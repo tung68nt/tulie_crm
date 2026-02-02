@@ -40,13 +40,11 @@ then
     exit 1
 fi
 
-# Build Image with Build Args
+# Build Image using Cloud Build Config
 echo "Building container image..."
-gcloud builds submit --tag gcr.io/"$PROJECT_ID"/"$APP_NAME" \
-  --project "$PROJECT_ID" \
-  --build-arg NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
-  --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-  --build-arg NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
+gcloud builds submit \
+  --config cloudbuild.yaml \
+  --substitutions=_GCR_TAG="gcr.io/$PROJECT_ID/$APP_NAME",_NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL",_NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY",_NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
   .
 
 # Deploy Service with Env Vars
