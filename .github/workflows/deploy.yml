@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: tulie-crm
+  PROJECT_ID: academy-tulie-2026
   SERVICE_NAME: tulie-crm
   REGION: asia-southeast1
 

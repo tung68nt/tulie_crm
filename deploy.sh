@@ -6,7 +6,7 @@ set -e
 # Configuration
 APP_NAME="tulie-crm"
 REGION="asia-southeast1" # Default region
-PROJECT_ID="tulie-crm"
+PROJECT_ID="academy-tulie-2026"
 
 if [ -z "$PROJECT_ID" ]; then
     echo "Error: No default project is set in gcloud."
