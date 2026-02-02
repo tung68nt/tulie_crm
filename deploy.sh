@@ -60,7 +60,9 @@ gcloud run deploy "$APP_NAME" \
     --update-env-vars NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
     --update-env-vars NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
     --update-env-vars SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
-    --update-env-vars RESEND_API_KEY="$RESEND_API_KEY"
+    --update-env-vars RESEND_API_KEY="$RESEND_API_KEY" \
+    --update-env-vars DATABASE_URL="$DATABASE_URL" \
+    --update-env-vars DIRECT_URL="$DIRECT_URL"
 
 echo ""
 echo "Deployment completed successfully."
