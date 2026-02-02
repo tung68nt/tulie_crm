@@ -6,8 +6,33 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Building2, Bell, Palette, Shield, Database as DatabaseIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner' // Assuming sonner or generic toast is used
 
 export default function SettingsPage() {
+    const [companySettings, setCompanySettings] = useState({
+        name: "Tulie Agency",
+        tax_code: "",
+        address: "",
+        email: "",
+        phone: "",
+        website: ""
+    })
+
+    useEffect(() => {
+        const saved = localStorage.getItem('company_settings')
+        if (saved) {
+            setCompanySettings(JSON.parse(saved))
+        }
+    }, [])
+
+    const handleSaveCompanySettings = () => {
+        localStorage.setItem('company_settings', JSON.stringify(companySettings))
+        // Here you would also save to DB in a real scenario
+        // toast.success("Đã lưu thông tin công ty")
+        alert("Đã lưu thông tin công ty thành công!")
+    }
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -55,30 +80,64 @@ export default function SettingsPage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="company_name">Tên công ty</Label>
-                                    <Input id="company_name" defaultValue="Tulie Agency" />
+                                    <Input
+                                        id="company_name"
+                                        value={companySettings.name}
+                                        onChange={(e) => setCompanySettings({ ...companySettings, name: e.target.value })}
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="tax_code">Mã số thuế</Label>
-                                    <Input id="tax_code" placeholder="0123456789" />
+                                    <Input
+                                        id="tax_code"
+                                        value={companySettings.tax_code}
+                                        onChange={(e) => setCompanySettings({ ...companySettings, tax_code: e.target.value })}
+                                        placeholder="0123456789"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="address">Địa chỉ</Label>
-                                <Input id="address" placeholder="Địa chỉ công ty" />
+                                <Input
+                                    id="address"
+                                    value={companySettings.address}
+                                    onChange={(e) => setCompanySettings({ ...companySettings, address: e.target.value })}
+                                    placeholder="Địa chỉ công ty"
+                                />
                             </div>
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="contact@tulie.agency" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={companySettings.email}
+                                        onChange={(e) => setCompanySettings({ ...companySettings, email: e.target.value })}
+                                        placeholder="contact@tulie.agency"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">Số điện thoại</Label>
-                                    <Input id="phone" placeholder="0901234567" />
+                                    <Input
+                                        id="phone"
+                                        value={companySettings.phone}
+                                        onChange={(e) => setCompanySettings({ ...companySettings, phone: e.target.value })}
+                                        placeholder="0901234567"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="website">Website</Label>
+                                    <Input
+                                        id="website"
+                                        value={companySettings.website}
+                                        onChange={(e) => setCompanySettings({ ...companySettings, website: e.target.value })}
+                                        placeholder="tulie.agency"
+                                    />
                                 </div>
                             </div>
                             <Separator />
                             <div className="flex justify-end">
-                                <Button>Lưu thay đổi</Button>
+                                <Button onClick={handleSaveCompanySettings}>Lưu thay đổi</Button>
                             </div>
                         </CardContent>
                     </Card>
