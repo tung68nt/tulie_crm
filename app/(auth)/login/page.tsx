@@ -132,8 +132,8 @@ export default function LoginPage() {
                         )}
                     </div>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-4">
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                <CardFooter className="flex flex-col gap-4 pt-4">
+                    <Button type="submit" className="w-full mt-2" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Đăng nhập
                     </Button>
