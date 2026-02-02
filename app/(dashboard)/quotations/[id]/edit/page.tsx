@@ -63,15 +63,15 @@ const mockQuotation = {
 }
 
 const mockCustomers = [
-    { id: '1', company_name: 'ABC Corporation' },
-    { id: '2', company_name: 'XYZ Limited' },
+    { id: '1', company_name: 'ABC Corporation', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', company_name: 'XYZ Limited', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 const mockProducts = [
-    { id: '1', name: 'Website Development', unit_price: 50000000, unit: 'dự án' },
-    { id: '2', name: 'SEO Package - Basic', unit_price: 10000000, unit: 'tháng' },
-    { id: '3', name: 'Social Media Management', unit_price: 15000000, unit: 'tháng' },
-    { id: '4', name: 'Content Marketing', unit_price: 8000000, unit: 'tháng' },
+    { id: '1', name: 'Website Development', unit_price: 50000000, unit: 'dự án', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', name: 'SEO Package - Basic', unit_price: 10000000, unit: 'tháng', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '3', name: 'Social Media Management', unit_price: 15000000, unit: 'tháng', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '4', name: 'Content Marketing', unit_price: 8000000, unit: 'tháng', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 export default function EditQuotationPage() {

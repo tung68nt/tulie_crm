@@ -10,20 +10,20 @@ import { ArrowLeft, Eye, Save, Send, Loader2 } from 'lucide-react'
 
 // Mock Data (Replace with API fetch)
 const mockProducts = [
-    { id: '1', name: 'Website Development', unit_price: 50000000, unit: 'dự án', description: 'Thiết kế và lập trình website trọn gói' },
-    { id: '2', name: 'SEO Package - Basic', unit_price: 10000000, unit: 'tháng', description: 'Tối ưu hóa công cụ tìm kiếm cơ bản' },
-    { id: '3', name: 'Social Media Management', unit_price: 15000000, unit: 'tháng', description: 'Quản lý Fanpage, content, hình ảnh' },
-    { id: '4', name: 'Logo Design', unit_price: 8000000, unit: 'thiết kế', description: 'Thiết kế Logo nhận diện thương hiệu' },
-    { id: '5', name: 'Brand Identity Package', unit_price: 35000000, unit: 'gói', description: 'Bộ nhận diện thương hiệu đầy đủ' },
-    { id: '6', name: 'Backdrop Event', unit_price: 1500000, unit: 'm2', description: 'In ấn & thi công backdrop (Hiflex/PP)' },
-    { id: '7', name: 'Photobooth', unit_price: 5000000, unit: 'gói', description: 'Chụp hình lấy liền, thiết kế frame' },
+    { id: '1', name: 'Website Development', unit_price: 50000000, unit: 'dự án', description: 'Thiết kế và lập trình website trọn gói', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', name: 'SEO Package - Basic', unit_price: 10000000, unit: 'tháng', description: 'Tối ưu hóa công cụ tìm kiếm cơ bản', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '3', name: 'Social Media Management', unit_price: 15000000, unit: 'tháng', description: 'Quản lý Fanpage, content, hình ảnh', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '4', name: 'Logo Design', unit_price: 8000000, unit: 'thiết kế', description: 'Thiết kế Logo nhận diện thương hiệu', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '5', name: 'Brand Identity Package', unit_price: 35000000, unit: 'gói', description: 'Bộ nhận diện thương hiệu đầy đủ', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '6', name: 'Backdrop Event', unit_price: 1500000, unit: 'm2', description: 'In ấn & thi công backdrop (Hiflex/PP)', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '7', name: 'Photobooth', unit_price: 5000000, unit: 'gói', description: 'Chụp hình lấy liền, thiết kế frame', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 const mockCustomers = [
-    { id: '1', company_name: 'ABC Corporation', address: 'London, UK', phone: '0123456789' },
-    { id: '2', company_name: 'XYZ Limited', address: 'New York, USA', phone: '0987654321' },
-    { id: '3', company_name: 'DEF Industries' },
-    { id: '4', company_name: 'GHI Company' },
+    { id: '1', company_name: 'ABC Corporation', address: 'London, UK', phone: '0123456789', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '2', company_name: 'XYZ Limited', address: 'New York, USA', phone: '0987654321', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '3', company_name: 'DEF Industries', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: '4', company_name: 'GHI Company', status: 'customer', assigned_to: '1', created_by: '1', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 export default function NewQuotationPage() {
