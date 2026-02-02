@@ -2,6 +2,9 @@ import { Metadata } from 'next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState } from 'react'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { CheckCircle, XCircle, Download, Building2, Calendar, FileText } from 'lucide-react'
 
@@ -42,11 +45,33 @@ export default function PublicQuotationPage() {
     const quotation = mockQuotation
     const isExpired = new Date(quotation.valid_until) < new Date()
 
+    const [showConfirm, setShowConfirm] = useState(false)
+    const [confirmer, setConfirmer] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        position: ''
+    })
+
+    const handleConfirm = () => {
+        // Validation
+        if (!confirmer.name || !confirmer.phone) {
+            alert('Vui lòng nhập họ tên và số điện thoại')
+            return
+        }
+
+        // TODO: Call API to update status='accepted' and save confirmer info
+        alert('Cảm ơn! Báo giá đã được chấp nhận. Chúng tôi sẽ liên hệ lại sớm.')
+        console.log('Confirmed by:', confirmer)
+        setShowConfirm(false)
+    }
+
     return (
         <div className="min-h-screen bg-muted/30 py-8">
             <div className="container max-w-4xl mx-auto px-4">
                 {/* Header with Logo */}
                 <div className="text-center mb-8">
+                    {/* Use proper logo component or Image in real implementation */}
                     <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-foreground mb-4">
                         <span className="text-2xl font-bold text-background">T</span>
                     </div>
@@ -93,7 +118,8 @@ export default function PublicQuotationPage() {
                             )}
                         </div>
 
-                        {/* Items Table */}
+                        {/* Items Table - Using Sections logic if available or flat fallback */}
+                        {/* For now keeping flat structure but ready for sections update */}
                         <div className="mb-8">
                             <h3 className="font-semibold mb-4">Chi tiết báo giá</h3>
                             <div className="border rounded-lg overflow-hidden">
@@ -175,9 +201,45 @@ export default function PublicQuotationPage() {
                                     Báo giá này đã hết hạn. Vui lòng liên hệ để nhận báo giá mới.
                                 </p>
                             </div>
+                        ) : showConfirm ? (
+                            <Card className="border-green-500/50 bg-green-500/5">
+                                <CardContent className="p-6 space-y-4">
+                                    <h3 className="font-semibold text-lg flex items-center gap-2 text-green-700">
+                                        <CheckCircle className="h-5 w-5" />
+                                        Xác nhận chấp nhận báo giá
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Vui lòng để lại thông tin người đại diện để chúng tôi liên hệ triển khai hợp đồng.
+                                    </p>
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label>Họ và tên <span className="text-red-500">*</span></Label>
+                                            <Input value={confirmer.name} onChange={e => setConfirmer({ ...confirmer, name: e.target.value })} placeholder="Nguyễn Văn A" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Số điện thoại <span className="text-red-500">*</span></Label>
+                                            <Input value={confirmer.phone} onChange={e => setConfirmer({ ...confirmer, phone: e.target.value })} placeholder="090..." />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Email</Label>
+                                            <Input value={confirmer.email} onChange={e => setConfirmer({ ...confirmer, email: e.target.value })} placeholder="email@example.com" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Chức vụ</Label>
+                                            <Input value={confirmer.position} onChange={e => setConfirmer({ ...confirmer, position: e.target.value })} placeholder="Giám đốc / Kế toán..." />
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end gap-2 pt-2">
+                                        <Button variant="ghost" onClick={() => setShowConfirm(false)}>Hủy</Button>
+                                        <Button className="bg-green-600 hover:bg-green-700" onClick={handleConfirm}>
+                                            Xác nhận ngay
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         ) : (
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                                <Button size="lg" className="bg-green-600 hover:bg-green-700" onClick={() => setShowConfirm(true)}>
                                     <CheckCircle className="mr-2 h-5 w-5" />
                                     Chấp nhận báo giá
                                 </Button>
@@ -205,3 +267,4 @@ export default function PublicQuotationPage() {
         </div>
     )
 }
+

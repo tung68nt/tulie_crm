@@ -113,6 +113,12 @@ export interface Quotation {
   view_count: number
   accepted_at?: string
   rejected_at?: string
+  confirmer_info?: {
+    name: string
+    phone: string
+    email: string
+    position?: string
+  }
   items?: QuotationItem[]
   created_at: string
   updated_at: string
@@ -130,7 +136,8 @@ export interface QuotationItem {
   unit_price: number
   discount_percent?: number
   total: number
-  sort_order: number
+  sort_order: number // To order items within a section
+  section_name?: string // To group items (e.g., "Design", "Printing")
 }
 
 // Contract Types
@@ -276,7 +283,7 @@ export interface Expense {
 }
 
 // Notification Types
-export type NotificationType = 
+export type NotificationType =
   | 'customer_inactive'
   | 'contract_expiry'
   | 'invoice_overdue'
