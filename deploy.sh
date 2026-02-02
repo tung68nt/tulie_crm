@@ -44,15 +44,17 @@ fi
 echo "Building container image..."
 gcloud builds submit \
   --config cloudbuild.yaml \
-  --substitutions=_GCR_TAG="gcr.io/$PROJECT_ID/$APP_NAME",_NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL",_NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY",_NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
+  --substitutions=_GCR_TAG="asia-southeast1-docker.pkg.dev/$PROJECT_ID/tulie-repo/$APP_NAME",_NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL",_NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY",_NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
   .
 
 # Deploy Service with Env Vars
+# Deploy Service with Env Vars
 echo "Deploying to Cloud Run..."
 gcloud run deploy "$APP_NAME" \
-    --image gcr.io/"$PROJECT_ID"/"$APP_NAME" \
-    --project "$PROJECT_ID" \
+    --image asia-southeast1-docker.pkg.dev/"$PROJECT_ID"/tulie-repo/"$APP_NAME" \
+    --platform managed \
     --region "$REGION" \
+    --project "$PROJECT_ID" \
     --allow-unauthenticated \
     --update-env-vars NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
     --update-env-vars NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
