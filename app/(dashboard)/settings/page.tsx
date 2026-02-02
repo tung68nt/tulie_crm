@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Building2, Bell, Palette, Shield, Database as DatabaseIcon } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { toast } from 'sonner' // Assuming sonner or generic toast is used
 
 export default function SettingsPage() {
     const [companySettings, setCompanySettings] = useState({
