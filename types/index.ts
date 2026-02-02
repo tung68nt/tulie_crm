@@ -126,7 +126,7 @@ export interface Quotation {
 
 export interface QuotationItem {
   id: string
-  quotation_id: string
+  quotation_id?: string
   product_id?: string
   product?: Product
   name: string
@@ -169,7 +169,7 @@ export interface Contract {
 
 export interface ContractItem {
   id: string
-  contract_id: string
+  contract_id?: string
   product_id?: string
   name: string
   quantity: number
@@ -222,7 +222,7 @@ export interface Invoice {
 
 export interface InvoiceItem {
   id: string
-  invoice_id: string
+  invoice_id?: string
   description: string
   quantity: number
   unit: string
