@@ -226,24 +226,24 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             </div>
 
                             {/* Right Column: Bank Transfer */}
-                            <div className="bg-slate-900 text-white p-6 rounded-xl h-full flex flex-col justify-center">
-                                <h4 className="font-bold mb-4 text-sm uppercase opacity-90 tracking-wide border-b border-slate-700 pb-3">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
-                                <div className="space-y-3 text-sm">
-                                    <div className="grid grid-cols-[100px_1fr] items-center">
-                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Ngân hàng</span>
-                                        <span className="font-medium">TECHCOMBANK</span>
+                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit">
+                                <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
+                                <div className="space-y-2 text-xs">
+                                    <div className="grid grid-cols-[80px_1fr] items-center">
+                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Ngân hàng</span>
+                                        <span className="font-bold text-slate-900">TECHCOMBANK</span>
                                     </div>
-                                    <div className="grid grid-cols-[100px_1fr] items-center">
-                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Số tài khoản</span>
-                                        <span className="font-mono text-lg tracking-widest text-yellow-400">190368686868</span>
+                                    <div className="grid grid-cols-[80px_1fr] items-center">
+                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Số TK</span>
+                                        <span className="font-mono text-sm font-bold text-slate-900">190368686868</span>
                                     </div>
-                                    <div className="grid grid-cols-[100px_1fr] items-center">
-                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Chủ tài khoản</span>
-                                        <span className="uppercase font-medium">CONG TY TNHH TULIE</span>
+                                    <div className="grid grid-cols-[80px_1fr] items-center">
+                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Chủ TK</span>
+                                        <span className="uppercase font-bold text-slate-900">CONG TY TNHH TULIE</span>
                                     </div>
-                                    <div className="grid grid-cols-[100px_1fr] items-center">
-                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Chi nhánh</span>
-                                        <span className="font-medium">Thanh Xuân - Hà Nội</span>
+                                    <div className="grid grid-cols-[80px_1fr] items-center">
+                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Chi nhánh</span>
+                                        <span className="font-bold text-slate-900">Thanh Xuân - Hà Nội</span>
                                     </div>
                                 </div>
                             </div>
