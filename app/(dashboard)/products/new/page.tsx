@@ -40,6 +40,9 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>
 
+import { createProduct } from '@/lib/supabase/services/product-service'
+import { toast } from 'sonner'
+
 export default function NewProductPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -61,15 +64,18 @@ export default function NewProductPage() {
     const onSubmit = async (data: ProductFormData) => {
         setIsLoading(true)
         try {
-            console.log('Creating product:', data)
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await createProduct(data)
+            toast.success('Thêm sản phẩm mới thành công!')
             router.push('/products')
+            router.refresh()
         } catch (error) {
             console.error('Failed to create product:', error)
+            toast.error('Có lỗi xảy ra khi thêm sản phẩm')
         } finally {
             setIsLoading(false)
         }
     }
+
 
     return (
         <div className="space-y-6">

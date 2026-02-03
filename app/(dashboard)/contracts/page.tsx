@@ -1,5 +1,3 @@
-import { Contract } from '@/types'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -19,86 +17,17 @@ import {
 } from '@/components/ui/table'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { CONTRACT_STATUS_LABELS, CONTRACT_STATUS_COLORS } from '@/lib/constants/status'
-import { Plus, Eye, MoreHorizontal, FileSignature, Clock, CheckCircle } from 'lucide-react'
+import { Plus, Eye, FileSignature, Clock, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { getContracts } from '@/lib/supabase/services/contract-service'
+import { Button } from '@/components/ui/button'
 
-// Mock data
-const mockContracts: Contract[] = [
-    {
-        id: '1',
-        contract_number: 'HD-2026-0089',
-        customer_id: '1',
-        customer: {
-            id: '1',
-            company_name: 'ABC Corporation',
-            status: 'customer',
-            assigned_to: 'user-1',
-            created_by: 'admin',
-            created_at: '2024-01-01',
-            updated_at: '2024-01-01',
-        },
-        created_by: 'user-1',
-        title: 'Hợp đồng phát triển website',
-        status: 'active',
-        total_value: 220000000,
-        start_date: '2026-01-10',
-        end_date: '2026-04-10',
-        signed_date: '2026-01-09',
-        created_at: '2026-01-09',
-        updated_at: '2026-01-09',
-    },
-    {
-        id: '2',
-        contract_number: 'HD-2026-0078',
-        customer_id: '3',
-        customer: {
-            id: '3',
-            company_name: 'DEF Industries',
-            status: 'vip',
-            assigned_to: 'user-1',
-            created_by: 'admin',
-            created_at: '2024-01-01',
-            updated_at: '2024-01-01',
-        },
-        created_by: 'user-1',
-        title: 'Hợp đồng SEO 12 tháng',
-        status: 'active',
-        total_value: 120000000,
-        start_date: '2025-07-01',
-        end_date: '2026-01-17',
-        signed_date: '2025-06-28',
-        created_at: '2025-06-28',
-        updated_at: '2025-06-28',
-    },
-    {
-        id: '3',
-        contract_number: 'HD-2025-0156',
-        customer_id: '2',
-        customer: {
-            id: '2',
-            company_name: 'XYZ Limited',
-            status: 'customer',
-            assigned_to: 'user-2',
-            created_by: 'admin',
-            created_at: '2024-01-01',
-            updated_at: '2024-01-01',
-        },
-        created_by: 'user-2',
-        title: 'Thiết kế bộ nhận diện thương hiệu',
-        status: 'completed',
-        total_value: 45000000,
-        start_date: '2025-10-01',
-        end_date: '2025-12-31',
-        signed_date: '2025-09-28',
-        created_at: '2025-09-28',
-        updated_at: '2025-12-31',
-    },
-]
+export default async function ContractsPage() {
+    const contracts = await getContracts()
 
-export default function ContractsPage() {
-    const activeContracts = mockContracts.filter((c) => c.status === 'active').length
-    const completedContracts = mockContracts.filter((c) => c.status === 'completed').length
-    const totalValue = mockContracts.reduce((sum, c) => sum + c.total_value, 0)
+    const activeContracts = contracts.filter((c) => c.status === 'active').length
+    const completedContracts = contracts.filter((c) => c.status === 'completed').length
+    const totalValue = contracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
 
     return (
         <div className="space-y-6">
@@ -187,7 +116,7 @@ export default function ContractsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {mockContracts.map((contract) => (
+                            {contracts.map((contract) => (
                                 <TableRow key={contract.id}>
                                     <TableCell>
                                         <Link href={`/contracts/${contract.id}`} className="font-medium hover:underline">
@@ -199,7 +128,7 @@ export default function ContractsPage() {
                                         {contract.title}
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        {formatCurrency(contract.total_value)}
+                                        {formatCurrency(contract.total_amount)}
                                     </TableCell>
                                     <TableCell>
                                         <div className="text-sm">

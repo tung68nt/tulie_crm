@@ -12,41 +12,26 @@ import {
     FileText,
     BarChart3
 } from 'lucide-react'
+import { getProductById } from '@/lib/supabase/services/product-service'
+import { notFound } from 'next/navigation'
 
-// Mock data
-const mockProduct = {
-    id: '1',
-    name: 'Website Development',
-    sku: 'WEB-DEV-001',
-    category: 'Web Development',
-    description: 'Thiết kế và phát triển website doanh nghiệp theo yêu cầu. Bao gồm thiết kế UI/UX, phát triển frontend & backend, tích hợp CMS, và optimization SEO cơ bản.',
-    unit: 'dự án',
-    unit_price: 50000000,
-    cost_price: 30000000,
-    is_active: true,
-    created_at: '2024-01-01',
-    updated_at: '2024-06-15',
-    stats: {
-        total_sold: 15,
-        total_revenue: 750000000,
-        avg_margin: 40,
-    },
-    recent_quotations: [
-        { id: '1', quote_number: 'QT-2026-0142', customer: 'ABC Corporation', status: 'accepted', date: '2026-01-05' },
-        { id: '2', quote_number: 'QT-2025-0256', customer: 'XYZ Limited', status: 'converted', date: '2025-11-20' },
-        { id: '3', quote_number: 'QT-2025-0189', customer: 'DEF Industries', status: 'rejected', date: '2025-09-08' },
-    ],
-}
-
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+    const { id } = await params
+    const product = await getProductById(id)
     return {
-        title: `${mockProduct.name} - Tulie CRM`,
+        title: product ? `${product.name} - Tulie CRM` : 'Sản phẩm - Tulie CRM',
     }
 }
 
-export default function ProductDetailPage() {
-    const product = mockProduct
-    const margin = ((product.unit_price - (product.cost_price || 0)) / product.unit_price) * 100
+export default async function ProductDetailPage({ params }: any) {
+    const { id } = await params
+    const product = await getProductById(id)
+
+    if (!product) {
+        notFound()
+    }
+
+    const margin = product.unit_price > 0 ? ((product.unit_price - (product.cost_price || 0)) / product.unit_price) * 100 : 0
 
     return (
         <div className="space-y-6">
@@ -65,7 +50,7 @@ export default function ProductDetailPage() {
                                 {product.is_active ? 'Đang bán' : 'Ngừng bán'}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground">SKU: {product.sku}</p>
+                        <p className="text-muted-foreground">SKU: {product.sku || 'N/A'}</p>
                     </div>
                 </div>
                 <Button variant="outline" asChild>
@@ -91,11 +76,11 @@ export default function ProductDetailPage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Danh mục</p>
-                                    <p className="font-medium">{product.category}</p>
+                                    <p className="font-medium">{product.category || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Đơn vị tính</p>
-                                    <p className="font-medium">{product.unit}</p>
+                                    <p className="font-medium">{product.unit || 'N/A'}</p>
                                 </div>
                             </div>
                             {product.description && (
@@ -135,7 +120,7 @@ export default function ProductDetailPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Recent Quotations */}
+                    {/* Recent Quotations Placeholder */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -144,22 +129,7 @@ export default function ProductDetailPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            {product.recent_quotations.map((quote) => (
-                                <Link
-                                    key={quote.id}
-                                    href={`/quotations/${quote.id}`}
-                                    className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors"
-                                >
-                                    <div>
-                                        <p className="font-medium">{quote.quote_number}</p>
-                                        <p className="text-sm text-muted-foreground">{quote.customer}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <Badge variant="secondary">{quote.status}</Badge>
-                                        <p className="text-sm text-muted-foreground mt-1">{quote.date}</p>
-                                    </div>
-                                </Link>
-                            ))}
+                            <p className="text-sm text-muted-foreground text-center py-8 italic border rounded-lg">Chưa có thống kê báo giá cho sản phẩm này</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -176,15 +146,15 @@ export default function ProductDetailPage() {
                         <CardContent className="space-y-4">
                             <div className="p-4 rounded-lg bg-muted">
                                 <p className="text-sm text-muted-foreground">Tổng doanh thu</p>
-                                <p className="text-2xl font-bold">{formatCurrency(product.stats.total_revenue)}</p>
+                                <p className="text-2xl font-bold">{formatCurrency(0)}</p>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Số lượng đã bán</span>
-                                <span className="font-medium">{product.stats.total_sold} {product.unit}</span>
+                                <span className="font-medium">0 {product.unit}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Margin trung bình</span>
-                                <span className="font-medium text-green-500">{product.stats.avg_margin}%</span>
+                                <span className="font-medium text-green-500">0%</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -196,11 +166,11 @@ export default function ProductDetailPage() {
                         <CardContent className="space-y-3 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Ngày tạo</span>
-                                <span>{product.created_at}</span>
+                                <span>{formatDate(product.created_at)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Cập nhật lần cuối</span>
-                                <span>{product.updated_at}</span>
+                                <span>{formatDate(product.updated_at)}</span>
                             </div>
                         </CardContent>
                     </Card>

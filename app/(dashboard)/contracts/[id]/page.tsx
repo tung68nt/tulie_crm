@@ -6,14 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import { formatCurrency, formatDate } from '@/lib/utils/format'
+    formatCurrency, formatDate
+} from '@/lib/utils/format'
 import { CONTRACT_STATUS_LABELS, CONTRACT_STATUS_COLORS } from '@/lib/constants/status'
 import {
     ArrowLeft,
@@ -26,60 +20,32 @@ import {
     Clock,
     AlertTriangle
 } from 'lucide-react'
+import { getContractById } from '@/lib/supabase/services/contract-service'
+import { notFound } from 'next/navigation'
+import { ContractStatus } from '@/types'
 
-// Mock data
-const mockContract = {
-    id: '1',
-    contract_number: 'HD-2026-0089',
-    customer: {
-        id: '1',
-        company_name: 'ABC Corporation',
-        email: 'contact@abc.com',
-        phone: '0901234567',
-    },
-    quotation: {
-        id: '1',
-        quote_number: 'QT-2026-0142',
-    },
-    creator: {
-        full_name: 'Sarah Nguyen',
-    },
-    title: 'Hợp đồng phát triển website và marketing',
-    description: 'Triển khai website doanh nghiệp và gói SEO + Social Media 6 tháng',
-    status: 'active' as const,
-    total_value: 220000000,
-    paid_amount: 110000000,
-    start_date: '2026-01-10',
-    end_date: '2026-07-10',
-    signed_date: '2026-01-09',
-    terms: 'Thanh toán theo tiến độ milestone\nBảo hành 12 tháng sau hoàn thành',
-    items: [
-        { id: '1', name: 'Website Development', quantity: 1, unit: 'dự án', unit_price: 50000000, total: 50000000 },
-        { id: '2', name: 'SEO Package', quantity: 6, unit: 'tháng', unit_price: 10000000, total: 60000000 },
-        { id: '3', name: 'Social Media', quantity: 6, unit: 'tháng', unit_price: 15000000, total: 90000000 },
-        { id: '4', name: 'VAT 10%', quantity: 1, unit: '', unit_price: 20000000, total: 20000000 },
-    ],
-    milestones: [
-        { id: '1', name: 'Ký hợp đồng & Đặt cọc 50%', amount: 110000000, due_date: '2026-01-10', status: 'completed', completed_at: '2026-01-10' },
-        { id: '2', name: 'Hoàn thành website', amount: 50000000, due_date: '2026-03-10', status: 'pending' },
-        { id: '3', name: 'Thanh toán đợt cuối', amount: 60000000, due_date: '2026-07-10', status: 'pending' },
-    ],
-    invoices: [
-        { id: '1', invoice_number: 'HDB-2026-0142', amount: 110000000, status: 'paid', issue_date: '2026-01-10' },
-    ],
-    created_at: '2026-01-09',
-    updated_at: '2026-01-10',
-}
-
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+    const { id } = await params
+    const contract = await getContractById(id)
     return {
-        title: `${mockContract.contract_number} - Tulie CRM`,
+        title: contract ? `${contract.contract_number} - Tulie CRM` : 'Hợp đồng - Tulie CRM',
     }
 }
 
-export default function ContractDetailPage() {
-    const contract = mockContract
-    const progress = (contract.paid_amount / contract.total_value) * 100
+export default async function ContractDetailPage({ params }: any) {
+    const { id } = await params
+    const contract = await getContractById(id)
+
+    if (!contract) {
+        notFound()
+    }
+
+    // In a real app, paid_amount would be calculated from related invoices
+    const paidAmount = contract.milestones
+        ?.filter((m: any) => m.status === 'completed')
+        .reduce((sum: number, m: any) => sum + m.amount, 0) || 0
+
+    const progress = contract.total_amount > 0 ? (paidAmount / contract.total_amount) * 100 : 0
 
     return (
         <div className="space-y-6">
@@ -94,8 +60,8 @@ export default function ContractDetailPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-bold">{contract.contract_number}</h1>
-                            <Badge className={CONTRACT_STATUS_COLORS[contract.status]}>
-                                {CONTRACT_STATUS_LABELS[contract.status]}
+                            <Badge className={CONTRACT_STATUS_COLORS[contract.status as ContractStatus] || 'bg-gray-100'}>
+                                {CONTRACT_STATUS_LABELS[contract.status as ContractStatus] || contract.status}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground">{contract.title}</p>
@@ -127,8 +93,8 @@ export default function ContractDetailPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="flex justify-between text-sm">
-                                <span>Đã thanh toán: {formatCurrency(contract.paid_amount)}</span>
-                                <span>Tổng giá trị: {formatCurrency(contract.total_value)}</span>
+                                <span>Đã thanh toán: {formatCurrency(paidAmount)}</span>
+                                <span>Tổng giá trị: {formatCurrency(contract.total_amount)}</span>
                             </div>
                             <Progress value={progress} className="h-3" />
                             <p className="text-center text-sm text-muted-foreground">
@@ -143,11 +109,11 @@ export default function ContractDetailPage() {
                             <CardTitle>Milestone thanh toán</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {contract.milestones.map((milestone, index) => (
+                            {contract.milestones?.map((milestone: any, index: number) => (
                                 <div key={milestone.id} className="flex items-start gap-4">
                                     <div className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${milestone.status === 'completed' ? 'bg-green-500 text-white' :
-                                            milestone.status === 'overdue' ? 'bg-red-500 text-white' :
-                                                'bg-muted text-muted-foreground'
+                                        milestone.status === 'overdue' ? 'bg-red-500 text-white' :
+                                            'bg-muted text-muted-foreground'
                                         }`}>
                                         {milestone.status === 'completed' ? (
                                             <CheckCircle className="h-5 w-5" />
@@ -171,69 +137,30 @@ export default function ContractDetailPage() {
                                     </div>
                                 </div>
                             ))}
+                            {(!contract.milestones || contract.milestones.length === 0) && (
+                                <p className="text-sm text-muted-foreground text-center py-4">Chưa thiết lập milestone thanh toán</p>
+                            )}
                         </CardContent>
                     </Card>
 
-                    {/* Items */}
+                    {/* Terms & Details */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Chi tiết hợp đồng</CardTitle>
+                            <CardTitle>Chi tiết & Điều khoản</CardTitle>
                         </CardHeader>
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Hạng mục</TableHead>
-                                        <TableHead className="text-center">SL</TableHead>
-                                        <TableHead className="text-right">Đơn giá</TableHead>
-                                        <TableHead className="text-right">Thành tiền</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {contract.items.map((item) => (
-                                        <TableRow key={item.id}>
-                                            <TableCell className="font-medium">{item.name}</TableCell>
-                                            <TableCell className="text-center">{item.quantity} {item.unit}</TableCell>
-                                            <TableCell className="text-right">{formatCurrency(item.unit_price)}</TableCell>
-                                            <TableCell className="text-right font-medium">{formatCurrency(item.total)}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                            <div className="border-t p-4">
-                                <div className="flex justify-end">
-                                    <div className="flex justify-between w-48 font-semibold text-lg">
-                                        <span>Tổng cộng</span>
-                                        <span>{formatCurrency(contract.total_value)}</span>
-                                    </div>
+                        <CardContent className="space-y-4">
+                            {contract.description && (
+                                <div>
+                                    <h4 className="font-medium mb-1">Mô tả dự án</h4>
+                                    <p className="text-sm text-muted-foreground">{contract.description}</p>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Invoices */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Hóa đơn liên quan</CardTitle>
-                            <Button size="sm" variant="outline" asChild>
-                                <Link href={`/invoices/new?contract=${contract.id}`}>
-                                    Tạo hóa đơn
-                                </Link>
-                            </Button>
-                        </CardHeader>
-                        <CardContent>
-                            {contract.invoices.map((invoice) => (
-                                <Link key={invoice.id} href={`/invoices/${invoice.id}`} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent">
-                                    <div>
-                                        <p className="font-medium">{invoice.invoice_number}</p>
-                                        <p className="text-sm text-muted-foreground">{formatDate(invoice.issue_date)}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-medium">{formatCurrency(invoice.amount)}</p>
-                                        <Badge variant="secondary" className="text-green-500">{invoice.status}</Badge>
-                                    </div>
-                                </Link>
-                            ))}
+                            )}
+                            {contract.terms && (
+                                <div>
+                                    <h4 className="font-medium mb-1">Điều khoản hợp đồng</h4>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-line">{contract.terms}</p>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
@@ -249,11 +176,11 @@ export default function ContractDetailPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Link href={`/customers/${contract.customer.id}`} className="font-medium hover:underline">
-                                {contract.customer.company_name}
+                            <Link href={`/customers/${contract.customer?.id}`} className="font-medium hover:underline">
+                                {contract.customer?.company_name}
                             </Link>
-                            <p className="text-sm text-muted-foreground mt-1">{contract.customer.email}</p>
-                            <p className="text-sm text-muted-foreground">{contract.customer.phone}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{contract.customer?.email}</p>
+                            <p className="text-sm text-muted-foreground">{contract.customer?.phone}</p>
                         </CardContent>
                     </Card>
 
@@ -268,7 +195,7 @@ export default function ContractDetailPage() {
                         <CardContent className="space-y-3">
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Ngày ký</span>
-                                <span className="font-medium">{formatDate(contract.signed_date)}</span>
+                                <span className="font-medium">{contract.signed_date ? formatDate(contract.signed_date) : 'Chưa ký'}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Bắt đầu</span>
@@ -276,27 +203,36 @@ export default function ContractDetailPage() {
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Kết thúc</span>
-                                <span className="font-medium">{formatDate(contract.end_date)}</span>
+                                <span className="font-medium">{contract.end_date ? formatDate(contract.end_date) : 'Không xác định'}</span>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* Related Quote */}
-                    {contract.quotation && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5" />
-                                    Báo giá gốc
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Link href={`/quotations/${contract.quotation.id}`} className="font-medium hover:underline">
-                                    {contract.quotation.quote_number}
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    )}
+                    {/* Related Quote & Creator */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Thông tin khác
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {contract.quotation && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground uppercase mb-1">Báo giá gốc</p>
+                                    <Link href={`/quotations/${contract.quotation.id}`} className="font-medium hover:underline">
+                                        {contract.quotation.quote_number}
+                                    </Link>
+                                </div>
+                            )}
+                            {contract.creator && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground uppercase mb-1">Người phụ trách</p>
+                                    <p className="font-medium">{contract.creator.full_name}</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>

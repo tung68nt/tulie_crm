@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,7 +16,6 @@ import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_COLORS } from '@/lib/constant
 import {
     ArrowLeft,
     Edit,
-    Copy,
     ExternalLink,
     FileSignature,
     Download,
@@ -26,47 +23,19 @@ import {
     Clock,
     Building2
 } from 'lucide-react'
+import { getQuotationById } from '@/lib/supabase/services/quotation-service'
+import { notFound } from 'next/navigation'
+import { CopyButton } from '@/components/shared/copy-button'
+import { QuotationStatus, QuotationItem } from '@/types'
 
-// Mock data
-const mockQuotation = {
-    id: '1',
-    quote_number: 'QT-2026-0142',
-    customer: {
-        id: '1',
-        company_name: 'ABC Corporation',
-        email: 'contact@abc.com',
-        phone: '0901234567',
-    },
-    creator: {
-        full_name: 'Sarah Nguyen',
-    },
-    status: 'accepted' as const,
-    title: 'Báo giá dịch vụ Marketing Digital',
-    description: 'Gói dịch vụ marketing tổng hợp bao gồm website, SEO và quản lý social media',
-    terms: '• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành',
-    notes: 'Khách hàng yêu cầu hoàn thành trong Q1 2026',
-    items: [
-        { id: '1', name: 'Website Development', description: 'Thiết kế và phát triển website doanh nghiệp', quantity: 1, unit: 'dự án', unit_price: 50000000, discount_percent: 0, total: 50000000 },
-        { id: '2', name: 'SEO Package - Basic', description: 'Tối ưu SEO cơ bản 6 tháng', quantity: 6, unit: 'tháng', unit_price: 10000000, discount_percent: 0, total: 60000000 },
-        { id: '3', name: 'Social Media Management', description: 'Quản lý fanpage Facebook & Instagram', quantity: 6, unit: 'tháng', unit_price: 15000000, discount_percent: 0, total: 90000000 },
-    ],
-    subtotal: 200000000,
-    discount_percent: 0,
-    discount_amount: 0,
-    vat_percent: 10,
-    vat_amount: 20000000,
-    total_amount: 220000000,
-    valid_until: '2026-02-10',
-    public_token: 'abc123xyz',
-    view_count: 5,
-    viewed_at: '2026-01-08T10:30:00',
-    accepted_at: '2026-01-09T14:20:00',
-    created_at: '2026-01-05T09:00:00',
-    updated_at: '2026-01-09T14:20:00',
-}
+export default async function QuotationDetailPage({ params }: any) {
+    const { id } = await params
+    const quotation = await getQuotationById(id)
 
-export default function QuotationDetailPage() {
-    const quotation = mockQuotation
+    if (!quotation) {
+        notFound()
+    }
+
     const publicUrl = `/quote/${quotation.public_token}`
 
     return (
@@ -82,8 +51,8 @@ export default function QuotationDetailPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-bold">{quotation.quote_number}</h1>
-                            <Badge className={QUOTATION_STATUS_COLORS[quotation.status]}>
-                                {QUOTATION_STATUS_LABELS[quotation.status]}
+                            <Badge className={QUOTATION_STATUS_COLORS[quotation.status as QuotationStatus] || 'bg-gray-100'}>
+                                {QUOTATION_STATUS_LABELS[quotation.status as QuotationStatus] || quotation.status}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground">{quotation.title}</p>
@@ -96,10 +65,7 @@ export default function QuotationDetailPage() {
                             Xem trang công khai
                         </Link>
                     </Button>
-                    <Button variant="outline" onClick={() => navigator.clipboard.writeText(`${window.location.origin}${publicUrl}`)}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        Sao chép link
-                    </Button>
+                    <CopyButton value={publicUrl} />
                     <Button variant="outline">
                         <Download className="mr-2 h-4 w-4" />
                         Tải PDF
@@ -136,21 +102,21 @@ export default function QuotationDetailPage() {
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Công ty</p>
-                                    <Link href={`/customers/${quotation.customer.id}`} className="font-medium hover:underline">
-                                        {quotation.customer.company_name}
+                                    <Link href={`/customers/${quotation.customer?.id}`} className="font-medium hover:underline">
+                                        {quotation.customer?.company_name}
                                     </Link>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Email</p>
-                                    <p className="font-medium">{quotation.customer.email}</p>
+                                    <p className="font-medium">{quotation.customer?.email}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Điện thoại</p>
-                                    <p className="font-medium">{quotation.customer.phone}</p>
+                                    <p className="font-medium">{quotation.customer?.phone}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-muted-foreground">Người tạo</p>
-                                    <p className="font-medium">{quotation.creator.full_name}</p>
+                                    <p className="font-medium">{quotation.creator?.full_name}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -172,7 +138,7 @@ export default function QuotationDetailPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {quotation.items.map((item) => (
+                                    {quotation.items?.map((item: QuotationItem) => (
                                         <TableRow key={item.id}>
                                             <TableCell className="pl-6">
                                                 <p className="font-medium">{item.name}</p>
@@ -202,7 +168,7 @@ export default function QuotationDetailPage() {
                                             <span className="text-muted-foreground">Tạm tính</span>
                                             <span>{formatCurrency(quotation.subtotal)}</span>
                                         </div>
-                                        {quotation.discount_amount > 0 && (
+                                        {quotation.discount_amount && quotation.discount_amount > 0 && (
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-muted-foreground">Chiết khấu ({quotation.discount_percent}%)</span>
                                                 <span className="text-destructive">-{formatCurrency(quotation.discount_amount)}</span>
@@ -278,7 +244,7 @@ export default function QuotationDetailPage() {
                             )}
                             <div className="flex gap-3">
                                 <div className="h-2 w-2 mt-2 rounded-full bg-gray-400" />
-                                <div>
+                                <div className="flex-1">
                                     <p className="text-sm font-medium">Tạo báo giá</p>
                                     <p className="text-xs text-muted-foreground">{formatDate(quotation.created_at)}</p>
                                 </div>

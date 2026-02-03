@@ -42,3 +42,12 @@ next-env.d.ts
 
 # Google Cloud Service Account Key
 gcp-sa-key.json
+
+# AI Agent & Knowns
+.agent/
+.claude/
+.knowns/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+GEMINI.md

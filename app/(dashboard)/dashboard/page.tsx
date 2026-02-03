@@ -4,8 +4,14 @@ import { RecentActivities } from '@/components/dashboard/recent-activities'
 import { AlertsPanel } from '@/components/dashboard/alerts-panel'
 import { formatCurrency } from '@/lib/utils/format'
 import { Users, FileSignature, Receipt, Wallet } from 'lucide-react'
+import { getDashboardStats, getRevenueChartData } from '@/lib/supabase/services/dashboard-service'
+import { getRecentActivities } from '@/lib/supabase/services/activity-service'
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    const stats = await getDashboardStats()
+    const chartData = await getRevenueChartData()
+    const recentActivities = await getRecentActivities()
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -19,44 +25,43 @@ export default function DashboardPage() {
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
-                    title="Doanh thu tháng này"
-                    value={formatCurrency(350000000)}
-                    change={15.2}
-                    changeLabel="so với tháng trước"
+                    title="Doanh thu tổng"
+                    value={formatCurrency(stats.revenue.total)}
+                    change={stats.revenue.change}
+                    changeLabel={stats.revenue.period}
                     icon={<Wallet className="h-4 w-4 text-muted-foreground" />}
                 />
                 <StatsCard
                     title="Tổng khách hàng"
-                    value="248"
-                    change={8.5}
+                    value={stats.customers.total.toString()}
+                    change={stats.customers.change}
                     changeLabel="so với tháng trước"
                     icon={<Users className="h-4 w-4 text-muted-foreground" />}
                 />
                 <StatsCard
                     title="Hợp đồng đang thực hiện"
-                    value="45"
-                    change={12.3}
+                    value={stats.contracts.active.toString()}
+                    change={stats.contracts.change}
                     changeLabel="so với tháng trước"
                     icon={<FileSignature className="h-4 w-4 text-muted-foreground" />}
                 />
                 <StatsCard
                     title="Hóa đơn chờ thanh toán"
-                    value="12"
-                    change={-5.2}
-                    changeLabel="so với tháng trước"
+                    value={stats.invoices.pending.toString()}
                     icon={<Receipt className="h-4 w-4 text-muted-foreground" />}
                 />
             </div>
 
             {/* Charts & Activities */}
             <div className="grid gap-6 lg:grid-cols-3">
-                <RevenueChart />
+                <RevenueChart data={chartData} />
                 <AlertsPanel />
             </div>
 
             {/* Recent Activities */}
             <div className="grid gap-6 lg:grid-cols-2">
-                <RecentActivities />
+                <RecentActivities data={recentActivities} />
+
                 {/* Business Health Card - placeholder */}
                 <div className="rounded-lg border bg-card p-6">
                     <h3 className="text-lg font-semibold mb-4">Sức khỏe doanh nghiệp</h3>

@@ -17,56 +17,27 @@ import {
     Calendar,
     CheckCircle
 } from 'lucide-react'
+import { getInvoiceById } from '@/lib/supabase/services/invoice-service'
+import { notFound } from 'next/navigation'
 
-// Mock data
-const mockInvoice = {
-    id: '1',
-    invoice_number: 'HDB-2026-0142',
-    type: 'output' as const,
-    customer: {
-        id: '1',
-        company_name: 'ABC Corporation',
-        email: 'contact@abc.com',
-        phone: '0901234567',
-        address: '123 Nguyễn Huệ, Q1, TP.HCM',
-        tax_code: '0123456789',
-    },
-    contract: {
-        id: '1',
-        contract_number: 'HD-2026-0089',
-    },
-    creator: {
-        full_name: 'Sarah Nguyen',
-    },
-    status: 'paid' as const,
-    issue_date: '2026-01-10',
-    due_date: '2026-01-25',
-    items: [
-        { id: '1', description: 'Đặt cọc 50% hợp đồng HD-2026-0089', quantity: 1, unit: 'lần', unit_price: 100000000, total: 100000000 },
-        { id: '2', description: 'VAT 10%', quantity: 1, unit: '', unit_price: 10000000, total: 10000000 },
-    ],
-    subtotal: 100000000,
-    vat_percent: 10,
-    vat_amount: 10000000,
-    total_amount: 110000000,
-    paid_amount: 110000000,
-    notes: 'Thanh toán đặt cọc 50% dự án',
-    payments: [
-        { id: '1', amount: 110000000, payment_date: '2026-01-10', payment_method: 'Chuyển khoản', notes: 'VCB - 0011001234567' },
-    ],
-    created_at: '2026-01-10',
-}
-
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+    const { id } = await params
+    const invoice = await getInvoiceById(id)
     return {
-        title: `${mockInvoice.invoice_number} - Tulie CRM`,
+        title: invoice ? `${invoice.invoice_number} - Tulie CRM` : 'Hóa đơn - Tulie CRM',
     }
 }
 
-export default function InvoiceDetailPage() {
-    const invoice = mockInvoice
+export default async function InvoiceDetailPage({ params }: any) {
+    const { id } = await params
+    const invoice = await getInvoiceById(id)
+
+    if (!invoice) {
+        notFound()
+    }
+
     const isPaid = invoice.status === 'paid'
-    const remaining = invoice.total_amount - invoice.paid_amount
+    const remaining = invoice.total_amount - (invoice.paid_amount || 0)
 
     return (
         <div className="space-y-6">
@@ -81,8 +52,8 @@ export default function InvoiceDetailPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-bold">{invoice.invoice_number}</h1>
-                            <Badge className={INVOICE_STATUS_COLORS[invoice.status]}>
-                                {INVOICE_STATUS_LABELS[invoice.status]}
+                            <Badge className={INVOICE_STATUS_COLORS[invoice.status] || 'bg-gray-100'}>
+                                {INVOICE_STATUS_LABELS[invoice.status] || invoice.status}
                             </Badge>
                         </div>
                         <p className="text-muted-foreground">
@@ -105,6 +76,12 @@ export default function InvoiceDetailPage() {
                             Ghi nhận thanh toán
                         </Button>
                     )}
+                    <Button variant="outline" asChild>
+                        <Link href={`/invoices/${invoice.id}/edit`}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Chỉnh sửa
+                        </Link>
+                    </Button>
                 </div>
             </div>
 
@@ -138,9 +115,9 @@ export default function InvoiceDetailPage() {
                             <div className="grid gap-6 sm:grid-cols-2 mb-8">
                                 <div>
                                     <p className="text-sm text-muted-foreground mb-1">Khách hàng</p>
-                                    <p className="font-semibold">{invoice.customer.company_name}</p>
-                                    <p className="text-sm">{invoice.customer.address}</p>
-                                    <p className="text-sm">MST: {invoice.customer.tax_code}</p>
+                                    <p className="font-semibold">{invoice.customer?.company_name}</p>
+                                    <p className="text-sm">{invoice.customer?.address}</p>
+                                    <p className="text-sm">MST: {invoice.customer?.tax_code || 'N/A'}</p>
                                 </div>
                                 <div className="text-right">
                                     <div className="space-y-1 text-sm">
@@ -168,14 +145,24 @@ export default function InvoiceDetailPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {invoice.items.map((item) => (
+                                        {invoice.items?.map((item: any) => (
                                             <tr key={item.id} className="border-t">
-                                                <td className="p-3">{item.description}</td>
+                                                <td className="p-3">
+                                                    <p className="font-medium">{item.name || item.description}</p>
+                                                    {item.description && item.name && (
+                                                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                                                    )}
+                                                </td>
                                                 <td className="p-3 text-center">{item.quantity} {item.unit}</td>
                                                 <td className="p-3 text-right">{formatCurrency(item.unit_price)}</td>
                                                 <td className="p-3 text-right font-medium">{formatCurrency(item.total)}</td>
                                             </tr>
                                         ))}
+                                        {(!invoice.items || invoice.items.length === 0) && (
+                                            <tr>
+                                                <td colSpan={4} className="p-8 text-center text-muted-foreground italic">Không có hạng mục nào</td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -227,7 +214,7 @@ export default function InvoiceDetailPage() {
                             <CardTitle>Lịch sử thanh toán</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {invoice.payments.map((payment) => (
+                            {invoice.payments?.map((payment: any) => (
                                 <div key={payment.id} className="flex items-center gap-4 p-4 rounded-lg border">
                                     <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
                                         <CheckCircle className="h-5 w-5 text-green-500" />
@@ -243,6 +230,9 @@ export default function InvoiceDetailPage() {
                                     </div>
                                 </div>
                             ))}
+                            {(!invoice.payments || invoice.payments.length === 0) && (
+                                <p className="text-sm text-muted-foreground text-center py-8 italic border rounded-lg">Chưa có lịch sử thanh toán</p>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
@@ -258,10 +248,10 @@ export default function InvoiceDetailPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Link href={`/customers/${invoice.customer.id}`} className="font-medium hover:underline">
-                                {invoice.customer.company_name}
+                            <Link href={`/customers/${invoice.customer?.id}`} className="font-medium hover:underline">
+                                {invoice.customer?.company_name}
                             </Link>
-                            <p className="text-sm text-muted-foreground mt-1">{invoice.customer.email}</p>
+                            <p className="text-sm text-muted-foreground mt-1">{invoice.customer?.email}</p>
                         </CardContent>
                     </Card>
 
@@ -297,7 +287,7 @@ export default function InvoiceDetailPage() {
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Người tạo</span>
-                                <span>{invoice.creator.full_name}</span>
+                                <span>{invoice.creator?.full_name || 'N/A'}</span>
                             </div>
                         </CardContent>
                     </Card>

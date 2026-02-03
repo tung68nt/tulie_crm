@@ -43,6 +43,9 @@ const customerSchema = z.object({
 
 type CustomerFormData = z.infer<typeof customerSchema>
 
+import { createCustomer } from '@/lib/supabase/services/customer-service'
+import { toast } from 'sonner'
+
 export default function NewCustomerPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -62,16 +65,22 @@ export default function NewCustomerPage() {
     const onSubmit = async (data: CustomerFormData) => {
         setIsLoading(true)
         try {
-            // TODO: API call to create customer
-            console.log('Creating customer:', data)
-            await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API
+            await createCustomer({
+                ...data,
+                assigned_to: '00000000-0000-0000-0000-000000000000', // Default admin for now
+                created_by: '00000000-0000-0000-0000-000000000000',
+            })
+            toast.success('Thêm khách hàng thành công')
             router.push('/customers')
+            router.refresh()
         } catch (error) {
             console.error('Failed to create customer:', error)
+            toast.error('Có lỗi xảy ra khi thêm khách hàng')
         } finally {
             setIsLoading(false)
         }
     }
+
 
     return (
         <div className="space-y-6">

@@ -147,9 +147,8 @@ export function Header() {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive" onClick={async () => {
-                            const supabase = createClient()
-                            await supabase.auth.signOut()
-                            window.location.href = '/'
+                            const { signout } = await import('@/app/(auth)/actions')
+                            await signout()
                         }}>
                             <LogOut className="mr-2 h-4 w-4" />
                             Đăng xuất

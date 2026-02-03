@@ -12,67 +12,19 @@ import {
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/utils/format'
 import { ROLE_LABELS } from '@/lib/constants/roles'
-import { Plus, Users, TrendingUp, Target, Trophy } from 'lucide-react'
+import { Plus, Users, TrendingUp, Trophy } from 'lucide-react'
 import Link from 'next/link'
+import { getTeamMetrics } from '@/lib/supabase/services/user-service'
 
-// Mock data
-const teamMembers = [
-    {
-        id: 'user-1',
-        full_name: 'Sarah Nguyen',
-        email: 'sarah@tulie.agency',
-        role: 'staff' as const,
-        avatar_url: null,
-        customers: 15,
-        contracts: 8,
-        revenue: 450000000,
-        target: 500000000,
-        is_active: true,
-    },
-    {
-        id: 'user-2',
-        full_name: 'Mike Tran',
-        email: 'mike@tulie.agency',
-        role: 'staff' as const,
-        avatar_url: null,
-        customers: 12,
-        contracts: 6,
-        revenue: 320000000,
-        target: 400000000,
-        is_active: true,
-    },
-    {
-        id: 'user-3',
-        full_name: 'Anna Le',
-        email: 'anna@tulie.agency',
-        role: 'accountant' as const,
-        avatar_url: null,
-        customers: 0,
-        contracts: 0,
-        revenue: 0,
-        target: 0,
-        is_active: true,
-    },
-    {
-        id: 'admin',
-        full_name: 'Tulie Admin',
-        email: 'admin@tulie.agency',
-        role: 'admin' as const,
-        avatar_url: null,
-        customers: 5,
-        contracts: 10,
-        revenue: 680000000,
-        target: 600000000,
-        is_active: true,
-    },
-]
+export default async function TeamPage() {
+    const teamMembers = await getTeamMetrics()
 
-export default function TeamPage() {
     const totalStaff = teamMembers.filter((m) => m.role !== 'accountant').length
     const totalRevenue = teamMembers.reduce((sum, m) => sum + m.revenue, 0)
-    const topPerformer = teamMembers.reduce((top, m) =>
-        m.revenue > top.revenue ? m : top, teamMembers[0]
-    )
+
+    const topPerformer = teamMembers.length > 0
+        ? teamMembers.reduce((top, m) => m.revenue > top.revenue ? m : top, teamMembers[0])
+        : null
 
     return (
         <div className="space-y-6">
@@ -84,12 +36,19 @@ export default function TeamPage() {
                         Quản lý team và theo dõi hiệu suất làm việc
                     </p>
                 </div>
-                <Button asChild>
-                    <Link href="/team/new">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Thêm thành viên
-                    </Link>
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" asChild>
+                        <Link href="/team/roles">
+                            Phân quyền
+                        </Link>
+                    </Button>
+                    <Button asChild>
+                        <Link href="/team/new">
+                            <Plus className="mr-2 h-4 w-4" />
+                            Thêm thành viên
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             {/* Stats */}
@@ -115,7 +74,7 @@ export default function TeamPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
-                        <p className="text-xs text-muted-foreground">Trong năm 2026</p>
+                        <p className="text-xs text-muted-foreground">Tổng doanh thu hợp đồng</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -126,8 +85,8 @@ export default function TeamPage() {
                         <Trophy className="h-4 w-4 text-yellow-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{topPerformer.full_name}</div>
-                        <p className="text-xs text-muted-foreground">{formatCurrency(topPerformer.revenue)}</p>
+                        <div className="text-2xl font-bold">{topPerformer?.full_name || '-'}</div>
+                        <p className="text-xs text-muted-foreground">{topPerformer ? formatCurrency(topPerformer.revenue) : '-'}</p>
                     </CardContent>
                 </Card>
             </div>
@@ -159,22 +118,22 @@ export default function TeamPage() {
                                 return (
                                     <TableRow key={member.id}>
                                         <TableCell>
-                                            <div className="flex items-center gap-3">
+                                            <Link href={`/team/${member.id}`} className="flex items-center gap-3">
                                                 <Avatar className="h-9 w-9">
                                                     <AvatarImage src={member.avatar_url || undefined} />
                                                     <AvatarFallback className="text-xs bg-foreground text-background">
-                                                        {member.full_name.split(' ').map(n => n[0]).join('')}
+                                                        {member.full_name?.split(' ').map((n: string) => n[0]).join('') || '?'}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div>
                                                     <p className="font-medium">{member.full_name}</p>
                                                     <p className="text-sm text-muted-foreground">{member.email}</p>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant="secondary">
-                                                {ROLE_LABELS[member.role]}
+                                                {ROLE_LABELS[member.role as keyof typeof ROLE_LABELS] || member.role}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-center">{member.customers}</TableCell>
@@ -194,7 +153,7 @@ export default function TeamPage() {
                                                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                                                         <div
                                                             className={`h-full rounded-full ${progress >= 100 ? 'bg-green-500' :
-                                                                    progress >= 70 ? 'bg-yellow-500' : 'bg-blue-500'
+                                                                progress >= 70 ? 'bg-yellow-500' : 'bg-blue-500'
                                                                 }`}
                                                             style={{ width: `${progress}%` }}
                                                         />
@@ -212,6 +171,13 @@ export default function TeamPage() {
                                     </TableRow>
                                 )
                             })}
+                            {teamMembers.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                                        Chưa có thành viên nào
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </CardContent>

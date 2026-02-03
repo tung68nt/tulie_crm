@@ -1,4 +1,3 @@
-import { Invoice } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,110 +14,18 @@ import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { INVOICE_STATUS_LABELS, INVOICE_STATUS_COLORS } from '@/lib/constants/status'
 import { Plus, Download, Eye, Receipt, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import { getInvoices } from '@/lib/supabase/services/invoice-service'
 
-// Mock data
-const mockOutputInvoices: Invoice[] = [
-    {
-        id: '1',
-        invoice_number: 'HDB-2026-0142',
-        type: 'output',
-        customer_id: '1',
-        customer: { id: '1', company_name: 'ABC Corporation', status: 'customer', assigned_to: 'user-1', created_by: 'admin', created_at: '2024-01-01', updated_at: '2024-01-01' },
-        created_by: 'user-1',
-        status: 'paid',
-        issue_date: '2026-01-05',
-        due_date: '2026-01-20',
-        subtotal: 100000000,
-        vat_percent: 10,
-        vat_amount: 10000000,
-        total_amount: 110000000,
-        paid_amount: 110000000,
-        created_at: '2026-01-05',
-        updated_at: '2026-01-09',
-    },
-    {
-        id: '2',
-        invoice_number: 'HDB-2026-0156',
-        type: 'output',
-        customer_id: '2',
-        customer: { id: '2', company_name: 'XYZ Limited', status: 'lead', assigned_to: 'user-2', created_by: 'admin', created_at: '2024-01-01', updated_at: '2024-01-01' },
-        created_by: 'user-2',
-        status: 'sent',
-        issue_date: '2026-01-08',
-        due_date: '2026-01-23',
-        subtotal: 80000000,
-        vat_percent: 10,
-        vat_amount: 8000000,
-        total_amount: 88000000,
-        paid_amount: 0,
-        created_at: '2026-01-08',
-        updated_at: '2026-01-08',
-    },
-    {
-        id: '3',
-        invoice_number: 'HDB-2025-0089',
-        type: 'output',
-        customer_id: '4',
-        customer: { id: '4', company_name: 'GHI Company', status: 'prospect', assigned_to: 'user-2', created_by: 'admin', created_at: '2024-01-01', updated_at: '2024-01-01' },
-        created_by: 'user-2',
-        status: 'overdue',
-        issue_date: '2025-12-15',
-        due_date: '2026-01-05',
-        subtotal: 45000000,
-        vat_percent: 10,
-        vat_amount: 4500000,
-        total_amount: 49500000,
-        paid_amount: 0,
-        created_at: '2025-12-15',
-        updated_at: '2026-01-05',
-    },
-]
+export default async function InvoicesPage() {
+    const invoices = await getInvoices()
+    const outputInvoices = invoices.filter(i => i.type === 'output')
+    const inputInvoices = invoices.filter(i => i.type === 'input')
 
-const mockInputInvoices: Invoice[] = [
-    {
-        id: '10',
-        invoice_number: 'HDM-2026-0015',
-        type: 'input',
-        vendor_id: '1',
-        vendor: { id: '1', name: 'Công ty ABC Hosting', created_at: '2024-01-01', updated_at: '2024-01-01' },
-        created_by: 'user-1',
-        status: 'paid',
-        issue_date: '2026-01-01',
-        due_date: '2026-01-15',
-        subtotal: 5000000,
-        vat_percent: 10,
-        vat_amount: 500000,
-        total_amount: 5500000,
-        paid_amount: 5500000,
-        created_at: '2026-01-01',
-        updated_at: '2026-01-02',
-    },
-    {
-        id: '11',
-        invoice_number: 'HDM-2026-0018',
-        type: 'input',
-        vendor_id: '2',
-        vendor: { id: '2', name: 'Văn phòng 123', created_at: '2024-01-01', updated_at: '2024-01-01' },
-        created_by: 'user-1',
-        status: 'sent',
-        issue_date: '2026-01-05',
-        due_date: '2026-01-20',
-        subtotal: 25000000,
-        vat_percent: 10,
-        vat_amount: 2500000,
-        total_amount: 27500000,
-        paid_amount: 0,
-        created_at: '2026-01-05',
-        updated_at: '2026-01-05',
-    },
-]
-
-export default function InvoicesPage() {
-    const totalReceivable = mockOutputInvoices
+    const totalReceivable = outputInvoices
         .filter((i) => i.status !== 'paid')
         .reduce((sum, i) => sum + (i.total_amount - i.paid_amount), 0)
 
-    const overdueCount = mockOutputInvoices.filter((i) => i.status === 'overdue').length
+    const overdueCount = outputInvoices.filter((i) => i.status === 'overdue').length
 
     return (
         <div className="space-y-6">
@@ -175,8 +82,8 @@ export default function InvoicesPage() {
             {/* Tabs */}
             <Tabs defaultValue="output" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="output">Hóa đơn bán hàng ({mockOutputInvoices.length})</TabsTrigger>
-                    <TabsTrigger value="input">Hóa đơn mua vào ({mockInputInvoices.length})</TabsTrigger>
+                    <TabsTrigger value="output">Hóa đơn bán hàng ({outputInvoices.length})</TabsTrigger>
+                    <TabsTrigger value="input">Hóa đơn mua vào ({inputInvoices.length})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="output">
@@ -195,7 +102,7 @@ export default function InvoicesPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {mockOutputInvoices.map((invoice) => (
+                                    {outputInvoices.map((invoice) => (
                                         <TableRow key={invoice.id}>
                                             <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                                             <TableCell>{invoice.customer?.company_name}</TableCell>
@@ -236,7 +143,7 @@ export default function InvoicesPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {mockInputInvoices.map((invoice) => (
+                                    {inputInvoices.map((invoice) => (
                                         <TableRow key={invoice.id}>
                                             <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
                                             <TableCell>{invoice.vendor?.name}</TableCell>
