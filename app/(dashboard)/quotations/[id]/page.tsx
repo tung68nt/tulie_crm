@@ -165,7 +165,7 @@ export default function QuotationDetailPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Mô tả</TableHead>
+                                        <TableHead className="pl-6">Mô tả</TableHead>
                                         <TableHead className="text-center w-20">SL</TableHead>
                                         <TableHead className="text-right w-32">Đơn giá</TableHead>
                                         <TableHead className="text-right w-36">Thành tiền</TableHead>
@@ -174,7 +174,7 @@ export default function QuotationDetailPage() {
                                 <TableBody>
                                     {quotation.items.map((item) => (
                                         <TableRow key={item.id}>
-                                            <TableCell>
+                                            <TableCell className="pl-6">
                                                 <p className="font-medium">{item.name}</p>
                                                 {item.description && (
                                                     <p className="text-sm text-muted-foreground">{item.description}</p>

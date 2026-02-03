@@ -106,8 +106,8 @@ export function Header() {
                             </DropdownMenuItem>
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="justify-center text-center">
-                            <Link href="/notifications" className="text-sm font-medium">
+                        <DropdownMenuItem asChild className="justify-center text-center cursor-pointer">
+                            <Link href="/notifications" className="text-sm font-medium w-full">
                                 Xem tất cả thông báo
                             </Link>
                         </DropdownMenuItem>
@@ -133,13 +133,17 @@ export function Header() {
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <User className="mr-2 h-4 w-4" />
-                            Hồ sơ
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/profile" className="flex items-center w-full">
+                                <User className="mr-2 h-4 w-4" />
+                                Hồ sơ
+                            </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Settings className="mr-2 h-4 w-4" />
-                            Cài đặt
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/settings" className="flex items-center w-full">
+                                <Settings className="mr-2 h-4 w-4" />
+                                Cài đặt
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive" onClick={async () => {

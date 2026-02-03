@@ -87,7 +87,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     <Globe className="h-8 w-8" />
                                 </div>
                                 <div className="space-y-2 mt-1">
-                                    <h1 className="text-base font-bold text-slate-900 uppercase mb-3 leading-tight">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</h1>
+                                    <h1 className="text-sm font-bold text-slate-900 uppercase mb-3 leading-tight whitespace-nowrap">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</h1>
 
                                     <div className="flex items-start gap-2.5 text-xs text-slate-500">
                                         <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
@@ -188,7 +188,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                         {/* Totals */}
                         <div className="flex justify-end mb-12">
-                            <div className="w-1/2 bg-slate-50 p-6 rounded-lg border border-slate-100">
+                            <div className="w-2/3 bg-slate-50 p-6 rounded-lg border border-slate-100">
                                 <div className="flex justify-between py-2 border-b border-slate-200 text-sm">
                                     <span className="text-slate-600">Tổng cộng <span className="text-[0.8em] italic font-normal opacity-70">/ Subtotal</span>:</span>
                                     <span className="font-medium text-slate-900">{formatCurrency(totalAmount)}</span>
@@ -199,7 +199,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 </div>
                                 <div className="flex justify-between items-center pt-3">
                                     <span className="font-bold text-lg text-slate-900">TỔNG CỘNG <span className="text-[0.8em] italic font-normal opacity-70">/ TOTAL</span>:</span>
-                                    <span className="font-bold text-xl text-slate-900">{formatCurrency(finalAmount)}</span>
+                                    <span className="font-bold text-xl text-slate-900 pl-8">{formatCurrency(finalAmount)}</span>
                                 </div>
                             </div>
                         </div>
@@ -209,7 +209,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
                             <div className="grid grid-cols-2 gap-8 text-xs text-slate-600">
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
+                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px]">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
                                     <ul className="list-disc pl-4 space-y-1">
                                         <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
                                         <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
@@ -217,7 +217,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     </ul>
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
+                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px]">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
                                     <ul className="list-disc pl-4 space-y-1">
                                         <li>Lần 1: Thanh toán 50% ngay sau khi ký hợp đồng.</li>
                                         <li>Lần 2: Thanh toán 50% còn lại sau khi nghiệm thu và bàn giao.</li>

@@ -69,13 +69,36 @@ export function RevenueChart() {
                                 tickFormatter={(value) => `${value}tr`}
                             />
                             <Tooltip
-                                contentStyle={{
-                                    backgroundColor: 'hsl(var(--card))',
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '8px',
+                                content={({ active, payload, label }) => {
+                                    if (active && payload && payload.length) {
+                                        return (
+                                            <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                            Tháng {label}
+                                                        </span>
+                                                        <span className="font-bold text-muted-foreground">
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                                    {payload.map((entry, index) => (
+                                                        <div key={index} className="flex flex-col gap-1">
+                                                            <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                                                {entry.name}
+                                                            </span>
+                                                            <span className="font-bold font-mono" style={{ color: entry.color }}>
+                                                                {entry.value} tr
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                    return null
                                 }}
-                                labelStyle={{ color: 'hsl(var(--foreground))' }}
-                                formatter={(value) => value !== undefined ? [`${value} triệu`, ''] : ['', '']}
                             />
                             <Legend />
                             <Line
