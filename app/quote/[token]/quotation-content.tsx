@@ -204,54 +204,53 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             </div>
                         </div>
 
-                        {/* Notes & Terms - Re-layout */}
-                        <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
-                            <div className="grid grid-cols-2 gap-8 text-xs text-slate-600">
+                        {/* Footer Section: Notes & Bank Info */}
+                        <div className="grid grid-cols-2 gap-6 mt-auto">
+                            {/* Left Column: Notes & Terms */}
+                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col gap-6 h-full">
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px]">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
-                                    <ul className="list-disc pl-4 space-y-1">
+                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-600 leading-relaxed">
                                         <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
                                         <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
                                         <li>Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.</li>
                                     </ul>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px]">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
-                                    <ul className="list-disc pl-4 space-y-1">
+                                <div className="border-t border-slate-200 pt-4 mt-auto">
+                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-600 leading-relaxed">
                                         <li>Lần 1: Thanh toán 50% ngay sau khi ký hợp đồng.</li>
-                                        <li>Lần 2: Thanh toán 50% còn lại sau khi nghiệm thu và bàn giao.</li>
+                                        <li>Lần 2: 50% còn lại sau khi nghiệm thu và bàn giao.</li>
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div>
-                        {/* Bank & Signature */}
-                        <div className="bg-slate-900 text-white p-6 rounded-xl flex justify-between items-center mt-auto">
-                            <div className="w-full">
-                                <h4 className="font-bold mb-3 text-sm uppercase opacity-90">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
-                                <div className="space-y-1.5 text-sm">
-                                    <div className="grid grid-cols-[110px_1fr]">
-                                        <span className="text-slate-400">Ngân hàng:</span>
-                                        <span>TECHCOMBANK</span>
+                            {/* Right Column: Bank Transfer */}
+                            <div className="bg-slate-900 text-white p-6 rounded-xl h-full flex flex-col justify-center">
+                                <h4 className="font-bold mb-4 text-sm uppercase opacity-90 tracking-wide border-b border-slate-700 pb-3">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
+                                <div className="space-y-3 text-sm">
+                                    <div className="grid grid-cols-[100px_1fr] items-center">
+                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Ngân hàng</span>
+                                        <span className="font-medium">TECHCOMBANK</span>
                                     </div>
-                                    <div className="grid grid-cols-[110px_1fr]">
-                                        <span className="text-slate-400">Số tài khoản:</span>
-                                        <span className="font-mono tracking-wide">190368686868</span>
+                                    <div className="grid grid-cols-[100px_1fr] items-center">
+                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Số tài khoản</span>
+                                        <span className="font-mono text-lg tracking-widest text-yellow-400">190368686868</span>
                                     </div>
-                                    <div className="grid grid-cols-[110px_1fr]">
-                                        <span className="text-slate-400">Chủ tài khoản:</span>
-                                        <span className="uppercase">CONG TY TNHH TULIE</span>
+                                    <div className="grid grid-cols-[100px_1fr] items-center">
+                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Chủ tài khoản</span>
+                                        <span className="uppercase font-medium">CONG TY TNHH TULIE</span>
                                     </div>
-                                    <div className="grid grid-cols-[110px_1fr]">
-                                        <span className="text-slate-400">Chi nhánh:</span>
-                                        <span>Thanh Xuân - Hà Nội</span>
+                                    <div className="grid grid-cols-[100px_1fr] items-center">
+                                        <span className="text-slate-400 text-xs uppercase tracking-wider">Chi nhánh</span>
+                                        <span className="font-medium">Thanh Xuân - Hà Nội</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {/* End of Main Content Div - was previously closed around here */}
+
                 </div>
             </div>
 
