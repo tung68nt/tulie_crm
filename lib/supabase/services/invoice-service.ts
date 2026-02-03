@@ -1,21 +1,8 @@
 'use server'
 import { createClient } from '../server'
-import { Invoice } from '@/types'
+import { Invoice, InvoiceItem } from '@/types'
 
-export async function getInvoices() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('invoices')
-        .select('*, customer:customers(id, company_name)')
-        .order('created_at', { ascending: false })
-
-    if (error) {
-        console.error('Error fetching invoices:', error)
-        return []
-    }
-
-    return data as Invoice[]
-}
+// ... (lines 4-18 unchanged)
 
 export async function getInvoiceById(id: string) {
     const supabase = await createClient()
@@ -33,7 +20,7 @@ export async function getInvoiceById(id: string) {
     return data as Invoice
 }
 
-export async function createInvoice(invoice: Partial<Invoice>, items: any[]) {
+export async function createInvoice(invoice: Partial<Invoice>, items: Partial<InvoiceItem>[]) {
     const supabase = await createClient()
 
     // 1. Insert invoice

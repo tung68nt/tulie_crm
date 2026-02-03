@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Quotation } from '@/types'
 
 interface QuotationPreviewProps {
-    data: any // Partial Quotation data
+    data: Partial<Quotation>
     open?: boolean
     onOpenChange?: (open: boolean) => void
 }

@@ -71,7 +71,7 @@ export async function getTeamMetrics() {
 
     return users.map(user => {
         const contractsCount = user.contracts?.length || 0
-        const revenue = user.contracts?.reduce((sum: number, c: any) => sum + (c.total_amount || 0), 0) || 0
+        const revenue = user.contracts?.reduce((sum: number, c: { total_amount: number }) => sum + (c.total_amount || 0), 0) || 0
 
         return {
             ...user,

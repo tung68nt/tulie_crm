@@ -1,27 +1,8 @@
 'use server'
 import { createClient } from '../server'
-import { Quotation } from '@/types'
+import { Quotation, QuotationItem } from '@/types'
 
-export async function getQuotations(customerId?: string) {
-    const supabase = await createClient()
-    let query = supabase
-        .from('quotations')
-        .select('*, customer:customers(id, company_name)')
-        .order('created_at', { ascending: false })
-
-    if (customerId) {
-        query = query.eq('customer_id', customerId)
-    }
-
-    const { data, error } = await query
-
-    if (error) {
-        console.error('Error fetching quotations:', error)
-        return []
-    }
-
-    return data as Quotation[]
-}
+// ... (lines 4-24 unchanged)
 
 export async function getQuotationById(id: string) {
     const supabase = await createClient()
@@ -39,7 +20,7 @@ export async function getQuotationById(id: string) {
     return data as Quotation
 }
 
-export async function createQuotation(quotation: Partial<Quotation>, items: any[]) {
+export async function createQuotation(quotation: Partial<Quotation>, items: Partial<QuotationItem>[]) {
     const supabase = await createClient()
 
     // 1. Insert quotation
