@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, Box } from 'lucide-react'
+import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 
 interface QuotationContentProps {
     quotation: any
@@ -46,168 +45,170 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
     const finalAmount = totalAmount + vatAmount
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-zinc-950 py-8 pb-32 font-sans text-gray-900 dark:text-gray-100">
-            {/* Main Content Container - Modern Web Style */}
-            <div className="container max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="min-h-screen bg-gray-100 dark:bg-zinc-950 py-8 pb-32 font-sans text-black print:bg-white print:p-0">
+            {/* A4 Container - Fixed Width & Ratio */}
+            <div className="mx-auto bg-white shadow-2xl overflow-hidden relative print:shadow-none print:mx-0 print:w-full" style={{ width: '210mm', minHeight: '297mm' }}>
 
-                <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 overflow-hidden">
-                    {/* Header - Condensed & Clean */}
-                    <div className="p-6 md:p-8 border-b border-gray-100 dark:border-zinc-800">
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-black dark:bg-white text-white dark:text-black rounded-xl flex items-center justify-center">
-                                    <Globe className="h-6 w-6" />
+                <div className="p-12 h-full flex flex-col justify-between">
+                    <div>
+                        {/* Header Section */}
+                        <div className="flex justify-between items-start mb-8">
+                            <div className="flex items-center gap-3">
+                                {/* Logo Placeholder */}
+                                <div className="h-16 w-16 bg-black rounded-xl flex items-center justify-center text-white">
+                                    <Globe className="h-10 w-10" />
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">BÁO GIÁ</h1>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                                        <span>#{quotation.quote_number}</span>
-                                        <span className="text-gray-300">•</span>
-                                        <span>{formatDate(quotation.created_at)}</span>
-                                    </div>
+                                    <h1 className="text-xl font-bold uppercase tracking-wider">TULIE AGENCY</h1>
+                                    <p className="text-sm text-gray-600">Design & Technology</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-sm font-normal py-1 px-3 bg-gray-50 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 border-gray-200">
-                                    Hết hạn: <span className="font-semibold ml-1 text-gray-900 dark:text-white">{formatDate(quotation.valid_until)}</span>
-                                </Badge>
-                                <Badge className="text-sm font-medium py-1 px-3 bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100">
-                                    Đang chờ duyệt
-                                </Badge>
-                            </div>
+                            <h2 className="text-4xl font-extrabold uppercase tracking-tighter">BÁO GIÁ</h2>
                         </div>
-                    </div>
 
-                    {/* From/To Grid - Optimized for Readability */}
-                    <div className="grid md:grid-cols-2">
-                        <div className="p-6 md:p-8 border-b md:border-b-0 md:border-r border-gray-100 dark:border-zinc-800">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Nhà cung cấp</h3>
-                            <div className="flex items-start gap-3">
-                                <div className="p-2 bg-gray-100 dark:bg-zinc-800 rounded-lg">
-                                    <Building2 className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        {/* Divider Line */}
+                        <div className="border-b-2 border-black mb-8"></div>
+
+                        {/* Metadata Block - Black Box */}
+                        <div className="flex justify-end mb-12">
+                            <div className="bg-black text-white p-4 min-w-[300px]">
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-sm font-medium opacity-80">Mã số:</span>
+                                    <span className="font-bold">{quotation.quote_number}</span>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-base">CÔNG TY TNHH TULIE AGENCY</h4>
-                                    <div className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-                                        <p>Tầng 4, Tòa nhà Bitexco, Q.1, TP.HCM</p>
-                                        <p>contact@tulie.agency</p>
-                                        <p>(+84) 909 123 456</p>
-                                    </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium opacity-80">Ngày:</span>
+                                    <span className="font-bold">{formatDate(quotation.created_at)}</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="p-6 md:p-8">
-                            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Khách hàng</h3>
-                            <div className="flex items-start gap-3">
-                                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                    <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+
+                        {/* From / To Section - Two Columns */}
+                        <div className="grid grid-cols-2 gap-12 mb-12">
+                            <div>
+                                <h3 className="text-sm font-bold uppercase mb-2">FROM:</h3>
+                                <div className="text-sm leading-relaxed">
+                                    <p className="font-bold">CÔNG TY TNHH TULIE AGENCY</p>
+                                    <p>Tầng 4, Tòa nhà Bitexco, Q.1, TP.HCM</p>
+                                    <p><span className="font-semibold">Phone:</span> (+84) 909 123 456</p>
+                                    <p><span className="font-semibold">Email:</span> contact@tulie.agency</p>
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 dark:text-white text-base">{quotation.customer.company_name}</h4>
-                                    <div className="mt-1 space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-                                        <p>{quotation.customer.contact_name}</p>
-                                        <p>{quotation.customer.address}</p>
-                                        <p className="text-xs text-gray-400 mt-1">MST: {quotation.customer.tax_code}</p>
-                                    </div>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold uppercase mb-2">TO:</h3>
+                                <div className="text-sm leading-relaxed">
+                                    <p className="font-bold">{quotation.customer.company_name}</p>
+                                    <p>{quotation.customer.address}</p>
+                                    <p><span className="font-semibold">Attn:</span> {quotation.customer.contact_name}</p>
+                                    <p><span className="font-semibold">MST:</span> {quotation.customer.tax_code}</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Table - Clean & Modern */}
-                    <div className="border-t border-gray-100 dark:border-zinc-800">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-gray-50/50 dark:bg-zinc-800/50">
-                                    <tr className="border-b border-gray-100 dark:border-zinc-800">
-                                        <th className="py-3 px-6 md:px-8 font-semibold text-gray-500 dark:text-gray-400 w-1/2">Hạng mục</th>
-                                        <th className="py-3 px-4 font-semibold text-gray-500 dark:text-gray-400 text-center">ĐVT</th>
-                                        <th className="py-3 px-4 font-semibold text-gray-500 dark:text-gray-400 text-center">SL</th>
-                                        <th className="py-3 px-4 font-semibold text-gray-500 dark:text-gray-400 text-right">Đơn giá</th>
-                                        <th className="py-3 px-6 md:px-8 font-semibold text-gray-500 dark:text-gray-400 text-right">Thành tiền</th>
+                        {/* Table Header Description */}
+                        <h3 className="text-lg font-bold mb-4 border-b border-gray-300 pb-2">Chi tiết dịch vụ / Services Description:</h3>
+
+                        {/* Table - High Contrast */}
+                        <div className="mb-8">
+                            <table className="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr className="bg-black text-white">
+                                        <th className="py-3 px-4 font-bold text-center border border-black w-12">No</th>
+                                        <th className="py-3 px-4 font-bold border border-black">Mô tả dịch vụ</th>
+                                        <th className="py-3 px-4 font-bold text-center border border-black w-24">SL</th>
+                                        <th className="py-3 px-4 font-bold text-center border border-black w-24">ĐVT</th>
+                                        <th className="py-3 px-4 font-bold text-right border border-black w-32">Đơn giá</th>
+                                        <th className="py-3 px-4 font-bold text-right border border-black w-32">Thành tiền</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-50 dark:divide-zinc-800">
+                                <tbody>
                                     {quotation.items?.map((item: any, index: number) => (
-                                        <tr key={index} className="hover:bg-gray-50/50 dark:hover:bg-zinc-800/50 transition-colors">
-                                            <td className="py-4 px-6 md:px-8 align-top">
-                                                <div className="font-medium text-gray-900 dark:text-white mb-0.5">{item.name || "Dịch vụ"}</div>
-                                                {item.description && (
-                                                    <p className="text-gray-500 dark:text-gray-400 text-xs leading-relaxed max-w-lg">
-                                                        {item.description}
-                                                    </p>
-                                                )}
+                                        <tr key={index} className="border border-gra-300">
+                                            <td className="py-3 px-4 text-center border border-gray-300">{index + 1}</td>
+                                            <td className="py-3 px-4 border border-gray-300 font-medium">
+                                                {item.name || "Dịch vụ"}
+                                                {item.description && <p className="text-xs text-gray-500 font-normal mt-1">{item.description}</p>}
                                             </td>
-                                            <td className="py-4 px-4 text-center text-gray-600 dark:text-gray-400">{item.unit}</td>
-                                            <td className="py-4 px-4 text-center text-gray-600 dark:text-gray-400">{item.quantity}</td>
-                                            <td className="py-4 px-4 text-right text-gray-600 dark:text-gray-400 font-medium">{formatCurrency(item.unit_price)}</td>
-                                            <td className="py-4 px-6 md:px-8 text-right font-semibold text-gray-900 dark:text-white">
-                                                {formatCurrency(item.quantity * item.unit_price)}
-                                            </td>
+                                            <td className="py-3 px-4 text-center border border-gray-300">{item.quantity}</td>
+                                            <td className="py-3 px-4 text-center border border-gray-300">{item.unit}</td>
+                                            <td className="py-3 px-4 text-right border border-gray-300">{formatCurrency(item.unit_price)}</td>
+                                            <td className="py-3 px-4 text-right border border-gray-300 font-bold">{formatCurrency(item.quantity * item.unit_price)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                    </div>
 
-                    {/* Summary & Footer - Layout Grid */}
-                    <div className="grid md:grid-cols-12 gap-8 p-6 md:p-8 border-t border-gray-100 dark:border-zinc-800 bg-gray-50/30 dark:bg-zinc-900/50">
-                        {/* Left Column: Terms & Bank */}
-                        <div className="md:col-span-7 space-y-6">
-                            <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 border border-gray-100 dark:border-zinc-700 shadow-sm">
-                                <h5 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                                    <CreditCard className="h-4 w-4 text-gray-400" />
-                                    Thông tin thanh toán
-                                </h5>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                                    <div className="text-gray-500">Ngân hàng</div>
-                                    <div className="font-medium text-gray-900 dark:text-white">TECHCOMBANK</div>
-                                    <div className="text-gray-500">Số tài khoản</div>
-                                    <div className="font-mono font-medium text-gray-900 dark:text-white">190368686868</div>
-                                    <div className="text-gray-500">Chủ tài khoản</div>
-                                    <div className="font-medium text-gray-900 dark:text-white">NGUYEN VAN A</div>
-                                </div>
-                            </div>
-
-                            <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed space-y-1 pl-1">
-                                <p>• Báo giá có hiệu lực 07 ngày.</p>
-                                <p>• Chưa bao gồm chi phí tên miền/hosting bên thứ 3.</p>
-                            </div>
-                        </div>
-
-                        {/* Right Column: Totals */}
-                        <div className="md:col-span-5 flex flex-col justify-center">
-                            <div className="space-y-3 bg-white dark:bg-zinc-800 p-6 rounded-xl border border-gray-100 dark:border-zinc-700 shadow-sm">
-                                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-                                    <span>Tạm tính</span>
+                        {/* Totals Section */}
+                        <div className="flex justify-end mb-16">
+                            <div className="w-1/2">
+                                <div className="flex justify-between py-2 border-b border-gray-300">
+                                    <span className="font-bold text-sm">Tạm tính:</span>
                                     <span className="font-medium">{formatCurrency(totalAmount)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-                                    <span>VAT (10%)</span>
+                                <div className="flex justify-between py-2 border-b border-gray-300">
+                                    <span className="font-bold text-sm">VAT (10%):</span>
                                     <span className="font-medium">{formatCurrency(vatAmount)}</span>
                                 </div>
-                                <div className="h-px bg-gray-100 dark:bg-zinc-700 my-1"></div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-base font-bold text-gray-900 dark:text-white">Tổng cộng</span>
-                                    <span className="text-2xl font-bold text-black dark:text-white tracking-tight">{formatCurrency(finalAmount)}</span>
+                                <div className="flex justify-between py-2 mt-2">
+                                    <span className="font-bold text-lg">TỔNG CỘNG:</span>
+                                    <span className="font-bold text-lg">{formatCurrency(finalAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        {/* Footer Divider */}
+                        <div className="border-b border-black mb-8"></div>
+
+                        {/* Bottom Section - Payment & Contact - Flex Row */}
+                        <div className="flex justify-between items-end gap-8">
+                            {/* Payment Method - Black Box */}
+                            <div className="bg-black text-white p-6 w-1/2">
+                                <h4 className="font-bold mb-2">HÌNH THỨC THANH TOÁN:</h4>
+                                <p className="text-sm mb-1"><span className="opacity-80">Ngân hàng:</span> TECHCOMBANK</p>
+                                <p className="text-sm mb-1"><span className="opacity-80">Số tài khoản:</span> 190368686868</p>
+                                <p className="text-sm"><span className="opacity-80">Chủ tài khoản:</span> NGUYEN VAN A</p>
+                            </div>
+
+                            {/* Contact Info */}
+                            <div className="text-right text-sm space-y-2">
+                                <div className="flex items-center justify-end gap-2">
+                                    <Phone className="h-4 w-4" /> (+84) 909 123 456
+                                </div>
+                                <div className="flex items-center justify-end gap-2">
+                                    <Globe className="h-4 w-4" /> www.tulie.agency
+                                </div>
+                                <div className="mt-4 pt-4 border-t border-gray-300 inline-block w-48 text-center text-xs text-gray-500 uppercase tracking-widest">
+                                    Authorized Signature
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Print Footer - Only visible in Print/PDF */}
-                <div className="hidden print:flex justify-between items-end mt-12 px-8">
-                    <div className="flex flex-col gap-8 w-64">
-                        <div className="border-b border-black h-1"></div>
-                        <p className="text-xs font-bold uppercase">Authorized Signature</p>
+            {/* Sticky Action Footer */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-4 shadow-lg z-50 print:hidden">
+                <div className="container max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="text-sm text-gray-500 hidden sm:block font-medium">
+                        Cần hỗ trợ? <span className="text-black font-bold">0909 123 456</span>
                     </div>
-                    <div className="text-right text-xs text-gray-400">
-                        Generated by Tulie CRM
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <Button variant="ghost" className="flex-1 sm:flex-none text-gray-500 hover:text-black">
+                            Từ chối
+                        </Button>
+                        <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-100 text-black" onClick={() => window.print()}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Tải PDF
+                        </Button>
+                        <Button className="flex-1 sm:flex-none bg-black text-white hover:bg-gray-800 shadow-md w-full sm:w-auto font-bold px-6" onClick={() => setShowConfirm(true)}>
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Chấp nhận ngay
+                        </Button>
                     </div>
                 </div>
-
             </div>
 
             {/* Print Styles */}
@@ -218,43 +219,28 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         margin: 0;
                     }
                     body {
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
+                         -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                        background-color: white !important;
+                    }
+                    /* Ensure background colors (black boxes) print correctly */
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                 }
             `}</style>
 
-            {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-zinc-800 p-4 shadow-lg z-50 print:hidden">
-                <div className="container max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block font-medium">
-                        Bạn cần hỗ trợ? <span className="text-gray-900 dark:text-white">0909 123 456</span>
-                    </div>
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                        <Button variant="ghost" className="flex-1 sm:flex-none text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                            Từ chối
-                        </Button>
-                        <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700" onClick={() => window.print()}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Tải PDF
-                        </Button>
-                        <Button className="flex-1 sm:flex-none bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 shadow-md w-full sm:w-auto font-semibold px-6" onClick={() => setShowConfirm(true)}>
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Chấp nhận ngay
-                        </Button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Confirmation Dialog */}
+            {/* Confirmation Dialog - Keeping existing logic */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Xác nhận chấp nhận báo giá</DialogTitle>
                         <DialogDescription>
-                            Vui lòng kiểm tra lại thông tin liên hệ của bạn.
+                            Vui lòng kiểm tra lại thông tin xác nhận.
                         </DialogDescription>
                     </DialogHeader>
+                    {/* ... (Same as before) ... */}
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label htmlFor="name">Họ và tên <span className="text-red-500">*</span></Label>
@@ -263,7 +249,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 value={confirmer.name}
                                 onChange={(e) => setConfirmer({ ...confirmer, name: e.target.value })}
                                 placeholder="Nhập họ tên của bạn"
-                                className="border-gray-300 dark:border-zinc-700"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -274,7 +259,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     value={confirmer.phone}
                                     onChange={(e) => setConfirmer({ ...confirmer, phone: e.target.value })}
                                     placeholder="VD: 090..."
-                                    className="border-gray-300 dark:border-zinc-700"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -284,7 +268,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     value={confirmer.email}
                                     onChange={(e) => setConfirmer({ ...confirmer, email: e.target.value })}
                                     placeholder="email@company.com"
-                                    className="border-gray-300 dark:border-zinc-700"
                                 />
                             </div>
                         </div>
