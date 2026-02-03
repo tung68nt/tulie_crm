@@ -186,17 +186,17 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 <tbody>
                                     {quotation.items?.map((item: any, index: number) => (
                                         <tr key={index} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                                            <td className="py-2.5 px-4 text-slate-500 align-top">{index + 1}</td>
-                                            <td className="py-4 px-4 align-top">
+                                            <td className="py-2 px-4 text-slate-500 align-top text-center">{index + 1}</td>
+                                            <td className="py-2 px-4 align-top">
                                                 <p className="font-semibold text-slate-900">{item.name || "Dịch vụ"}</p>
                                                 {item.description && (
                                                     <p className="text-slate-500 text-xs mt-1 leading-relaxed whitespace-pre-line">{item.description}</p>
                                                 )}
                                             </td>
-                                            <td className="py-4 px-4 text-center text-slate-600 align-top">{item.unit}</td>
-                                            <td className="py-4 px-4 text-center text-slate-600 align-top">{item.quantity}</td>
-                                            <td className="py-4 px-4 text-right text-slate-600 align-top">{formatCurrency(item.unit_price)}</td>
-                                            <td className="py-4 px-4 text-right font-medium text-slate-900 align-top">{formatCurrency(item.quantity * item.unit_price)}</td>
+                                            <td className="py-2 px-4 text-center text-slate-600 align-top">{item.unit}</td>
+                                            <td className="py-2 px-4 text-center text-slate-600 align-top">{item.quantity}</td>
+                                            <td className="py-2 px-4 text-right text-slate-600 align-top">{formatCurrency(item.unit_price)}</td>
+                                            <td className="py-2 px-4 text-right font-medium text-slate-900 align-top">{formatCurrency(item.quantity * item.unit_price)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
