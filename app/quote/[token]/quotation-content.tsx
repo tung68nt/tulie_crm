@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { formatCurrency, formatDate } from '@/lib/utils/format'
+import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer } from 'lucide-react'
 import {
     Dialog,
@@ -83,8 +83,10 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         <div className="flex justify-between items-start mb-10">
                             <div className="flex items-start gap-4 w-1/2">
                                 {/* Logo Placeholder */}
-                                <div className="h-14 w-14 bg-slate-900 rounded-lg flex items-center justify-center text-white shrink-0">
-                                    <Globe className="h-8 w-8" />
+                                {/* Logo Image */}
+                                <div className="h-16 flex items-center shrink-0">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img src="/file/tulie-agency-logo.png" alt="Tulie Agency" className="h-full w-auto object-contain" />
                                 </div>
                                 <div className="space-y-2 mt-1">
                                     <h1 className="text-sm font-bold text-slate-900 uppercase mb-3 leading-tight whitespace-nowrap">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</h1>
@@ -115,9 +117,9 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 <p className="text-lg text-slate-400 font-light mb-4">QUOTATION</p>
 
                                 <div className="space-y-1 text-sm text-slate-600">
-                                    <p><span className="font-medium text-slate-900">Số <span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span> {quotation.quote_number}</p>
-                                    <p><span className="font-medium text-slate-900">Ngày <span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span> {formatDate(quotation.created_at)}</p>
-                                    <p><span className="font-medium text-slate-900">Hết hạn <span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span> {formatDate(quotation.valid_until)}</p>
+                                    <p><span className="font-medium text-slate-900">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span> {quotation.quote_number}</p>
+                                    <p><span className="font-medium text-slate-900">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span> {formatDate(quotation.created_at)}</p>
+                                    <p><span className="font-medium text-slate-900">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span> {formatDate(quotation.valid_until)}</p>
                                 </div>
                             </div>
                         </div>
@@ -128,23 +130,23 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         {/* Customer Info */}
                         <div className="mb-12">
                             <h3 className="text-sm font-bold text-slate-900 mb-4 border-l-4 border-slate-900 pl-3">
-                                THÔNG TIN KHÁCH HÀNG <span className="text-[0.8em] italic font-normal opacity-70">/ CUSTOMER</span>
+                                THÔNG TIN KHÁCH HÀNG<span className="text-[0.8em] italic font-normal opacity-70">/ CUSTOMER</span>
                             </h3>
                             <div className="bg-slate-50 p-6 rounded-lg border border-slate-100 grid gap-3 text-sm">
                                 <div className="grid grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500">Đơn vị <span className="text-[0.8em] italic font-normal opacity-70">/ Company</span>:</span>
+                                    <span className="text-slate-500">Đơn vị<span className="text-[0.8em] italic font-normal opacity-70">/ Company</span>:</span>
                                     <span className="font-bold text-slate-900">{quotation.customer.company_name}</span>
                                 </div>
                                 <div className="grid grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500">Địa chỉ <span className="text-[0.8em] italic font-normal opacity-70">/ Address</span>:</span>
+                                    <span className="text-slate-500">Địa chỉ<span className="text-[0.8em] italic font-normal opacity-70">/ Address</span>:</span>
                                     <span className="text-slate-900">{quotation.customer.address}</span>
                                 </div>
                                 <div className="grid grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500">Người liên hệ <span className="text-[0.8em] italic font-normal opacity-70">/ Attn</span>:</span>
+                                    <span className="text-slate-500">Người liên hệ<span className="text-[0.8em] italic font-normal opacity-70">/ Attn</span>:</span>
                                     <span className="font-medium text-slate-900">{quotation.customer.contact_name}</span>
                                 </div>
                                 <div className="grid grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500">Mã số thuế <span className="text-[0.8em] italic font-normal opacity-70">/ Tax ID</span>:</span>
+                                    <span className="text-slate-500">Mã số thuế<span className="text-[0.8em] italic font-normal opacity-70">/ Tax ID</span>:</span>
                                     <span className="text-slate-900">{quotation.customer.tax_code}</span>
                                 </div>
                             </div>
@@ -153,7 +155,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         {/* Table */}
                         <div className="mb-10">
                             <h3 className="text-sm font-bold text-slate-900 mb-4 border-l-4 border-slate-900 pl-3">
-                                CHI TIẾT DỊCH VỤ <span className="text-[0.8em] italic font-normal opacity-70">/ SERVICE DETAILS</span>
+                                CHI TIẾT DỊCH VỤ<span className="text-[0.8em] italic font-normal opacity-70">/ SERVICE DETAILS</span>
                             </h3>
                             <table className="w-full text-left border-collapse text-sm">
                                 <thead>
@@ -198,8 +200,11 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     <span className="font-medium text-slate-900">{formatCurrency(vatAmount)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-3">
-                                    <span className="font-bold text-lg text-slate-900">TỔNG CỘNG <span className="text-[0.8em] italic font-normal opacity-70">/ TOTAL</span>:</span>
+                                    <span className="font-bold text-lg text-slate-900">TỔNG CỘNG<span className="text-[0.8em] italic font-normal opacity-70">/ TOTAL</span>:</span>
                                     <span className="font-bold text-xl text-slate-900 pl-8">{formatCurrency(finalAmount)}</span>
+                                </div>
+                                <div className="text-right mt-3 text-xs italic text-slate-500 border-t border-slate-200 pt-2">
+                                    Bằng chữ: {readNumberToWords(finalAmount)}./.
                                 </div>
                             </div>
                         </div>
@@ -227,30 +232,40 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                             {/* Right Column: Bank Transfer */}
                             <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit">
-                                <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
+                                <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản<span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
                                 <div className="space-y-2 text-xs">
                                     <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Ngân hàng</span>
+                                        <span className="text-slate-500 text-[10px] tracking-wider">Ngân hàng</span>
                                         <span className="font-bold text-slate-900">TECHCOMBANK</span>
                                     </div>
                                     <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Số TK</span>
+                                        <span className="text-slate-500 text-[10px] tracking-wider">Số TK</span>
                                         <span className="font-mono text-sm font-bold text-slate-900">190368686868</span>
                                     </div>
                                     <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Chủ TK</span>
+                                        <span className="text-slate-500 text-[10px] tracking-wider">Chủ TK</span>
                                         <span className="uppercase font-bold text-slate-900">CONG TY TNHH TULIE</span>
                                     </div>
                                     <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 uppercase text-[10px] tracking-wider">Chi nhánh</span>
+                                        <span className="text-slate-500 text-[10px] tracking-wider">Chi nhánh</span>
                                         <span className="font-bold text-slate-900">Thanh Xuân - Hà Nội</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/* End of Main Content Div - was previously closed around here */}
 
+                    {/* Decorative Footer */}
+                    <div className="mt-auto pt-10 flex flex-col items-center justify-center opacity-40">
+                        <div className="w-full border-t border-slate-200 mb-2"></div>
+                        <div className="flex items-center gap-1">
+                            <div className="h-1 w-1 bg-slate-400 rounded-full"></div>
+                            <div className="h-1 w-8 bg-slate-400 rounded-full"></div>
+                            <div className="h-1 w-1 bg-slate-400 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    {/* End of Main Content Div */}
                 </div>
             </div>
 

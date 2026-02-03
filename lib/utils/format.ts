@@ -113,3 +113,59 @@ export function slugify(text: string): string {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '')
 }
+
+// Number to Vietnamese text
+const UNITS = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
+const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+
+function readThreeDigits(n: number, readZero: boolean): string {
+    const a = Math.floor(n / 100);
+    const b = Math.floor((n % 100) / 10);
+    const c = n % 10;
+
+    let result = '';
+
+    if (a > 0 || readZero) {
+        result += DIGITS[a] + ' trăm';
+    }
+
+    if (b === 0) {
+        if (readZero && a === 0 && c > 0) result += ''; // Special case
+        if (a > 0 && c > 0) result += ' linh';
+    } else if (b === 1) {
+        result += ' mười';
+    } else {
+        result += ' ' + DIGITS[b] + ' mươi';
+    }
+
+    if (c > 0) {
+        if (b > 0 && c === 1) result += ' mốt';
+        else if (b > 0 && c === 5) result += ' lăm';
+        else result += ' ' + DIGITS[c];
+    }
+
+    return result.trim();
+}
+
+export function readNumberToWords(n: number): string {
+    if (n === 0) return 'Không đồng';
+
+    let number = Math.abs(n);
+    let result = '';
+    let unitIndex = 0;
+
+    while (number > 0) {
+        const chunk = number % 1000;
+        if (chunk > 0) {
+            const chunkText = readThreeDigits(chunk, number >= 1000 && chunk < 100);
+            result = chunkText + ' ' + UNITS[unitIndex] + ' ' + result;
+        }
+        number = Math.floor(number / 1000);
+        unitIndex++;
+    }
+
+    // Capitalize first letter and add suffix
+    result = result.trim();
+    result = result.charAt(0).toUpperCase() + result.slice(1);
+    return result + ' đồng';
+}
