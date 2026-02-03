@@ -234,20 +234,20 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit">
                                 <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản<span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
                                 <div className="space-y-2 text-xs">
-                                    <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 text-[10px] tracking-wider">Ngân hàng</span>
+                                    <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                        <span className="text-slate-600">Ngân hàng<span className="text-[0.8em] italic opacity-70">/ Bank</span>:</span>
                                         <span className="font-bold text-slate-900">TECHCOMBANK</span>
                                     </div>
-                                    <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 text-[10px] tracking-wider">Số TK</span>
-                                        <span className="font-mono text-sm font-bold text-slate-900">190368686868</span>
+                                    <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                        <span className="text-slate-600">Số TK<span className="text-[0.8em] italic opacity-70">/ Account No</span>:</span>
+                                        <span className="font-mono text-sm font-bold text-slate-900 leading-none">190368686868</span>
                                     </div>
-                                    <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 text-[10px] tracking-wider">Chủ TK</span>
+                                    <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                        <span className="text-slate-600">Chủ TK<span className="text-[0.8em] italic opacity-70">/ Account Name</span>:</span>
                                         <span className="uppercase font-bold text-slate-900">CONG TY TNHH TULIE</span>
                                     </div>
-                                    <div className="grid grid-cols-[80px_1fr] items-center">
-                                        <span className="text-slate-500 text-[10px] tracking-wider">Chi nhánh</span>
+                                    <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                        <span className="text-slate-600">Chi nhánh<span className="text-[0.8em] italic opacity-70">/ Branch</span>:</span>
                                         <span className="font-bold text-slate-900">Thanh Xuân - Hà Nội</span>
                                     </div>
                                 </div>
