@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
+// @ts-expect-error - reactCompiler is valid but types might be strict
 const nextConfig: NextConfig = {
-  /* config options here */
-  // @ts-expect-error - eslint and typescript config are valid but types might be strict
   reactCompiler: true,
   output: "standalone",
   typescript: {
@@ -11,3 +10,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
