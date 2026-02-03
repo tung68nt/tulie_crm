@@ -44,6 +44,34 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
     const vatAmount = totalAmount * 0.1
     const finalAmount = totalAmount + vatAmount
 
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const handleDownloadPDF = async () => {
+        const element = document.querySelector('.mx-auto.bg-white.shadow-xl');
+        if (!element) return;
+
+        // Dynamically load html2pdf.js
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.onload = () => {
+            // @ts-ignore
+            if (window.html2pdf) {
+                const opt = {
+                    margin: 0,
+                    filename: `Bao_gia_${quotation.quote_number || 'draft'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                // @ts-ignore
+                window.html2pdf().set(opt).from(element).save();
+            }
+        };
+        document.body.appendChild(script);
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-zinc-950 py-8 pb-32 font-sans text-slate-800 print:bg-white print:p-0">
             {/* A4 Container */}
@@ -213,7 +241,11 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         <Button variant="ghost" className="flex-1 sm:flex-none text-slate-500 hover:text-slate-900">
                             Từ chối
                         </Button>
-                        <Button variant="outline" className="flex-1 sm:flex-none border-slate-300 hover:bg-slate-50 text-slate-700" onClick={() => window.print()}>
+                        <Button variant="outline" className="flex-1 sm:flex-none border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
+                            <span className="material-symbols-outlined mr-2" style={{ fontSize: '18px' }}>print</span>
+                            In báo giá
+                        </Button>
+                        <Button variant="outline" className="flex-1 sm:flex-none border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handleDownloadPDF}>
                             <Download className="mr-2 h-4 w-4" />
                             Tải PDF
                         </Button>
@@ -236,6 +268,10 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                          -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                         background-color: white !important;
+                    }
+                    /* Hide non-printable elements */
+                    .print\\:hidden {
+                        display: none !important;
                     }
                     .print-bg-slate-100 {
                         background-color: #f1f5f9 !important;
