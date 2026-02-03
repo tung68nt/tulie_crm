@@ -160,7 +160,7 @@ export interface Contract {
   title: string
   description?: string
   status: ContractStatus
-  total_value: number
+  total_amount: number
   start_date: string
   end_date?: string
   signed_date?: string

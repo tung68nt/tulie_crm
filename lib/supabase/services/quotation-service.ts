@@ -1,3 +1,4 @@
+'use server'
 import { createClient } from '../server'
 import { Quotation } from '@/types'
 
