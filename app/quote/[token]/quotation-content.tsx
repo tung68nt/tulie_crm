@@ -81,10 +81,10 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                     <div>
                         {/* Header Section - Modern & Bilingual */}
                         <div className="flex justify-between items-start mb-10">
-                            <div className="flex items-start gap-4 w-1/2">
+                            <div className="flex flex-col items-start gap-6 w-[60%]">
                                 {/* Logo Placeholder */}
                                 {/* Logo Image */}
-                                <div className="h-16 flex items-center shrink-0">
+                                <div className="h-20 flex items-center shrink-0">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src="/file/tulie-agency-logo.png" alt="Tulie Agency" className="h-full w-auto object-contain" />
                                 </div>
