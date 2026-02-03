@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 
 export function Header() {
@@ -141,7 +142,11 @@ export function Header() {
                             Cài đặt
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem className="text-destructive" onClick={async () => {
+                            const supabase = createClient()
+                            await supabase.auth.signOut()
+                            window.location.href = '/'
+                        }}>
                             <LogOut className="mr-2 h-4 w-4" />
                             Đăng xuất
                         </DropdownMenuItem>

@@ -41,27 +41,38 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // Protected routes - redirect to login if not authenticated
+    // Protected routes - redirect to system-login if not authenticated
     const protectedPaths = ['/dashboard', '/customers', '/quotations', '/contracts', '/invoices', '/products', '/finance', '/team', '/reports', '/settings']
     const isProtectedPath = protectedPaths.some(path =>
-        request.nextUrl.pathname.startsWith(path) || request.nextUrl.pathname === '/'
+        request.nextUrl.pathname.startsWith(path)
     )
 
     // Public paths that don't require auth
-    const publicPaths = ['/login', '/register', '/forgot-password', '/quote']
+    const publicPaths = ['/system-login', '/register', '/forgot-password', '/quote']
     const isPublicPath = publicPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
-    if (!user && isProtectedPath && !isPublicPath) {
+    if (!user && isProtectedPath) {
         const url = request.nextUrl.clone()
-        url.pathname = '/login'
+        url.pathname = '/system-login'
         return NextResponse.redirect(url)
     }
 
-    // Redirect authenticated users away from auth pages
-    if (user && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register')) {
-        const url = request.nextUrl.clone()
-        url.pathname = '/'
-        return NextResponse.redirect(url)
+    // Redirect authenticated users away from auth pages AND root
+    if (user) {
+        // If on login page, go to dashboard
+        if (request.nextUrl.pathname === '/system-login' || request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register') {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
+        // If on root (now public welcome page), optionally redirect to dashboard? 
+        // User might want to see the landing page. But usually a logged in user wants the app.
+        // Let's redirect to dashboard for convenience if they hit root.
+        if (request.nextUrl.pathname === '/') {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
     }
 
     return supabaseResponse

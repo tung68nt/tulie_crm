@@ -28,7 +28,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { title: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { title: 'Khách hàng', href: '/customers', icon: Users },
     { title: 'Báo giá', href: '/quotations', icon: FileText },
     { title: 'Hợp đồng', href: '/contracts', icon: FileSignature },
