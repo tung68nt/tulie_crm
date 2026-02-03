@@ -53,10 +53,15 @@ export function QuotationForm({
     // Form State
     const [customerId, setCustomerId] = useState(initialData?.customer_id || '')
     const [validDays, setValidDays] = useState(initialData?.valid_days?.toString() || '30')
-    const [vatPercent, setVatPercent] = useState(initialData?.vat_percent || 0) // Default 0
+    const [vatPercent, setVatPercent] = useState(initialData?.vat_percent || 8) // Default 8% current rate
     const [terms, setTerms] = useState(initialData?.terms || '• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành')
     const [notes, setNotes] = useState(initialData?.notes || '')
     const [quoteNumber, setQuoteNumber] = useState(initialData?.quote_number || 'BG-' + Date.now().toString().slice(-6))
+    // Bank Details State
+    const [bankName, setBankName] = useState(initialData?.bank_name || 'TECHCOMBANK')
+    const [bankAccountNo, setBankAccountNo] = useState(initialData?.bank_account_no || '190368686868')
+    const [bankAccountName, setBankAccountName] = useState(initialData?.bank_account_name || 'CONG TY TNHH TULIE')
+    const [bankBranch, setBankBranch] = useState(initialData?.bank_branch || 'Thanh Xuân - Hà Nội')
 
     // Sections State
     // We Group items by a "sectionId" or just keep a list of sections?
@@ -108,7 +113,8 @@ export function QuotationForm({
         })
 
         const subtotal = flatItems.reduce((sum, item) => sum + item.total, 0)
-        const vatAmount = subtotal * (vatPercent / 100)
+        // Per-item VAT calculation
+        const vatAmount = flatItems.reduce((sum, item) => sum + (item.total * ((item.vat_percent || 0) / 100)), 0)
         const grandTotal = subtotal + vatAmount
 
         const customer = customers.find(c => c.id === customerId)
@@ -118,16 +124,20 @@ export function QuotationForm({
             customer, // include full object for preview
             quote_number: quoteNumber,
             valid_days: parseInt(validDays),
-            vat_percent: vatPercent,
+            vat_percent: vatPercent, // Still keep for backward compatibility/default
             vat_amount: vatAmount,
             subtotal,
             grand_total: grandTotal, // or total_amount
             total_amount: grandTotal,
             terms,
             notes,
+            bank_name: bankName,
+            bank_account_no: bankAccountNo,
+            bank_account_name: bankAccountName,
+            bank_branch: bankBranch,
             items: flatItems
         })
-    }, [customerId, validDays, vatPercent, terms, notes, quoteNumber, sections])
+    }, [customerId, validDays, vatPercent, terms, notes, quoteNumber, sections, bankName, bankAccountNo, bankAccountName, bankBranch])
 
     // Actions
     const addSection = () => {
@@ -154,7 +164,8 @@ export function QuotationForm({
             quantity: 1,
             unit: 'cái',
             unit_price: 0,
-            discount_percent: 0,
+            discount_percent: 20, // Default 20% discount as requested
+            vat_percent: 8, // Default to 8% current rate
             total: 0,
             sort_order: 0,
             section_name: ''
@@ -298,8 +309,9 @@ export function QuotationForm({
                                         <TableHead className="w-[30%]">Tên hàng hóa / Dịch vụ</TableHead>
                                         <TableHead className="w-[10%]">ĐVT</TableHead>
                                         <TableHead className="w-[10%]">SL</TableHead>
-                                        <TableHead className="w-[15%]">Đơn giá</TableHead>
-                                        <TableHead className="w-[10%]">CK(%)</TableHead>
+                                        <TableHead className="w-[12%]">Đơn giá</TableHead>
+                                        <TableHead className="w-[8%]">CK(%)</TableHead>
+                                        <TableHead className="w-[10%]">VAT(%)</TableHead>
                                         <TableHead className="w-[15%] text-right">Thành tiền</TableHead>
                                         <TableHead className="w-[5%]"></TableHead>
                                     </TableRow>
@@ -358,6 +370,21 @@ export function QuotationForm({
                                                     className="h-9"
                                                 />
                                             </TableCell>
+                                            <TableCell className="align-top">
+                                                <Select
+                                                    value={(item.vat_percent || 0).toString()}
+                                                    onValueChange={(v) => updateItem(section.id, item.id, 'vat_percent', Number(v))}
+                                                >
+                                                    <SelectTrigger className="h-9 px-2">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="0">0%</SelectItem>
+                                                        <SelectItem value="8">8%</SelectItem>
+                                                        <SelectItem value="10">10%</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </TableCell>
                                             <TableCell className="text-right font-medium align-top pt-3">
                                                 {formatCurrency(item.total)}
                                             </TableCell>
@@ -381,7 +408,7 @@ export function QuotationForm({
             </div>
 
             {/* Totals & Terms */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-3">
                 <Card>
                     <CardHeader><CardTitle>Điều khoản & Ghi chú</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
@@ -400,6 +427,28 @@ export function QuotationForm({
                                 onChange={(e) => setNotes(e.target.value)}
                                 rows={2}
                             />
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader><CardTitle>Thông tin chuyển khoản</CardTitle></CardHeader>
+                    <CardContent className="space-y-3">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs">Ngân hàng</Label>
+                            <Input value={bankName} onChange={e => setBankName(e.target.value)} className="h-8 shadow-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs">Số tài khoản</Label>
+                            <Input value={bankAccountNo} onChange={e => setBankAccountNo(e.target.value)} className="h-8 shadow-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs">Chủ tài khoản</Label>
+                            <Input value={bankAccountName} onChange={e => setBankAccountName(e.target.value)} className="h-8 shadow-none" />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs">Chi nhánh</Label>
+                            <Input value={bankBranch} onChange={e => setBankBranch(e.target.value)} className="h-8 shadow-none" />
                         </div>
                     </CardContent>
                 </Card>
@@ -424,20 +473,9 @@ export function QuotationForm({
                             </div>
                         </div>
                         <Separator />
-                        <div className="flex justify-between items-center">
-                            <span>VAT (%)</span>
-                            <div className="w-32">
-                                <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(Number(v))}>
-                                    <SelectTrigger className="h-8">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="0">0%</SelectItem>
-                                        <SelectItem value="8">8%</SelectItem>
-                                        <SelectItem value="10">10%</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">Thuế VAT (Tổng cộng)</span>
+                            <span className="font-medium text-slate-900">{formatCurrency(initialData?.vat_amount || 0)}</span>
                         </div>
                         <Separator />
                         <div className="flex justify-between font-bold text-xl">

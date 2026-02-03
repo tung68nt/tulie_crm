@@ -120,6 +120,10 @@ export interface Quotation {
     position?: string
   }
   items?: QuotationItem[]
+  bank_name?: string
+  bank_account_no?: string
+  bank_account_name?: string
+  bank_branch?: string
   created_at: string
   updated_at: string
 }
@@ -135,6 +139,7 @@ export interface QuotationItem {
   unit: string
   unit_price: number
   discount_percent?: number
+  vat_percent?: number
   total: number
   sort_order: number // To order items within a section
   section_name?: string // To group items (e.g., "Design", "Printing")
