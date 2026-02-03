@@ -2,10 +2,9 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, MapPin, Phone } from 'lucide-react'
+import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, MapPin, Phone, Mail, FileCheck } from 'lucide-react'
 import {
     Table,
     TableBody,
@@ -55,164 +54,181 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
     const finalAmount = totalAmount + vatAmount
 
     return (
-        <div className="min-h-screen bg-muted/20 pb-32">
-            <div className="bg-white border-b">
-                <div className="container max-w-4xl mx-auto px-4 py-8 text-center">
-                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary mb-4 shadow-lg shadow-primary/20">
-                        <span className="text-3xl font-bold text-primary-foreground">T</span>
+        <div className="min-h-screen bg-gray-100 py-8 pb-32 print:bg-white print:p-0">
+            {/* A4 Container */}
+            <div className="mx-auto bg-white shadow-xl min-h-[297mm] w-full max-w-[210mm] p-8 md:p-[15mm] flex flex-col relative print:shadow-none print:w-full">
+
+                {/* Header Section */}
+                <div className="flex justify-between items-start mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-16 w-16 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-3xl shadow-lg shadow-primary/30">
+                            T
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 leading-tight">TULIE AGENCY</h1>
+                            <p className="text-sm text-muted-foreground font-medium">Creative Digital Solutions</p>
+                        </div>
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight">Báo giá dịch vụ</h1>
-                    <p className="text-muted-foreground mt-2">Cảm ơn quý khách đã quan tâm đến dịch vụ của Tulie Agency</p>
-                </div>
-            </div>
-
-            <div className="container max-w-4xl mx-auto px-4 py-8 space-y-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <User className="h-4 w-4 text-primary" />
-                                Thông tin khách hàng
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3 text-sm">
-                            <div className="font-semibold text-lg">{quotation.customer.company_name}</div>
-                            <div className="flex items-start gap-2 text-muted-foreground">
-                                <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                                <div>{quotation.customer.address}</div>
+                    <div className="text-right">
+                        <h2 className="text-4xl font-bold text-gray-900/10 mb-2">BÁO GIÁ</h2>
+                        <div className="space-y-1 text-sm bg-gray-50/80 p-3 rounded-lg border border-gray-100/50">
+                            <div className="flex justify-between gap-6">
+                                <span className="text-muted-foreground font-medium">Số báo giá:</span>
+                                <span className="font-bold text-gray-900">{quotation.quote_number}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <Building2 className="h-4 w-4 shrink-0" />
-                                <div>MST: {quotation.customer.tax_code}</div>
+                            <div className="flex justify-between gap-6">
+                                <span className="text-muted-foreground font-medium">Ngày:</span>
+                                <span className="font-semibold text-gray-700">{formatDate(quotation.created_at)}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                                <User className="h-4 w-4 shrink-0" />
-                                <div>Người liên hệ: {quotation.customer.contact_name}</div>
+                            <div className="flex justify-between gap-6">
+                                <span className="text-muted-foreground font-medium">Hết hạn:</span>
+                                <span className="font-semibold text-red-500">{formatDate(quotation.valid_until)}</span>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-base flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-primary" />
-                                Thông tin báo giá
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3 text-sm">
-                            <div className="flex justify-between py-1 border-b">
-                                <span className="text-muted-foreground">Số báo giá:</span>
-                                <span className="font-medium">{quotation.quote_number}</span>
-                            </div>
-                            <div className="flex justify-between py-1 border-b">
-                                <span className="text-muted-foreground">Ngày tạo:</span>
-                                <span className="font-medium">{formatDate(quotation.created_at)}</span>
-                            </div>
-                            <div className="flex justify-between py-1 border-b">
-                                <span className="text-muted-foreground">Hết hạn:</span>
-                                <span className="font-medium">{formatDate(quotation.valid_until)}</span>
-                            </div>
-                            <div className="flex justify-between py-1 border-b">
-                                <span className="text-muted-foreground">Trạng thái:</span>
-                                <span className="font-medium text-blue-600">Mới</span>
-                            </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
 
-                <Card className="overflow-hidden">
+                <div className="grid grid-cols-2 gap-8 mb-8">
+                    {/* From Section */}
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                        <h3 className="text-sm font-bold text-primary mb-3 uppercase flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            Đơn vị cung cấp
+                        </h3>
+                        <div className="space-y-1.5 text-sm">
+                            <p className="font-bold text-base text-gray-900">CÔNG TY TNHH TULIE AGENCY</p>
+                            <p className="text-gray-600">Tầng 4, Tòa nhà Bitexco, Q.1, TP.HCM</p>
+                            <p className="text-gray-600 flex items-center gap-2"><Mail className="h-3 w-3" /> contact@tulie.agency</p>
+                            <p className="text-gray-600 flex items-center gap-2"><Phone className="h-3 w-3" /> (+84) 909 123 456</p>
+                        </div>
+                    </div>
+
+                    {/* To Section */}
+                    <div className="bg-white p-6 rounded-xl border-2 border-primary/5 shadow-sm">
+                        <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase flex items-center gap-2">
+                            <User className="h-4 w-4 text-primary" />
+                            Khách hàng
+                        </h3>
+                        <div className="space-y-1.5 text-sm">
+                            <p className="font-bold text-base text-gray-900">{quotation.customer.company_name}</p>
+                            <p className="text-gray-600">{quotation.customer.address}</p>
+                            <div className="pt-2 mt-2 border-t border-dashed border-gray-200">
+                                <p className="text-gray-600 flex items-center gap-2">
+                                    <User className="h-3 w-3" /> {quotation.customer.contact_name}
+                                </p>
+                                <p className="text-gray-600 flex items-center gap-2">
+                                    <FileCheck className="h-3 w-3" /> MST: {quotation.customer.tax_code}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Items Table */}
+                <div className="mb-8 flex-1">
                     <Table>
-                        <TableHeader className="bg-muted/50">
-                            <TableRow>
-                                <TableHead className="w-[50px]">#</TableHead>
-                                <TableHead>Hạng mục</TableHead>
-                                <TableHead className="w-[80px] text-center">ĐVT</TableHead>
-                                <TableHead className="w-[80px] text-center">SL</TableHead>
-                                <TableHead className="w-[140px] text-right">Đơn giá</TableHead>
-                                <TableHead className="w-[140px] text-right">Thành tiền</TableHead>
+                        <TableHeader>
+                            <TableRow className="bg-gray-900 hover:bg-gray-900">
+                                <TableHead className="w-[50px] font-bold text-white rounded-tl-lg rounded-bl-lg">#</TableHead>
+                                <TableHead className="font-bold text-white">Hạng mục & Mô tả</TableHead>
+                                <TableHead className="w-[80px] text-center font-bold text-white">ĐVT</TableHead>
+                                <TableHead className="w-[80px] text-center font-bold text-white">SL</TableHead>
+                                <TableHead className="w-[140px] text-right font-bold text-white">Đơn giá</TableHead>
+                                <TableHead className="w-[140px] text-right font-bold text-white rounded-tr-lg rounded-br-lg">Thành tiền</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {quotation.items?.map((item: any, index: number) => (
-                                <TableRow key={index} className="hover:bg-muted/30">
-                                    <TableCell className="text-muted-foreground text-center">{index + 1}</TableCell>
-                                    <TableCell>
-                                        <div className="font-medium">{item.name || "Dịch vụ"}</div>
+                                <TableRow key={index} className="border-b border-gray-100 hover:bg-gray-50/50">
+                                    <TableCell className="text-center font-medium text-gray-500 py-4 align-top">{index + 1}</TableCell>
+                                    <TableCell className="py-4 align-top">
+                                        <div className="font-bold text-gray-900 mb-1 text-base">{item.name || "Dịch vụ"}</div>
                                         {item.description && (
-                                            <div className="text-sm text-muted-foreground mt-0.5 line-clamp-1">{item.description}</div>
+                                            <div className="text-sm text-gray-500 leading-relaxed max-w-[400px]">
+                                                {item.description}
+                                            </div>
                                         )}
                                     </TableCell>
-                                    <TableCell className="text-center">{item.unit}</TableCell>
-                                    <TableCell className="text-center">{item.quantity}</TableCell>
-                                    <TableCell className="text-right">{formatCurrency(item.unit_price)}</TableCell>
-                                    <TableCell className="text-right font-medium">
+                                    <TableCell className="text-center py-4 align-top text-gray-600">{item.unit}</TableCell>
+                                    <TableCell className="text-center py-4 align-top text-gray-600">{item.quantity}</TableCell>
+                                    <TableCell className="text-right py-4 align-top font-medium text-gray-600">{formatCurrency(item.unit_price)}</TableCell>
+                                    <TableCell className="text-right py-4 align-top font-bold text-gray-900">
                                         {formatCurrency(item.quantity * item.unit_price)}
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                </Card>
-
-                <div className="flex justify-end">
-                    <Card className="w-full md:w-1/2 lg:w-1/3">
-                        <CardContent className="p-6 space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Tạm tính:</span>
-                                <span>{formatCurrency(totalAmount)}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">VAT (10%):</span>
-                                <span>{formatCurrency(vatAmount)}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between items-end">
-                                <span className="font-semibold">Tổng cộng:</span>
-                                <span className="text-2xl font-bold text-primary">{formatCurrency(finalAmount)}</span>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6 text-sm text-muted-foreground">
-                    <div className="bg-white p-4 rounded-lg border">
-                        <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                            <Building2 className="h-4 w-4" />
-                            Thông tin chuyển khoản
-                        </h3>
-                        <div className="space-y-1 pl-6">
-                            <p>Ngân hàng: TECHCOMBANK</p>
-                            <p>Số TK: 190368686868</p>
-                            <p>Chủ TK: NGUYEN VAN A</p>
+                {/* Summary Section */}
+                <div className="flex justify-end mb-12">
+                    <div className="bg-gray-50 p-6 rounded-xl w-[320px] space-y-3 shadow-inner">
+                        <div className="flex justify-between text-sm text-gray-500 font-medium">
+                            <span>Tạm tính</span>
+                            <span>{formatCurrency(totalAmount)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-gray-500 font-medium">
+                            <span>VAT (10%)</span>
+                            <span>{formatCurrency(vatAmount)}</span>
+                        </div>
+                        <Separator className="bg-gray-200" />
+                        <div className="flex justify-between items-baseline pt-1">
+                            <span className="font-bold text-lg text-gray-900">TỔNG CỘNG</span>
+                            <span className="text-2xl font-black text-primary">{formatCurrency(finalAmount)}</span>
                         </div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg border">
-                        <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                </div>
+
+                {/* Footer Section (Terms & Bank) */}
+                <div className="mt-auto grid md:grid-cols-2 gap-8 text-sm">
+                    <div className="bg-blue-50/50 p-5 rounded-lg border border-blue-100/50">
+                        <h4 className="font-bold mb-3 flex items-center gap-2 text-primary">
+                            <Building2 className="h-4 w-4" />
+                            Thông tin thanh toán
+                        </h4>
+                        <div className="space-y-2 text-gray-700">
+                            <p><span className="font-semibold w-24 inline-block">Ngân hàng:</span> TECHCOMBANK</p>
+                            <p><span className="font-semibold w-24 inline-block">Số TK:</span> 190368686868</p>
+                            <p><span className="font-semibold w-24 inline-block">Chủ TK:</span> NGUYEN VAN A</p>
+                            <p><span className="font-semibold w-24 inline-block">Nội dung:</span> <span className="font-mono bg-white px-1 py-0.5 rounded border">{quotation.quote_number}</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 className="font-bold mb-3 flex items-center gap-2 text-gray-900">
                             <Calendar className="h-4 w-4" />
-                            Hiệu lực báo giá
-                        </h3>
-                        <div className="space-y-1 pl-6">
-                            <p>Báo giá này có hiệu lực trong vòng 7 ngày kể từ ngày ban hành.</p>
+                            Lưu ý
+                        </h4>
+                        <div className="space-y-2 text-gray-500 text-xs leading-relaxed">
+                            <p className="flex gap-2">
+                                <span className="font-bold text-gray-900">1.</span>
+                                Báo giá này có hiệu lực trong vòng 07 ngày kể từ ngày quy định tại mục "Hết hạn".
+                            </p>
+                            <p className="flex gap-2">
+                                <span className="font-bold text-gray-900">2.</span>
+                                Quý khách vui lòng thanh toán 50% giá trị hợp đồng ngay sau khi ký kết.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+            {/* Sticky Action Footer */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t p-4 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] z-40 print:hidden">
                 <div className="container max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-sm text-muted-foreground hidden sm:block">
-                        Mọi thắc mắc xin vui lòng liên hệ: <span className="font-medium text-foreground">support@tulie.agency</span>
+                    <div className="text-sm text-gray-500 hidden sm:block">
+                        Cần hỗ trợ? Gọi ngay <span className="font-bold text-gray-900">0909 123 456</span>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto">
-                        <Button variant="outline" className="flex-1 sm:flex-none text-destructive hover:text-destructive hover:bg-destructive/10">
+                        <Button variant="ghost" className="flex-1 sm:flex-none text-gray-500 hover:text-gray-900 hover:bg-gray-100">
                             <XCircle className="mr-2 h-4 w-4" />
                             Từ chối
                         </Button>
-                        <Button variant="secondary" className="flex-1 sm:flex-none">
+                        <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 shadow-sm">
                             <Download className="mr-2 h-4 w-4" />
                             Tải PDF
                         </Button>
-                        <Button className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 w-full sm:w-auto" onClick={() => setShowConfirm(true)}>
+                        <Button className="flex-1 sm:flex-none bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/25 w-full sm:w-auto font-semibold px-6" onClick={() => setShowConfirm(true)}>
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Chấp nhận ngay
                         </Button>
@@ -220,6 +236,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                 </div>
             </div>
 
+            {/* Confirmation Dialog */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
                 <DialogContent>
                     <DialogHeader>
