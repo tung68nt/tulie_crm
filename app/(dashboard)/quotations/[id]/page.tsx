@@ -168,7 +168,7 @@ export default function QuotationDetailPage() {
                                         <TableHead className="pl-6">Mô tả</TableHead>
                                         <TableHead className="text-center w-20">SL</TableHead>
                                         <TableHead className="text-right w-32">Đơn giá</TableHead>
-                                        <TableHead className="text-right w-36">Thành tiền</TableHead>
+                                        <TableHead className="text-right w-36 pr-6">Thành tiền</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -186,7 +186,7 @@ export default function QuotationDetailPage() {
                                             <TableCell className="text-right">
                                                 {formatCurrency(item.unit_price)}
                                             </TableCell>
-                                            <TableCell className="text-right font-medium">
+                                            <TableCell className="text-right font-medium pr-6">
                                                 {formatCurrency(item.total)}
                                             </TableCell>
                                         </TableRow>
@@ -195,7 +195,7 @@ export default function QuotationDetailPage() {
                             </Table>
 
                             {/* Totals */}
-                            <div className="border-t p-4">
+                            <div className="border-t p-4 pr-6">
                                 <div className="flex justify-end">
                                     <div className="w-full max-w-xs space-y-2">
                                         <div className="flex justify-between text-sm">

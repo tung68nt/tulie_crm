@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin } from 'lucide-react'
+import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -89,22 +89,22 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 <div className="space-y-2 mt-1">
                                     <h1 className="text-sm font-bold text-slate-900 uppercase mb-3 leading-tight whitespace-nowrap">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</h1>
 
-                                    <div className="flex items-start gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-start gap-2.5 text-sm text-slate-500">
                                         <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                                        <span>Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</span>
+                                        <span>Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, <br />Thành phố Hà Nội, Việt Nam</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
                                         <Phone className="h-3.5 w-3.5 shrink-0" />
                                         <span>098.898.4554</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
                                         <Mail className="h-3.5 w-3.5 shrink-0" />
                                         <span>support@tulielab.vn</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-xs text-slate-500">
+                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
                                         <FileText className="h-3.5 w-3.5 shrink-0" />
                                         <span>0110163102</span>
                                     </div>
@@ -157,13 +157,13 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             </h3>
                             <table className="w-full text-left border-collapse text-sm">
                                 <thead>
-                                    <tr className="bg-slate-100 text-slate-700">
-                                        <th className="py-3 px-4 font-semibold w-12 border-y border-slate-200">#</th>
-                                        <th className="py-3 px-4 font-semibold border-y border-slate-200">Mô tả <span className="text-[0.8em] italic font-normal opacity-70">/ Description</span></th>
-                                        <th className="py-3 px-4 font-semibold border-y border-slate-200 text-center w-24">ĐVT <span className="text-[0.8em] italic font-normal opacity-70">/ Unit</span></th>
-                                        <th className="py-3 px-4 font-semibold border-y border-slate-200 text-center w-20">SL <span className="text-[0.8em] italic font-normal opacity-70">/ Qty</span></th>
-                                        <th className="py-3 px-4 font-semibold border-y border-slate-200 text-right w-32">Đơn giá <span className="text-[0.8em] italic font-normal opacity-70">/ Price</span></th>
-                                        <th className="py-3 px-4 font-semibold border-y border-slate-200 text-right w-36">Thành tiền <span className="text-[0.8em] italic font-normal opacity-70">/ Amount</span></th>
+                                    <tr className="bg-slate-900 text-white text-sm">
+                                        <th className="py-3 px-4 font-bold w-12 first:rounded-l-lg">#</th>
+                                        <th className="py-3 px-4 font-bold">Mô tả/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Description</span></th>
+                                        <th className="py-3 px-4 font-bold text-center w-24">ĐVT/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Unit</span></th>
+                                        <th className="py-3 px-4 font-bold text-center w-20">SL/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Qty</span></th>
+                                        <th className="py-3 px-4 font-bold text-right w-32">Đơn giá/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Price</span></th>
+                                        <th className="py-3 px-4 font-bold text-right w-36 last:rounded-r-lg">Thành tiền/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Amount</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -188,7 +188,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                         {/* Totals */}
                         <div className="flex justify-end mb-12">
-                            <div className="w-2/3 bg-slate-50 p-6 rounded-lg border border-slate-100">
+                            <div className="w-[60%] bg-slate-50 p-6 rounded-lg border border-slate-100">
                                 <div className="flex justify-between py-2 border-b border-slate-200 text-sm">
                                     <span className="text-slate-600">Tổng cộng <span className="text-[0.8em] italic font-normal opacity-70">/ Subtotal</span>:</span>
                                     <span className="font-medium text-slate-900">{formatCurrency(totalAmount)}</span>
@@ -204,7 +204,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             </div>
                         </div>
 
-                        {/* Notes & Terms - New Section */}
                         {/* Notes & Terms - Re-layout */}
                         <div className="mb-8 bg-slate-50 p-6 rounded-lg border border-slate-100">
                             <div className="grid grid-cols-2 gap-8 text-xs text-slate-600">
@@ -230,12 +229,25 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                     <div>
                         {/* Bank & Signature */}
                         <div className="bg-slate-900 text-white p-6 rounded-xl flex justify-between items-center mt-auto">
-                            <div>
-                                <h4 className="font-bold mb-2 text-sm uppercase opacity-90">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-1 text-sm">
-                                    <p><span className="text-slate-400">Ngân hàng:</span> TECHCOMBANK</p>
-                                    <p><span className="text-slate-400">Số tài khoản:</span> 190368686868</p>
-                                    <p><span className="text-slate-400">Chủ tài khoản:</span> CONG TY TNHH TULIE</p>
+                            <div className="w-full">
+                                <h4 className="font-bold mb-3 text-sm uppercase opacity-90">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
+                                <div className="space-y-1.5 text-sm">
+                                    <div className="grid grid-cols-[110px_1fr]">
+                                        <span className="text-slate-400">Ngân hàng:</span>
+                                        <span>TECHCOMBANK</span>
+                                    </div>
+                                    <div className="grid grid-cols-[110px_1fr]">
+                                        <span className="text-slate-400">Số tài khoản:</span>
+                                        <span className="font-mono tracking-wide">190368686868</span>
+                                    </div>
+                                    <div className="grid grid-cols-[110px_1fr]">
+                                        <span className="text-slate-400">Chủ tài khoản:</span>
+                                        <span className="uppercase">CONG TY TNHH TULIE</span>
+                                    </div>
+                                    <div className="grid grid-cols-[110px_1fr]">
+                                        <span className="text-slate-400">Chi nhánh:</span>
+                                        <span>Thanh Xuân - Hà Nội</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -254,7 +266,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             Từ chối
                         </Button>
                         <Button variant="outline" className="flex-1 sm:flex-none border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
-                            <span className="material-symbols-outlined mr-2" style={{ fontSize: '18px' }}>print</span>
+                            <Printer className="mr-2 h-4 w-4" />
                             In báo giá
                         </Button>
                         <Button variant="outline" className="flex-1 sm:flex-none border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handleDownloadPDF}>
