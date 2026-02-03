@@ -210,6 +210,20 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
             </div>
 
+            {/* Print Styles */}
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        size: A4;
+                        margin: 0;
+                    }
+                    body {
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                }
+            `}</style>
+
             {/* Sticky Action Footer */}
             <div className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-t border-gray-200 dark:border-zinc-800 p-4 shadow-lg z-50 print:hidden">
                 <div className="container max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -220,7 +234,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         <Button variant="ghost" className="flex-1 sm:flex-none text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                             Từ chối
                         </Button>
-                        <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700">
+                        <Button variant="outline" className="flex-1 sm:flex-none border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700" onClick={() => window.print()}>
                             <Download className="mr-2 h-4 w-4" />
                             Tải PDF
                         </Button>
