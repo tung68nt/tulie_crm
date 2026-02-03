@@ -80,59 +80,74 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                 <div className="p-10 h-full flex flex-col justify-between">
                     <div>
                         {/* Header Section - Modern & Bilingual */}
-                        <div className="flex justify-between items-start mb-10">
-                            <div className="flex flex-col items-start gap-6 w-[60%]">
-                                {/* Logo Placeholder */}
-                                {/* Logo Image */}
-                                <div className="h-20 flex items-center shrink-0">
+                        <div className="flex justify-between items-start mb-8">
+                            <div className="flex flex-col items-start w-[65%]">
+                                {/* Logo Section - Height matches Title for alignment */}
+                                <div className="h-24 flex items-end mb-4 overflow-visible">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src="/file/tulie-agency-logo.png" alt="Tulie Agency" className="h-full w-auto object-contain" />
+                                    <img src="/file/tulie-agency-logo.png" alt="Tulie Agency" className="h-20 w-auto object-contain" />
                                 </div>
-                                <div className="space-y-2 mt-1">
-                                    <h1 className="text-sm font-bold text-slate-900 uppercase mb-3 leading-tight whitespace-nowrap">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</h1>
 
-                                    <div className="flex items-start gap-2.5 text-sm text-slate-500">
-                                        <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                                <div className="space-y-1.5">
+                                    <h1 className="text-sm font-bold text-slate-900 uppercase leading-none h-4 flex items-center">
+                                        CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE
+                                    </h1>
+
+                                    <div className="flex items-start gap-2 text-[13px] text-slate-500 leading-snug">
+                                        <MapPin className="h-3 w-3 mt-1 shrink-0" />
                                         <span>Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, <br />Thành phố Hà Nội, Việt Nam</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
-                                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                                    <div className="flex items-center gap-2 text-[13px] text-slate-500">
+                                        <Phone className="h-3 w-3 shrink-0" />
                                         <span>098.898.4554</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
-                                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                                    <div className="flex items-center gap-2 text-[13px] text-slate-500">
+                                        <Mail className="h-3 w-3 shrink-0" />
                                         <span>support@tulielab.vn</span>
                                     </div>
 
-                                    <div className="flex items-center gap-2.5 text-sm text-slate-500">
-                                        <FileText className="h-3.5 w-3.5 shrink-0" />
+                                    <div className="flex items-center gap-2 text-[13px] text-slate-500">
+                                        <FileText className="h-3 w-3 shrink-0" />
                                         <span>0110163102</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <h2 className="text-3xl font-bold text-slate-900 mb-1">BÁO GIÁ</h2>
-                                <p className="text-lg text-slate-400 font-light mb-4">QUOTATION</p>
 
-                                <div className="space-y-1 text-sm text-slate-600">
-                                    <p><span className="font-medium text-slate-900">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span> {quotation.quote_number}</p>
-                                    <p><span className="font-medium text-slate-900">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span> {formatDate(quotation.created_at)}</p>
-                                    <p><span className="font-medium text-slate-900">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span> {formatDate(quotation.valid_until)}</p>
+                            <div className="text-right">
+                                {/* Title Section - Height matches Logo for alignment */}
+                                <div className="h-24 flex flex-col justify-end mb-4">
+                                    <h2 className="text-5xl font-bold text-slate-900 leading-none tracking-tight">BÁO GIÁ</h2>
+                                    <p className="text-2xl text-slate-400 font-light mt-1">QUOTATION</p>
+                                </div>
+
+                                <div className="space-y-0.5 text-[13px] text-slate-600">
+                                    <p className="flex justify-end gap-1 h-4 items-center">
+                                        <span className="font-medium text-slate-900">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span>
+                                        <span>{quotation.quote_number}</span>
+                                    </p>
+                                    <p className="flex justify-end gap-1 h-4 items-center">
+                                        <span className="font-medium text-slate-900">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span>
+                                        <span>{formatDate(quotation.created_at)}</span>
+                                    </p>
+                                    <p className="flex justify-end gap-1 h-4 items-center">
+                                        <span className="font-medium text-slate-900">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span>
+                                        <span>{formatDate(quotation.valid_until)}</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Divider */}
-                        <hr className="border-slate-200 mb-10" />
+                        <hr className="border-slate-200 mb-6" />
 
                         {/* Customer Info */}
-                        <div className="mb-12">
-                            <h3 className="text-sm font-bold text-slate-900 mb-4 border-l-4 border-slate-900 pl-3">
-                                THÔNG TIN KHÁCH HÀNG<span className="text-[0.8em] italic font-normal opacity-70">/ CUSTOMER</span>
+                        <div className="mb-6">
+                            <h3 className="text-[12px] font-bold text-slate-900 mb-2 border-l-4 border-slate-900 pl-3 leading-none h-3 flex items-center">
+                                THÔNG TIN KHÁCH HÀNG<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ CUSTOMER</span>
                             </h3>
-                            <div className="bg-slate-50 p-6 rounded-lg border border-slate-100 grid gap-3 text-sm">
+                            <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 grid gap-1.5 text-[13px]">
                                 <div className="grid grid-cols-[140px_1fr]">
                                     <span className="text-slate-500">Đơn vị<span className="text-[0.8em] italic font-normal opacity-70">/ Company</span>:</span>
                                     <span className="font-bold text-slate-900">{quotation.customer.company_name}</span>
@@ -153,25 +168,25 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         </div>
 
                         {/* Table */}
-                        <div className="mb-10">
-                            <h3 className="text-sm font-bold text-slate-900 mb-4 border-l-4 border-slate-900 pl-3">
-                                CHI TIẾT DỊCH VỤ<span className="text-[0.8em] italic font-normal opacity-70">/ SERVICE DETAILS</span>
+                        <div className="mb-6">
+                            <h3 className="text-[12px] font-bold text-slate-900 mb-2 border-l-4 border-slate-900 pl-3 leading-none h-3 flex items-center">
+                                CHI TIẾT DỊCH VỤ<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ SERVICE DETAILS</span>
                             </h3>
-                            <table className="w-full text-left border-collapse text-sm">
+                            <table className="w-full text-left border-collapse text-[13px]">
                                 <thead>
-                                    <tr className="bg-slate-900 text-white text-sm">
-                                        <th className="py-3 px-4 font-bold w-12 first:rounded-l-lg">#</th>
-                                        <th className="py-3 px-4 font-bold">Mô tả/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Description</span></th>
-                                        <th className="py-3 px-4 font-bold text-center w-24">ĐVT/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Unit</span></th>
-                                        <th className="py-3 px-4 font-bold text-center w-20">SL/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Qty</span></th>
-                                        <th className="py-3 px-4 font-bold text-right w-32">Đơn giá/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Price</span></th>
-                                        <th className="py-3 px-4 font-bold text-right w-36 last:rounded-r-lg">Thành tiền/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Amount</span></th>
+                                    <tr className="bg-slate-900 text-white">
+                                        <th className="py-2 px-4 font-bold w-12 first:rounded-l-lg">#</th>
+                                        <th className="py-2 px-4 font-bold">Mô tả/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Description</span></th>
+                                        <th className="py-2 px-4 font-bold text-center w-24">ĐVT/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Unit</span></th>
+                                        <th className="py-2 px-4 font-bold text-center w-20">SL/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Qty</span></th>
+                                        <th className="py-2 px-4 font-bold text-right w-32">Đơn giá/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Price</span></th>
+                                        <th className="py-2 px-4 font-bold text-right w-36 last:rounded-r-lg">Thành tiền/<br /><span className="text-[0.8em] font-normal opacity-60 italic normal-case">Amount</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {quotation.items?.map((item: any, index: number) => (
                                         <tr key={index} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
-                                            <td className="py-4 px-4 text-slate-500 align-top">{index + 1}</td>
+                                            <td className="py-2.5 px-4 text-slate-500 align-top">{index + 1}</td>
                                             <td className="py-4 px-4 align-top">
                                                 <p className="font-semibold text-slate-900">{item.name || "Dịch vụ"}</p>
                                                 {item.description && (
@@ -189,41 +204,41 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         </div>
 
                         {/* Totals */}
-                        <div className="flex justify-end mb-12">
-                            <div className="w-[60%] bg-slate-50 p-6 rounded-lg border border-slate-100">
-                                <div className="flex justify-between py-2 border-b border-slate-200 text-sm">
+                        <div className="flex justify-end mb-8">
+                            <div className="w-[60%] bg-slate-50 p-4 rounded-lg border border-slate-100">
+                                <div className="flex justify-between py-1.5 border-b border-slate-200 text-[13px]">
                                     <span className="text-slate-600">Tổng cộng <span className="text-[0.8em] italic font-normal opacity-70">/ Subtotal</span>:</span>
                                     <span className="font-medium text-slate-900">{formatCurrency(totalAmount)}</span>
                                 </div>
-                                <div className="flex justify-between py-2 border-b border-slate-200 text-sm">
+                                <div className="flex justify-between py-1.5 border-b border-slate-200 text-[13px]">
                                     <span className="text-slate-600">Thuế VAT (10%):</span>
                                     <span className="font-medium text-slate-900">{formatCurrency(vatAmount)}</span>
                                 </div>
-                                <div className="flex justify-between items-center pt-3">
-                                    <span className="font-bold text-lg text-slate-900">TỔNG CỘNG<span className="text-[0.8em] italic font-normal opacity-70">/ TOTAL</span>:</span>
-                                    <span className="font-bold text-xl text-slate-900 pl-8">{formatCurrency(finalAmount)}</span>
+                                <div className="flex justify-between items-center pt-2">
+                                    <span className="font-bold text-slate-900">TỔNG CỘNG<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ TOTAL</span>:</span>
+                                    <span className="font-bold text-lg text-slate-900 pl-8">{formatCurrency(finalAmount)}</span>
                                 </div>
-                                <div className="text-right mt-3 text-xs italic text-slate-500 border-t border-slate-200 pt-2">
+                                <div className="text-right mt-2 text-[11px] italic text-slate-500 border-t border-slate-200 pt-1.5">
                                     Bằng chữ: {readNumberToWords(finalAmount)}./.
                                 </div>
                             </div>
                         </div>
 
                         {/* Footer Section: Notes & Bank Info */}
-                        <div className="grid grid-cols-2 gap-6 mt-auto">
+                        <div className="grid grid-cols-2 gap-4 mt-auto">
                             {/* Left Column: Notes & Terms */}
-                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col gap-6 h-full">
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-4 h-full">
                                 <div>
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
-                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-600 leading-relaxed">
+                                    <h4 className="font-bold text-slate-900 mb-1.5 uppercase text-[11px] tracking-wide">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
+                                    <ul className="list-disc pl-4 space-y-1 text-xs text-slate-600 leading-relaxed">
                                         <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
                                         <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
                                         <li>Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.</li>
                                     </ul>
                                 </div>
-                                <div className="border-t border-slate-200 pt-4 mt-auto">
-                                    <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
-                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-600 leading-relaxed">
+                                <div className="border-t border-slate-200 pt-3 mt-auto">
+                                    <h4 className="font-bold text-slate-900 mb-1.5 uppercase text-[11px] tracking-wide">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
+                                    <ul className="list-disc pl-4 space-y-1 text-xs text-slate-600 leading-relaxed">
                                         <li>Lần 1: Thanh toán 50% ngay sau khi ký hợp đồng.</li>
                                         <li>Lần 2: 50% còn lại sau khi nghiệm thu và bàn giao.</li>
                                     </ul>
@@ -231,8 +246,8 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             </div>
 
                             {/* Right Column: Bank Transfer */}
-                            <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 h-fit">
-                                <h4 className="font-bold text-slate-900 mb-2 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản<span className="text-[0.8em] italic font-normal opacity-70 normal-case">/ Bank Transfer</span></h4>
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 h-fit">
+                                <h4 className="font-bold text-slate-900 mb-1.5 uppercase text-[11px] tracking-wide">Thông tin chuyển khoản<span className="text-[0.8em] italic font-normal opacity-70 ml-1 normal-case">/ Bank Transfer</span></h4>
                                 <div className="space-y-2 text-xs">
                                     <div className="grid grid-cols-[140px_1fr] items-baseline">
                                         <span className="text-slate-600">Ngân hàng<span className="text-[0.8em] italic opacity-70">/ Bank</span>:</span>
@@ -256,7 +271,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                     </div>
 
                     {/* Decorative Footer */}
-                    <div className="mt-auto pt-10 flex flex-col items-center justify-center opacity-40">
+                    <div className="mt-auto pt-6 flex flex-col items-center justify-center opacity-40">
                         <div className="w-full border-t border-slate-200 mb-2"></div>
                         <div className="flex items-center gap-1">
                             <div className="h-1 w-1 bg-slate-400 rounded-full"></div>
