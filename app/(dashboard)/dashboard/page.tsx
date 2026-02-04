@@ -8,9 +8,11 @@ import { getDashboardStats, getRevenueChartData } from '@/lib/supabase/services/
 import { getRecentActivities } from '@/lib/supabase/services/activity-service'
 
 export default async function DashboardPage() {
-    const stats = await getDashboardStats()
-    const chartData = await getRevenueChartData()
-    const recentActivities = await getRecentActivities()
+    const [stats, chartData, recentActivities] = await Promise.all([
+        getDashboardStats(),
+        getRevenueChartData(),
+        getRecentActivities()
+    ])
 
     return (
         <div className="space-y-6">

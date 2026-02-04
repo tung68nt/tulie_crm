@@ -11,17 +11,22 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
+    async function handleAction(formData: FormData) {
         setLoading(true)
         setError(null)
-
-        const formData = new FormData(event.currentTarget)
-        const result = await login(formData)
-
-        if (result?.error) {
-            setError(result.error)
+        try {
+            const result = await login(formData)
+            if (result?.error) {
+                setError(result.error)
+                setLoading(false)
+            }
+        } catch (e) {
+            // Next.js redirect creates an error that should not be caught here
+            // if we want the framework to handle it, but sometimes we need to 
+            // let it bubble up or handle it more gracefully.
+            // However, in form actions, we usually don't need to catch redirect.
             setLoading(false)
+            throw e
         }
     }
 
@@ -33,11 +38,11 @@ export default function LoginPage() {
                     Nhập email và mật khẩu để đăng nhập vào hệ thống
                 </CardDescription>
             </CardHeader>
-            <form onSubmit={handleSubmit}>
+            <form action={handleAction}>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="name@example.com" required />
+                        <Input id="email" name="email" type="email" placeholder="admin@tulie.agency" required />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="password">Mật khẩu</Label>
