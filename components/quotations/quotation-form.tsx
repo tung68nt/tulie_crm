@@ -43,6 +43,7 @@ interface QuotationFormProps {
     onChange?: (data: any) => void
     onSave?: () => void
     isLoading?: boolean
+    hideHeader?: boolean
 }
 
 export function QuotationForm({ quotation, customers, products, onChange, onSave, isLoading: externalIsLoading, hideHeader = false }: QuotationFormProps) {
