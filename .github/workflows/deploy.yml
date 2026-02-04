@@ -31,7 +31,7 @@ jobs:
         run: |
           gcloud builds submit --config cloudbuild.yaml \
             --project $PROJECT_ID \
-            --substitutions=_GCR_TAG="asia-southeast1-docker.pkg.dev/$PROJECT_ID/tulie-repo/$SERVICE_NAME",_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}",_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}",_NEXT_PUBLIC_APP_URL="${{ secrets.NEXT_PUBLIC_APP_URL }}" \
+            --substitutions=_GCR_TAG="asia-southeast1-docker.pkg.dev/$PROJECT_ID/tulie-repo/$SERVICE_NAME",_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}",_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" \
             .
 
       - name: 'Deploy to Cloud Run'
@@ -44,7 +44,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-            NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_APP_URL=https://crm.tulie.agency
             RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             DIRECT_URL=${{ secrets.DIRECT_URL }}

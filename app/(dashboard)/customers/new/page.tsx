@@ -25,7 +25,8 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Loader2, Save } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 const customerSchema = z.object({
     company_name: z.string().min(2, 'Tên công ty phải có ít nhất 2 ký tự'),
@@ -64,18 +65,28 @@ export default function NewCustomerPage() {
 
     const onSubmit = async (data: CustomerFormData) => {
         setIsLoading(true)
+        const supabase = createClient()
+
         try {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                toast.error('Bạn cần đăng nhập để thực hiện thao tác này')
+                return
+            }
+
             await createCustomer({
                 ...data,
-                assigned_to: '00000000-0000-0000-0000-000000000000', // Default admin for now
-                created_by: '00000000-0000-0000-0000-000000000000',
+                assigned_to: user.id,
+                created_by: user.id,
             })
             toast.success('Thêm khách hàng thành công')
             router.push('/customers')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to create customer:', error)
-            toast.error('Có lỗi xảy ra khi thêm khách hàng')
+            const message = error.message || 'Có lỗi xảy ra khi thêm khách hàng'
+            toast.error(message)
         } finally {
             setIsLoading(false)
         }

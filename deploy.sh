@@ -44,7 +44,7 @@ fi
 echo "Building container image..."
 gcloud builds submit \
   --config cloudbuild.yaml \
-  --substitutions=_GCR_TAG="asia-southeast1-docker.pkg.dev/$PROJECT_ID/tulie-repo/$APP_NAME",_NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL",_NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY",_NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
+  --substitutions=_GCR_TAG="asia-southeast1-docker.pkg.dev/$PROJECT_ID/tulie-repo/$APP_NAME",_NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL",_NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
   .
 
 # Deploy Service with Env Vars
