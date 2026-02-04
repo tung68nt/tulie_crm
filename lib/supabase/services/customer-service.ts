@@ -175,3 +175,45 @@ export async function deleteCustomers(ids: string[]) {
         throw new Error(err.message || 'Lỗi hệ thống khi xóa nhiều khách hàng')
     }
 }
+
+export async function updateCustomersStatus(ids: string[], status: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('customers')
+            .update({ status })
+            .in('id', ids)
+
+        if (error) {
+            console.error('[updateCustomersStatus] Error:', error)
+            throw error
+        }
+
+        revalidatePath('/customers')
+        return true
+    } catch (err: any) {
+        console.error('[updateCustomersStatus] Fatal error:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật trạng thái nhiều khách hàng')
+    }
+}
+
+export async function reassignCustomers(ids: string[], userId: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('customers')
+            .update({ assigned_to: userId })
+            .in('id', ids)
+
+        if (error) {
+            console.error('[reassignCustomers] Error:', error)
+            throw error
+        }
+
+        revalidatePath('/customers')
+        return true
+    } catch (err: any) {
+        console.error('[reassignCustomers] Fatal error:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi chuyển người phụ trách nhiều khách hàng')
+    }
+}

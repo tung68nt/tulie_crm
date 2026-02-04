@@ -8,16 +8,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { getCustomers, deleteCustomers } from '@/lib/supabase/services/customer-service'
+import { getCustomers } from '@/lib/supabase/services/customer-service'
+import { getUsers } from '@/lib/supabase/services/user-service'
 import { Plus, Upload, Download } from 'lucide-react'
 import Link from 'next/link'
+import { CustomerTableClient } from '@/components/customers/customer-table-client'
+
+export const dynamic = 'force-dynamic'
 
 export default async function CustomersPage() {
-    const customers = await getCustomers()
+    const [customers, users] = await Promise.all([
+        getCustomers(),
+        getUsers(),
+    ])
 
     return (
         <div className="space-y-6">
-            {/* ... Header and Filters ... */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Khách hàng</h1>
@@ -43,43 +49,7 @@ export default async function CustomersPage() {
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="flex items-center gap-4">
-                <Select defaultValue="all">
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Trạng thái" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                        <SelectItem value="lead">Tiềm năng</SelectItem>
-                        <SelectItem value="prospect">Đang theo dõi</SelectItem>
-                        <SelectItem value="customer">Khách hàng</SelectItem>
-                        <SelectItem value="vip">VIP</SelectItem>
-                        <SelectItem value="churned">Đã rời bỏ</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            {/* Data Table */}
-            <CustomerTableInitialData data={customers} />
+            <CustomerTableClient data={customers} users={users} />
         </div>
-    )
-}
-
-async function CustomerTableInitialData({ data }: { data: any[] }) {
-    const handleDelete = async (rows: any[]) => {
-        'use server'
-        const ids = rows.map((r) => r.id)
-        await deleteCustomers(ids)
-    }
-
-    return (
-        <DataTable
-            columns={customerColumns}
-            data={data}
-            searchKey="company_name"
-            searchPlaceholder="Tìm theo tên công ty..."
-            onDelete={handleDelete}
-        />
     )
 }

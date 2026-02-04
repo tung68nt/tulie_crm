@@ -210,8 +210,8 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                                 <div className="space-y-2">
                                     <Label>Khách hàng</Label>
                                     <Select value={customerId} onValueChange={setCustomerId}>
-                                        <SelectTrigger>
-                                            <SelectValue />
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn khách hàng..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {customers.map((c) => (

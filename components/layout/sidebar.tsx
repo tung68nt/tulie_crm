@@ -6,19 +6,19 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
-    LayoutDashboard,
+    LayoutGrid,
     Users,
     FileText,
-    FileSignature,
-    Receipt,
-    Package,
+    FilePenLine,
+    Banknote,
+    Box,
     Wallet,
-    UsersRound,
-    BarChart3,
+    UserCheck,
+    PieChart,
     Settings,
     ChevronLeft,
     ChevronRight,
-    FileStack
+    Files
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -29,16 +29,16 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
     { title: 'Khách hàng', href: '/customers', icon: Users },
     { title: 'Báo giá', href: '/quotations', icon: FileText },
-    { title: 'Hợp đồng', href: '/contracts', icon: FileSignature },
-    { title: 'Hóa đơn', href: '/invoices', icon: Receipt },
-    { title: 'Sản phẩm', href: '/products', icon: Package },
-    { title: 'Mẫu giấy tờ', href: '/templates', icon: FileStack },
+    { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
+    { title: 'Hóa đơn', href: '/invoices', icon: Banknote },
+    { title: 'Sản phẩm', href: '/products', icon: Box },
+    { title: 'Mẫu giấy tờ', href: '/templates', icon: Files },
     { title: 'Tài chính', href: '/finance', icon: Wallet },
-    { title: 'Nhân sự', href: '/team', icon: UsersRound },
-    { title: 'Báo cáo', href: '/reports', icon: BarChart3 },
+    { title: 'Nhân sự', href: '/team', icon: UserCheck },
+    { title: 'Báo cáo', href: '/reports', icon: PieChart },
     { title: 'Cài đặt', href: '/settings', icon: Settings },
 ]
 

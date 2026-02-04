@@ -1,41 +1,24 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ArrowLeft, Save, Loader2, Info } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { getTemplateById, updateDocumentTemplate, DocumentTemplate } from '@/lib/supabase/services/document-template-service'
+import { createDocumentTemplate } from '@/lib/supabase/services/document-template-service'
 
-export default function EditTemplatePage() {
-    const params = useParams()
+export default function NewTemplatePage() {
     const router = useRouter()
-    const templateId = params.id as string
-
-    const [template, setTemplate] = useState<DocumentTemplate | null>(null)
     const [name, setName] = useState('')
+    const [type, setType] = useState<'contract' | 'invoice' | 'payment_request' | 'quotation' | 'order'>('contract')
     const [content, setContent] = useState('')
-    const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
-
-    useEffect(() => {
-        const fetchTemplate = async () => {
-            const data = await getTemplateById(templateId)
-            if (data) {
-                setTemplate(data)
-                setName(data.name)
-                setContent(data.content)
-            }
-            setIsLoading(false)
-        }
-        fetchTemplate()
-    }, [templateId])
 
     const handleSave = async () => {
         if (!name || !content) {
@@ -45,43 +28,26 @@ export default function EditTemplatePage() {
 
         setIsSaving(true)
         try {
+            // Extract variables from content if needed, for now just basic extraction
             const variables = Array.from(content.matchAll(/{{(.*?)}}/g)).map(match => match[1])
             const uniqueVariables = Array.from(new Set(variables))
 
-            await updateDocumentTemplate(templateId, {
+            await createDocumentTemplate({
                 name,
+                type,
                 content,
                 variables: uniqueVariables
             })
 
-            toast.success('Đã lưu thay đổi mẫu')
+            toast.success('Tạo mẫu mới thành công')
             router.push('/templates')
             router.refresh()
         } catch (error: any) {
-            console.error('Error updating template:', error)
-            toast.error(error.message || 'Có lỗi xảy ra khi cập nhật mẫu')
+            console.error('Error creating template:', error)
+            toast.error(error.message || 'Có lỗi xảy ra khi tạo mẫu')
         } finally {
             setIsSaving(false)
         }
-    }
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )
-    }
-
-    if (!template) {
-        return (
-            <div className="p-8 text-center">
-                <h2 className="text-xl font-bold">Không tìm thấy mẫu</h2>
-                <Button asChild className="mt-4">
-                    <Link href="/templates">Quay lại danh sách</Link>
-                </Button>
-            </div>
-        )
     }
 
     return (
@@ -94,13 +60,13 @@ export default function EditTemplatePage() {
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold">Chỉnh sửa mẫu: {template.name}</h1>
-                        <p className="text-muted-foreground text-sm">Cập nhật nội dung và định dạng cho mẫu giấy tờ</p>
+                        <h1 className="text-2xl font-bold">Tạo mẫu mới</h1>
+                        <p className="text-muted-foreground text-sm">Thiết kế nội dung và định dạng cho mẫu giấy tờ mới</p>
                     </div>
                 </div>
                 <Button onClick={handleSave} disabled={isSaving}>
                     {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    Lưu thay đổi
+                    Lưu mẫu
                 </Button>
             </div>
 
@@ -118,7 +84,7 @@ export default function EditTemplatePage() {
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
                                 className="min-h-[600px] font-mono text-sm leading-relaxed"
-                                placeholder="Nhập nội dung HTML của bạn tại đây..."
+                                placeholder="Nhập nội dung HTML của bạn tại đây... VD: <div>Chào {{customer_name}}</div>"
                             />
                         </CardContent>
                     </Card>
@@ -134,17 +100,25 @@ export default function EditTemplatePage() {
                                 <Label htmlFor="name">Tên mẫu</Label>
                                 <Input
                                     id="name"
+                                    placeholder="VD: Hợp đồng đại lý 2024"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Loại văn bản</Label>
-                                <Badge variant="secondary" className="block w-fit text-sm py-1">
-                                    {template.type === 'contract' ? 'Hợp đồng' :
-                                        template.type === 'invoice' ? 'Hóa đơn' :
-                                            template.type === 'payment_request' ? 'Đề nghị thanh toán' : 'Báo giá'}
-                                </Badge>
+                                <Label htmlFor="type">Loại văn bản</Label>
+                                <Select value={type} onValueChange={(v: any) => setType(v)}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="contract">Hợp đồng</SelectItem>
+                                        <SelectItem value="quotation">Báo giá</SelectItem>
+                                        <SelectItem value="invoice">Hóa đơn</SelectItem>
+                                        <SelectItem value="payment_request">Đề nghị thanh toán</SelectItem>
+                                        <SelectItem value="order">Đơn hàng</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </CardContent>
                     </Card>
@@ -153,31 +127,19 @@ export default function EditTemplatePage() {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Info className="h-5 w-5 text-blue-500" />
-                                Các biến khả dụng
+                                Hướng dẫn
                             </CardTitle>
-                            <CardDescription>
-                                Copy các biến này dán vào nội dung bên trái
-                            </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="flex flex-wrap gap-2">
-                                {template.variables.map(v => (
-                                    <Badge
-                                        key={v}
-                                        variant="outline"
-                                        className="cursor-pointer hover:bg-muted font-mono"
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(`{{${v}}}`)
-                                            toast.success(`Đã copy: {{${v}}}`)
-                                        }}
-                                    >
-                                        {`{{${v}}}`}
-                                    </Badge>
-                                ))}
+                        <CardContent className="text-sm space-y-4">
+                            <p>Sử dụng các biến nằm trong dấu ngoặc nhọn đôi để hệ thống tự động điền thông tin khi xuất văn bản.</p>
+                            <div className="space-y-2">
+                                <p className="font-medium">Các biến phổ biến:</p>
+                                <ul className="list-disc list-inside text-muted-foreground">
+                                    <li><code>{'{{customer_company}}'}</code></li>
+                                    <li><code>{'{{total_amount}}'}</code></li>
+                                    <li><code>{'{{contract_date}}'}</code></li>
+                                </ul>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-4">
-                                * Bấm vào biến để copy nhanh.
-                            </p>
                         </CardContent>
                     </Card>
                 </div>

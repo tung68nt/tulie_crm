@@ -317,8 +317,8 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                                 <div className="space-y-2">
                                     <Label>Khách hàng</Label>
                                     <Select value={customerId} onValueChange={setCustomerId}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Chọn khách hàng" />
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn khách hàng..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {customers.map(c => (
@@ -331,8 +331,8 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                                 <div className="space-y-2">
                                     <Label>Nhà cung cấp</Label>
                                     <Select value={vendorId} onValueChange={setVendorId}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Chọn nhà cung cấp" />
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Chọn nhà cung cấp..." />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {vendors.map(v => (
@@ -346,8 +346,8 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                             <div className="space-y-2">
                                 <Label>Hợp đồng liên quan</Label>
                                 <Select value={contractId} onValueChange={setContractId}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Chọn hợp đồng (tùy chọn)" />
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Chọn hợp đồng (tùy chọn)..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {contracts.map(c => (

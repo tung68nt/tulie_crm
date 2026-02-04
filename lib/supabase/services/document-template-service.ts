@@ -232,6 +232,51 @@ export async function getTemplateById(id: string) {
     }
 }
 
+// Create template
+export async function createDocumentTemplate(template: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at'>) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('document_templates')
+            .insert([template])
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Error creating template:', error)
+            throw error
+        }
+
+        return data as DocumentTemplate
+    } catch (err: any) {
+        console.error('Fatal error in createDocumentTemplate:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi tạo mẫu')
+    }
+}
+
+// Update template
+export async function updateDocumentTemplate(id: string, template: Partial<DocumentTemplate>) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('document_templates')
+            .update(template)
+            .eq('id', id)
+            .select()
+            .single()
+
+        if (error) {
+            console.error('Error updating template:', error)
+            throw error
+        }
+
+        return data as DocumentTemplate
+    } catch (err: any) {
+        console.error('Fatal error in updateDocumentTemplate:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật mẫu')
+    }
+}
+
 // Fill template with variables
 export async function fillTemplate(template: string, variables: Record<string, string>): Promise<string> {
     let result = template
