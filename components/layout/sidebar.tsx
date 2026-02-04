@@ -49,23 +49,30 @@ export function Sidebar() {
     return (
         <aside
             className={cn(
-                'relative flex flex-col border-r bg-card transition-all duration-300',
-                isCollapsed ? 'w-[72px]' : 'w-[280px]'
+                'relative flex flex-col border-r bg-card transition-all duration-300 ease-in-out',
+                isCollapsed ? 'w-20' : 'w-72'
             )}
         >
             {/* Logo */}
-            <div className="flex h-16 items-center justify-between border-b px-4">
-                {!isCollapsed && (
-                    <Link href="/" className="flex items-center gap-3">
-                        <img src="/logo.png" alt="Tulie" className="h-10 w-auto object-contain" />
-                        <span className="text-2xl font-bold tracking-tight">Tulie CRM</span>
-                    </Link>
-                )}
-                {isCollapsed && (
-                    <div className="h-8 w-8 mx-auto flex items-center justify-center">
-                        <img src="/logo.png" alt="Tulie" className="h-6 w-auto object-contain" />
-                    </div>
-                )}
+            <div className="flex h-16 items-center border-b px-4">
+                <Link href="/" className={cn(
+                    "flex items-center gap-3 transition-all duration-300 ease-in-out overflow-hidden w-full",
+                    isCollapsed ? "justify-center" : "justify-start"
+                )}>
+                    <img
+                        src={isCollapsed ? "/logo-icon.png" : "/logo.png"}
+                        alt="Tulie"
+                        className={cn(
+                            "h-10 w-auto object-contain transition-all duration-300 ease-in-out shrink-0",
+                            isCollapsed ? "h-8" : "h-10"
+                        )}
+                    />
+                    {!isCollapsed && (
+                        <span className="text-2xl font-bold tracking-tight whitespace-nowrap opacity-100 transition-opacity duration-300">
+                            Tulie CRM
+                        </span>
+                    )}
+                </Link>
             </div>
 
             {/* Navigation */}
@@ -81,12 +88,16 @@ export function Sidebar() {
                                 <Button
                                     variant={isActive ? 'secondary' : 'ghost'}
                                     className={cn(
-                                        'w-full justify-start gap-3',
-                                        isCollapsed && 'justify-center px-2'
+                                        'w-full justify-start gap-3 h-11 text-base transition-all duration-200',
+                                        isCollapsed && 'justify-center px-0'
                                     )}
                                 >
-                                    <Icon className="h-5 w-5 shrink-0" />
-                                    {!isCollapsed && <span>{item.title}</span>}
+                                    <Icon className="h-6 w-6 shrink-0" />
+                                    {!isCollapsed && (
+                                        <span className="truncate opacity-100 transition-opacity duration-300">
+                                            {item.title}
+                                        </span>
+                                    )}
                                 </Button>
                             </Link>
                         )

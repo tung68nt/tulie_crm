@@ -26,8 +26,9 @@ import { Separator } from '@/components/ui/separator'
 import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Customer } from '@/types'
+import { Customer, User } from '@/types'
 import { updateCustomer, deleteCustomer } from '@/lib/supabase/services/customer-service'
+import { getUsers } from '@/lib/supabase/services/user-service'
 import { toast } from 'sonner'
 import {
     Dialog,
@@ -49,6 +50,7 @@ const customerSchema = z.object({
     company_size: z.string().optional(),
     website: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
     status: z.enum(['lead', 'prospect', 'customer', 'vip', 'churned']),
+    assigned_to: z.string().min(1, 'Vui lòng chọn người phụ trách'),
     notes: z.string().optional(),
 })
 
@@ -63,6 +65,15 @@ export function CustomerForm({ customer }: CustomerFormProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [staff, setStaff] = useState<User[]>([])
+
+    useState(() => {
+        const fetchStaff = async () => {
+            const users = await getUsers()
+            setStaff(users)
+        }
+        fetchStaff()
+    })
 
     const {
         register,
@@ -82,6 +93,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
             company_size: customer.company_size || '',
             website: customer.website || '',
             status: customer.status,
+            assigned_to: customer.assigned_to || '',
             notes: customer.notes || '',
         },
     })
@@ -208,16 +220,11 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="website">Website</Label>
-                                <Input id="website" {...register('website')} />
-                                {errors.website && (
-                                    <p className="text-sm text-destructive">{errors.website.message}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label htmlFor="status">Trạng thái</Label>
-                                <Select defaultValue={customer.status} onValueChange={(value) => setValue('status', value as CustomerFormData['status'])}>
+                                <Select
+                                    defaultValue={customer.status}
+                                    onValueChange={(value) => setValue('status', value as CustomerFormData['status'])}
+                                >
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
@@ -229,6 +236,28 @@ export function CustomerForm({ customer }: CustomerFormProps) {
                                         <SelectItem value="churned">Đã rời bỏ</SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="assigned_to">Người phụ trách</Label>
+                                <Select
+                                    defaultValue={customer.assigned_to}
+                                    onValueChange={(value) => setValue('assigned_to', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn nhân viên phụ trách" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {staff.map((member) => (
+                                            <SelectItem key={member.id} value={member.id}>
+                                                {member.full_name} ({member.email})
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.assigned_to && (
+                                    <p className="text-sm text-destructive">{errors.assigned_to.message}</p>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
