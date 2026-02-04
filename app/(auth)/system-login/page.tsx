@@ -49,7 +49,7 @@ export default function LoginPage() {
                         </div>
                     )}
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="pt-6">
                     <Button className="w-full" type="submit" disabled={loading}>
                         {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                     </Button>

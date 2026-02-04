@@ -1,5 +1,3 @@
-'use client'
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -8,53 +6,11 @@ import {
     Clock,
     UserMinus,
     TrendingDown,
-    ChevronRight
+    ChevronRight,
+    CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
-
-interface AlertItem {
-    id: string
-    type: 'inactive_customer' | 'overdue_invoice' | 'contract_expiry' | 'low_margin'
-    title: string
-    message: string
-    severity: 'warning' | 'danger' | 'info'
-    link: string
-}
-
-const mockAlerts: AlertItem[] = [
-    {
-        id: '1',
-        type: 'inactive_customer',
-        title: '3 khách hàng không tương tác',
-        message: 'Đã hơn 30 ngày chưa liên hệ',
-        severity: 'warning',
-        link: '/customers?status=inactive',
-    },
-    {
-        id: '2',
-        type: 'overdue_invoice',
-        title: '2 hóa đơn quá hạn',
-        message: 'Tổng giá trị: 45.000.000đ',
-        severity: 'danger',
-        link: '/invoices?status=overdue',
-    },
-    {
-        id: '3',
-        type: 'contract_expiry',
-        title: '1 hợp đồng sắp hết hạn',
-        message: 'HD-2026-0078 hết hạn trong 7 ngày',
-        severity: 'warning',
-        link: '/contracts?expiring=true',
-    },
-    {
-        id: '4',
-        type: 'low_margin',
-        title: '1 deal có margin thấp',
-        message: 'QT-2026-0165 chỉ có margin 8%',
-        severity: 'info',
-        link: '/quotations/qt-2026-0165',
-    },
-]
+import { getSystemAlerts, AlertItem } from '@/lib/supabase/services/alerts-service'
 
 const getAlertIcon = (type: AlertItem['type']) => {
     switch (type) {
@@ -80,7 +36,9 @@ const getSeverityColors = (severity: AlertItem['severity']) => {
     }
 }
 
-export function AlertsPanel() {
+export async function AlertsPanel() {
+    const alerts = await getSystemAlerts()
+
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -88,33 +46,41 @@ export function AlertsPanel() {
                     <AlertTriangle className="h-5 w-5 text-yellow-500" />
                     Cảnh báo
                 </CardTitle>
-                <Button variant="ghost" size="sm">
-                    Xem tất cả
+                <Button variant="ghost" size="sm" asChild>
+                    <Link href="/notifications">Xem tất cả</Link>
                 </Button>
             </CardHeader>
             <CardContent className="p-0">
                 <ScrollArea className="h-[300px]">
                     <div className="space-y-2 px-6 pb-4">
-                        {mockAlerts.map((alert) => (
-                            <Link
-                                key={alert.id}
-                                href={alert.link}
-                                className={`flex items-center gap-3 p-3 rounded-lg border transition-colors hover:bg-accent ${getSeverityColors(alert.severity)}`}
-                            >
-                                <div className="shrink-0">
-                                    {getAlertIcon(alert.type)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">
-                                        {alert.title}
-                                    </p>
-                                    <p className="text-xs opacity-80 truncate">
-                                        {alert.message}
-                                    </p>
-                                </div>
-                                <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
-                            </Link>
-                        ))}
+                        {alerts.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-8 text-center">
+                                <CheckCircle className="h-12 w-12 text-green-500 mb-2" />
+                                <p className="text-sm font-medium">Hệ thống hoạt động tốt</p>
+                                <p className="text-xs text-muted-foreground">Không có cảnh báo nào cần xử lý</p>
+                            </div>
+                        ) : (
+                            alerts.map((alert) => (
+                                <Link
+                                    key={alert.id}
+                                    href={alert.link}
+                                    className={`flex items-center gap-3 p-3 rounded-lg border transition-colors hover:bg-accent ${getSeverityColors(alert.severity)}`}
+                                >
+                                    <div className="shrink-0">
+                                        {getAlertIcon(alert.type)}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">
+                                            {alert.title}
+                                        </p>
+                                        <p className="text-xs opacity-80 truncate">
+                                            {alert.message}
+                                        </p>
+                                    </div>
+                                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                </Link>
+                            ))
+                        )}
                     </div>
                 </ScrollArea>
             </CardContent>

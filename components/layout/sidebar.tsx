@@ -17,7 +17,8 @@ import {
     BarChart3,
     Settings,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    FileStack
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -34,6 +35,7 @@ const navItems: NavItem[] = [
     { title: 'Hợp đồng', href: '/contracts', icon: FileSignature },
     { title: 'Hóa đơn', href: '/invoices', icon: Receipt },
     { title: 'Sản phẩm', href: '/products', icon: Package },
+    { title: 'Mẫu giấy tờ', href: '/templates', icon: FileStack },
     { title: 'Tài chính', href: '/finance', icon: Wallet },
     { title: 'Nhân sự', href: '/team', icon: UsersRound },
     { title: 'Báo cáo', href: '/reports', icon: BarChart3 },

@@ -17,15 +17,97 @@ import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
+interface Notification {
+    id: string
+    type: string
+    title: string
+    message: string
+    link?: string
+    read: boolean
+    created_at: string
+}
 
 export function Header() {
     const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
+    const [notifications, setNotifications] = useState<Notification[]>([])
+    const [unreadCount, setUnreadCount] = useState(0)
+    const router = useRouter()
 
     // Prevent hydration mismatch
     useEffect(() => {
         setMounted(true)
+        // Load mock notifications on mount
+        setNotifications([
+            {
+                id: '1',
+                type: 'new_customer',
+                title: 'Khách hàng mới',
+                message: 'ABC Corp vừa được thêm vào hệ thống',
+                link: '/customers',
+                read: false,
+                created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString()
+            },
+            {
+                id: '2',
+                type: 'quotation_accepted',
+                title: 'Báo giá được chấp nhận',
+                message: 'XYZ Ltd đã chấp nhận báo giá QT-2026-0142',
+                link: '/quotations',
+                read: false,
+                created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString()
+            },
+            {
+                id: '3',
+                type: 'invoice_overdue',
+                title: 'Hóa đơn quá hạn',
+                message: 'Hóa đơn HDB-2026-0089 đã quá hạn 3 ngày',
+                link: '/invoices',
+                read: false,
+                created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
+            }
+        ])
+        setUnreadCount(3)
     }, [])
+
+    const handleNotificationClick = (notification: Notification) => {
+        // Mark as read (update local state)
+        setNotifications(prev =>
+            prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
+        )
+        setUnreadCount(prev => Math.max(0, prev - 1))
+
+        // Navigate to target page
+        if (notification.link) {
+            router.push(notification.link)
+        }
+    }
+
+    const getNotificationColor = (type: string) => {
+        switch (type) {
+            case 'new_customer': return 'bg-blue-500'
+            case 'quotation_accepted': return 'bg-green-500'
+            case 'invoice_overdue': return 'bg-red-500'
+            case 'contract_signed': return 'bg-purple-500'
+            case 'payment_received': return 'bg-emerald-500'
+            default: return 'bg-gray-500'
+        }
+    }
+
+    const formatTimeAgo = (dateString: string) => {
+        const date = new Date(dateString)
+        const now = new Date()
+        const diffMs = now.getTime() - date.getTime()
+        const diffMins = Math.floor(diffMs / 60000)
+        const diffHours = Math.floor(diffMs / 3600000)
+        const diffDays = Math.floor(diffMs / 86400000)
+
+        if (diffMins < 60) return `${diffMins} phút trước`
+        if (diffHours < 24) return `${diffHours} giờ trước`
+        return `${diffDays} ngày trước`
+    }
 
     return (
         <header className="flex h-16 items-center justify-between border-b bg-card px-6">
@@ -62,48 +144,44 @@ export function Header() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative">
                             <Bell className="h-5 w-5" />
-                            <Badge
-                                variant="destructive"
-                                className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
-                            >
-                                3
-                            </Badge>
+                            {unreadCount > 0 && (
+                                <Badge
+                                    variant="destructive"
+                                    className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                                >
+                                    {unreadCount}
+                                </Badge>
+                            )}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-80">
                         <DropdownMenuLabel>Thông báo</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <div className="max-h-[300px] overflow-y-auto">
-                            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-                                <div className="flex items-center gap-2">
-                                    <span className="h-2 w-2 rounded-full bg-blue-500" />
-                                    <span className="font-medium">Khách hàng mới</span>
+                            {notifications.length === 0 ? (
+                                <div className="py-4 text-center text-sm text-muted-foreground">
+                                    Không có thông báo mới
                                 </div>
-                                <p className="text-sm text-muted-foreground">
-                                    ABC Corp vừa được thêm vào hệ thống
-                                </p>
-                                <span className="text-xs text-muted-foreground">5 phút trước</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-                                <div className="flex items-center gap-2">
-                                    <span className="h-2 w-2 rounded-full bg-green-500" />
-                                    <span className="font-medium">Báo giá được chấp nhận</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    XYZ Ltd đã chấp nhận báo giá QT-2026-0142
-                                </p>
-                                <span className="text-xs text-muted-foreground">1 giờ trước</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3">
-                                <div className="flex items-center gap-2">
-                                    <span className="h-2 w-2 rounded-full bg-red-500" />
-                                    <span className="font-medium">Hóa đơn quá hạn</span>
-                                </div>
-                                <p className="text-sm text-muted-foreground">
-                                    Hóa đơn HDB-2026-0089 đã quá hạn 3 ngày
-                                </p>
-                                <span className="text-xs text-muted-foreground">3 giờ trước</span>
-                            </DropdownMenuItem>
+                            ) : (
+                                notifications.map((notification) => (
+                                    <DropdownMenuItem
+                                        key={notification.id}
+                                        className={`flex flex-col items-start gap-1 py-3 cursor-pointer ${!notification.read ? 'bg-muted/50' : ''}`}
+                                        onClick={() => handleNotificationClick(notification)}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <span className={`h-2 w-2 rounded-full ${getNotificationColor(notification.type)}`} />
+                                            <span className="font-medium">{notification.title}</span>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">
+                                            {notification.message}
+                                        </p>
+                                        <span className="text-xs text-muted-foreground">
+                                            {formatTimeAgo(notification.created_at)}
+                                        </span>
+                                    </DropdownMenuItem>
+                                ))
+                            )}
                         </div>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild className="justify-center text-center cursor-pointer">
