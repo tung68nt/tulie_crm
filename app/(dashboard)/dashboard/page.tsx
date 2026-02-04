@@ -19,7 +19,7 @@ export default async function DashboardPage() {
             <div className="space-y-8 max-w-[1600px] mx-auto">
                 {/* Page Header */}
                 <div className="flex flex-col gap-1">
-                    <h1 className="text-4xl font-extrabold tracking-tight">Dashboard</h1>
+                    <h1 className="text-4xl font-semibold">Dashboard</h1>
                     <p className="text-muted-foreground font-medium">
                         Tổng quan hoạt động kinh doanh của Tulie Agency
                     </p>
@@ -71,7 +71,7 @@ export default async function DashboardPage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-muted-foreground">Điểm tổng thể</span>
-                                <span className="text-2xl font-bold text-gray-400">--/100</span>
+                                <span className="text-2xl font-semibold text-gray-400">--/100</span>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                     <span className="text-xl">⚠️</span>
                 </div>
-                <h1 className="text-2xl font-bold">Hệ thống đang gặp sự cố tải dữ liệu</h1>
+                <h1 className="text-2xl font-semibold">Hệ thống đang gặp sự cố tải dữ liệu</h1>
                 <p className="text-muted-foreground mx-auto max-w-md">
                     Rất tiếc, chúng tôi không thể tải dữ liệu tổng quan vào lúc này.
                     Vui lòng làm mới trang hoặc quay lại sau.

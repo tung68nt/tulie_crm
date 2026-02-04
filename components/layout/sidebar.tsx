@@ -68,7 +68,7 @@ export function Sidebar() {
                         )}
                     />
                     {!isCollapsed && (
-                        <span className="text-2xl font-bold tracking-tight whitespace-nowrap opacity-100 transition-opacity duration-300">
+                        <span className="text-2xl font-semibold whitespace-nowrap opacity-100 transition-opacity duration-300">
                             Tulie CRM
                         </span>
                     )}
@@ -113,7 +113,7 @@ export function Sidebar() {
             <Button
                 variant="ghost"
                 size="icon"
-                className="absolute -right-3 top-20 h-6 w-6 rounded-full border bg-background shadow-sm"
+                className="absolute -right-3 top-20 h-6 w-6 rounded-full border bg-background"
                 onClick={() => setIsCollapsed(!isCollapsed)}
             >
                 {isCollapsed ? (

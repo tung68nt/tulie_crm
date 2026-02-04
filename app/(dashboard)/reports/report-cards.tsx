@@ -24,7 +24,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Link href="/reports/sales" className="block h-full">
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+                <Card className="cursor-pointer transition-shadow h-full flex flex-col">
                     <CardHeader>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
@@ -39,11 +39,11 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                     <CardContent className="flex-1 flex flex-col justify-between">
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Tổng doanh thu</p>
-                                <p className="font-bold text-2xl text-slate-900">{formatCurrency(stats.revenue.total)}</p>
+                                <p className="text-muted-foreground text-xs">Tổng doanh thu</p>
+                                <p className="font-semibold text-2xl text-slate-900">{formatCurrency(stats.revenue.total)}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Hợp đồng chạy</p>
+                                <p className="text-muted-foreground text-xs">Hợp đồng chạy</p>
                                 <p className="font-semibold text-xl">{stats.contracts.active}</p>
                             </div>
                         </div>
@@ -65,7 +65,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
             </Link>
 
             <Link href="/reports/customers" className="block h-full">
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+                <Card className="cursor-pointer transition-shadow h-full flex flex-col">
                     <CardHeader>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -80,11 +80,11 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                     <CardContent className="flex-1 flex flex-col justify-between">
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Tổng KH</p>
-                                <p className="font-bold text-2xl text-slate-900">{stats.customers.total}</p>
+                                <p className="text-muted-foreground text-xs">Tổng KH</p>
+                                <p className="font-semibold text-2xl text-slate-900">{stats.customers.total}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Mới</p>
+                                <p className="text-muted-foreground text-xs">Mới</p>
                                 <p className="font-semibold text-xl text-blue-600">+{stats.customers.new || 0}</p>
                             </div>
                         </div>
@@ -100,7 +100,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
             </Link>
 
             <Link href="/reports/performance" className="block h-full">
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+                <Card className="cursor-pointer transition-shadow h-full flex flex-col">
                     <CardHeader>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
@@ -115,11 +115,11 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                     <CardContent className="flex-1 flex flex-col justify-between">
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Avg Revenue</p>
-                                <p className="font-bold text-2xl text-green-600">{formatCurrency(stats.revenue.total / 1)}</p>
+                                <p className="text-muted-foreground text-xs">Avg Revenue</p>
+                                <p className="font-semibold text-2xl text-green-600">{formatCurrency(stats.revenue.total / 1)}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Conversion</p>
+                                <p className="text-muted-foreground text-xs">Conversion</p>
                                 <p className="font-semibold text-xl">32%</p>
                             </div>
                         </div>
@@ -137,7 +137,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
             </Link>
 
             <Link href="/finance" className="block h-full">
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+                <Card className="cursor-pointer transition-shadow h-full flex flex-col">
                     <CardHeader>
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
@@ -152,11 +152,11 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                     <CardContent className="flex-1 flex flex-col justify-between">
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Net Profit</p>
-                                <p className="font-bold text-2xl text-green-600">{formatCurrency(stats.revenue.total * 0.4)}</p>
+                                <p className="text-muted-foreground text-xs">Net Profit</p>
+                                <p className="font-semibold text-2xl text-green-600">{formatCurrency(stats.revenue.total * 0.4)}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground text-xs uppercase">Profit Margin</p>
+                                <p className="text-muted-foreground text-xs">Profit Margin</p>
                                 <p className="font-semibold text-xl">40%</p>
                             </div>
                         </div>
@@ -177,7 +177,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                 </Card>
             </Link>
 
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card className="cursor-pointer transition-shadow h-full flex flex-col">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center">
@@ -192,11 +192,11 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                 <CardContent className="flex-1 flex flex-col justify-between">
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <p className="text-muted-foreground text-xs uppercase">Đang chạy</p>
-                            <p className="font-bold text-2xl text-slate-900">{stats.contracts.active}</p>
+                            <p className="text-muted-foreground text-xs">Đang chạy</p>
+                            <p className="font-semibold text-2xl text-slate-900">{stats.contracts.active}</p>
                         </div>
                         <div>
-                            <p className="text-muted-foreground text-xs uppercase">Pending</p>
+                            <p className="text-muted-foreground text-xs">Pending</p>
                             <p className="font-semibold text-xl text-yellow-600">{stats.contracts.pending}</p>
                         </div>
                     </div>
@@ -212,7 +212,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                 </CardContent>
             </Card>
 
-            <Card className="bg-gradient-to-br from-green-500/10 to-blue-500/10 cursor-pointer hover:shadow-lg transition-shadow h-full flex flex-col">
+            <Card className="bg-gradient-to-br from-green-500/10 to-blue-500/10 cursor-pointer transition-shadow h-full flex flex-col">
                 <CardHeader>
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center">
@@ -227,26 +227,26 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                 <CardContent className="flex-1 flex flex-col justify-between">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <p className="text-muted-foreground text-xs uppercase">Điểm tổng thể</p>
-                            <p className="text-4xl font-bold text-green-600">85<span className="text-lg text-green-600/60 font-medium">/100</span></p>
+                            <p className="text-muted-foreground text-xs">Điểm tổng thể</p>
+                            <p className="text-4xl font-semibold text-green-600">85<span className="text-lg text-green-600/60 font-medium">/100</span></p>
                         </div>
                         <div className="text-right">
-                            <p className="text-lg font-bold text-green-600">Tốt</p>
-                            <p className="text-[10px] text-muted-foreground uppercase">Real-time</p>
+                            <p className="text-lg font-semibold text-green-600">Tốt</p>
+                            <p className="text-[10px] text-muted-foreground">Real-time</p>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2 mt-auto">
                         <div className="text-center p-2 bg-white/50 rounded-lg backdrop-blur-sm">
-                            <p className="text-[10px] text-slate-500 uppercase">Dòng tiền</p>
-                            <p className="text-green-600 font-bold text-sm">A+</p>
+                            <p className="text-[10px] text-slate-500">Dòng tiền</p>
+                            <p className="text-green-600 font-semibold text-sm">A+</p>
                         </div>
                         <div className="text-center p-2 bg-white/50 rounded-lg backdrop-blur-sm">
-                            <p className="text-[10px] text-slate-500 uppercase">Khách hàng</p>
-                            <p className="text-blue-600 font-bold text-sm">A-</p>
+                            <p className="text-[10px] text-slate-500">Khách hàng</p>
+                            <p className="text-blue-600 font-semibold text-sm">A-</p>
                         </div>
                         <div className="text-center p-2 bg-white/50 rounded-lg backdrop-blur-sm">
-                            <p className="text-[10px] text-slate-500 uppercase">Vận hành</p>
-                            <p className="text-green-600 font-bold text-sm">B+</p>
+                            <p className="text-[10px] text-slate-500">Vận hành</p>
+                            <p className="text-green-600 font-semibold text-sm">B+</p>
                         </div>
                     </div>
                 </CardContent>

@@ -36,9 +36,9 @@ const getActivityIcon = (type: ActivityLog['action']) => {
 
 export function RecentActivities({ data }: RecentActivitiesProps) {
     return (
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
             <CardHeader className="pb-3 text-card-foreground">
-                <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Hoạt động gần đây</CardTitle>
+                <CardTitle className="text-xs font-semibold text-muted-foreground">Hoạt động gần đây</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
                 <ScrollArea className="h-[300px]">
@@ -53,10 +53,10 @@ export function RecentActivities({ data }: RecentActivitiesProps) {
                                 </div>
                                 <div className="flex-1 space-y-0.5 min-w-0">
                                     <div className="flex items-center justify-between gap-2">
-                                        <p className="text-sm font-bold text-foreground">
+                                        <p className="text-sm font-semibold text-foreground">
                                             {activity.user?.full_name || 'Hệ thống'}
                                         </p>
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <p className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                                             {formatRelativeTime(activity.created_at)}
                                         </p>
                                     </div>
