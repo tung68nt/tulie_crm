@@ -44,66 +44,54 @@ export async function getCustomerById(id: string) {
 }
 
 export async function createCustomer(customer: Partial<Customer>) {
-    console.log('[createCustomer] Starting process for:', customer.company_name)
     try {
         const supabase = await createClient()
 
         const userId = customer.created_by || customer.assigned_to
         if (userId) {
-            console.log('[createCustomer] Checking user ID:', userId)
             // Use limit(1) instead of single() to avoid unnecessary error throwing
-            const { data: users, error: checkError } = await supabase
+            const { data: users } = await supabase
                 .from('users')
                 .select('id')
                 .eq('id', userId)
                 .limit(1)
 
-            if (checkError) {
-                console.warn('[createCustomer] Warning checking user existence:', checkError.message)
-            }
-
             if (!users || users.length === 0) {
-                console.log('[createCustomer] User profile missing, attempting to create it...')
                 try {
                     const { data: { user: authUser } } = await supabase.auth.getUser()
                     if (authUser && authUser.id === userId) {
-                        const { error: insError } = await supabase.from('users').upsert([{
+                        await supabase.from('users').upsert([{
                             id: authUser.id,
                             email: authUser.email,
                             full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0],
                             role: 'staff',
                             is_active: true
                         }], { onConflict: 'id' })
-
-                        if (insError) console.error('[createCustomer] Failed to sync user profile:', insError)
-                        else console.log('[createCustomer] User profile synced successfully')
                     }
                 } catch (authErr) {
-                    console.error('[createCustomer] Error during auth user fetch:', authErr)
+                    // Error during auth user fetch is not critical for customer creation,
+                    // but might indicate a problem with user sync.
+                    // console.error('[createCustomer] Error during auth user fetch:', authErr)
                 }
             }
         }
 
-        console.log('[createCustomer] Inserting customer record...')
         const { data, error } = await supabase
             .from('customers')
             .insert([customer])
             .select()
 
         if (error) {
-            console.error('[createCustomer] Database insert error:', error)
             throw error
         }
 
         if (!data || data.length === 0) {
-            console.error('[createCustomer] Empty data returned from insert')
             throw new Error('Không có dữ liệu trả về sau khi tạo khách hàng')
         }
 
-        console.log('[createCustomer] Success!')
         return data[0]
     } catch (err: any) {
-        console.error('[createCustomer] Fatal error:', err)
+        console.error('Error in createCustomer:', err)
         throw new Error(err.message || 'Lỗi hệ thống khi tạo khách hàng')
     }
 }

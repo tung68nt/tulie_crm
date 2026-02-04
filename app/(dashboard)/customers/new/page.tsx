@@ -65,41 +65,22 @@ export default function NewCustomerPage() {
 
     const onSubmit = async (data: CustomerFormData) => {
         setIsLoading(true)
-        console.log('[NewCustomer] onSubmit started')
 
         try {
-            console.log('[NewCustomer] Checking environment variables...')
-            const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL
-            const hasKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-            console.log('[NewCustomer] Env check:', { hasUrl, hasKey })
-
-            console.log('[NewCustomer] Initializing Supabase client...')
             const supabase = createClient()
-            console.log('[NewCustomer] Supabase client initialized')
-
-            console.log('[NewCustomer] Fetching authenticated user...')
             const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-            if (authError) {
-                console.error('[NewCustomer] Auth error:', authError)
-                throw new Error('Lỗi xác thực: ' + authError.message)
-            }
-
-            if (!user) {
-                console.warn('[NewCustomer] No user found')
+            if (authError || !user) {
                 toast.error('Bạn cần đăng nhập để thực hiện thao tác này')
                 setIsLoading(false)
                 return
             }
 
-            console.log('[NewCustomer] Calling server action createCustomer with user ID:', user.id)
             const result = await createCustomer({
                 ...data,
                 assigned_to: user.id,
                 created_by: user.id,
             })
-
-            console.log('[NewCustomer] Server action result:', result)
 
             if (result) {
                 toast.success('Thêm khách hàng thành công')
@@ -109,12 +90,9 @@ export default function NewCustomerPage() {
                 throw new Error('Không nhận được phản hồi từ hệ thống')
             }
         } catch (error: any) {
-            console.error('[NewCustomer] Caught error:', error)
-            const message = error.message || 'Có lỗi xảy ra khi thêm khách hàng'
-            toast.error(message)
+            console.error('Failed to create customer:', error)
+            toast.error(error.message || 'Có lỗi xảy ra khi thêm khách hàng')
             setIsLoading(false)
-        } finally {
-            console.log('[NewCustomer] Submission process finished')
         }
     }
 
