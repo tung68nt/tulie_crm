@@ -23,54 +23,83 @@ export async function getProducts() {
 }
 
 export async function getProductById(id: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('id', id)
+            .single()
 
-    if (error) {
-        console.error('Error fetching product by id:', error)
+        if (error) {
+            console.error('Error fetching product by id:', error)
+            return null
+        }
+
+        return data as Product
+    } catch (err) {
+        console.error('Fatal error in getProductById:', err)
         return null
     }
-
-    return data as Product
 }
 
 
 export async function createProduct(product: Partial<Product>) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('products')
-        .insert([product])
-        .select()
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('products')
+            .insert([product])
+            .select()
+            .single()
 
-    if (error) throw error
-    return data
+        if (error) {
+            console.error('Error creating product:', error)
+            throw error
+        }
+        return data
+    } catch (err) {
+        console.error('Fatal error in createProduct:', err)
+        throw err
+    }
 }
 
 export async function updateProduct(id: string, product: Partial<Product>) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('products')
-        .update(product)
-        .eq('id', id)
-        .select()
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('products')
+            .update(product)
+            .eq('id', id)
+            .select()
+            .single()
 
-    if (error) throw error
-    return data
+        if (error) {
+            console.error('Error updating product:', error)
+            throw error
+        }
+        return data
+    } catch (err) {
+        console.error('Fatal error in updateProduct:', err)
+        throw err
+    }
 }
 
 export async function deleteProduct(id: string) {
-    const supabase = await createClient()
-    const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id)
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', id)
 
-    if (error) throw error
-    return true
+        if (error) {
+            console.error('Error deleting product:', error)
+            throw error
+        }
+        return true
+    } catch (err) {
+        console.error('Fatal error in deleteProduct:', err)
+        throw err
+    }
 }
