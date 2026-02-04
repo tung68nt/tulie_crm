@@ -41,37 +41,46 @@ export async function getNotifications(userId?: string, limit = 10) {
 }
 
 export async function markNotificationAsRead(id: string) {
-    const supabase = await createClient()
-    const { error } = await supabase
-        .from('notifications')
-        .update({ read: true })
-        .eq('id', id)
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('notifications')
+            .update({ read: true })
+            .eq('id', id)
 
-    if (error) {
-        console.error('Error marking notification as read:', error)
+        if (error) {
+            console.error('Error marking notification as read:', error)
+        }
+    } catch (err) {
+        console.error('Fatal error in markNotificationAsRead:', err)
     }
 }
 
 export async function getUnreadCount(userId?: string) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    let query = supabase
-        .from('notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('read', false)
+        let query = supabase
+            .from('notifications')
+            .select('id', { count: 'exact', head: true })
+            .eq('read', false)
 
-    if (userId) {
-        query = query.eq('user_id', userId)
+        if (userId) {
+            query = query.eq('user_id', userId)
+        }
+
+        const { count, error } = await query
+
+        if (error) {
+            console.error('Error fetching unread count:', error)
+            return 3 // Default mock count
+        }
+
+        return count || 0
+    } catch (err) {
+        console.error('Fatal error in getUnreadCount:', err)
+        return 3
     }
-
-    const { count, error } = await query
-
-    if (error) {
-        console.error('Error fetching unread count:', error)
-        return 3 // Default mock count
-    }
-
-    return count || 0
 }
 
 // Mock data for when notifications table doesn't exist
