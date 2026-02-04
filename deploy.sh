@@ -58,7 +58,7 @@ gcloud run deploy "$APP_NAME" \
     --allow-unauthenticated \
     --update-env-vars NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
     --update-env-vars NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-    --update-env-vars NEXT_PUBLIC_APP_URL="$NEXT_PUBLIC_APP_URL" \
+    --update-env-vars NEXT_PUBLIC_APP_URL="https://crm.tulie.agency" \
     --update-env-vars SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
     --update-env-vars RESEND_API_KEY="$RESEND_API_KEY" \
     --update-env-vars DATABASE_URL="$DATABASE_URL" \
