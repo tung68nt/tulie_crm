@@ -246,7 +246,7 @@ export function QuotationForm({
     return (
         <div className="space-y-8">
             {/* General Info */}
-            <Card>
+            <Card className="shadow-none border-slate-200">
                 <CardHeader>
                     <CardTitle>Thông tin chung</CardTitle>
                 </CardHeader>
@@ -409,7 +409,7 @@ export function QuotationForm({
 
             {/* Totals & Terms */}
             <div className="grid gap-6 md:grid-cols-3">
-                <Card>
+                <Card className="shadow-none border-slate-200">
                     <CardHeader><CardTitle>Điều khoản & Ghi chú</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
@@ -431,7 +431,7 @@ export function QuotationForm({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="shadow-none border-slate-200">
                     <CardHeader><CardTitle>Thông tin chuyển khoản</CardTitle></CardHeader>
                     <CardContent className="space-y-3">
                         <div className="space-y-1.5">
@@ -453,7 +453,7 @@ export function QuotationForm({
                     </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="shadow-none border-slate-200">
                     <CardHeader><CardTitle>Tổng tiền</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex justify-between">
