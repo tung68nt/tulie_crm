@@ -8,7 +8,8 @@ export async function createClient() {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     if (!url || !anonKey) {
-        throw new Error('Supabase environment variables are missing.')
+        // Throw error so services can catch it and return fallback data
+        throw new Error('Supabase environment variables are missing')
     }
 
     return createServerClient(

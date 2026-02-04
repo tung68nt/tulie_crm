@@ -3,34 +3,44 @@ import { createClient } from '../server'
 import { Invoice, InvoiceItem } from '@/types'
 
 export async function getInvoices() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('invoices')
-        .select('*, customer:customers(id, company_name)')
-        .order('created_at', { ascending: false })
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('invoices')
+            .select('*, customer:customers(id, company_name)')
+            .order('created_at', { ascending: false })
 
-    if (error) {
-        console.error('Error fetching invoices:', error)
+        if (error) {
+            console.error('Error fetching invoices:', error)
+            return []
+        }
+
+        return data as Invoice[]
+    } catch (err) {
+        console.error('Fatal error in getInvoices:', err)
         return []
     }
-
-    return data as Invoice[]
 }
 
 export async function getInvoiceById(id: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('invoices')
-        .select('*, customer:customers(*), creator:users(*), contract:contracts(id, contract_number), items:invoice_items(*), payments:invoice_payments(*)')
-        .eq('id', id)
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('invoices')
+            .select('*, customer:customers(*), creator:users(*), contract:contracts(id, contract_number), items:invoice_items(*), payments:invoice_payments(*)')
+            .eq('id', id)
+            .single()
 
-    if (error) {
-        console.error('Error fetching invoice by id:', error)
+        if (error) {
+            console.error('Error fetching invoice by id:', error)
+            return null
+        }
+
+        return data as Invoice
+    } catch (err) {
+        console.error('Fatal error in getInvoiceById:', err)
         return null
     }
-
-    return data as Invoice
 }
 
 export async function createInvoice(invoice: Partial<Invoice>, items: Partial<InvoiceItem>[]) {

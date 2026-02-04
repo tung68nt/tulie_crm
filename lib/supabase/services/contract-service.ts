@@ -3,40 +3,50 @@ import { createClient } from '../server'
 import { Contract, ContractMilestone } from '@/types'
 
 export async function getContracts(customerId?: string) {
-    const supabase = await createClient()
-    let query = supabase
-        .from('contracts')
-        .select('*, customer:customers(id, company_name)')
-        .order('created_at', { ascending: false })
+    try {
+        const supabase = await createClient()
+        let query = supabase
+            .from('contracts')
+            .select('*, customer:customers(id, company_name)')
+            .order('created_at', { ascending: false })
 
-    if (customerId) {
-        query = query.eq('customer_id', customerId)
-    }
+        if (customerId) {
+            query = query.eq('customer_id', customerId)
+        }
 
-    const { data, error } = await query
+        const { data, error } = await query
 
-    if (error) {
-        console.error('Error fetching contracts:', error)
+        if (error) {
+            console.error('Error fetching contracts:', error)
+            return []
+        }
+
+        return data as Contract[]
+    } catch (err) {
+        console.error('Fatal error in getContracts:', err)
         return []
     }
-
-    return data as Contract[]
 }
 
 export async function getContractById(id: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('contracts')
-        .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quote_number)')
-        .eq('id', id)
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('contracts')
+            .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quote_number)')
+            .eq('id', id)
+            .single()
 
-    if (error) {
-        console.error('Error fetching contract by id:', error)
+        if (error) {
+            console.error('Error fetching contract by id:', error)
+            return null
+        }
+
+        return data as Contract
+    } catch (err) {
+        console.error('Fatal error in getContractById:', err)
         return null
     }
-
-    return data as Contract
 }
 
 export async function createContract(contract: Partial<Contract>, milestones: Partial<ContractMilestone>[]) {

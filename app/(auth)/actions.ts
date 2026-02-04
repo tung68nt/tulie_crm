@@ -5,18 +5,28 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 
 export async function login(formData: FormData) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
+        const email = formData.get('email') as string
+        const password = formData.get('password') as string
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-    })
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        })
 
-    if (error) {
-        return { error: error.message }
+        if (error) {
+            console.error('Supabase login error:', error.message)
+            return { error: 'Email hoặc mật khẩu không chính xác' }
+        }
+
+        if (!data.user) {
+            return { error: 'Đăng nhập thất bại' }
+        }
+    } catch (err) {
+        console.error('Login action error:', err)
+        return { error: 'Lỗi hệ thống. Vui lòng thử lại sau.' }
     }
 
     redirect('/dashboard')

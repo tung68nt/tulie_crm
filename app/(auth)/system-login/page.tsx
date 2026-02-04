@@ -20,13 +20,16 @@ export default function LoginPage() {
                 setError(result.error)
                 setLoading(false)
             }
+            // If success, the action will redirect, so we don't need to setLoading(false)
+            // otherwise it might flicker before navigation
         } catch (e) {
-            // Next.js redirect creates an error that should not be caught here
-            // if we want the framework to handle it, but sometimes we need to 
-            // let it bubble up or handle it more gracefully.
-            // However, in form actions, we usually don't need to catch redirect.
+            // Check if it's a redirect error (NEXT_REDIRECT)
+            if ((e as Error).message === 'NEXT_REDIRECT') {
+                throw e
+            }
+            console.error('Login error:', e)
+            setError('Đã có lỗi xảy ra. Vui lòng thử lại.')
             setLoading(false)
-            throw e
         }
     }
 
