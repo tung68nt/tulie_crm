@@ -13,27 +13,31 @@ export interface Notification {
 }
 
 export async function getNotifications(userId?: string, limit = 10) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    let query = supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(limit)
+        let query = supabase
+            .from('notifications')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(limit)
 
-    if (userId) {
-        query = query.eq('user_id', userId)
-    }
+        if (userId) {
+            query = query.eq('user_id', userId)
+        }
 
-    const { data, error } = await query
+        const { data, error } = await query
 
-    if (error) {
-        console.error('Error fetching notifications:', error)
-        // Return mock data if table doesn't exist yet
+        if (error) {
+            console.error('Error fetching notifications:', error)
+            return getMockNotifications()
+        }
+
+        return data as Notification[]
+    } catch (err) {
+        console.error('Fatal error in getNotifications:', err)
         return getMockNotifications()
     }
-
-    return data as Notification[]
 }
 
 export async function markNotificationAsRead(id: string) {

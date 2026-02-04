@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '../server'
+import crypto from 'crypto'
 
 export interface DocumentTemplate {
     id: string
