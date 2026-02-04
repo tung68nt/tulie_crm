@@ -2,6 +2,7 @@
 import { createClient } from '../server'
 import { Customer } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { createNotification } from './notification-service'
 
 export async function getCustomers() {
     try {
@@ -88,6 +89,18 @@ export async function createCustomer(customer: Partial<Customer>) {
 
         if (data && data.length > 0) {
             revalidatePath('/customers')
+
+            // Create a notification for the person assigned to the customer
+            if (data[0].assigned_to) {
+                await createNotification({
+                    user_id: data[0].assigned_to,
+                    type: 'new_customer',
+                    title: 'Khách hàng mới',
+                    message: `${data[0].company_name} vừa được thêm vào hệ thống`,
+                    link: `/customers/${data[0].id}`
+                })
+            }
+
             return data[0]
         }
 

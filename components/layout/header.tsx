@@ -18,61 +18,48 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-interface Notification {
-    id: string
-    type: string
-    title: string
-    message: string
-    link?: string
-    read: boolean
-    created_at: string
-}
+import { getNotifications, getUnreadCount, markNotificationAsRead, type Notification } from '@/lib/supabase/services/notification-service'
 
 export function Header() {
     const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
+    const [userId, setUserId] = useState<string | null>(null)
     const router = useRouter()
 
-    // Prevent hydration mismatch
+    // Get current user and initial notifications
     useEffect(() => {
         setMounted(true)
-        // Load mock notifications on mount
-        setNotifications([
-            {
-                id: '1',
-                type: 'new_customer',
-                title: 'Khách hàng mới',
-                message: 'ABC Corp vừa được thêm vào hệ thống',
-                link: '/customers',
-                read: false,
-                created_at: new Date(Date.now() - 5 * 60 * 1000).toISOString()
-            },
-            {
-                id: '2',
-                type: 'quotation_accepted',
-                title: 'Báo giá được chấp nhận',
-                message: 'XYZ Ltd đã chấp nhận báo giá QT-2026-0142',
-                link: '/quotations',
-                read: false,
-                created_at: new Date(Date.now() - 60 * 60 * 1000).toISOString()
-            },
-            {
-                id: '3',
-                type: 'invoice_overdue',
-                title: 'Hóa đơn quá hạn',
-                message: 'Hóa đơn HDB-2026-0089 đã quá hạn 3 ngày',
-                link: '/invoices',
-                read: false,
-                created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
+
+        const fetchData = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user) {
+                setUserId(user.id)
+                const [notifs, count] = await Promise.all([
+                    getNotifications(user.id),
+                    getUnreadCount(user.id)
+                ])
+                setNotifications(notifs)
+                setUnreadCount(count)
             }
-        ])
-        setUnreadCount(3)
+        }
+
+        fetchData()
+
+        // Refresh notifications every 60 seconds
+        const interval = setInterval(fetchData, 60000)
+        return () => clearInterval(interval)
     }, [])
 
-    const handleNotificationClick = (notification: Notification) => {
+    const handleNotificationClick = async (notification: Notification) => {
+        // Mark as read in DB if it's not a mock notification
+        if (notification.id !== 'system') {
+            await markNotificationAsRead(notification.id)
+        }
+
         // Mark as read (update local state)
         setNotifications(prev =>
             prev.map(n => n.id === notification.id ? { ...n, read: true } : n)

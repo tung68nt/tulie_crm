@@ -132,3 +132,28 @@ CREATE TABLE IF NOT EXISTS public.document_templates (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- 10. Bảng Thông báo (Notifications)
+CREATE TABLE IF NOT EXISTS public.notifications (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id),
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    link TEXT,
+    read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- DISABLE RLS for all tables to ensure visibility
+ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.customers DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quotations DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quotation_items DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.contracts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.invoices DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.expenses DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_log DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.document_templates DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notifications DISABLE ROW LEVEL SECURITY;

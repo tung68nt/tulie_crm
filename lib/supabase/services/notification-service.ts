@@ -40,6 +40,26 @@ export async function getNotifications(userId?: string, limit = 10) {
     }
 }
 
+export async function createNotification(notification: Omit<Notification, 'id' | 'created_at' | 'read'>) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('notifications')
+            .insert([{ ...notification, read: false }])
+            .select()
+
+        if (error) {
+            console.error('Error creating notification:', error)
+            return null
+        }
+
+        return data[0] as Notification
+    } catch (err) {
+        console.error('Fatal error in createNotification:', err)
+        return null
+    }
+}
+
 export async function markNotificationAsRead(id: string) {
     try {
         const supabase = await createClient()
