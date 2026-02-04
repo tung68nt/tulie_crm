@@ -37,30 +37,47 @@ import { updateQuotation } from '@/lib/supabase/services/quotation-service'
 import { toast } from 'sonner'
 
 interface QuotationFormProps {
-    quotation: Quotation
+    quotation?: Quotation
     customers: Customer[]
     products: Product[]
+    onChange?: (data: any) => void
+    onSave?: () => void
+    isLoading?: boolean
 }
 
-export function QuotationForm({ quotation, customers, products }: QuotationFormProps) {
+export function QuotationForm({ quotation, customers, products, onChange, onSave, isLoading: externalIsLoading }: QuotationFormProps) {
     const router = useRouter()
-    const [isLoading, setIsLoading] = useState(false)
+    const [internalIsLoading, setInternalIsLoading] = useState(false)
+    const isLoading = externalIsLoading || internalIsLoading
 
-    const [customerId, setCustomerId] = useState(quotation.customer_id)
-    const [title, setTitle] = useState(quotation.title || '')
-    const [terms, setTerms] = useState(quotation.terms || '')
-    const [notes, setNotes] = useState(quotation.notes || '')
-    const [vatPercent, setVatPercent] = useState(quotation.vat_percent || 10)
+    const [customerId, setCustomerId] = useState(quotation?.customer_id || '')
+    const [title, setTitle] = useState(quotation?.title || '')
+    const [terms, setTerms] = useState(quotation?.terms || '')
+    const [notes, setNotes] = useState(quotation?.notes || '')
+    const [vatPercent, setVatPercent] = useState(quotation?.vat_percent || 10)
 
     // Calculate valid_until to days for the input
-    const createdDate = new Date(quotation.created_at)
-    const validUntilDate = new Date(quotation.valid_until)
+    const createdDate = quotation ? new Date(quotation.created_at) : new Date()
+    const validUntilDate = quotation ? new Date(quotation.valid_until) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     const diffTime = Math.abs(validUntilDate.getTime() - createdDate.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     const [validityDays, setValidityDays] = useState(diffDays || 30)
 
     const [items, setItems] = useState<Partial<QuotationItem>[]>(
-        quotation.items?.map(item => ({ ...item })) || []
+        quotation?.items?.map(item => ({ ...item })) || [
+            {
+                id: `temp-${Date.now()}`,
+                product_id: '',
+                name: '',
+                description: '',
+                quantity: 1,
+                unit: 'cái',
+                unit_price: 0,
+                discount_percent: 0,
+                total: 0,
+                sort_order: 0
+            }
+        ]
     )
 
     const addItem = () => {
@@ -121,7 +138,14 @@ export function QuotationForm({ quotation, customers, products }: QuotationFormP
     const totalAmount = subtotal + vatAmount
 
     const handleSave = async (sendAfterSave = false) => {
-        setIsLoading(true)
+        if (onSave) {
+            onSave()
+            return
+        }
+
+        if (!quotation) return
+
+        setInternalIsLoading(true)
         try {
             // Calculate new validUntil
             const validUntil = new Date()
@@ -148,7 +172,7 @@ export function QuotationForm({ quotation, customers, products }: QuotationFormP
             console.error('Failed to update quotation:', error)
             toast.error(error.message || 'Có lỗi xảy ra khi cập nhật báo giá')
         } finally {
-            setIsLoading(false)
+            setInternalIsLoading(false)
         }
     }
 
@@ -158,13 +182,17 @@ export function QuotationForm({ quotation, customers, products }: QuotationFormP
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/quotations/${quotation.id}`}>
+                        <Link href={quotation ? `/quotations/${quotation.id}` : "/quotations"}>
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-bold">Chỉnh sửa {quotation.quote_number}</h1>
-                        <p className="text-muted-foreground">Cập nhật thông tin báo giá</p>
+                        <h1 className="text-3xl font-bold">
+                            {quotation ? `Chỉnh sửa ${quotation.quote_number}` : "Tạo báo giá mới"}
+                        </h1>
+                        <p className="text-muted-foreground">
+                            {quotation ? "Cập nhật thông tin báo giá" : "Nhập thông tin cho báo giá mới"}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -371,7 +399,7 @@ export function QuotationForm({ quotation, customers, products }: QuotationFormP
                                     Lưu & Gửi
                                 </Button>
                                 <Button variant="ghost" asChild>
-                                    <Link href={`/quotations/${quotation.id}`}>Hủy</Link>
+                                    <Link href={quotation ? `/quotations/${quotation.id}` : "/quotations"}>Hủy</Link>
                                 </Button>
                             </div>
                         </CardContent>

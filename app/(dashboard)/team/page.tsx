@@ -16,6 +16,8 @@ import { Plus, Users, TrendingUp, Trophy } from 'lucide-react'
 import Link from 'next/link'
 import { getTeamMetrics } from '@/lib/supabase/services/user-service'
 
+export const dynamic = 'force-dynamic'
+
 export default async function TeamPage() {
     const teamMembers = await getTeamMetrics()
 
