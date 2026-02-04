@@ -282,7 +282,7 @@ export function QuotationForm({
 
                 {sections.map((section, secIdx) => (
                     <Card key={section.id} className="relative border-l-4 border-l-primary/20">
-                        <CardHeader className="pb-3">
+                        <CardHeader className="pb-3 px-6">
                             <div className="flex items-center gap-4">
                                 <div className="flex-1">
                                     <Input
@@ -306,20 +306,20 @@ export function QuotationForm({
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-muted/50 hover:bg-muted/50">
-                                        <TableHead className="w-[30%]">Tên hàng hóa / Dịch vụ</TableHead>
+                                        <TableHead className="w-[30%] pl-6">Tên hàng hóa / Dịch vụ</TableHead>
                                         <TableHead className="w-[10%]">ĐVT</TableHead>
                                         <TableHead className="w-[10%]">SL</TableHead>
                                         <TableHead className="w-[12%]">Đơn giá</TableHead>
                                         <TableHead className="w-[8%]">CK(%)</TableHead>
                                         <TableHead className="w-[10%]">VAT(%)</TableHead>
                                         <TableHead className="w-[15%] text-right">Thành tiền</TableHead>
-                                        <TableHead className="w-[5%]"></TableHead>
+                                        <TableHead className="w-[5%] pr-6"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {section.items.map((item) => (
                                         <TableRow key={item.id} className="group">
-                                            <TableCell className="space-y-2 align-top">
+                                            <TableCell className="space-y-2 align-top pl-6">
                                                 {/* Product Select or Text Input */}
                                                 <div className="relative">
                                                     {/* We could use a Combobox here for better UX, simply input for now or select */}
@@ -388,7 +388,7 @@ export function QuotationForm({
                                             <TableCell className="text-right font-medium align-top pt-3">
                                                 {formatCurrency(item.total)}
                                             </TableCell>
-                                            <TableCell className="align-top">
+                                            <TableCell className="align-top pr-6">
                                                 <Button variant="ghost" size="icon" onClick={() => removeItem(section.id, item.id)} className="opacity-0 group-hover:opacity-100 h-8 w-8">
                                                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                                                 </Button>

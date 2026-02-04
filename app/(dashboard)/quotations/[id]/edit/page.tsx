@@ -224,7 +224,7 @@ export default function EditQuotationPage() {
 
                     {/* Items */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center justify-between px-6">
                             <div>
                                 <CardTitle>Sản phẩm / Dịch vụ</CardTitle>
                                 <CardDescription>Danh sách hạng mục báo giá</CardDescription>
@@ -238,18 +238,18 @@ export default function EditQuotationPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Sản phẩm</TableHead>
+                                        <TableHead className="pl-6">Sản phẩm</TableHead>
                                         <TableHead className="w-[70px]">SL</TableHead>
                                         <TableHead className="w-[130px]">Đơn giá</TableHead>
                                         <TableHead className="w-[70px]">CK%</TableHead>
                                         <TableHead className="w-[130px] text-right">Thành tiền</TableHead>
-                                        <TableHead className="w-[40px]"></TableHead>
+                                        <TableHead className="w-[40px] pr-6"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {items.map((item) => (
                                         <TableRow key={item.id}>
-                                            <TableCell>
+                                            <TableCell className="pl-6">
                                                 <Select value={item.product_id} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Chọn sản phẩm" />
@@ -290,7 +290,7 @@ export default function EditQuotationPage() {
                                             <TableCell className="text-right font-medium">
                                                 {formatCurrency(item.total)}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="pr-6">
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
