@@ -65,10 +65,18 @@ export default function NewCustomerPage() {
 
     const onSubmit = async (data: CustomerFormData) => {
         setIsLoading(true)
-        console.log('[NewCustomer] Submitting form data:', data)
-        const supabase = createClient()
+        console.log('[NewCustomer] onSubmit started')
 
         try {
+            console.log('[NewCustomer] Checking environment variables...')
+            const hasUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL
+            const hasKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+            console.log('[NewCustomer] Env check:', { hasUrl, hasKey })
+
+            console.log('[NewCustomer] Initializing Supabase client...')
+            const supabase = createClient()
+            console.log('[NewCustomer] Supabase client initialized')
+
             console.log('[NewCustomer] Fetching authenticated user...')
             const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -104,12 +112,9 @@ export default function NewCustomerPage() {
             console.error('[NewCustomer] Caught error:', error)
             const message = error.message || 'Có lỗi xảy ra khi thêm khách hàng'
             toast.error(message)
-            setIsLoading(false) // Ensure loading is stopped on error
+            setIsLoading(false)
         } finally {
             console.log('[NewCustomer] Submission process finished')
-            // Don't set isLoading(false) here if we're redirecting, it might cause a flicker
-            // But if we're still on the page, we need it. 
-            // The catch block already handles the stays-on-page case.
         }
     }
 
