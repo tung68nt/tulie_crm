@@ -281,7 +281,7 @@ export function QuotationForm({
                 </div>
 
                 {sections.map((section, secIdx) => (
-                    <Card key={section.id} className="relative border-l-4 border-l-primary/20">
+                    <Card key={section.id} className="relative shadow-none border-slate-200">
                         <CardHeader className="pb-3 px-6">
                             <div className="flex items-center gap-4">
                                 <div className="flex-1">
