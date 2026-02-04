@@ -30,7 +30,8 @@ interface CustomerPageProps {
 }
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-    const customer = await getCustomerById(params.id)
+    const { id } = await params
+    const customer = await getCustomerById(id)
     return {
         title: customer ? `${customer.company_name} - Tulie CRM` : 'Khách hàng - Tulie CRM',
     }
