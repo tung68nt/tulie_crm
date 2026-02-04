@@ -5,30 +5,13 @@ import { Quotation } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
     QUOTATION_STATUS_LABELS,
     QUOTATION_STATUS_COLORS
 } from '@/lib/constants/status'
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/format'
-import {
-    ArrowUpDown,
-    MoreHorizontal,
-    Eye,
-    Edit,
-    Trash2,
-    Copy,
-    Send,
-    ExternalLink,
-    FileSignature
-} from 'lucide-react'
+import { ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
+import { QuotationCellAction } from './quotation-cell-action'
 
 export const quotationColumns: ColumnDef<Quotation>[] = [
     {
@@ -142,63 +125,6 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: ({ row }) => {
-            const quotation = row.original
-            const publicUrl = `/quote/${quotation.public_token}`
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Mở menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/quotations/${quotation.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Xem chi tiết
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/quotations/${quotation.id}/edit`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Chỉnh sửa
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href={publicUrl} target="_blank">
-                                <ExternalLink className="mr-2 h-4 w-4" />
-                                Xem trang công khai
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(`${window.location.origin}${publicUrl}`)}
-                        >
-                            <Copy className="mr-2 h-4 w-4" />
-                            Sao chép link
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Send className="mr-2 h-4 w-4" />
-                            Gửi email
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        {quotation.status === 'accepted' && (
-                            <DropdownMenuItem>
-                                <FileSignature className="mr-2 h-4 w-4" />
-                                Tạo hợp đồng
-                            </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Xóa
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({ row }) => <QuotationCellAction data={row.original} />,
     },
 ]

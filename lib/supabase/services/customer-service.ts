@@ -110,3 +110,68 @@ export async function createCustomer(customer: Partial<Customer>) {
         throw new Error(err.message || 'Lỗi hệ thống khi tạo khách hàng')
     }
 }
+
+export async function updateCustomer(id: string, customer: Partial<Customer>) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('customers')
+            .update(customer)
+            .eq('id', id)
+            .select()
+
+        if (error) {
+            console.error('[updateCustomer] Error:', error)
+            throw error
+        }
+
+        revalidatePath('/customers')
+        revalidatePath(`/customers/${id}`)
+        return data[0] as Customer
+    } catch (err: any) {
+        console.error('[updateCustomer] Fatal error:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật khách hàng')
+    }
+}
+
+export async function deleteCustomer(id: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('customers')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.error('[deleteCustomer] Error:', error)
+            throw error
+        }
+
+        revalidatePath('/customers')
+        return true
+    } catch (err: any) {
+        console.error('[deleteCustomer] Fatal error:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa khách hàng')
+    }
+}
+
+export async function deleteCustomers(ids: string[]) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('customers')
+            .delete()
+            .in('id', ids)
+
+        if (error) {
+            console.error('[deleteCustomers] Error:', error)
+            throw error
+        }
+
+        revalidatePath('/customers')
+        return true
+    } catch (err: any) {
+        console.error('[deleteCustomers] Fatal error:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa nhiều khách hàng')
+    }
+}

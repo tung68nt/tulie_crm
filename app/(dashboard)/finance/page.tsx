@@ -1,32 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatCurrency } from '@/lib/utils/format'
 import {
     TrendingUp,
     TrendingDown,
     CreditCard,
-    ArrowUpRight,
-    ArrowDownRight,
     DollarSign,
 } from 'lucide-react'
-import { getDashboardStats, getRevenueChartData } from '@/lib/supabase/services/dashboard-service'
+import { getDashboardStats, getRevenueChartData, getRecentTransactions } from '@/lib/supabase/services/dashboard-service'
 import { FinanceCharts } from './finance-charts'
 
 export default async function FinancePage() {
     const stats = await getDashboardStats()
     const chartData = await getRevenueChartData()
+    const recentTransactions = await getRecentTransactions()
 
     const totalRevenue = stats.revenue.total
     const totalExpenses = chartData.reduce((sum, d) => sum + (d.expenses * 1000000), 0) // chartData is in millions
     const netProfit = totalRevenue - totalExpenses
     const profitMargin = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0
-
-    // Mock recent transactions for now as we don't have a specific transaction table yet
-    // In a real app, these would come from an 'invoices' or 'ledger' table
-    const recentTransactions = [
-        { id: '1', type: 'income', description: 'Doanh thu từ hóa đơn', amount: totalRevenue, date: 'Trong tháng' },
-        { id: '2', type: 'expense', description: 'Tổng chi phí vận hành', amount: totalExpenses, date: 'Trong tháng' },
-    ]
 
     return (
         <div className="space-y-6">
@@ -104,7 +95,7 @@ export default async function FinancePage() {
             </div>
 
             {/* Charts Component (Client Component) */}
-            <FinanceCharts monthlyData={chartData} recentTransactions={recentTransactions} />
+            <FinanceCharts monthlyData={chartData} recentTransactions={recentTransactions as any} />
         </div>
     )
 }

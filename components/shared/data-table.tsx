@@ -30,13 +30,22 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, SlidersHorizontal } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, SlidersHorizontal, Trash2 } from 'lucide-react'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     searchKey?: string
     searchPlaceholder?: string
+    onDelete?: (rows: TData[]) => Promise<void>
 }
 
 export function DataTable<TData, TValue>({
@@ -44,11 +53,14 @@ export function DataTable<TData, TValue>({
     data,
     searchKey,
     searchPlaceholder = 'Tìm kiếm...',
+    onDelete,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
+    const [loading, setLoading] = React.useState(false)
+    const [open, setOpen] = React.useState(false)
 
     const table = useReactTable({
         data,
@@ -69,23 +81,69 @@ export function DataTable<TData, TValue>({
         },
     })
 
+    const selectedRows = table.getFilteredSelectedRowModel().rows
+    const hasSelection = selectedRows.length > 0
+
+    const onBulkDelete = async () => {
+        if (!onDelete) return
+        try {
+            setLoading(true)
+            await onDelete(selectedRows.map((row) => row.original))
+            table.resetRowSelection()
+        } finally {
+            setLoading(false)
+            setOpen(false)
+        }
+    }
+
     return (
         <div className="space-y-4">
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Xác nhận xóa {selectedRows.length} mục?</DialogTitle>
+                        <DialogDescription>
+                            Hành động này không thể hoàn tác. Các mục đã chọn sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+                            Hủy
+                        </Button>
+                        <Button variant="destructive" onClick={onBulkDelete} disabled={loading}>
+                            {loading ? 'Đang xóa...' : 'Xác nhận xóa'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* Toolbar */}
             <div className="flex items-center justify-between">
-                {searchKey && (
-                    <div className="relative max-w-sm">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder={searchPlaceholder}
-                            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
-                            onChange={(event) =>
-                                table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                            }
-                            className="pl-9"
-                        />
-                    </div>
-                )}
+                <div className="flex items-center gap-2">
+                    {searchKey && (
+                        <div className="relative max-w-sm">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder={searchPlaceholder}
+                                value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
+                                onChange={(event) =>
+                                    table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                                }
+                                className="pl-9"
+                            />
+                        </div>
+                    )}
+                    {hasSelection && onDelete && (
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setOpen(true)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Xóa đã chọn ({selectedRows.length})
+                        </Button>
+                    )}
+                </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" size="sm">

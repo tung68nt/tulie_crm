@@ -8,16 +8,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { getCustomers, deleteCustomers } from '@/lib/supabase/services/customer-service'
 import { Plus, Upload, Download } from 'lucide-react'
 import Link from 'next/link'
-import { getCustomers } from '@/lib/supabase/services/customer-service'
 
 export default async function CustomersPage() {
     const customers = await getCustomers()
 
     return (
         <div className="space-y-6">
-            {/* Page Header */}
+            {/* ... Header and Filters ... */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Khách hàng</h1>
@@ -61,12 +61,25 @@ export default async function CustomersPage() {
             </div>
 
             {/* Data Table */}
-            <DataTable
-                columns={customerColumns}
-                data={customers}
-                searchKey="company_name"
-                searchPlaceholder="Tìm theo tên công ty..."
-            />
+            <CustomerTableInitialData data={customers} />
         </div>
+    )
+}
+
+async function CustomerTableInitialData({ data }: { data: any[] }) {
+    const handleDelete = async (rows: any[]) => {
+        'use server'
+        const ids = rows.map((r) => r.id)
+        await deleteCustomers(ids)
+    }
+
+    return (
+        <DataTable
+            columns={customerColumns}
+            data={data}
+            searchKey="company_name"
+            searchPlaceholder="Tìm theo tên công ty..."
+            onDelete={handleDelete}
+        />
     )
 }

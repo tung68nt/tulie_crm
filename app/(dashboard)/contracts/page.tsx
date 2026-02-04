@@ -7,20 +7,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { CONTRACT_STATUS_LABELS, CONTRACT_STATUS_COLORS } from '@/lib/constants/status'
-import { Plus, Eye, FileSignature, Clock, CheckCircle } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils/format'
+import { FileSignature, Clock, CheckCircle, Plus } from 'lucide-react'
 import Link from 'next/link'
-import { getContracts } from '@/lib/supabase/services/contract-service'
+import { getContracts, deleteContracts } from '@/lib/supabase/services/contract-service'
 import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/shared/data-table'
+import { contractColumns } from '@/components/contracts/contract-columns'
 
 export default async function ContractsPage() {
     const contracts = await getContracts()
@@ -100,62 +93,26 @@ export default async function ContractsPage() {
                 </Select>
             </div>
 
-            {/* Contracts Table */}
-            <Card>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Mã hợp đồng</TableHead>
-                                <TableHead>Khách hàng</TableHead>
-                                <TableHead>Tiêu đề</TableHead>
-                                <TableHead>Giá trị</TableHead>
-                                <TableHead>Thời hạn</TableHead>
-                                <TableHead>Trạng thái</TableHead>
-                                <TableHead className="w-10"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {contracts.map((contract) => (
-                                <TableRow key={contract.id}>
-                                    <TableCell>
-                                        <Link href={`/contracts/${contract.id}`} className="font-medium hover:underline">
-                                            {contract.contract_number}
-                                        </Link>
-                                    </TableCell>
-                                    <TableCell>{contract.customer?.company_name}</TableCell>
-                                    <TableCell className="max-w-[200px] truncate">
-                                        {contract.title}
-                                    </TableCell>
-                                    <TableCell className="font-medium">
-                                        {formatCurrency(contract.total_amount)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="text-sm">
-                                            <div>{formatDate(contract.start_date)}</div>
-                                            <div className="text-muted-foreground">
-                                                → {contract.end_date ? formatDate(contract.end_date) : 'Không xác định'}
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge className={CONTRACT_STATUS_COLORS[contract.status]}>
-                                            {CONTRACT_STATUS_LABELS[contract.status]}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/contracts/${contract.id}`}>
-                                                <Eye className="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            {/* Data Table */}
+            <ContractTableInitialData data={contracts} />
         </div>
+    )
+}
+
+async function ContractTableInitialData({ data }: { data: any[] }) {
+    const handleDelete = async (rows: any[]) => {
+        'use server'
+        const ids = rows.map((r) => r.id)
+        await deleteContracts(ids)
+    }
+
+    return (
+        <DataTable
+            columns={contractColumns}
+            data={data}
+            searchKey="contract_number"
+            searchPlaceholder="Tìm theo số hợp đồng..."
+            onDelete={handleDelete}
+        />
     )
 }

@@ -1,13 +1,15 @@
 'use server'
+
 import { createClient } from '../server'
 import { Invoice, InvoiceItem } from '@/types'
+import { revalidatePath } from 'next/cache'
 
 export async function getInvoices() {
     try {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('invoices')
-            .select('*, customer:customers(id, company_name)')
+            .select('*, customer:customers(id, company_name), vendor:vendors(id, name)')
             .order('created_at', { ascending: false })
 
         if (error) {
@@ -27,7 +29,7 @@ export async function getInvoiceById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('invoices')
-            .select('*, customer:customers(*), creator:users(*), contract:contracts(id, contract_number), items:invoice_items(*), payments:invoice_payments(*)')
+            .select('*, customer:customers(*), creator:users(*), contract:contracts(id, contract_number), vendor:vendors(*), items:invoice_items(*), payments:invoice_payments(*)')
             .eq('id', id)
             .single()
 
@@ -73,5 +75,48 @@ export async function createInvoice(invoice: Partial<Invoice>, items: Partial<In
         throw itemsError
     }
 
+    revalidatePath('/invoices')
     return invoiceData
+}
+
+export async function deleteInvoice(id: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('invoices')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.error('Error deleting invoice:', error)
+            throw error
+        }
+
+        revalidatePath('/invoices')
+        return true
+    } catch (err: any) {
+        console.error('Fatal error in deleteInvoice:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa hóa đơn')
+    }
+}
+
+export async function deleteInvoices(ids: string[]) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('invoices')
+            .delete()
+            .in('id', ids)
+
+        if (error) {
+            console.error('Error deleting invoices:', error)
+            throw error
+        }
+
+        revalidatePath('/invoices')
+        return true
+    } catch (err: any) {
+        console.error('Fatal error in deleteInvoices:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa nhiều hóa đơn')
+    }
 }

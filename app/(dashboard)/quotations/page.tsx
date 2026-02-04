@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
-import { getQuotations } from '@/lib/supabase/services/quotation-service'
+import { getQuotations, deleteQuotations } from '@/lib/supabase/services/quotation-service'
 
 export default async function QuotationsPage() {
     const quotations = await getQuotations()
@@ -52,12 +52,25 @@ export default async function QuotationsPage() {
             </div>
 
             {/* Data Table */}
-            <DataTable
-                columns={quotationColumns}
-                data={quotations}
-                searchKey="quote_number"
-                searchPlaceholder="Tìm theo mã báo giá..."
-            />
+            <QuotationTableInitialData data={quotations} />
         </div>
+    )
+}
+
+async function QuotationTableInitialData({ data }: { data: any[] }) {
+    const handleDelete = async (rows: any[]) => {
+        'use server'
+        const ids = rows.map((r) => r.id)
+        await deleteQuotations(ids)
+    }
+
+    return (
+        <DataTable
+            columns={quotationColumns}
+            data={data}
+            searchKey="quote_number"
+            searchPlaceholder="Tìm theo mã báo giá..."
+            onDelete={handleDelete}
+        />
     )
 }

@@ -1,6 +1,7 @@
 'use server'
 import { createClient } from '../server'
 import { Quotation, QuotationItem } from '@/types'
+import { revalidatePath } from 'next/cache'
 
 export async function getQuotations(customerId?: string) {
     try {
@@ -84,5 +85,97 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
     } catch (err: any) {
         console.error('Fatal error in createQuotation:', err)
         throw new Error(err.message || 'Lỗi hệ thống khi tạo báo giá')
+    }
+}
+
+export async function updateQuotation(id: string, quotation: Partial<Quotation>, items: Partial<QuotationItem>[]) {
+    try {
+        const supabase = await createClient()
+
+        // 1. Update quotation
+        const { error: quoteError } = await supabase
+            .from('quotations')
+            .update(quotation)
+            .eq('id', id)
+
+        if (quoteError) {
+            console.error('Error updating quotation:', quoteError)
+            throw quoteError
+        }
+
+        // 2. Refresh items (Delete old and insert new for simplicity)
+        const { error: deleteError } = await supabase
+            .from('quotation_items')
+            .delete()
+            .eq('quotation_id', id)
+
+        if (deleteError) {
+            console.error('Error deleting old quotation items:', deleteError)
+            throw deleteError
+        }
+
+        const quoteItems = items.map(item => ({
+            ...item,
+            id: undefined, // Let Supabase generate new IDs
+            quotation_id: id
+        }))
+
+        const { error: itemsError } = await supabase
+            .from('quotation_items')
+            .insert(quoteItems)
+
+        if (itemsError) {
+            console.error('Error inserting new quotation items:', itemsError)
+            throw itemsError
+        }
+
+        revalidatePath('/quotations')
+        revalidatePath(`/quotations/${id}`)
+        return true
+    } catch (err: any) {
+        console.error('Fatal error in updateQuotation:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật báo giá')
+    }
+}
+
+export async function deleteQuotation(id: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('quotations')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.error('Error deleting quotation:', error)
+            throw error
+        }
+
+        revalidatePath('/quotations')
+        return true
+    } catch (err: any) {
+        console.error('Fatal error in deleteQuotation:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa báo giá')
+    }
+}
+
+export async function deleteQuotations(ids: string[]) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('quotations')
+            .delete()
+            .in('id', ids)
+
+        if (error) {
+            console.error('Error deleting quotations:', error)
+            throw error
+        }
+
+        revalidatePath('/quotations')
+        return true
+    } catch (err: any) {
+        console.error('Fatal error in deleteQuotations:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi xóa nhiều báo giá')
     }
 }

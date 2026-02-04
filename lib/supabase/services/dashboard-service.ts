@@ -117,3 +117,53 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
         return []
     }
 }
+
+export async function getRecentTransactions() {
+    try {
+        const supabase = await createClient()
+
+        // Fetch recent 10 output invoices (income)
+        const { data: income, error: incError } = await supabase
+            .from('invoices')
+            .select('id, invoice_number, total_amount, issue_date, status')
+            .eq('type', 'output')
+            .order('issue_date', { ascending: false })
+            .limit(10)
+
+        if (incError) console.error('Error fetching recent income:', incError)
+
+        // Fetch recent 10 expenses (expense)
+        const { data: expenses, error: expError } = await supabase
+            .from('expenses')
+            .select('id, description, amount, date')
+            .order('date', { ascending: false })
+            .limit(10)
+
+        if (expError) console.error('Error fetching recent expenses:', expError)
+
+        const transactions = [
+            ...(income || []).map(i => ({
+                id: i.id,
+                type: 'income',
+                description: `Hóa đơn ${i.invoice_number}`,
+                amount: i.total_amount,
+                date: i.issue_date,
+                status: i.status
+            })),
+            ...(expenses || []).map(e => ({
+                id: e.id,
+                type: 'expense',
+                description: e.description,
+                amount: e.amount,
+                date: e.date,
+                status: 'paid'
+            }))
+        ]
+
+        // Sort by date descending
+        return transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10)
+    } catch (err) {
+        console.error('Fatal error in getRecentTransactions:', err)
+        return []
+    }
+}

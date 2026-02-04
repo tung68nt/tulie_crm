@@ -1,20 +1,13 @@
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { INVOICE_STATUS_LABELS, INVOICE_STATUS_COLORS } from '@/lib/constants/status'
-import { Plus, Download, Eye, Receipt, AlertCircle } from 'lucide-react'
+import { formatCurrency } from '@/lib/utils/format'
+import { Plus, Download, Receipt, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { getInvoices } from '@/lib/supabase/services/invoice-service'
+import { getInvoices, deleteInvoices } from '@/lib/supabase/services/invoice-service'
+import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/shared/data-table'
+import { invoiceColumns } from '@/components/invoices/invoice-columns'
 
 export default async function InvoicesPage() {
     const invoices = await getInvoices()
@@ -22,8 +15,8 @@ export default async function InvoicesPage() {
     const inputInvoices = invoices.filter(i => i.type === 'input')
 
     const totalReceivable = outputInvoices
-        .filter((i) => i.status !== 'paid')
-        .reduce((sum, i) => sum + (i.total_amount - i.paid_amount), 0)
+        .filter((i) => i.status !== 'paid' && i.status !== 'cancelled')
+        .reduce((sum, i) => sum + ((i.total_amount || 0) - (i.paid_amount || 0)), 0)
 
     const overdueCount = outputInvoices.filter((i) => i.status === 'overdue').length
 
@@ -56,7 +49,7 @@ export default async function InvoicesPage() {
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">
-                            Công nợ phải thu
+                            Công nợ phải thu (Bán hàng)
                         </CardTitle>
                         <Receipt className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
@@ -67,7 +60,7 @@ export default async function InvoicesPage() {
                 <Card className={overdueCount > 0 ? 'border-destructive' : ''}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                         <CardTitle className="text-sm font-medium text-muted-foreground">
-                            Hóa đơn quá hạn
+                            Hóa đơn bán hàng quá hạn
                         </CardTitle>
                         <AlertCircle className={`h-4 w-4 ${overdueCount > 0 ? 'text-destructive' : 'text-muted-foreground'}`} />
                     </CardHeader>
@@ -87,87 +80,31 @@ export default async function InvoicesPage() {
                 </TabsList>
 
                 <TabsContent value="output">
-                    <Card>
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Số hóa đơn</TableHead>
-                                        <TableHead>Khách hàng</TableHead>
-                                        <TableHead>Ngày phát hành</TableHead>
-                                        <TableHead>Hạn thanh toán</TableHead>
-                                        <TableHead>Số tiền</TableHead>
-                                        <TableHead>Trạng thái</TableHead>
-                                        <TableHead className="w-10"></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {outputInvoices.map((invoice) => (
-                                        <TableRow key={invoice.id}>
-                                            <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                                            <TableCell>{invoice.customer?.company_name}</TableCell>
-                                            <TableCell>{formatDate(invoice.issue_date)}</TableCell>
-                                            <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                                            <TableCell className="font-medium">{formatCurrency(invoice.total_amount)}</TableCell>
-                                            <TableCell>
-                                                <Badge className={INVOICE_STATUS_COLORS[invoice.status]}>
-                                                    {INVOICE_STATUS_LABELS[invoice.status]}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Button variant="ghost" size="icon">
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                    <InvoiceTableInitialData data={outputInvoices} prefix="output" />
                 </TabsContent>
 
                 <TabsContent value="input">
-                    <Card>
-                        <CardContent className="p-0">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Số hóa đơn</TableHead>
-                                        <TableHead>Nhà cung cấp</TableHead>
-                                        <TableHead>Ngày phát hành</TableHead>
-                                        <TableHead>Hạn thanh toán</TableHead>
-                                        <TableHead>Số tiền</TableHead>
-                                        <TableHead>Trạng thái</TableHead>
-                                        <TableHead className="w-10"></TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {inputInvoices.map((invoice) => (
-                                        <TableRow key={invoice.id}>
-                                            <TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-                                            <TableCell>{invoice.vendor?.name}</TableCell>
-                                            <TableCell>{formatDate(invoice.issue_date)}</TableCell>
-                                            <TableCell>{formatDate(invoice.due_date)}</TableCell>
-                                            <TableCell className="font-medium">{formatCurrency(invoice.total_amount)}</TableCell>
-                                            <TableCell>
-                                                <Badge className={INVOICE_STATUS_COLORS[invoice.status]}>
-                                                    {INVOICE_STATUS_LABELS[invoice.status]}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Button variant="ghost" size="icon">
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                    <InvoiceTableInitialData data={inputInvoices} prefix="input" />
                 </TabsContent>
             </Tabs>
         </div>
+    )
+}
+
+async function InvoiceTableInitialData({ data, prefix }: { data: any[], prefix: string }) {
+    const handleDelete = async (rows: any[]) => {
+        'use server'
+        const ids = rows.map((r) => r.id)
+        await deleteInvoices(ids)
+    }
+
+    return (
+        <DataTable
+            columns={invoiceColumns}
+            data={data}
+            searchKey="invoice_number"
+            searchPlaceholder="Tìm theo số hóa đơn..."
+            onDelete={handleDelete}
+        />
     )
 }

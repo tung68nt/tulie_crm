@@ -6,20 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
     CUSTOMER_STATUS_LABELS,
     CUSTOMER_STATUS_COLORS
 } from '@/lib/constants/status'
 import { formatRelativeTime } from '@/lib/utils/format'
-import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2, Phone, Mail } from 'lucide-react'
+import { ArrowUpDown, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { CellAction } from './cell-action'
 
 export const customerColumns: ColumnDef<Customer>[] = [
     {
@@ -141,38 +134,6 @@ export const customerColumns: ColumnDef<Customer>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: ({ row }) => {
-            const customer = row.original
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Mở menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/customers/${customer.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                Xem chi tiết
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/customers/${customer.id}/edit`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Chỉnh sửa
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Xóa
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
+        cell: ({ row }) => <CellAction data={row.original} />,
     },
 ]
