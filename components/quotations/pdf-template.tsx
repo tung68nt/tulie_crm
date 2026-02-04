@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
  fontFamily: 'Roboto',
  color: '#000',
  marginBottom: 5,
- textTransform: ' ',
+ textTransform: 'none',
  },
  metaInfo: {
  width: '40%',
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
  fontFamily: 'Roboto',
  color: '#000',
  marginBottom: 10,
- textTransform: ' ',
+ textTransform: 'none',
  letterSpacing: 2,
  },
  billTo: {
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
  paddingBottom: 5,
  borderBottomWidth: 1,
  borderBottomColor: '#000',
- textTransform: ' ',
+ textTransform: 'none',
  },
  table: {
  width: 'auto',
