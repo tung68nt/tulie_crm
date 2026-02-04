@@ -1,6 +1,7 @@
 'use server'
 import { createClient } from '../server'
 import { Customer } from '@/types'
+import { revalidatePath } from 'next/cache'
 
 export async function getCustomers() {
     try {
@@ -85,11 +86,12 @@ export async function createCustomer(customer: Partial<Customer>) {
             throw error
         }
 
-        if (!data || data.length === 0) {
-            throw new Error('Không có dữ liệu trả về sau khi tạo khách hàng')
+        if (data && data.length > 0) {
+            revalidatePath('/customers')
+            return data[0]
         }
 
-        return data[0]
+        throw new Error('Không có dữ liệu trả về sau khi tạo khách hàng')
     } catch (err: any) {
         console.error('Error in createCustomer:', err)
         throw new Error(err.message || 'Lỗi hệ thống khi tạo khách hàng')

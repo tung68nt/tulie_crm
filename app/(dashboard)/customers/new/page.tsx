@@ -76,14 +76,29 @@ export default function NewCustomerPage() {
                 return
             }
 
-            const result = await createCustomer({
+            // Clean up data: convert empty strings to undefined for optional fields
+            const cleanedData = {
                 ...data,
+                tax_code: data.tax_code || undefined,
+                email: data.email || undefined,
+                phone: data.phone || undefined,
+                address: data.address || undefined,
+                invoice_address: data.invoice_address || undefined,
+                industry: data.industry || undefined,
+                company_size: data.company_size || undefined,
+                website: data.website || undefined,
+                notes: data.notes || undefined,
+            }
+
+            const result = await createCustomer({
+                ...cleanedData,
                 assigned_to: user.id,
                 created_by: user.id,
             })
 
             if (result) {
                 toast.success('Thêm khách hàng thành công')
+                setIsLoading(false)
                 router.push('/customers')
                 router.refresh()
             } else {
