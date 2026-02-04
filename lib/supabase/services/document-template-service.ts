@@ -227,7 +227,7 @@ export async function getTemplateById(id: string) {
 }
 
 // Fill template with variables
-export function fillTemplate(template: string, variables: Record<string, string>): string {
+export async function fillTemplate(template: string, variables: Record<string, string>): Promise<string> {
     let result = template
     for (const [key, value] of Object.entries(variables)) {
         const regex = new RegExp(`{{${key}}}`, 'g')
@@ -304,7 +304,7 @@ export async function generateDocument(
     }
 
     // Fill the template
-    const filledContent = fillTemplate(template.content, variables)
+    const filledContent = await fillTemplate(template.content, variables)
 
     return {
         template,
