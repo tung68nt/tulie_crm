@@ -49,7 +49,7 @@ export function Sidebar() {
     return (
         <aside
             className={cn(
-                'relative flex flex-col border-r bg-card transition-all duration-300 ease-in-out',
+                'relative flex flex-col border-r bg-background transition-all duration-300 ease-in-out',
                 isCollapsed ? 'w-20' : 'w-72'
             )}
         >
@@ -86,15 +86,19 @@ export function Sidebar() {
                         return (
                             <Link key={item.href} href={item.href}>
                                 <Button
-                                    variant={isActive ? 'secondary' : 'ghost'}
+                                    variant="ghost"
                                     className={cn(
-                                        'w-full justify-start gap-3 h-11 text-base transition-all duration-200',
+                                        'w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-200',
+                                        isActive ? 'bg-secondary text-secondary-foreground' : 'text-muted-foreground hover:text-foreground',
                                         isCollapsed && 'justify-center px-0'
                                     )}
                                 >
-                                    <Icon className="h-6 w-6 shrink-0" />
+                                    <Icon className={cn(
+                                        "h-5 w-5 shrink-0 transition-colors",
+                                        isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                                    )} />
                                     {!isCollapsed && (
-                                        <span className="truncate opacity-100 transition-opacity duration-300">
+                                        <span className="truncate">
                                             {item.title}
                                         </span>
                                     )}

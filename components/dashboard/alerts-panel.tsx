@@ -40,13 +40,13 @@ export async function AlertsPanel() {
     const alerts = await getSystemAlerts()
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                    Cảnh báo
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-muted-foreground">
+                    <AlertTriangle className="h-4 w-4 text-orange-500" />
+                    Cảnh báo hệ thống
                 </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
+                <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold uppercase tracking-wider px-2" asChild>
                     <Link href="/notifications">Xem tất cả</Link>
                 </Button>
             </CardHeader>
@@ -64,20 +64,20 @@ export async function AlertsPanel() {
                                 <Link
                                     key={alert.id}
                                     href={alert.link}
-                                    className={`flex items-center gap-3 p-3 rounded-lg border transition-colors hover:bg-accent ${getSeverityColors(alert.severity)}`}
+                                    className={`flex items-center gap-3 p-3 rounded-lg border transition-all hover:shadow-sm ${getSeverityColors(alert.severity)}`}
                                 >
-                                    <div className="shrink-0">
+                                    <div className="shrink-0 h-8 w-8 rounded-full bg-background/50 flex items-center justify-center border border-current opacity-20">
                                         {getAlertIcon(alert.type)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate">
+                                        <p className="text-xs font-bold truncate">
                                             {alert.title}
                                         </p>
-                                        <p className="text-xs opacity-80 truncate">
+                                        <p className="text-[11px] opacity-70 truncate mt-0.5">
                                             {alert.message}
                                         </p>
                                     </div>
-                                    <ChevronRight className="h-4 w-4 shrink-0 opacity-50" />
+                                    <ChevronRight className="h-3 w-3 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity" />
                                 </Link>
                             ))
                         )}

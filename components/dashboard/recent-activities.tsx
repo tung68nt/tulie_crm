@@ -36,29 +36,34 @@ const getActivityIcon = (type: ActivityLog['action']) => {
 
 export function RecentActivities({ data }: RecentActivitiesProps) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-lg">Hoạt động gần đây</CardTitle>
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden">
+            <CardHeader className="pb-3 text-card-foreground">
+                <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Hoạt động gần đây</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
                 <ScrollArea className="h-[300px]">
-                    <div className="space-y-1 px-6 pb-4">
+                    <div className="space-y-0 px-6 pb-4">
                         {data.map((activity) => (
                             <div
                                 key={activity.id}
-                                className="flex items-start gap-3 py-3 border-b last:border-0"
+                                className="flex items-start gap-4 py-3.5 border-b last:border-0 group transition-all"
                             >
-                                <div className="mt-0.5">
+                                <div className="mt-1 h-8 w-8 rounded-md bg-secondary flex items-center justify-center shrink-0 border border-border/50">
                                     {getActivityIcon(activity.action)}
                                 </div>
-                                <div className="flex-1 space-y-1">
-                                    <p className="text-sm font-medium leading-none">
-                                        {activity.user?.full_name || 'Hệ thống'}
+                                <div className="flex-1 space-y-0.5 min-w-0">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <p className="text-sm font-bold text-foreground">
+                                            {activity.user?.full_name || 'Hệ thống'}
+                                        </p>
+                                        <p className="text-[10px] font-bold text-muted-foreground uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {formatRelativeTime(activity.created_at)}
+                                        </p>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground font-medium truncate">
+                                        <span className="capitalize">{activity.action}</span> {activity.entity_type} <span className="font-mono text-[10px] bg-muted px-1 rounded">#{activity.entity_id}</span>
                                     </p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {activity.action} {activity.entity_type} #{activity.entity_id}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-[10px] text-muted-foreground/60 font-medium group-hover:hidden">
                                         {formatRelativeTime(activity.created_at)}
                                     </p>
                                 </div>

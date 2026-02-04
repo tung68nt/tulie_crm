@@ -23,38 +23,33 @@ export function StatsCard({
     const isNegative = change && change < 0
 
     return (
-        <Card className={cn('', className)}>
+        <Card className={cn('overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300', className)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {title}
                 </CardTitle>
                 {icon && (
-                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary/70">
                         {icon}
                     </div>
                 )}
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
+                <div className="text-2xl font-bold tracking-tight">{value}</div>
                 {change !== undefined && (
-                    <div className="flex items-center gap-1 mt-1">
-                        {isPositive && (
-                            <>
-                                <ArrowUp className="h-4 w-4 text-green-500" />
-                                <span className="text-sm text-green-500">+{change.toFixed(1)}%</span>
-                            </>
-                        )}
-                        {isNegative && (
-                            <>
-                                <ArrowDown className="h-4 w-4 text-red-500" />
-                                <span className="text-sm text-red-500">{change.toFixed(1)}%</span>
-                            </>
-                        )}
-                        {change === 0 && (
-                            <span className="text-sm text-muted-foreground">0%</span>
-                        )}
+                    <div className="flex items-center gap-1.5 mt-2">
+                        <div className={cn(
+                            "flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-xs font-bold transition-colors",
+                            isPositive ? "bg-green-500/10 text-green-600" :
+                                isNegative ? "bg-red-500/10 text-red-600" :
+                                    "bg-muted text-muted-foreground"
+                        )}>
+                            {isPositive && <ArrowUp className="h-3 w-3" />}
+                            {isNegative && <ArrowDown className="h-3 w-3" />}
+                            {Math.abs(change).toFixed(1)}%
+                        </div>
                         {changeLabel && (
-                            <span className="text-sm text-muted-foreground ml-1">
+                            <span className="text-xs text-muted-foreground font-medium">
                                 {changeLabel}
                             </span>
                         )}

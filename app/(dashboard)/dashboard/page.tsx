@@ -16,11 +16,11 @@ export default async function DashboardPage() {
         ])
 
         return (
-            <div className="space-y-6">
+            <div className="space-y-8 max-w-[1600px] mx-auto">
                 {/* Page Header */}
-                <div>
-                    <h1 className="text-3xl font-bold">Dashboard</h1>
-                    <p className="text-muted-foreground">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-4xl font-extrabold tracking-tight">Dashboard</h1>
+                    <p className="text-muted-foreground font-medium">
                         Tổng quan hoạt động kinh doanh của Tulie Agency
                     </p>
                 </div>

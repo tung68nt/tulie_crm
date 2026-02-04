@@ -97,14 +97,14 @@ export function Header() {
     }
 
     return (
-        <header className="flex h-16 items-center justify-between border-b bg-card px-6">
+        <header className="flex h-16 items-center justify-between border-b bg-background px-6">
             {/* Search */}
             <div className="flex items-center gap-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <div className="relative group">
+                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                     <Input
                         placeholder="Tìm kiếm..."
-                        className="w-[300px] pl-9"
+                        className="w-[280px] pl-9 h-9 bg-muted/40 border-transparent focus-visible:bg-background focus-visible:border-border transition-all text-sm"
                     />
                 </div>
             </div>

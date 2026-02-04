@@ -159,15 +159,15 @@ export function DataTable<TData, TValue>({
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-1 flex-wrap items-center gap-2">
                     {searchKey && (
-                        <div className="relative max-w-sm">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <div className="relative group">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                             <Input
                                 placeholder={searchPlaceholder}
                                 value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
                                 onChange={(event) =>
                                     table.getColumn(searchKey)?.setFilterValue(event.target.value)
                                 }
-                                className="pl-9 w-[250px] lg:w-[350px]"
+                                className="pl-9 w-[250px] lg:w-[350px] bg-muted/30 border-transparent focus-visible:bg-background focus-visible:border-border transition-all"
                             />
                         </div>
                     )}
@@ -182,9 +182,9 @@ export function DataTable<TData, TValue>({
                             <div key={filter.columnId} className="flex items-center gap-2">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-10 border-dashed">
-                                            <Plus className="mr-2 h-4 w-4" />
-                                            {filter.title}
+                                        <Button variant="outline" size="sm" className="h-9 border-dashed bg-background hover:bg-muted/50 transition-colors">
+                                            <Plus className="mr-2 h-3.5 w-3.5" />
+                                            <span className="text-xs font-semibold">{filter.title}</span>
                                             {filterValue.length > 0 && (
                                                 <>
                                                     <Separator orientation="vertical" className="mx-2 h-4" />
@@ -305,8 +305,8 @@ export function DataTable<TData, TValue>({
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-10">
-                                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                            <Button variant="outline" size="sm" className="h-9 font-medium">
+                                <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
                                 Hiển thị
                             </Button>
                         </DropdownMenuTrigger>
@@ -338,12 +338,12 @@ export function DataTable<TData, TValue>({
             {/* Table */}
             <div className="rounded-md border">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-muted/30">
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="hover:bg-transparent border-b">
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="first:pl-6 last:pr-6 whitespace-nowrap">
+                                        <TableHead key={header.id} className="first:pl-6 last:pr-6 whitespace-nowrap h-11 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
@@ -362,10 +362,10 @@ export function DataTable<TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && 'selected'}
-                                    className="group"
+                                    className="group hover:bg-muted/30 transition-colors"
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="first:pl-6 last:pr-6 py-3">
+                                        <TableCell key={cell.id} className="first:pl-6 last:pr-6 py-3.5 text-sm font-medium">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
@@ -402,7 +402,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -411,7 +411,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -420,7 +420,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
                         >
@@ -429,7 +429,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                             disabled={!table.getCanNextPage()}
                         >

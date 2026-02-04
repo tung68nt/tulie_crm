@@ -46,40 +46,37 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 <div className="h-[300px]">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={data}>
-                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted/50" />
                             <XAxis
                                 dataKey="name"
-                                className="text-xs"
-                                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                                axisLine={false}
+                                tickLine={false}
+                                className="text-[10px] font-medium uppercase tracking-wider"
+                                tick={{ fill: 'oklch(var(--muted-foreground))' }}
+                                dy={10}
                             />
                             <YAxis
-                                className="text-xs"
-                                tick={{ fill: 'hsl(var(--muted-foreground))' }}
-                                tickFormatter={(value) => `${value}tr`}
+                                axisLine={false}
+                                tickLine={false}
+                                className="text-[10px] font-medium"
+                                tick={{ fill: 'oklch(var(--muted-foreground))' }}
+                                tickFormatter={(value) => `${value}M`}
                             />
                             <Tooltip
+                                cursor={{ stroke: 'oklch(var(--muted))', strokeWidth: 1 }}
                                 content={({ active, payload, label }) => {
                                     if (active && payload && payload.length) {
                                         return (
-                                            <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                                            Tháng {label}
-                                                        </span>
-                                                        <span className="font-bold text-muted-foreground">
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                            <div className="rounded-xl border border-border/50 bg-background/95 backdrop-blur-md p-3 shadow-xl">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Tháng {label}</p>
+                                                <div className="space-y-1.5">
                                                     {payload.map((entry, index) => (
-                                                        <div key={index} className="flex flex-col gap-1">
-                                                            <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                                                {entry.name}
-                                                            </span>
-                                                            <span className="font-bold font-mono" style={{ color: entry.color }}>
-                                                                {entry.value} tr
-                                                            </span>
+                                                        <div key={index} className="flex items-center justify-between gap-4">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                                <span className="text-xs font-semibold text-foreground/80">{entry.name}</span>
+                                                            </div>
+                                                            <span className="text-xs font-bold font-mono text-foreground">{entry.value}M</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -89,30 +86,32 @@ export function RevenueChart({ data }: RevenueChartProps) {
                                     return null
                                 }}
                             />
-                            <Legend />
                             <Line
                                 type="monotone"
                                 dataKey="revenue"
                                 name="Doanh thu"
-                                stroke="hsl(142.1 76.2% 36.3%)"
-                                strokeWidth={2}
+                                stroke="oklch(0.646 0.222 41.116)"
+                                strokeWidth={3}
                                 dot={false}
+                                activeDot={{ r: 4, strokeWidth: 0 }}
                             />
                             <Line
                                 type="monotone"
                                 dataKey="expenses"
                                 name="Chi phí"
-                                stroke="hsl(0 84.2% 60.2%)"
-                                strokeWidth={2}
+                                stroke="oklch(0.577 0.245 27.325)"
+                                strokeWidth={3}
                                 dot={false}
+                                activeDot={{ r: 4, strokeWidth: 0 }}
                             />
                             <Line
                                 type="monotone"
                                 dataKey="profit"
                                 name="Lợi nhuận"
-                                stroke="hsl(217.2 91.2% 59.8%)"
-                                strokeWidth={2}
+                                stroke="oklch(0.6 0.118 184.704)"
+                                strokeWidth={3}
                                 dot={false}
+                                activeDot={{ r: 4, strokeWidth: 0 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
