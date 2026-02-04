@@ -44,12 +44,25 @@ export async function getCustomerById(id: string) {
 }
 
 export async function createCustomer(customer: Partial<Customer>) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('customers')
-        .insert([customer])
-        .select()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('customers')
+            .insert([customer])
+            .select()
 
-    if (error) throw error
-    return data[0]
+        if (error) {
+            console.error('Database error in createCustomer:', error)
+            throw error
+        }
+
+        if (!data || data.length === 0) {
+            throw new Error('Không thể tạo khách hàng, không có dữ liệu trả về')
+        }
+
+        return data[0]
+    } catch (err: any) {
+        console.error('Fatal error in createCustomer:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi tạo khách hàng')
+    }
 }

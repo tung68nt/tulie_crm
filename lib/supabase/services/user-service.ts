@@ -3,18 +3,23 @@ import { createClient } from '../server'
 import { User } from '@/types'
 
 export async function getUsers() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .order('full_name', { ascending: true })
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .order('full_name', { ascending: true })
 
-    if (error) {
-        console.error('Error fetching users:', error)
+        if (error) {
+            console.error('Error fetching users:', error)
+            return []
+        }
+
+        return data as User[]
+    } catch (err) {
+        console.error('Fatal error in getUsers:', err)
         return []
     }
-
-    return data as User[]
 }
 
 export async function getUserById(id: string) {

@@ -56,16 +56,14 @@ export function Sidebar() {
             {/* Logo */}
             <div className="flex h-16 items-center justify-between border-b px-4">
                 {!isCollapsed && (
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground">
-                            <span className="text-sm font-bold text-background">T</span>
-                        </div>
-                        <span className="text-lg font-bold">Tulie CRM</span>
+                    <Link href="/" className="flex items-center gap-3">
+                        <img src="/logo.png" alt="Tulie" className="h-8 w-auto object-contain" />
+                        <span className="text-xl font-bold tracking-tight">Tulie CRM</span>
                     </Link>
                 )}
                 {isCollapsed && (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground mx-auto">
-                        <span className="text-sm font-bold text-background">T</span>
+                    <div className="h-8 w-8 mx-auto flex items-center justify-center">
+                        <img src="/logo.png" alt="Tulie" className="h-6 w-auto object-contain" />
                     </div>
                 )}
             </div>

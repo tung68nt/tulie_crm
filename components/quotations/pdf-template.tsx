@@ -194,6 +194,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                 {/* Header */}
                 <View style={styles.header}>
                     <View style={styles.companyInfo}>
+                        <Image src="/logo.png" style={styles.logo} />
                         <Text style={styles.companyName}>TULIE AGENCY</Text>
                         <Text>Design • Branding • Marketing • Events</Text>
                         <Text>123 Đường ABC, Quận XYZ, TP.HCM</Text>

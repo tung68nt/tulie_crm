@@ -50,34 +50,39 @@ export async function getQuotationById(id: string) {
 }
 
 export async function createQuotation(quotation: Partial<Quotation>, items: Partial<QuotationItem>[]) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    // 1. Insert quotation
-    const { data: quoteData, error: quoteError } = await supabase
-        .from('quotations')
-        .insert([quotation])
-        .select()
-        .single()
+        // 1. Insert quotation
+        const { data: quoteData, error: quoteError } = await supabase
+            .from('quotations')
+            .insert([quotation])
+            .select()
+            .single()
 
-    if (quoteError) {
-        console.error('Error creating quotation:', quoteError)
-        throw quoteError
+        if (quoteError) {
+            console.error('Error creating quotation:', quoteError)
+            throw quoteError
+        }
+
+        // 2. Insert items
+        const quoteItems = items.map(item => ({
+            ...item,
+            quotation_id: quoteData.id
+        }))
+
+        const { error: itemsError } = await supabase
+            .from('quotation_items')
+            .insert(quoteItems)
+
+        if (itemsError) {
+            console.error('Error creating quotation items:', itemsError)
+            throw itemsError
+        }
+
+        return quoteData
+    } catch (err: any) {
+        console.error('Fatal error in createQuotation:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi tạo báo giá')
     }
-
-    // 2. Insert items
-    const quoteItems = items.map(item => ({
-        ...item,
-        quotation_id: quoteData.id
-    }))
-
-    const { error: itemsError } = await supabase
-        .from('quotation_items')
-        .insert(quoteItems)
-
-    if (itemsError) {
-        console.error('Error creating quotation items:', itemsError)
-        throw itemsError
-    }
-
-    return quoteData
 }

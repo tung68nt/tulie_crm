@@ -9,6 +9,7 @@ import QuotationPreview from '@/components/quotations/quotation-preview'
 import { ArrowLeft, Eye, Save, Send, Loader2 } from 'lucide-react'
 import { createQuotation } from '@/lib/supabase/services/quotation-service'
 import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 
 interface NewQuotationClientProps {
     initialCustomers: any[]
@@ -43,7 +44,15 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
         }
 
         setIsLoading(true)
+        const supabase = createClient()
         try {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                toast.error('Bạn cần đăng nhập để thực hiện thao tác này')
+                return
+            }
+
             const quotationData = {
                 customer_id: formData.customer_id,
                 quote_number: formData.quote_number,
@@ -59,7 +68,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
                 bank_account_no: formData.bank_account_no,
                 bank_account_name: formData.bank_account_name,
                 bank_branch: formData.bank_branch,
-                created_by: '00000000-0000-0000-0000-000000000000' // Placeholder
+                created_by: user.id
             }
 
             const items = formData.items.map((item: any) => ({

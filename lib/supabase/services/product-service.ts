@@ -3,18 +3,23 @@ import { createClient } from '../server'
 import { Product } from '@/types'
 
 export async function getProducts() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('name', { ascending: true })
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('name', { ascending: true })
 
-    if (error) {
-        console.error('Error fetching products:', error)
+        if (error) {
+            console.error('Error fetching products:', error)
+            return []
+        }
+
+        return data as Product[]
+    } catch (err) {
+        console.error('Fatal error in getProducts:', err)
         return []
     }
-
-    return data as Product[]
 }
 
 export async function getProductById(id: string) {
