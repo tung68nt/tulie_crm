@@ -65,39 +65,39 @@ export default async function DashboardPage() {
                 <div className="grid gap-6 lg:grid-cols-2">
                     <RecentActivities data={recentActivities} />
 
-                    {/* Business Health Card - placeholder */}
+                    {/* Business Health Card - real data */}
                     <div className="rounded-lg border bg-card p-6">
                         <h3 className="text-lg font-semibold mb-4">Sức khỏe doanh nghiệp</h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-muted-foreground">Điểm tổng thể</span>
-                                <span className="text-2xl font-bold text-green-500">85/100</span>
+                                <span className="text-2xl font-bold text-gray-400">--/100</span>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span>Dòng tiền</span>
-                                    <span className="text-green-500">Tốt</span>
+                                    <span className="text-muted-foreground">{stats.revenue.total > 0 ? 'Ổn định' : 'Chưa có'}</span>
                                 </div>
                                 <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full w-[85%] bg-green-500 rounded-full" />
+                                    <div className={`h-full ${stats.revenue.total > 0 ? 'w-[40%] bg-blue-500' : 'w-0'} rounded-full`} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span>Tỷ lệ thu hồi công nợ</span>
-                                    <span className="text-yellow-500">Trung bình</span>
+                                    <span>Khách hàng mới</span>
+                                    <span className="text-muted-foreground">{stats.customers.new} khách</span>
                                 </div>
                                 <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full w-[65%] bg-yellow-500 rounded-full" />
+                                    <div className={`h-full ${stats.customers.total > 0 ? 'w-[20%] bg-green-500' : 'w-0'} rounded-full`} />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span>Tỷ lệ chuyển đổi báo giá</span>
-                                    <span className="text-green-500">Tốt</span>
+                                    <span>Hợp đồng chờ duyệt</span>
+                                    <span className="text-muted-foreground">{stats.contracts.pending}</span>
                                 </div>
                                 <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full w-[78%] bg-green-500 rounded-full" />
+                                    <div className="h-full w-0 bg-yellow-500 rounded-full" />
                                 </div>
                             </div>
                         </div>

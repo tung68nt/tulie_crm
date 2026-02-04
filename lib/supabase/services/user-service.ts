@@ -23,67 +23,85 @@ export async function getUsers() {
 }
 
 export async function getUserById(id: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', id)
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', id)
+            .single()
 
-    if (error) {
-        console.error('Error fetching user by id:', error)
+        if (error) {
+            console.error('Error fetching user by id:', error)
+            return null
+        }
+
+        return data as User
+    } catch (err) {
+        console.error('Fatal error in getUserById:', err)
         return null
     }
-
-    return data as User
 }
 
 export async function updateUser(id: string, user: Partial<User>) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('users')
-        .update(user)
-        .eq('id', id)
-        .select()
-        .single()
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('users')
+            .update(user)
+            .eq('id', id)
+            .select()
+            .single()
 
-    if (error) throw error
-    return data
+        if (error) {
+            console.error('Error updating user:', error)
+            throw error
+        }
+        return data
+    } catch (err) {
+        console.error('Fatal error in updateUser:', err)
+        throw err
+    }
 }
 
 export async function getTeamMetrics() {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    // In a real app, this would be a complex aggregation or a RPC call
-    // For now, let's fetch users and join with contracts/customers
-    const { data: users, error } = await supabase
-        .from('users')
-        .select(`
-            id,
-            full_name,
-            email,
-            role,
-            avatar_url,
-            is_active,
-            customers:customers(count),
-            contracts:contracts(count, total_amount)
-        `)
+        // In a real app, this would be a complex aggregation or a RPC call
+        // For now, let's fetch users and join with contracts/customers
+        const { data: users, error } = await supabase
+            .from('users')
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                avatar_url,
+                is_active,
+                customers:customers(count),
+                contracts:contracts(count, total_amount)
+            `)
 
-    if (error) {
-        console.error('Error fetching team metrics:', error)
+        if (error) {
+            console.error('Error fetching team metrics:', error)
+            return []
+        }
+
+        return users.map(user => {
+            const contractsCount = user.contracts?.length || 0
+            const revenue = user.contracts?.reduce((sum: number, c: { total_amount: number }) => sum + (c.total_amount || 0), 0) || 0
+
+            return {
+                ...user,
+                customers: user.customers?.length || 0,
+                contracts: contractsCount,
+                revenue: revenue,
+                target: 500000000, // Placeholder target
+            }
+        })
+    } catch (err) {
+        console.error('Fatal error in getTeamMetrics:', err)
         return []
     }
-
-    return users.map(user => {
-        const contractsCount = user.contracts?.length || 0
-        const revenue = user.contracts?.reduce((sum: number, c: { total_amount: number }) => sum + (c.total_amount || 0), 0) || 0
-
-        return {
-            ...user,
-            customers: user.customers?.length || 0, // count is returned as array if not head:true
-            contracts: contractsCount,
-            revenue: revenue,
-            target: 500000000, // Placeholder target
-        }
-    })
 }

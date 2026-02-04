@@ -198,33 +198,38 @@ export async function getDocumentTemplates() {
 
 // Get template by ID
 export async function getTemplateById(id: string) {
-    if (id.startsWith('default-')) {
-        const index = parseInt(id.replace('default-', ''))
-        const template = defaultTemplates[index]
-        if (template) {
-            return {
-                ...template,
-                id,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            } as DocumentTemplate
+    try {
+        if (id.startsWith('default-')) {
+            const index = parseInt(id.replace('default-', ''))
+            const template = defaultTemplates[index]
+            if (template) {
+                return {
+                    ...template,
+                    id,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                } as DocumentTemplate
+            }
+            return null
         }
+
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('document_templates')
+            .select('*')
+            .eq('id', id)
+            .single()
+
+        if (error) {
+            console.error('Error fetching template:', error)
+            return null
+        }
+
+        return data as DocumentTemplate
+    } catch (err) {
+        console.error('Fatal error in getTemplateById:', err)
         return null
     }
-
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('document_templates')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-    if (error) {
-        console.error('Error fetching template:', error)
-        return null
-    }
-
-    return data as DocumentTemplate
 }
 
 // Fill template with variables
@@ -244,106 +249,107 @@ export async function generateDocument(
     contractId?: string,
     additionalVariables?: Record<string, string>
 ) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    // Get template
-    const template = await getTemplateById(templateId)
-    if (!template) throw new Error('Template not found')
+        // Get template
+        const template = await getTemplateById(templateId)
+        if (!template) throw new Error('Template not found')
 
-    // Get customer data
-    const { data: customer } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('id', customerId)
-        .single()
-
-    if (!customer) throw new Error('Customer not found')
-
-    // Get contract data if provided
-    let contract = null
-    if (contractId) {
-        const { data } = await supabase
-            .from('contracts')
-            .select('*, milestones:contract_milestones(*)')
-            .eq('id', contractId)
+        // Get customer data
+        const { data: customer, error: custError } = await supabase
+            .from('customers')
+            .select('*')
+            .eq('id', customerId)
             .single()
-        contract = data
+
+        if (custError || !customer) throw new Error('Customer not found')
+
+        // Get contract data if provided
+        let contract = null
+        if (contractId) {
+            const { data } = await supabase
+                .from('contracts')
+                .select('*, milestones:contract_milestones(*)')
+                .eq('id', contractId)
+                .single()
+            contract = data
+        }
+
+        // Build variables map
+        const variables: Record<string, string> = {
+            // Customer variables
+            customer_company: customer.company_name || '',
+            customer_address: customer.address || '',
+            customer_tax_code: customer.tax_code || '',
+            customer_email: customer.email || '',
+            customer_phone: customer.phone || '',
+            customer_representative: '', // To be filled by user
+            customer_position: '',
+
+            // Provider variables (default company info)
+            provider_company: 'Công ty TNHH Tulie Lab',
+            provider_address: 'Tầng 5, Tòa nhà ABC, Quận 1, TP.HCM',
+            provider_tax_code: '0123456789',
+            provider_representative: '',
+            provider_position: 'Giám đốc',
+
+            // Date variables
+            contract_date: new Date().toLocaleDateString('vi-VN'),
+            location: 'TP. Hồ Chí Minh',
+
+            ...additionalVariables
+        }
+
+        // Add contract variables if available
+        if (contract) {
+            variables.contract_number = contract.contract_number || ''
+            variables.total_amount = new Intl.NumberFormat('vi-VN').format(contract.total_value || 0)
+            variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
+            variables.end_date = contract.end_date ? new Date(contract.end_date).toLocaleDateString('vi-VN') : ''
+            variables.service_description = contract.description || ''
+        }
+
+        // Fill the template
+        const filledContent = await fillTemplate(template.content, variables)
+
+        return {
+            template,
+            customer,
+            contract,
+            filledContent,
+            variables,
+            missingVariables: template.variables.filter(v => !variables[v] || variables[v] === '')
+        }
     }
-
-    // Build variables map
-    const variables: Record<string, string> = {
-        // Customer variables
-        customer_company: customer.company_name || '',
-        customer_address: customer.address || '',
-        customer_tax_code: customer.tax_code || '',
-        customer_email: customer.email || '',
-        customer_phone: customer.phone || '',
-        customer_representative: '', // To be filled by user
-        customer_position: '',
-
-        // Provider variables (default company info)
-        provider_company: 'Công ty TNHH Tulie Lab',
-        provider_address: 'Tầng 5, Tòa nhà ABC, Quận 1, TP.HCM',
-        provider_tax_code: '0123456789',
-        provider_representative: '',
-        provider_position: 'Giám đốc',
-
-        // Date variables
-        contract_date: new Date().toLocaleDateString('vi-VN'),
-        location: 'TP. Hồ Chí Minh',
-
-        ...additionalVariables
-    }
-
-    // Add contract variables if available
-    if (contract) {
-        variables.contract_number = contract.contract_number || ''
-        variables.total_amount = new Intl.NumberFormat('vi-VN').format(contract.total_value || 0)
-        variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
-        variables.end_date = contract.end_date ? new Date(contract.end_date).toLocaleDateString('vi-VN') : ''
-        variables.service_description = contract.description || ''
-    }
-
-    // Fill the template
-    const filledContent = await fillTemplate(template.content, variables)
-
-    return {
-        template,
-        customer,
-        contract,
-        filledContent,
-        variables,
-        missingVariables: template.variables.filter(v => !variables[v] || variables[v] === '')
-    }
-}
 
 // Create a shareable bundle
 export async function createDocumentBundle(
-    customerId: string,
-    contractId: string,
-    templateIds: string[],
-    name: string
-) {
-    // Generate a secure share token
-    const shareToken = crypto.randomUUID().replace(/-/g, '')
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+        customerId: string,
+        contractId: string,
+        templateIds: string[],
+        name: string
+    ) {
+        // Generate a secure share token
+        const shareToken = crypto.randomUUID().replace(/-/g, '')
+        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
 
-    const bundle: DocumentBundle = {
-        id: crypto.randomUUID(),
-        name,
-        customer_id: customerId,
-        contract_id: contractId,
-        templates: templateIds,
-        generated_documents: [],
-        share_token: shareToken,
-        expires_at: expiresAt.toISOString(),
-        created_at: new Date().toISOString()
-    }
+        const bundle: DocumentBundle = {
+            id: crypto.randomUUID(),
+            name,
+            customer_id: customerId,
+            contract_id: contractId,
+            templates: templateIds,
+            generated_documents: [],
+            share_token: shareToken,
+            expires_at: expiresAt.toISOString(),
+            created_at: new Date().toISOString()
+        }
 
-    // In a real implementation, save to database
-    // For now, return the bundle structure
-    return {
-        bundle,
-        shareUrl: `/portal/${shareToken}`
+        // In a real implementation, save to database
+        // For now, return the bundle structure
+        return {
+            bundle,
+            shareUrl: `/portal/${shareToken}`
+        }
     }
-}
