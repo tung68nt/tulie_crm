@@ -321,11 +321,10 @@ export async function generateDocument(
             variables,
             missingVariables: template.variables.filter(v => !variables[v] || variables[v] === '')
         }
-    }
     } catch (err: any) {
-    console.error('Fatal error in generateDocument:', err)
-    throw new Error(err.message || 'Lỗi hệ thống khi tạo tài liệu')
-}
+        console.error('Fatal error in generateDocument:', err)
+        throw new Error(err.message || 'Lỗi hệ thống khi tạo tài liệu')
+    }
 }
 
 // Create a shareable bundle

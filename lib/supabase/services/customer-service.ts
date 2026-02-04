@@ -46,6 +46,33 @@ export async function getCustomerById(id: string) {
 export async function createCustomer(customer: Partial<Customer>) {
     try {
         const supabase = await createClient()
+
+        // 1. Ensure user exists in 'users' table if assigned_to/created_by is provided
+        // This prevents foreign key constraint errors
+        const userId = customer.created_by || customer.assigned_to
+        if (userId) {
+            const { data: userExists } = await supabase
+                .from('users')
+                .select('id')
+                .eq('id', userId)
+                .single()
+
+            if (!userExists) {
+                console.log('User not found in public.users, syncing from auth...')
+                const { data: { user: authUser } } = await supabase.auth.getUser()
+                if (authUser && authUser.id === userId) {
+                    await supabase.from('users').insert([{
+                        id: authUser.id,
+                        email: authUser.email,
+                        full_name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0],
+                        role: 'staff',
+                        is_active: true
+                    }])
+                }
+            }
+        }
+
+        // 2. Insert customer
         const { data, error } = await supabase
             .from('customers')
             .insert([customer])
