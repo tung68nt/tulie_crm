@@ -57,8 +57,8 @@ export function Sidebar() {
             <div className="flex h-16 items-center justify-between border-b px-4">
                 {!isCollapsed && (
                     <Link href="/" className="flex items-center gap-3">
-                        <img src="/logo.png" alt="Tulie" className="h-8 w-auto object-contain" />
-                        <span className="text-xl font-bold tracking-tight">Tulie CRM</span>
+                        <img src="/logo.png" alt="Tulie" className="h-10 w-auto object-contain" />
+                        <span className="text-2xl font-bold tracking-tight">Tulie CRM</span>
                     </Link>
                 )}
                 {isCollapsed && (
