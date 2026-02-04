@@ -65,30 +65,51 @@ export default function NewCustomerPage() {
 
     const onSubmit = async (data: CustomerFormData) => {
         setIsLoading(true)
+        console.log('[NewCustomer] Submitting form data:', data)
         const supabase = createClient()
 
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            console.log('[NewCustomer] Fetching authenticated user...')
+            const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+            if (authError) {
+                console.error('[NewCustomer] Auth error:', authError)
+                throw new Error('Lỗi xác thực: ' + authError.message)
+            }
 
             if (!user) {
+                console.warn('[NewCustomer] No user found')
                 toast.error('Bạn cần đăng nhập để thực hiện thao tác này')
+                setIsLoading(false)
                 return
             }
 
-            await createCustomer({
+            console.log('[NewCustomer] Calling server action createCustomer with user ID:', user.id)
+            const result = await createCustomer({
                 ...data,
                 assigned_to: user.id,
                 created_by: user.id,
             })
-            toast.success('Thêm khách hàng thành công')
-            router.push('/customers')
-            router.refresh()
+
+            console.log('[NewCustomer] Server action result:', result)
+
+            if (result) {
+                toast.success('Thêm khách hàng thành công')
+                router.push('/customers')
+                router.refresh()
+            } else {
+                throw new Error('Không nhận được phản hồi từ hệ thống')
+            }
         } catch (error: any) {
-            console.error('Failed to create customer:', error)
+            console.error('[NewCustomer] Caught error:', error)
             const message = error.message || 'Có lỗi xảy ra khi thêm khách hàng'
             toast.error(message)
+            setIsLoading(false) // Ensure loading is stopped on error
         } finally {
-            setIsLoading(false)
+            console.log('[NewCustomer] Submission process finished')
+            // Don't set isLoading(false) here if we're redirecting, it might cause a flicker
+            // But if we're still on the page, we need it. 
+            // The catch block already handles the stays-on-page case.
         }
     }
 
