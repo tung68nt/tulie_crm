@@ -28,9 +28,9 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
         grand_total: 0
     })
 
-    const handleFormChange = (data: any) => {
+    const handleFormChange = useCallback((data: any) => {
         setFormData(data)
-    }
+    }, [])
 
     const handleSave = async (send: boolean = false) => {
         if (!formData.customer_id) {
