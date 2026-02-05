@@ -10,7 +10,7 @@ import {
     FileSignature
 } from 'lucide-react'
 import Link from 'next/link'
-import { AreaChart, Area, BarChart, Bar, ResponsiveContainer } from 'recharts'
+import { AreaChart, Area, BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 
 interface ReportCardsProps {
     chartData: any[]
@@ -56,6 +56,27 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                                             <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                    <XAxis
+                                        dataKey="name"
+                                        hide={false}
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: '#64748b' }}
+                                    />
+                                    <YAxis
+                                        hide={false}
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: '#64748b' }}
+                                        tickFormatter={(value) => `${value / 1000000}tr`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        formatter={(value: any) => [formatCurrency(value), 'Doanh thu']}
+                                    />
                                     <Area type="monotone" dataKey="revenue" stroke="#22c55e" fillOpacity={1} fill="url(#colorSales)" />
                                 </AreaChart>
                             </ResponsiveContainer>
@@ -91,6 +112,12 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                         <div className="h-[60px] w-full mt-auto">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={customerPreviewData}>
+                                    <XAxis hide={true} dataKey="name" />
+                                    <YAxis hide={false} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: '#64748b' }} />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                    />
                                     <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -169,6 +196,27 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                                             <stop offset="95%" stopColor="#eab308" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                    <XAxis
+                                        dataKey="name"
+                                        hide={false}
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: '#64748b' }}
+                                    />
+                                    <YAxis
+                                        hide={false}
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fill: '#64748b' }}
+                                        tickFormatter={(value) => `${value / 1000000}tr`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        formatter={(value: any) => [formatCurrency(value), 'Lợi nhuận']}
+                                    />
                                     <Area type="monotone" dataKey="profit" stroke="#eab308" fillOpacity={1} fill="url(#colorProfit)" />
                                 </AreaChart>
                             </ResponsiveContainer>
