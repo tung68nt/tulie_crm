@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "Tulie CRM - Quản trị Khách hàng",
   description: "Hệ thống CRM toàn diện cho Tulie Agency - Quản lý khách hàng, báo giá, hợp đồng và tài chính",
   keywords: ["CRM", "Tulie Agency", "quản lý khách hàng", "báo giá", "hợp đồng"],
+  icons: {
+    icon: "/logo-icon.png",
+  },
 };
 
 import { Toaster } from 'sonner'
