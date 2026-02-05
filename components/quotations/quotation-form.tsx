@@ -141,7 +141,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
     // Propagate changes to parent for preview
     useEffect(() => {
         if (onChange) {
-            const currentCustomer = customers.find(c => c.id === customerId)
+            const currentCustomer = customers?.find(c => c.id === customerId)
             onChange({
                 customer_id: customerId,
                 customer: currentCustomer,
