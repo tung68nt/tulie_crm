@@ -180,7 +180,8 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
  // Default section for items without one
  const DEFAULT_SECTION = 'Chi tiết';
 
- quotation.items.forEach((item: any) => {
+ const items = quotation.items || [];
+  items.forEach((item: any) => {
  const sectionName = item.section_name || DEFAULT_SECTION;
  if (!sections[sectionName]) {
  sections[sectionName] = [];

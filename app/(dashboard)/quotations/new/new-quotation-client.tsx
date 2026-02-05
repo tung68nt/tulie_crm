@@ -137,6 +137,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
  onChange={handleFormChange}
  onSave={() => handleSave(true)}
  isLoading={isLoading}
+hideHeader={true}
  />
 
  {/* Preview Modal */}

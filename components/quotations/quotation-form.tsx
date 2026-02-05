@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -137,6 +137,27 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
     const subtotal = items.reduce((sum, item) => sum + (Number(item.total) || 0), 0)
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
+
+    // Propagate changes to parent for preview
+    useEffect(() => {
+        if (onChange) {
+            const currentCustomer = customers.find(c => c.id === customerId)
+            onChange({
+                customer_id: customerId,
+                customer: currentCustomer,
+                title,
+                terms,
+                notes,
+                vat_percent: vatPercent,
+                vat_amount: vatAmount,
+                subtotal: subtotal,
+                grand_total: totalAmount,
+                total_amount: totalAmount,
+                items,
+                valid_days: validityDays
+            })
+        }
+    }, [customerId, title, terms, notes, vatPercent, items, validityDays, subtotal, vatAmount, totalAmount, onChange, customers])
 
     const handleSave = async (sendAfterSave = false) => {
         if (onSave) {
