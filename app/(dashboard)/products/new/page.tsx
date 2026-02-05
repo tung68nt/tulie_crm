@@ -42,12 +42,23 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>
 
 import { createProduct } from '@/lib/supabase/services/product-service'
+import { getProductCategories } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
+import { useEffect } from 'react'
 
 export default function NewProductPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [isActive, setIsActive] = useState(true)
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
+
+    useEffect(() => {
+        async function loadCategories() {
+            const data = await getProductCategories()
+            setCategories(data)
+        }
+        loadCategories()
+    }, [])
 
     const {
         register,

@@ -29,20 +29,36 @@ CREATE TABLE IF NOT EXISTS public.customers (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Bảng Sản phẩm & Dịch vụ
+-- 3. Bảng Danh mục sản phẩm
+CREATE TABLE IF NOT EXISTS public.product_categories (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 4. Bảng Sản phẩm & Dịch vụ
 CREATE TABLE IF NOT EXISTS public.products (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     sku TEXT UNIQUE,
     description TEXT,
     price DECIMAL(15,2) DEFAULT 0,
+    cost_price DECIMAL(15,2) DEFAULT 0,
     unit TEXT DEFAULT 'Gói',
     category TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Bảng Báo giá (Quotations)
+-- 5. Bảng Cài đặt hệ thống (Dynamic Statuses, Units, etc.)
+CREATE TABLE IF NOT EXISTS public.system_settings (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 6. Bảng Báo giá (Quotations)
 CREATE TABLE IF NOT EXISTS public.quotations (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     quotation_number TEXT UNIQUE NOT NULL,
@@ -133,7 +149,7 @@ CREATE TABLE IF NOT EXISTS public.document_templates (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 10. Bảng Thông báo (Notifications)
+-- 12. Bảng Thông báo (Notifications)
 CREATE TABLE IF NOT EXISTS public.notifications (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES public.users(id),
@@ -156,4 +172,5 @@ ALTER TABLE public.invoices DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.expenses DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.activity_log DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.document_templates DISABLE ROW LEVEL SECURITY;
-ALTER TABLE public.notifications DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_categories DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.system_settings DISABLE ROW LEVEL SECURITY;
