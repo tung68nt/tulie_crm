@@ -78,7 +78,7 @@ export interface Product {
   category?: string
   description?: string
   unit: string
-  unit_price: number
+  price: number
   cost_price?: number
   is_active: boolean
   created_at: string
@@ -137,7 +137,8 @@ export interface QuotationItem {
   description?: string
   quantity: number
   unit: string
-  unit_price: number
+  price: number
+  cost_price?: number
   discount_percent?: number
   vat_percent?: number
   total: number

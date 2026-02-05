@@ -47,9 +47,16 @@ export async function getProductById(id: string) {
 export async function createProduct(product: Partial<Product>) {
     try {
         const supabase = await createClient()
+        // Map unit_price to price for database schema compatibility if needed
+        const dbProduct = {
+            ...product,
+            price: product.price || (product as any).unit_price
+        }
+        delete (dbProduct as any).unit_price
+
         const { data, error } = await supabase
             .from('products')
-            .insert([product])
+            .insert([dbProduct])
             .select()
             .single()
 

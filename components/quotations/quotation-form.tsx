@@ -32,6 +32,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency } from '@/lib/utils/format'
 import { ArrowLeft, Loader2, Save, Plus, Trash2, Send } from 'lucide-react'
+import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
 import { toast } from 'sonner'
@@ -73,7 +74,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                 description: '',
                 quantity: 1,
                 unit: 'cái',
-                unit_price: 0,
+                price: 0,
                 discount_percent: 0,
                 total: 0,
                 sort_order: 0
@@ -89,7 +90,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
             description: '',
             quantity: 1,
             unit: 'cái',
-            unit_price: 0,
+            price: 0,
             discount_percent: 0,
             total: 0,
             sort_order: items.length
@@ -114,18 +115,18 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                     const product = products.find((p) => p.id === value)
                     if (product) {
                         updated.name = product.name
-                        updated.unit_price = product.unit_price
+                        updated.price = product.price
                         updated.unit = product.unit
                         updated.description = product.description || ''
                     }
                 }
 
                 // Recalculate total
-                if (['quantity', 'unit_price', 'discount_percent'].includes(field)) {
+                if (['quantity', 'price', 'discount_percent'].includes(field)) {
                     const qty = Number(updated.quantity) || 0
-                    const price = Number(updated.unit_price) || 0
+                    const priceVal = Number(updated.price) || 0
                     const discount = Number(updated.discount_percent) || 0
-                    const baseTotal = qty * price
+                    const baseTotal = qty * priceVal
                     updated.total = baseTotal - (baseTotal * discount / 100)
                 }
 
@@ -320,10 +321,10 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                <Input
-                                                    type="number"
-                                                    value={item.unit_price}
-                                                    onChange={(e) => updateItem(item.id, 'unit_price', parseInt(e.target.value) || 0)}
+                                                <PriceInput
+                                                    value={item.price}
+                                                    onChange={(val) => updateItem(item.id, 'price', val)}
+                                                    className="h-9"
                                                 />
                                             </TableCell>
                                             <TableCell>

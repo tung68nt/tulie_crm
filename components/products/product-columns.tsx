@@ -61,7 +61,7 @@ export const productColumns: ColumnDef<Product>[] = [
         },
     },
     {
-        accessorKey: 'unit_price',
+        accessorKey: 'price',
         header: ({ column }) => {
             return (
                 <Button
@@ -74,7 +74,7 @@ export const productColumns: ColumnDef<Product>[] = [
             )
         },
         cell: ({ row }) => {
-            const price = row.getValue('unit_price') as number
+            const price = row.getValue('price') as number
             const unit = row.original.unit
             return (
                 <div>
@@ -91,7 +91,7 @@ export const productColumns: ColumnDef<Product>[] = [
             const cost = row.getValue('cost_price') as number | undefined
             if (!cost) return <span className="text-muted-foreground">-</span>
 
-            const price = row.original.unit_price
+            const price = row.original.price
             const margin = ((price - cost) / price) * 100
 
             return (
