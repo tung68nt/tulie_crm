@@ -60,6 +60,12 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
     const [notes, setNotes] = useState(quotation?.notes || '')
     const [vatPercent, setVatPercent] = useState(quotation?.vat_percent || 10)
 
+    // Bank info state
+    const [bankName, setBankName] = useState(quotation?.bank_name || '')
+    const [bankAccountNo, setBankAccountNo] = useState(quotation?.bank_account_no || '')
+    const [bankAccountName, setBankAccountName] = useState(quotation?.bank_account_name || '')
+    const [bankBranch, setBankBranch] = useState(quotation?.bank_branch || '')
+
     // Calculate valid_until to days for the input
     const createdDate = quotation ? new Date(quotation.created_at) : new Date()
     const validUntilDate = quotation ? new Date(quotation.valid_until) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -174,10 +180,14 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                 grand_total: totalAmount,
                 total_amount: totalAmount,
                 items,
-                valid_days: validityDays
+                valid_days: validityDays,
+                bank_name: bankName,
+                bank_account_no: bankAccountNo,
+                bank_account_name: bankAccountName,
+                bank_branch: bankBranch
             })
         }
-    }, [customerId, title, terms, notes, vatPercent, items, validityDays, subtotal, vatAmount, totalAmount, onChange, customers])
+    }, [customerId, title, terms, notes, vatPercent, items, validityDays, subtotal, vatAmount, totalAmount, onChange, customers, bankName, bankAccountNo, bankAccountName, bankBranch])
 
     const handleSave = async (sendAfterSave = false) => {
         if (onSave) {
@@ -203,7 +213,11 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                 subtotal,
                 total_amount: totalAmount,
                 valid_until: validUntil.toISOString(),
-                status: sendAfterSave ? 'sent' : quotation.status
+                status: sendAfterSave ? 'sent' : quotation.status,
+                bank_name: bankName,
+                bank_account_no: bankAccountNo,
+                bank_account_name: bankAccountName,
+                bank_branch: bankBranch
             }
 
             await updateQuotation(quotation.id, updateData, items)
@@ -335,11 +349,11 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                     </Button>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="pl-2">
-                                                <div className="space-y-1">
+                                            <TableCell className="align-top pt-4">
+                                                <div className="space-y-2">
                                                     <div className="flex gap-1">
                                                         <Select value={item.product_id} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
-                                                            <SelectTrigger>
+                                                            <SelectTrigger className="h-9">
                                                                 <SelectValue placeholder="Chọn sản phẩm" />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -360,6 +374,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                                     updateItem(item.id, 'product_name', '')
                                                                 }}
                                                                 title="Xóa lựa chọn"
+                                                                className="h-9 w-9 shrink-0"
                                                             >
                                                                 <X className="h-4 w-4" />
                                                             </Button>
@@ -369,45 +384,48 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                         placeholder="Tên hoặc mô tả chi tiết"
                                                         value={item.product_name}
                                                         onChange={(e) => updateItem(item.id, 'product_name', e.target.value)}
-                                                        className="h-8 text-xs"
+                                                        className="h-9"
                                                     />
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="align-top pt-4">
                                                 <Input
                                                     placeholder="ĐVT"
                                                     value={item.unit}
                                                     onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
+                                                    className="h-9"
                                                 />
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="align-top pt-4">
                                                 <Input
                                                     type="number"
                                                     min={1}
                                                     value={item.quantity}
                                                     onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
+                                                    className="h-9"
                                                 />
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="align-top pt-4">
                                                 <PriceInput
                                                     value={item.unit_price}
                                                     onChange={(val) => updateItem(item.id, 'unit_price', val)}
                                                     className="h-9"
                                                 />
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="align-top pt-4">
                                                 <Input
                                                     type="number"
                                                     min={0}
                                                     max={100}
                                                     value={item.discount}
                                                     onChange={(e) => updateItem(item.id, 'discount', parseInt(e.target.value) || 0)}
+                                                    className="h-9"
                                                 />
                                             </TableCell>
-                                            <TableCell className="text-right font-medium">
+                                            <TableCell className="text-right font-medium align-top pt-6">
                                                 {formatCurrency(Number(item.total_price) || 0)}
                                             </TableCell>
-                                            <TableCell className="pr-6">
+                                            <TableCell className="pr-6 align-top pt-4">
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -438,6 +456,51 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="space-y-2">
                                 <Label>Ghi chú</Label>
                                 <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Bank Transfer Info */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Thông tin chuyển khoản</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label>Ngân hàng</Label>
+                                <Input
+                                    value={quotation?.bank_name || ''}
+                                    onChange={(e) => onChange && onChange({ bank_name: e.target.value })}
+                                    placeholder="VD: TECHCOMBANK"
+                                    id="bank_name"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Số tài khoản</Label>
+                                <Input
+                                    value={quotation?.bank_account_no || ''}
+                                    onChange={(e) => onChange && onChange({ bank_account_no: e.target.value })}
+                                    placeholder="VD: 190368686868"
+                                    id="bank_account_no"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Chủ tài khoản</Label>
+                                <Input
+                                    value={quotation?.bank_account_name || ''}
+                                    onChange={(e) => onChange && onChange({ bank_account_name: e.target.value })}
+                                    placeholder="VD: CONG TY TNHH TULIE"
+                                    id="bank_account_name"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Chi nhánh</Label>
+                                <Input
+                                    value={quotation?.bank_branch || ''}
+                                    onChange={(e) => onChange && onChange({ bank_branch: e.target.value })}
+                                    placeholder="VD: Thanh Xuân - Hà Nội"
+                                    id="bank_branch"
+                                />
                             </div>
                         </CardContent>
                     </Card>

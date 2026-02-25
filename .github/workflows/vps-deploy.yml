@@ -37,8 +37,10 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
              cd /www/wwwroot/tulie_crm
+             # Create a dummy .env if none exists so docker-compose doesn't fail, 
+             # but ideal case is relying on system envs or manual .env creation
              if [ ! -f .env ]; then
-               cp .env.local .env
-               sed -i 's|http://localhost:3000|https://crm.tulie.agency|g' .env
+               echo "NEXT_PUBLIC_APP_URL=https://crm.tulie.agency" > .env
+               echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
              fi
              docker compose -f docker-compose.prod.yml up -d --build
