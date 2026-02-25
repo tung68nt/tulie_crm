@@ -53,6 +53,20 @@ export default function NewProductPage() {
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
     const [units, setUnits] = useState<string[]>([])
 
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<ProductFormData>({
+        resolver: zodResolver(productSchema),
+        defaultValues: {
+            is_active: true,
+            unit: 'dự án',
+        },
+    })
+
     useEffect(() => {
         async function loadData() {
             const [catData, unitData] = await Promise.all([
@@ -68,21 +82,8 @@ export default function NewProductPage() {
             }
         }
         loadData()
-    }, [setValue])
-
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors },
-    } = useForm<ProductFormData>({
-        resolver: zodResolver(productSchema),
-        defaultValues: {
-            is_active: true,
-            unit: 'dự án',
-        },
-    })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const onSubmit = async (data: ProductFormData) => {
         setIsLoading(true)
