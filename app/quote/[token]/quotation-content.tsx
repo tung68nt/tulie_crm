@@ -41,18 +41,15 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
         }
     }
 
-    // For demo purposes and as requested: Apply 20% discount and 8% VAT if not set
-    const items = quotation.items?.map((item: any) => ({
-        ...item,
-        discount_percent: item.discount_percent || 20,
-        vat_percent: 8
-    })) || []
+    // Use items from quotation data
+    const items = quotation.items || []
 
+    // Calculations based on real data
     const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
-    const subtotalNet = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100)), 0)
+    const subtotalNet = items.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
     const totalDiscount = subtotalRaw - subtotalNet
-    const vatAmount = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100) * (item.vat_percent / 100)), 0)
-    const finalAmount = subtotalNet + vatAmount
+    const vatAmount = quotation.vat_amount || 0
+    const finalAmount = quotation.total_amount || (subtotalNet + vatAmount)
 
     const handlePrint = () => {
         window.print();
@@ -70,7 +67,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
             if (window.html2pdf) {
                 const opt = {
                     margin: 0,
-                    filename: `Bao_gia_${quotation.quote_number || 'draft'}.pdf`,
+                    filename: `Bao_gia_${quotation.quotation_number || 'draft'}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 2, useCORS: true },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -139,7 +136,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 <div className="space-y-0.5 text-[13px] text-slate-900">
                                     <p className="flex justify-end gap-1 h-4 items-center">
                                         <span className="font-medium text-slate-900">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span>
-                                        <span>{quotation.quote_number}</span>
+                                        <span>{quotation.quotation_number}</span>
                                     </p>
                                     <p className="flex justify-end gap-1 h-4 items-center">
                                         <span className="font-medium text-slate-900">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span>
@@ -212,7 +209,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                             <tr key={index} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">
                                                 <td className={`px-4 text-slate-700 align-top text-center ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{index + 1}</td>
                                                 <td className={`px-4 align-top ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>
-                                                    <p className="font-semibold text-slate-900">{item.name || "Dịch vụ"}</p>
+                                                    <p className="font-semibold text-slate-900">{item.product_name || "Dịch vụ"}</p>
                                                     {item.description && (
                                                         <p className="text-slate-700 text-[11px] mt-1 leading-relaxed whitespace-pre-line">{item.description}</p>
                                                     )}
@@ -221,7 +218,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                 <td className={`px-4 text-center text-slate-900 align-top ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{item.quantity}</td>
                                                 <td className={`px-4 text-right text-slate-900 align-top ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{formatCurrency(item.unit_price)}</td>
                                                 <td className={`px-4 text-center text-slate-700 align-top text-[11px] ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{item.vat_percent || 0}%</td>
-                                                <td className={`px-4 text-right font-medium text-slate-900 align-top ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{formatCurrency(item.total || (item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100)))}</td>
+                                                <td className={`px-4 text-right font-medium text-slate-900 align-top ${index === 0 ? 'pt-6 pb-2.5' : 'py-2.5'}`}>{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100)))}</td>
                                             </tr>
                                         ))}
                                     </tbody>

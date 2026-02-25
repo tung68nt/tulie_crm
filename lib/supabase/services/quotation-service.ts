@@ -34,7 +34,7 @@ export async function getQuotationById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('quotations')
-            .select('*, customer:customers(*), creator:users(*), items:quotation_items(*)')
+            .select('*, customer:customers!customer_id(*), creator:users!created_by(*), items:quotation_items(*)')
             .eq('id', id)
             .single()
 
@@ -46,6 +46,27 @@ export async function getQuotationById(id: string) {
         return data as Quotation
     } catch (err) {
         console.error('Fatal error in getQuotationById:', err)
+        return null
+    }
+}
+
+export async function getQuotationByToken(token: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('quotations')
+            .select('*, customer:customers!customer_id(*), creator:users!created_by(*), items:quotation_items(*)')
+            .eq('public_token', token)
+            .single()
+
+        if (error) {
+            console.error('Error fetching quotation by token:', error)
+            return null
+        }
+
+        return data as Quotation
+    } catch (err) {
+        console.error('Fatal error in getQuotationByToken:', err)
         return null
     }
 }
@@ -81,6 +102,7 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
             throw itemsError
         }
 
+        revalidatePath('/quotations')
         return quoteData
     } catch (err: any) {
         console.error('Fatal error in createQuotation:', err)
