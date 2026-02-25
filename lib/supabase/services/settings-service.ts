@@ -83,3 +83,12 @@ export async function updateSystemSetting(key: string, value: any) {
         throw err
     }
 }
+
+export async function getProductUnits() {
+    const units = await getSystemSetting('product_units')
+    return Array.isArray(units) ? units : ['Gói', 'Dự án', 'Tháng', 'Giờ', 'Thiết kế', 'Cái']
+}
+
+export async function updateProductUnits(units: string[]) {
+    return updateSystemSetting('product_units', units)
+}

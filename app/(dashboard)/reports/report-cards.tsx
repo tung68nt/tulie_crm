@@ -19,7 +19,7 @@ interface ReportCardsProps {
 
 export function ReportCards({ chartData, stats }: ReportCardsProps) {
     // Generate some simple data based on chartData for the small preview areas
-    const customerPreviewData = chartData.map(d => ({ value: Math.floor(Math.random() * 20) + 10 }))
+    const customerPreviewData = chartData.map(d => ({ name: d.name, value: Math.floor(Math.random() * 20) + 10 }))
 
     return (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -47,7 +47,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                                 <p className="font-semibold text-xl">{stats.contracts.active}</p>
                             </div>
                         </div>
-                        <div className="h-[60px] w-full mt-auto">
+                        <div className="h-[100px] w-full mt-auto">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={chartData}>
                                     <defs>
@@ -109,7 +109,7 @@ export function ReportCards({ chartData, stats }: ReportCardsProps) {
                                 <p className="font-semibold text-xl text-blue-600">+{stats.customers.new || 0}</p>
                             </div>
                         </div>
-                        <div className="h-[60px] w-full mt-auto">
+                        <div className="h-[100px] w-full mt-auto">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={customerPreviewData}>
                                     <XAxis hide={true} dataKey="name" />

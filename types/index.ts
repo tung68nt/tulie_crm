@@ -90,7 +90,7 @@ export type QuotationStatus = 'draft' | 'sent' | 'viewed' | 'accepted' | 'reject
 
 export interface Quotation {
   id: string
-  quote_number: string
+  quotation_number: string
   customer_id: string
   customer?: Customer
   created_by: string
@@ -133,15 +133,15 @@ export interface QuotationItem {
   quotation_id?: string
   product_id?: string
   product?: Product
-  name: string
+  product_name: string
   description?: string
   quantity: number
   unit: string
-  price: number
+  unit_price: number
   cost_price?: number
-  discount_percent?: number
+  discount?: number
   vat_percent?: number
-  total: number
+  total_price: number
   sort_order: number // To order items within a section
   section_name?: string // To group items (e.g., "Design", "Printing")
 }

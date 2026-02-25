@@ -42,7 +42,7 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>
 
 import { createProduct } from '@/lib/supabase/services/product-service'
-import { getProductCategories } from '@/lib/supabase/services/settings-service'
+import { getProductCategories, getProductUnits } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
 
@@ -51,14 +51,24 @@ export default function NewProductPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [isActive, setIsActive] = useState(true)
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
+    const [units, setUnits] = useState<string[]>([])
 
     useEffect(() => {
-        async function loadCategories() {
-            const data = await getProductCategories()
-            setCategories(data)
+        async function loadData() {
+            const [catData, unitData] = await Promise.all([
+                getProductCategories(),
+                getProductUnits()
+            ])
+            setCategories(catData)
+            setUnits(unitData)
+
+            // Set default unit if available
+            if (unitData.length > 0) {
+                setValue('unit', unitData[0])
+            }
         }
-        loadCategories()
-    }, [])
+        loadData()
+    }, [setValue])
 
     const {
         register,
@@ -150,17 +160,16 @@ export default function NewProductPage() {
                                 <Label htmlFor="unit">
                                     Đơn vị tính <span className="text-destructive">*</span>
                                 </Label>
-                                <Select defaultValue="dự án" onValueChange={(value) => setValue('unit', value)}>
+                                <Select onValueChange={(value) => setValue('unit', value)}>
                                     <SelectTrigger>
-                                        <SelectValue />
+                                        <SelectValue placeholder="Chọn ĐVT" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="dự án">Dự án</SelectItem>
-                                        <SelectItem value="tháng">Tháng</SelectItem>
-                                        <SelectItem value="giờ">Giờ</SelectItem>
-                                        <SelectItem value="gói">Gói</SelectItem>
-                                        <SelectItem value="thiết kế">Thiết kế</SelectItem>
-                                        <SelectItem value="lần">Lần</SelectItem>
+                                        {units.map((u) => (
+                                            <SelectItem key={u} value={u}>
+                                                {u}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>

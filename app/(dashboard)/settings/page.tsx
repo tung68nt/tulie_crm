@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2 } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { getProductCategories, createProductCategory, deleteProductCategory, getSystemSetting, updateSystemSetting } from '@/lib/supabase/services/settings-service'
+import { getProductCategories, createProductCategory, deleteProductCategory, getSystemSetting, updateSystemSetting, getProductUnits, updateProductUnits } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
 
 export default function SettingsPage() {
@@ -26,12 +26,17 @@ export default function SettingsPage() {
     const [newCategory, setNewCategory] = useState('')
     const [isAddingCategory, setIsAddingCategory] = useState(false)
 
+    const [units, setUnits] = useState<string[]>([])
+    const [newUnit, setNewUnit] = useState('')
+    const [isSavingUnits, setIsSavingUnits] = useState(false)
+
     useEffect(() => {
         const saved = localStorage.getItem('company_settings')
         if (saved) {
             setCompanySettings(JSON.parse(saved))
         }
         loadCategories()
+        loadUnits()
     }, [])
 
     async function loadCategories() {
@@ -40,6 +45,15 @@ export default function SettingsPage() {
             setCategories(data)
         } catch (error) {
             console.error('Failed to load categories:', error)
+        }
+    }
+
+    async function loadUnits() {
+        try {
+            const data = await getProductUnits()
+            setUnits(data)
+        } catch (error) {
+            console.error('Failed to load units:', error)
         }
     }
 
@@ -76,6 +90,40 @@ export default function SettingsPage() {
         alert("Đã lưu thông tin công ty thành công!")
     }
 
+    const handleAddUnit = async () => {
+        if (!newUnit.trim()) return
+        if (units.includes(newUnit.trim())) {
+            toast.error('Đơn vị tính này đã tồn tại')
+            return
+        }
+
+        const updatedUnits = [...units, newUnit.trim()]
+        setIsSavingUnits(true)
+        try {
+            await updateProductUnits(updatedUnits)
+            setUnits(updatedUnits)
+            setNewUnit('')
+            toast.success('Đã thêm đơn vị tính mới')
+        } catch (error) {
+            toast.error('Lỗi khi lưu đơn vị tính')
+        } finally {
+            setIsSavingUnits(false)
+        }
+    }
+
+    const handleDeleteUnit = async (unitToDelete: string) => {
+        if (!confirm(`Bạn có chắc chắn muốn xóa đơn vị tính "${unitToDelete}"?`)) return
+
+        const updatedUnits = units.filter(u => u !== unitToDelete)
+        try {
+            await updateProductUnits(updatedUnits)
+            setUnits(updatedUnits)
+            toast.success('Đã xóa đơn vị tính')
+        } catch (error) {
+            toast.error('Lỗi khi xóa đơn vị tính')
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -86,54 +134,61 @@ export default function SettingsPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue="company" className="flex flex-col lg:flex-row gap-10">
-                <aside className="lg:w-64 space-y-4">
+            <Tabs defaultValue="company" className="flex flex-col lg:flex-row gap-8">
+                <aside className="lg:w-60 space-y-4">
                     <TabsList className="flex flex-col h-auto bg-transparent p-0 space-y-1 items-stretch border-none shadow-none">
                         <TabsTrigger
                             value="company"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Building2 className="h-4 w-4" />
                             Công ty
                         </TabsTrigger>
                         <TabsTrigger
                             value="categories"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Tag className="h-4 w-4" />
                             Danh mục
                         </TabsTrigger>
                         <TabsTrigger
+                            value="units"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                        >
+                            <Box className="h-4 w-4" />
+                            Đơn vị tính
+                        </TabsTrigger>
+                        <TabsTrigger
                             value="statuses"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <ListFilter className="h-4 w-4" />
                             Trạng thái
                         </TabsTrigger>
                         <TabsTrigger
                             value="notifications"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Bell className="h-4 w-4" />
                             Thông báo
                         </TabsTrigger>
                         <TabsTrigger
                             value="appearance"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Palette className="h-4 w-4" />
                             Giao diện
                         </TabsTrigger>
                         <TabsTrigger
                             value="security"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Shield className="h-4 w-4" />
                             Bảo mật
                         </TabsTrigger>
                         <TabsTrigger
                             value="data"
-                            className="justify-start gap-3 px-4 py-2.5 h-auto data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-all font-medium border border-transparent data-[state=active]:border-primary/20"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <DatabaseIcon className="h-4 w-4" />
                             Dữ liệu
@@ -260,6 +315,54 @@ export default function SettingsPage() {
                                     {categories.length === 0 && (
                                         <div className="p-8 text-center text-muted-foreground italic">
                                             Chưa có danh mục nào được tạo
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Units Settings */}
+                    <TabsContent value="units">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Đơn vị tính (ĐVT)</CardTitle>
+                                <CardDescription>
+                                    Quản lý các đơn vị tính cho sản phẩm (Gói, Giờ, Dự án...)
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="flex gap-4">
+                                    <div className="flex-1 space-y-2">
+                                        <Label htmlFor="new_unit">Tên đơn vị mới</Label>
+                                        <Input
+                                            id="new_unit"
+                                            placeholder="Ví dụ: Mét, Kg, Bộ..."
+                                            value={newUnit}
+                                            onChange={(e) => setNewUnit(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleAddUnit()}
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <Button onClick={handleAddUnit} disabled={isSavingUnits}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Thêm
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="border rounded-lg divide-y">
+                                    {units.map((unit) => (
+                                        <div key={unit} className="flex items-center justify-between p-4">
+                                            <span className="font-medium">{unit}</span>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDeleteUnit(unit)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {units.length === 0 && (
+                                        <div className="p-8 text-center text-muted-foreground italic">
+                                            Chưa có đơn vị tính nào được cấu hình
                                         </div>
                                     )}
                                 </div>

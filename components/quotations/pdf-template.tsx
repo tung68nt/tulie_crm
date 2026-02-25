@@ -242,15 +242,15 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                                 <View style={styles.tableRow} key={item.id}>
                                     <Text style={styles.col1}>{idx + 1}</Text>
                                     <View style={styles.col2}>
-                                        <Text style={styles.productName}>{item.name}</Text>
+                                        <Text style={styles.productName}>{item.product_name}</Text>
                                         {item.description && (
                                             <Text style={styles.productDesc}>{item.description}</Text>
                                         )}
                                     </View>
                                     <Text style={styles.col3}>{item.unit}</Text>
                                     <Text style={styles.col4}>{item.quantity}</Text>
-                                    <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.price)}</Text>
-                                    <Text style={styles.col6}>{new Intl.NumberFormat('vi-VN').format(item.total)}</Text>
+                                    <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)}</Text>
+                                    <Text style={styles.col6}>{new Intl.NumberFormat('vi-VN').format(item.total_price)}</Text>
                                 </View>
                             ))}
                         </View>

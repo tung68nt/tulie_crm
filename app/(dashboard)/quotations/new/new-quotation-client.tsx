@@ -14,14 +14,17 @@ import { createClient } from '@/lib/supabase/client'
 interface NewQuotationClientProps {
     initialCustomers: any[]
     initialProducts: any[]
+    units: string[]
+    preselectedCustomerId?: string
 }
 
-export default function NewQuotationClient({ initialCustomers, initialProducts }: NewQuotationClientProps) {
+export default function NewQuotationClient({ initialCustomers, initialProducts, units, preselectedCustomerId }: NewQuotationClientProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
 
     const [formData, setFormData] = useState<any>({
+        customer_id: preselectedCustomerId || '',
         items: [],
         vat_percent: 0,
         subtotal: 0,
@@ -55,7 +58,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
 
             const quotationData = {
                 customer_id: formData.customer_id,
-                quote_number: formData.quote_number,
+                quotation_number: `BG-${Date.now()}`,
                 status: send ? 'sent' : 'draft',
                 issue_date: new Date().toISOString(),
                 valid_until: new Date(Date.now() + (formData.valid_days || 30) * 24 * 60 * 60 * 1000).toISOString(),
@@ -73,15 +76,14 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
 
             const items = formData.items.map((item: any) => ({
                 product_id: item.product_id || null,
-                name: item.name,
-                description: item.description,
+                product_name: item.product_name || item.name || '',
+                description: item.description || '',
                 quantity: item.quantity,
                 unit: item.unit,
-                unit_price: item.unit_price,
-                discount_percent: item.discount_percent,
-                vat_percent: item.vat_percent,
-                total: item.total,
-                sort_order: item.sort_order
+                unit_price: item.unit_price || item.price || 0,
+                discount: item.discount || item.discount_percent || 0,
+                total_price: item.total_price || item.total || 0,
+                sort_order: item.sort_order || 0
             }))
 
             await createQuotation(quotationData as any, items)
@@ -134,8 +136,10 @@ export default function NewQuotationClient({ initialCustomers, initialProducts }
             <QuotationForm
                 customers={initialCustomers}
                 products={initialProducts}
+                units={units}
+                initialCustomerId={preselectedCustomerId}
                 onChange={handleFormChange}
-                onSave={() => handleSave(true)}
+                onSave={(send) => handleSave(send)}
                 isLoading={isLoading}
                 hideHeader={true}
             />

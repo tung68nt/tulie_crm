@@ -1,0 +1,44 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "."
+          target: "/www/wwwroot/tulie_crm"
+          rm: false
+          exclude: |
+            node_modules
+            .next
+            .git
+            .github
+
+      - name: Build and restart Docker containers
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+             cd /www/wwwroot/tulie_crm
+             if [ ! -f .env ]; then
+               cp .env.local .env
+               sed -i 's|http://localhost:3000|https://crm.tulie.agency|g' .env
+             fi
+             docker compose -f docker-compose.prod.yml up -d --build

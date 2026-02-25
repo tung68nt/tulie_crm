@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X } from 'lucide-react'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
@@ -41,18 +41,20 @@ interface QuotationFormProps {
     quotation?: Quotation
     customers: Customer[]
     products: Product[]
+    units: string[]
+    initialCustomerId?: string
     onChange?: (data: any) => void
-    onSave?: () => void
+    onSave?: (send: boolean) => void
     isLoading?: boolean
     hideHeader?: boolean
 }
 
-export function QuotationForm({ quotation, customers, products, onChange, onSave, isLoading: externalIsLoading, hideHeader = false }: QuotationFormProps) {
+export function QuotationForm({ quotation, customers, products, units, initialCustomerId, onChange, onSave, isLoading: externalIsLoading, hideHeader = false }: QuotationFormProps) {
     const router = useRouter()
     const [internalIsLoading, setInternalIsLoading] = useState(false)
     const isLoading = externalIsLoading || internalIsLoading
 
-    const [customerId, setCustomerId] = useState(quotation?.customer_id || '')
+    const [customerId, setCustomerId] = useState(quotation?.customer_id || initialCustomerId || '')
     const [title, setTitle] = useState(quotation?.title || '')
     const [terms, setTerms] = useState(quotation?.terms || '')
     const [notes, setNotes] = useState(quotation?.notes || '')
@@ -70,13 +72,13 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
             {
                 id: `temp-${Date.now()}`,
                 product_id: '',
-                name: '',
+                product_name: '',
                 description: '',
                 quantity: 1,
                 unit: 'cái',
-                price: 0,
-                discount_percent: 0,
-                total: 0,
+                unit_price: 0,
+                discount: 0,
+                total_price: 0,
                 sort_order: 0
             }
         ]
@@ -86,13 +88,13 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
         const newItem: Partial<QuotationItem> = {
             id: `temp-${Date.now()}`,
             product_id: '',
-            name: '',
+            product_name: '',
             description: '',
             quantity: 1,
             unit: 'cái',
-            price: 0,
-            discount_percent: 0,
-            total: 0,
+            unit_price: 0,
+            discount: 0,
+            total_price: 0,
             sort_order: items.length
         }
         setItems([...items, newItem])
@@ -102,6 +104,23 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
         if (items.length > 1) {
             setItems(items.filter((item) => item.id !== id))
         }
+    }
+
+    const moveItem = (index: number, direction: 'up' | 'down') => {
+        const newIndex = direction === 'up' ? index - 1 : index + 1
+        if (newIndex < 0 || newIndex >= items.length) return
+
+        const newItems = [...items]
+        const temp = newItems[index]
+        newItems[index] = newItems[newIndex]
+        newItems[newIndex] = temp
+
+        // Update sort_order
+        newItems.forEach((item, idx) => {
+            item.sort_order = idx
+        })
+
+        setItems(newItems)
     }
 
     const updateItem = (id: string | undefined, field: keyof QuotationItem, value: any) => {
@@ -114,20 +133,20 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                 if (field === 'product_id') {
                     const product = products.find((p) => p.id === value)
                     if (product) {
-                        updated.name = product.name
-                        updated.price = product.price
+                        updated.product_name = product.name
+                        updated.unit_price = product.price
                         updated.unit = product.unit
                         updated.description = product.description || ''
                     }
                 }
 
                 // Recalculate total
-                if (['quantity', 'price', 'discount_percent'].includes(field)) {
+                if (['quantity', 'unit_price', 'discount'].includes(field)) {
                     const qty = Number(updated.quantity) || 0
-                    const priceVal = Number(updated.price) || 0
-                    const discount = Number(updated.discount_percent) || 0
+                    const priceVal = Number(updated.unit_price) || 0
+                    const disc = Number(updated.discount) || 0
                     const baseTotal = qty * priceVal
-                    updated.total = baseTotal - (baseTotal * discount / 100)
+                    updated.total_price = baseTotal - (baseTotal * disc / 100)
                 }
 
                 return updated
@@ -135,7 +154,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
         )
     }
 
-    const subtotal = items.reduce((sum, item) => sum + (Number(item.total) || 0), 0)
+    const subtotal = items.reduce((sum, item) => sum + (Number(item.total_price) || 0), 0)
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
 
@@ -162,7 +181,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
 
     const handleSave = async (sendAfterSave = false) => {
         if (onSave) {
-            onSave()
+            onSave(sendAfterSave)
             return
         }
 
@@ -212,7 +231,7 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                         </Button>
                         <div>
                             <h1 className="text-3xl font-semibold">
-                                {quotation ? `Chỉnh sửa ${quotation.quote_number}` : "Tạo báo giá mới"}
+                                {quotation ? `Chỉnh sửa ${quotation.quotation_number}` : "Tạo báo giá mới"}
                             </h1>
                             <p className="text-muted-foreground">
                                 {quotation ? "Cập nhật thông tin báo giá" : "Nhập thông tin cho báo giá mới"}
@@ -279,7 +298,9 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className="pl-6">Sản phẩm</TableHead>
+                                        <TableHead className="w-[40px]"></TableHead>
+                                        <TableHead className="pl-2">Sản phẩm</TableHead>
+                                        <TableHead className="w-[100px]">ĐVT</TableHead>
                                         <TableHead className="w-[70px]">SL</TableHead>
                                         <TableHead className="w-[130px]">Đơn giá</TableHead>
                                         <TableHead className="w-[70px]">CK%</TableHead>
@@ -288,29 +309,76 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {items.map((item) => (
+                                    {items.map((item, index) => (
                                         <TableRow key={item.id}>
-                                            <TableCell className="pl-6">
+                                            <TableCell className="pl-4">
+                                                <div className="flex flex-col gap-1">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-6 w-6"
+                                                        onClick={() => moveItem(index, 'up')}
+                                                        disabled={index === 0}
+                                                    >
+                                                        <ArrowUp className="h-3 w-3" />
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-6 w-6"
+                                                        onClick={() => moveItem(index, 'down')}
+                                                        disabled={index === items.length - 1}
+                                                    >
+                                                        <ArrowDown className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="pl-2">
                                                 <div className="space-y-1">
-                                                    <Select value={item.product_id} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Chọn sản phẩm" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {products.map((p) => (
-                                                                <SelectItem key={p.id} value={p.id}>
-                                                                    {p.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <div className="flex gap-1">
+                                                        <Select value={item.product_id} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Chọn sản phẩm" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {products.map((p) => (
+                                                                    <SelectItem key={p.id} value={p.id}>
+                                                                        {p.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        {item.product_id && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => {
+                                                                    updateItem(item.id, 'product_id', '')
+                                                                    updateItem(item.id, 'product_name', '')
+                                                                }}
+                                                                title="Xóa lựa chọn"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
                                                     <Input
                                                         placeholder="Tên hoặc mô tả chi tiết"
-                                                        value={item.name}
-                                                        onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                                                        value={item.product_name}
+                                                        onChange={(e) => updateItem(item.id, 'product_name', e.target.value)}
                                                         className="h-8 text-xs"
                                                     />
                                                 </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Input
+                                                    placeholder="ĐVT"
+                                                    value={item.unit}
+                                                    onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
+                                                />
                                             </TableCell>
                                             <TableCell>
                                                 <Input
@@ -322,8 +390,8 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                                             </TableCell>
                                             <TableCell>
                                                 <PriceInput
-                                                    value={item.price}
-                                                    onChange={(val) => updateItem(item.id, 'price', val)}
+                                                    value={item.unit_price}
+                                                    onChange={(val) => updateItem(item.id, 'unit_price', val)}
                                                     className="h-9"
                                                 />
                                             </TableCell>
@@ -332,12 +400,12 @@ export function QuotationForm({ quotation, customers, products, onChange, onSave
                                                     type="number"
                                                     min={0}
                                                     max={100}
-                                                    value={item.discount_percent}
-                                                    onChange={(e) => updateItem(item.id, 'discount_percent', parseInt(e.target.value) || 0)}
+                                                    value={item.discount}
+                                                    onChange={(e) => updateItem(item.id, 'discount', parseInt(e.target.value) || 0)}
                                                 />
                                             </TableCell>
                                             <TableCell className="text-right font-medium">
-                                                {formatCurrency(Number(item.total) || 0)}
+                                                {formatCurrency(Number(item.total_price) || 0)}
                                             </TableCell>
                                             <TableCell className="pr-6">
                                                 <Button
