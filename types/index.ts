@@ -131,7 +131,7 @@ export interface Quotation {
 export interface QuotationItem {
   id: string
   quotation_id?: string
-  product_id?: string
+  product_id?: string | null
   product?: Product
   product_name: string
   description?: string
@@ -143,7 +143,7 @@ export interface QuotationItem {
   vat_percent?: number
   total_price: number
   sort_order: number // To order items within a section
-  section_name?: string // To group items (e.g., "Design", "Printing")
+  section_name?: string | null // To group items (e.g., "Design", "Printing")
 }
 
 // Contract Types

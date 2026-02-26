@@ -95,11 +95,19 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
         // Filter out empty rows (no product_id and no product_name)
         const validItems = items.filter(item => item.product_id || (item.product_name && item.product_name.trim() !== ''))
 
-        // 2. Insert items
+        // 2. Insert items with specific field selection to ensure database compatibility
         const quoteItems = validItems.map(item => ({
-            ...item,
             quotation_id: quoteData.id,
-            product_id: item.product_id || null
+            product_id: item.product_id || null,
+            product_name: item.product_name || '',
+            description: item.description || '',
+            quantity: Number(item.quantity) || 0,
+            unit: item.unit || '',
+            unit_price: Number(item.unit_price) || 0,
+            discount: Number(item.discount) || 0,
+            total_price: Number(item.total_price) || 0,
+            sort_order: Number(item.sort_order) || 0,
+            section_name: item.section_name || null
         }))
 
         const { error: itemsError } = await supabase
@@ -155,10 +163,17 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
         const validItems = items.filter(item => item.product_id || (item.product_name && item.product_name.trim() !== ''))
 
         const quoteItems = validItems.map(item => ({
-            ...item,
-            id: undefined, // Let Supabase generate new IDs
             quotation_id: id,
-            product_id: item.product_id || null
+            product_id: item.product_id || null,
+            product_name: item.product_name || '',
+            description: item.description || '',
+            quantity: Number(item.quantity) || 0,
+            unit: item.unit || '',
+            unit_price: Number(item.unit_price) || 0,
+            discount: Number(item.discount) || 0,
+            total_price: Number(item.total_price) || 0,
+            sort_order: Number(item.sort_order) || 0,
+            section_name: item.section_name || null
         }))
 
         const { error: itemsError } = await supabase

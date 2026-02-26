@@ -140,25 +140,30 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
         setItems(newItems)
     }
 
-    const updateItem = (id: string | undefined, field: keyof QuotationItem, value: any) => {
-        setItems(
-            items.map((item) => {
+    const updateItem = (id: string | undefined, updates: Partial<QuotationItem>) => {
+        setItems(prevItems =>
+            prevItems.map((item) => {
                 if (item.id !== id) return item
-                const updated = { ...item, [field]: value }
+                const updated = { ...item, ...updates }
 
-                // Auto-fill product info
-                if (field === 'product_id') {
-                    const product = products.find((p) => p.id === value)
+                // Auto-fill product info if product_id is changed
+                if ('product_id' in updates) {
+                    const productId = updates.product_id
+                    const product = products.find((p) => p.id === productId)
                     if (product) {
                         updated.product_name = product.name
                         updated.unit_price = product.price
                         updated.unit = product.unit
                         updated.description = product.description || ''
+                    } else if (productId === '') {
+                        updated.product_name = ''
+                        updated.unit_price = 0
                     }
                 }
 
-                // Recalculate total
-                if (['quantity', 'unit_price', 'discount'].includes(field)) {
+                // Recalculate total - trigger if relevant fields changed
+                const calculationFields = ['quantity', 'unit_price', 'discount', 'product_id']
+                if (calculationFields.some(field => field in updates)) {
                     const qty = Number(updated.quantity) || 0
                     const priceVal = Number(updated.unit_price) || 0
                     const disc = Number(updated.discount) || 0
@@ -231,7 +236,21 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                 bank_branch: bankBranch
             }
 
-            await updateQuotation(quotation.id, updateData, items)
+            // Clean items to only include valid database columns
+            const cleanedItems = items.map(item => ({
+                product_id: item.product_id || null,
+                product_name: item.product_name || '',
+                description: item.description || '',
+                quantity: Number(item.quantity) || 0,
+                unit: item.unit || '',
+                unit_price: Number(item.unit_price) || 0,
+                discount: Number(item.discount) || 0,
+                total_price: Number(item.total_price) || 0,
+                sort_order: Number(item.sort_order) || 0,
+                section_name: item.section_name || null
+            }))
+
+            await updateQuotation(quotation.id, updateData, cleanedItems)
             toast.success('Cập nhật báo giá thành công')
             router.push(`/quotations/${quotation.id}`)
             router.refresh()
@@ -363,7 +382,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                             <TableCell className="align-top pt-4">
                                                 <div className="space-y-2">
                                                     <div className="flex gap-1">
-                                                        <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
+                                                        <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id, { product_id: v })}>
                                                             <SelectTrigger className="h-9">
                                                                 <SelectValue placeholder="Chọn sản phẩm" />
                                                             </SelectTrigger>
@@ -381,8 +400,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => {
-                                                                    updateItem(item.id, 'product_id', '')
-                                                                    updateItem(item.id, 'product_name', '')
+                                                                    updateItem(item.id, { product_id: '', product_name: '' })
                                                                 }}
                                                                 title="Xóa lựa chọn"
                                                                 className="h-9 w-9 shrink-0"
@@ -394,7 +412,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                     <Input
                                                         placeholder="Tên hoặc mô tả chi tiết"
                                                         value={item.product_name}
-                                                        onChange={(e) => updateItem(item.id, 'product_name', e.target.value)}
+                                                        onChange={(e) => updateItem(item.id, { product_name: e.target.value })}
                                                         className="h-9"
                                                     />
                                                 </div>
@@ -403,7 +421,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                 <Input
                                                     placeholder="ĐVT"
                                                     value={item.unit}
-                                                    onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
+                                                    onChange={(e) => updateItem(item.id, { unit: e.target.value })}
                                                     className="h-9"
                                                 />
                                             </TableCell>
@@ -412,14 +430,14 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                     type="number"
                                                     min={1}
                                                     value={item.quantity}
-                                                    onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
+                                                    onChange={(e) => updateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
                                                     className="h-9"
                                                 />
                                             </TableCell>
                                             <TableCell className="align-top pt-4">
                                                 <PriceInput
                                                     value={item.unit_price}
-                                                    onChange={(val) => updateItem(item.id, 'unit_price', val)}
+                                                    onChange={(val) => updateItem(item.id, { unit_price: val })}
                                                     className="h-9"
                                                 />
                                             </TableCell>
@@ -429,7 +447,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                                     min={0}
                                                     max={100}
                                                     value={item.discount}
-                                                    onChange={(e) => updateItem(item.id, 'discount', parseInt(e.target.value) || 0)}
+                                                    onChange={(e) => updateItem(item.id, { discount: parseInt(e.target.value) || 0 })}
                                                     className="h-9"
                                                 />
                                             </TableCell>
