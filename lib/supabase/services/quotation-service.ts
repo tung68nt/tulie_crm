@@ -75,10 +75,16 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
     try {
         const supabase = await createClient()
 
+        // Prepare quotation data (map empty UUIDs to null to prevent Postgres errors)
+        const quoteDataToInsert = {
+            ...quotation,
+            customer_id: quotation.customer_id || null
+        }
+
         // 1. Insert quotation
         const { data: quoteData, error: quoteError } = await supabase
             .from('quotations')
-            .insert([quotation])
+            .insert([quoteDataToInsert])
             .select()
             .single()
 
@@ -86,11 +92,14 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
             console.error('Error creating quotation:', quoteError)
             throw quoteError
         }
+        // Filter out empty rows (no product_id and no product_name)
+        const validItems = items.filter(item => item.product_id || (item.product_name && item.product_name.trim() !== ''))
 
         // 2. Insert items
-        const quoteItems = items.map(item => ({
+        const quoteItems = validItems.map(item => ({
             ...item,
-            quotation_id: quoteData.id
+            quotation_id: quoteData.id,
+            product_id: item.product_id || null
         }))
 
         const { error: itemsError } = await supabase
@@ -114,10 +123,16 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
     try {
         const supabase = await createClient()
 
+        // Prepare quotation data (map empty UUIDs to null)
+        const quoteDataToUpdate = {
+            ...quotation,
+            customer_id: quotation.customer_id || null
+        }
+
         // 1. Update quotation
         const { error: quoteError } = await supabase
             .from('quotations')
-            .update(quotation)
+            .update(quoteDataToUpdate)
             .eq('id', id)
 
         if (quoteError) {
@@ -136,10 +151,14 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
             throw deleteError
         }
 
-        const quoteItems = items.map(item => ({
+        // Filter out empty rows (no product_id and no product_name)
+        const validItems = items.filter(item => item.product_id || (item.product_name && item.product_name.trim() !== ''))
+
+        const quoteItems = validItems.map(item => ({
             ...item,
             id: undefined, // Let Supabase generate new IDs
-            quotation_id: id
+            quotation_id: id,
+            product_id: item.product_id || null
         }))
 
         const { error: itemsError } = await supabase
