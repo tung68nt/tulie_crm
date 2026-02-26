@@ -2,13 +2,7 @@ services:
   app:
     # Use platform linux/amd64 to match Cloud Run environment exactly
     platform: linux/amd64
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    image: ghcr.io/tung68nt/tulie_crm:latest
     ports:
       - "3000:3000"
     env_file:
