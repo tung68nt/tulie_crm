@@ -27,6 +27,7 @@ jobs:
             .next
             .git
             .github
+          command_timeout: 30m
 
       - name: Build and restart Docker containers
         uses: appleboy/ssh-action@v1.0.3
