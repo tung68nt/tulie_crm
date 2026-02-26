@@ -67,14 +67,25 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
     const [bankBranch, setBankBranch] = useState(quotation?.bank_branch || '')
 
     // Calculate valid_until to days for the input
-    const createdDate = quotation ? new Date(quotation.created_at) : new Date()
-    const validUntilDate = quotation ? new Date(quotation.valid_until) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    const diffTime = Math.abs(validUntilDate.getTime() - createdDate.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    const [validityDays, setValidityDays] = useState(diffDays || 30)
+    const [validityDays, setValidityDays] = useState(() => {
+        if (!quotation?.valid_until || !quotation?.created_at) return 30
+        try {
+            const createdDate = new Date(quotation.created_at)
+            const validUntilDate = new Date(quotation.valid_until)
+            if (isNaN(createdDate.getTime()) || isNaN(validUntilDate.getTime())) return 30
+            const diffTime = validUntilDate.getTime() - createdDate.getTime()
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+            return diffDays > 0 ? diffDays : 30
+        } catch (e) {
+            return 30
+        }
+    })
 
-    const [items, setItems] = useState<Partial<QuotationItem>[]>(
-        quotation?.items?.map(item => ({ ...item })) || [
+    const [items, setItems] = useState<Partial<QuotationItem>[]>(() => {
+        if (quotation?.items && Array.isArray(quotation.items) && quotation.items.length > 0) {
+            return quotation.items.map(item => ({ ...item }))
+        }
+        return [
             {
                 id: `temp-${Date.now()}`,
                 product_id: '',
@@ -88,7 +99,7 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                 sort_order: 0
             }
         ]
-    )
+    })
 
     const addItem = () => {
         const newItem: Partial<QuotationItem> = {
@@ -267,12 +278,12 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="grid gap-4 sm:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label>Khách hàng</Label>
-                                    <Select value={customerId} onValueChange={setCustomerId}>
+                                    <Select value={customerId || ""} onValueChange={setCustomerId}>
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Chọn khách hàng..." />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {customers.map((c) => (
+                                            {customers?.map((c) => (
                                                 <SelectItem key={c.id} value={c.id}>
                                                     {c.company_name}
                                                 </SelectItem>
@@ -352,12 +363,12 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                                             <TableCell className="align-top pt-4">
                                                 <div className="space-y-2">
                                                     <div className="flex gap-1">
-                                                        <Select value={item.product_id} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
+                                                        <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id, 'product_id', v)}>
                                                             <SelectTrigger className="h-9">
                                                                 <SelectValue placeholder="Chọn sản phẩm" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {products.map((p) => (
+                                                                {products?.map((p) => (
                                                                     <SelectItem key={p.id} value={p.id}>
                                                                         {p.name}
                                                                     </SelectItem>
@@ -469,8 +480,8 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="space-y-2">
                                 <Label>Ngân hàng</Label>
                                 <Input
-                                    value={quotation?.bank_name || ''}
-                                    onChange={(e) => onChange && onChange({ bank_name: e.target.value })}
+                                    value={bankName}
+                                    onChange={(e) => setBankName(e.target.value)}
                                     placeholder="VD: TECHCOMBANK"
                                     id="bank_name"
                                 />
@@ -478,8 +489,8 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="space-y-2">
                                 <Label>Số tài khoản</Label>
                                 <Input
-                                    value={quotation?.bank_account_no || ''}
-                                    onChange={(e) => onChange && onChange({ bank_account_no: e.target.value })}
+                                    value={bankAccountNo}
+                                    onChange={(e) => setBankAccountNo(e.target.value)}
                                     placeholder="VD: 190368686868"
                                     id="bank_account_no"
                                 />
@@ -487,8 +498,8 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="space-y-2">
                                 <Label>Chủ tài khoản</Label>
                                 <Input
-                                    value={quotation?.bank_account_name || ''}
-                                    onChange={(e) => onChange && onChange({ bank_account_name: e.target.value })}
+                                    value={bankAccountName}
+                                    onChange={(e) => setBankAccountName(e.target.value)}
                                     placeholder="VD: CONG TY TNHH TULIE"
                                     id="bank_account_name"
                                 />
@@ -496,8 +507,8 @@ export function QuotationForm({ quotation, customers, products, units, initialCu
                             <div className="space-y-2">
                                 <Label>Chi nhánh</Label>
                                 <Input
-                                    value={quotation?.bank_branch || ''}
-                                    onChange={(e) => onChange && onChange({ bank_branch: e.target.value })}
+                                    value={bankBranch}
+                                    onChange={(e) => setBankBranch(e.target.value)}
                                     placeholder="VD: Thanh Xuân - Hà Nội"
                                     id="bank_branch"
                                 />

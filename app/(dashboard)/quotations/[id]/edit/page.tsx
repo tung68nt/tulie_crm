@@ -6,28 +6,52 @@ import { notFound } from 'next/navigation'
 import { QuotationForm } from '@/components/quotations/quotation-form'
 
 interface EditQuotationPageProps {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }
 
-export default async function EditQuotationPage({ params }: any) {
-    const { id } = await params
-    const [quotation, customers, products, units] = await Promise.all([
-        getQuotationById(id),
-        getCustomers(),
-        getProducts(),
-        getProductUnits()
-    ])
-
-    if (!quotation) {
-        notFound()
+export default async function EditQuotationPage({ params }: EditQuotationPageProps) {
+    let id: string;
+    try {
+        const p = await params;
+        id = p.id;
+    } catch (e) {
+        console.error("Error awaiting params:", e);
+        return <div className="p-8 text-red-500">Lỗi tham số đường dẫn</div>;
     }
 
-    return (
-        <QuotationForm
-            quotation={quotation}
-            customers={customers}
-            products={products}
-            units={units}
-        />
-    )
+    try {
+        const [quotation, customers, products, units] = await Promise.all([
+            getQuotationById(id),
+            getCustomers(),
+            getProducts(),
+            getProductUnits()
+        ])
+
+        if (!quotation) {
+            console.error(`Quotation with ID ${id} not found`);
+            notFound()
+        }
+
+        return (
+            <QuotationForm
+                quotation={quotation}
+                customers={customers || []}
+                products={products || []}
+                units={units || []}
+            />
+        )
+    } catch (err) {
+        console.error('Fatal error rendering EditQuotationPage:', err)
+        return (
+            <div className="p-8 space-y-4">
+                <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200">
+                    <h2 className="font-semibold text-lg">Đã có lỗi xảy ra khi tải dữ liệu</h2>
+                    <p>Vui lòng thử lại hoặc liên hệ quản trị viên.</p>
+                </div>
+                <pre className="p-4 bg-gray-50 text-xs overflow-auto rounded-md">
+                    {JSON.stringify(err, null, 2)}
+                </pre>
+            </div>
+        )
+    }
 }
