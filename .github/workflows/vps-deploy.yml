@@ -42,20 +42,6 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Copy docker-compose via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT }}
-          source: "docker-compose.prod.yml"
-          target: "/www/wwwroot/tulie_crm"
-          command_timeout: 30m
-
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -65,7 +51,28 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           command_timeout: 30m
           script: |
+            mkdir -p /www/wwwroot/tulie_crm
             cd /www/wwwroot/tulie_crm
+            
+            # Write docker-compose.prod.yml directly to avoid SCP overhead
+            cat <<EOF > docker-compose.prod.yml
+            services:
+              app:
+                platform: linux/amd64
+                image: ghcr.io/${{ github.repository }}:latest
+                ports:
+                  - "3000:3000"
+                env_file:
+                  - .env
+                environment:
+                  - NODE_ENV=production
+                  - HOSTNAME=0.0.0.0
+                deploy:
+                  resources:
+                    limits:
+                      cpus: '1.0'
+                      memory: 2G
+            EOF
             
             # Login to GHCR on VPS
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
