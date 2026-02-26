@@ -16,3 +16,8 @@ services:
     environment:
       - NODE_ENV=production
       - HOSTNAME=0.0.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
