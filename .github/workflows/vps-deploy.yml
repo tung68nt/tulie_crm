@@ -35,6 +35,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
+          timeout: 30m
           script: |
              cd /www/wwwroot/tulie_crm
              # Create a dummy .env if none exists so docker-compose doesn't fail, 
@@ -42,5 +43,6 @@ jobs:
              if [ ! -f .env ]; then
                echo "NEXT_PUBLIC_APP_URL=https://crm.tulie.agency" > .env
                echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> .env
+               echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
              fi
              docker compose -f docker-compose.prod.yml up -d --build
