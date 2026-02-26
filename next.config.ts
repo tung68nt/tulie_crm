@@ -1,12 +1,15 @@
 import type { NextConfig } from "next";
 
-// @ts-expect-error - reactCompiler is valid but types might be strict
 const nextConfig: NextConfig = {
   reactCompiler: true,
   output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    // @ts-ignore - Lower memory usage by reducing ISR cache size
+    isrMemoryCacheSize: 0,
+  }
 };
 
 export default nextConfig;
