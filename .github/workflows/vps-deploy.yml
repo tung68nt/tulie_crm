@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT }}
-          timeout: 30m
+          command_timeout: 30m
           script: |
              cd /www/wwwroot/tulie_crm
              # Create a dummy .env if none exists so docker-compose doesn't fail, 
