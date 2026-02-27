@@ -71,7 +71,7 @@ export function QuotationCellAction({ data }: QuotationCellActionProps) {
                     <DialogHeader>
                         <DialogTitle>Bạn có chắc chắn muốn xóa?</DialogTitle>
                         <DialogDescription>
-                            Hành động này không thể hoàn tác. Báo giá <strong>{data.quote_number}</strong> sẽ bị xóa vĩnh viễn khỏi hệ thống.
+                            Hành động này không thể hoàn tác. Báo giá <strong>{data.quotation_number}</strong> sẽ bị xóa vĩnh viễn khỏi hệ thống.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>

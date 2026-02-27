@@ -50,7 +50,7 @@ export default function QuotationPreview({ data, open, onOpenChange }: Quotation
                     <div className="flex gap-2">
                         <PDFDownloadLink
                             document={<PdfTemplate quotation={previewData} />}
-                            fileName={`Bao_gia_${previewData.quote_number || 'new'}.pdf`}
+                            fileName={`Bao_gia_${previewData.quotation_number || 'new'}.pdf`}
                         >
                             {({ blob, url, loading, error }) => (
                                 <Button disabled={loading} size="sm">

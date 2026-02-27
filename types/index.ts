@@ -43,6 +43,7 @@ export interface Customer {
   assigned_user?: User
   last_contact_at?: string
   tags?: string[]
+  notes?: string
   created_by: string
   created_at: string
   updated_at: string

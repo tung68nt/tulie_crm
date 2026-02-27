@@ -89,7 +89,7 @@ function NewContractForm({ initialCustomers, initialQuotations }: NewContractCli
  if (quote) {
  setCustomerId(quote.customer_id)
  setTotalValue(quote.total_amount)
- setTitle(`Hợp đồng triển khai - ${quote.quote_number}`)
+ setTitle(`Hợp đồng triển khai - ${quote.quotation_number}`)
  }
  }
 
@@ -105,7 +105,7 @@ function NewContractForm({ initialCustomers, initialQuotations }: NewContractCli
  const contractData = {
  contract_number: `HD-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
  customer_id: customerId,
- quotation_id: quotationId || null,
+ quotation_id: quotationId || undefined,
  title,
  total_amount: totalValue,
  start_date: startDate?.toISOString(),
@@ -118,8 +118,8 @@ function NewContractForm({ initialCustomers, initialQuotations }: NewContractCli
  const milestoneData = milestones.map(m => ({
  name: m.name,
  amount: m.amount,
- due_date: m.due_date?.toISOString(),
- status: 'pending'
+ due_date: m.due_date?.toISOString() || "",
+ status: 'pending' as any
  }))
 
  await createContract(contractData as any, milestoneData)
@@ -170,7 +170,7 @@ function NewContractForm({ initialCustomers, initialQuotations }: NewContractCli
  <SelectContent>
  {initialQuotations.map((q) => (
  <SelectItem key={q.id} value={q.id}>
- {q.quote_number} - {formatCurrency(q.total_amount)}
+ {q.quotation_number} - {formatCurrency(q.total_amount)}
  </SelectItem>
  ))}
  </SelectContent>

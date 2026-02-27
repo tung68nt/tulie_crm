@@ -36,7 +36,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
                         href={`/quotations/${quotation.id}`}
                         className="font-medium hover:underline"
                     >
-                        {quotation.quote_number}
+                        {quotation.quotation_number}
                     </Link>
                     <p className="text-xs text-muted-foreground">
                         {formatDate(quotation.created_at)}

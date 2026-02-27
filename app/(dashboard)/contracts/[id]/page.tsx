@@ -221,7 +221,7 @@ export default async function ContractDetailPage({ params }: any) {
  <div>
  <p className="text-xs text-muted-foreground mb-1">Báo giá gốc</p>
  <Link href={`/quotations/${contract.quotation.id}`} className="font-medium hover:underline">
- {contract.quotation.quote_number}
+ {contract.quotation.quotation_number}
  </Link>
  </div>
  )}

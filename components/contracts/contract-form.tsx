@@ -106,7 +106,7 @@ export function ContractForm({ contract, customers, quotations }: ContractFormPr
  try {
  const updateData: Partial<Contract> = {
  customer_id: customerId,
- quotation_id: quotationId || null,
+ quotation_id: quotationId || undefined,
  title,
  total_amount: totalValue,
  start_date: startDate?.toISOString(),
