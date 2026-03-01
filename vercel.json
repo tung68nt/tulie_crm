@@ -1,8 +1,10 @@
 {
     "cleanUrls": true,
     "functions": {
-        "memory": 1024,
-        "maxDuration": 30
+        "app/**/*.ts": {
+            "memory": 1024,
+            "maxDuration": 30
+        }
     },
     "images": {
         "sizes": [
