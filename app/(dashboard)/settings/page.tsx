@@ -137,8 +137,9 @@ export default function SettingsPage() {
                 favicon_url: companySettings.favicon_url
             })
             toast.success("Đã lưu thông tin thương hiệu thành công!")
-        } catch (error) {
-            toast.error("Lỗi khi lưu cấu hình thương hiệu")
+        } catch (error: any) {
+            console.error('Brand config save error:', error)
+            toast.error(`Lỗi khi lưu: ${error?.message || 'Không xác định'}`)
         } finally {
             setIsSavingCompany(false)
         }

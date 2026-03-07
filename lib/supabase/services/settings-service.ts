@@ -74,7 +74,10 @@ export async function updateSystemSetting(key: string, value: any) {
         const supabase = await createClient()
         const { error } = await supabase
             .from('system_settings')
-            .upsert({ key, value, updated_at: new Date().toISOString() })
+            .upsert(
+                { key, value, updated_at: new Date().toISOString() },
+                { onConflict: 'key' }
+            )
 
         if (error) throw error
         return true
@@ -83,6 +86,7 @@ export async function updateSystemSetting(key: string, value: any) {
         throw err
     }
 }
+
 
 export async function getProductUnits() {
     const units = await getSystemSetting('product_units')
