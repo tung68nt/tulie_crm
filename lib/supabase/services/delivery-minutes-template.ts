@@ -1,4 +1,4 @@
-export const deliveryMinutesTemplate = \`
+export const deliveryMinutesTemplate = `
 <div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.5; color: #000; max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: justify;">
     
     <!-- HEADER -->
@@ -83,4 +83,4 @@ export const deliveryMinutesTemplate = \`
     </table>
 
 </div>
-\`;
+`;
