@@ -6,34 +6,41 @@ import { readNumberToWords } from '@/lib/utils/format'
 
 import { contractTemplate } from './contract-template'
 import { paymentTemplate } from './payment-template'
-import { quotationTemplate } from './quotation-template'
-
+import { orderTemplate } from './order-template'
 import { deliveryMinutesTemplate } from './delivery-minutes-template'
 
 /**
  * Standard templates with common variables for HTML fallback and variable definition
+ * Variables map to {{variable_name}} placeholders in HTML templates
  */
 const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at'>[] = [
     {
-        name: 'Hợp đồng dịch vụ (Mẫu chuẩn)',
+        name: 'Hợp đồng kinh tế (Mẫu chuẩn)',
         type: 'contract',
         content: contractTemplate,
         variables: [
-            'contract_number', 'contract_date', 'day', 'month', 'year',
-            'provider_company', 'provider_address', 'provider_tax_code', 'provider_representative', 'provider_position',
-            'customer_company', 'customer_address', 'customer_tax_code', 'customer_representative', 'customer_position', 'customer_email', 'customer_phone',
-            'service_description', 'total_amount_number', 'amount_in_words', 'payment_schedule', 'contract_items_table',
-            'start_date', 'end_date'
+            'contract_number', 'day', 'month', 'year',
+            'customer_company', 'customer_representative', 'customer_position',
+            'customer_address', 'customer_phone', 'customer_mobile',
+            'customer_tax_code', 'customer_email', 'customer_bank_account', 'customer_bank_name',
+            'contract_items_table', 'subtotal', 'vat_rate', 'vat_amount',
+            'total_amount_number', 'amount_in_words',
+            'payment_terms', 'delivery_time', 'delivery_address',
+            'service_description'
         ]
     },
     {
         name: 'Đơn đặt hàng (Mẫu chuẩn)',
         type: 'order',
-        content: quotationTemplate,
+        content: orderTemplate,
         variables: [
             'order_number', 'day', 'month', 'year',
-            'customer_company', 'customer_address', 'customer_tax_code', 'customer_representative', 'customer_phone',
-            'items_table', 'total_amount', 'amount_in_words', 'delivery_time', 'payment_method'
+            'customer_company', 'customer_representative', 'customer_position',
+            'customer_address', 'customer_phone', 'customer_mobile',
+            'customer_tax_code', 'customer_email', 'customer_bank_account', 'customer_bank_name',
+            'contract_items_table', 'subtotal', 'vat_rate', 'vat_amount',
+            'total_amount_number', 'amount_in_words',
+            'payment_terms', 'delivery_time', 'delivery_address'
         ]
     },
     {
@@ -41,25 +48,27 @@ const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at
         type: 'payment_request',
         content: paymentTemplate,
         variables: [
-            'provider_company', 'provider_address', 'provider_tax_code', 'provider_representative',
-            'customer_company', 'customer_address',
-            'contract_number', 'contract_date',
-            'payment_number', 'day', 'month', 'year', 'payment_description', 'payment_amount', 'amount_in_words',
-            'bank_name', 'bank_account', 'account_holder', 'transfer_content',
-            'due_date'
+            'payment_number', 'day', 'month', 'year',
+            'customer_company', 'contract_number', 'contract_date',
+            'service_description', 'delivery_date',
+            'payment_percentage', 'payment_amount', 'amount_in_words'
         ]
     },
     {
-        name: 'Biên bản nghiệm thu & bàn giao (Mẫu chuẩn)',
+        name: 'Biên bản giao nhận (Mẫu chuẩn)',
         type: 'delivery_minutes',
         content: deliveryMinutesTemplate,
         variables: [
             'report_number', 'day', 'month', 'year',
-            'customer_company', 'customer_address', 'customer_representative',
-            'contract_number', 'delivery_items_table'
+            'customer_company', 'customer_representative', 'customer_position',
+            'customer_address', 'customer_phone', 'customer_mobile',
+            'customer_tax_code', 'customer_email', 'customer_bank_account', 'customer_bank_name',
+            'contract_number', 'order_number', 'order_date',
+            'delivery_items_table'
         ]
     }
 ]
+
 
 // Get all templates - always includes built-in defaults
 export async function getDocumentTemplates() {

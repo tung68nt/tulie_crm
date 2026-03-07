@@ -1,74 +1,73 @@
+/**
+ * Đề nghị thanh toán - HTML Template
+ * Layout chuẩn theo bộ thủ tục Tulie (Google Sheets export)
+ */
 export const paymentTemplate = `
-<div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.5; color: #000; max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: justify;">
-    
-    <!-- HEADER -->
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-            <td style="width: 40%; text-align: center; vertical-align: top;">
-                <p style="margin: 0; font-weight: bold;">Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</p>
-                <hr style="width: 50%; border: 0.5px solid #000; margin: 5px auto;" />
-            </td>
-            <td style="width: 60%; text-align: center; vertical-align: top;">
-                <p style="margin: 0; font-weight: bold;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</p>
-            </td>
-        </tr>
-    </table>
+<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 20mm 15mm; line-height: 1.8;">
+  <!-- Header -->
+  <table style="width:100%; border-collapse:collapse; margin-bottom: 4px;">
+    <tr>
+      <td style="width:50%; text-align:center; font-weight:bold; font-size:10pt; vertical-align:middle;">
+        CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP<br>
+        <span style="text-decoration:underline;">CÔNG NGHỆ TULIE</span>
+      </td>
+      <td style="width:50%; text-align:center; font-weight:bold; font-size:10pt; vertical-align:middle;">
+        CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td style="text-align:center; font-weight:bold; text-decoration:underline; font-size:10pt;">
+        Độc lập - Tự do - Hạnh phúc
+      </td>
+    </tr>
+  </table>
 
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-        <tr>
-            <td style="width: 40%; text-align: left;">Số: {{payment_number}}</td>
-            <td style="width: 60%; text-align: right;">Hà Nội, ngày {{payment_date}}</td>
-        </tr>
-    </table>
+  <table style="width:100%; border-collapse:collapse; margin-bottom: 8px;">
+    <tr>
+      <td style="width:50%; text-align:center; font-size:10pt;">Số: {{payment_number}}</td>
+      <td style="width:50%; text-align:right; font-style:italic; font-size:10pt;">Hà Nội, ngày {{day}} tháng {{month}} năm {{year}}</td>
+    </tr>
+  </table>
 
-    <!-- TITLE -->
-    <h1 style="text-align: center; font-size: 14pt; font-weight: bold; margin-bottom: 20px;">CÔNG VĂN ĐỀ NGHỊ THANH TOÁN CÔNG NỢ</h1>
+  <!-- Title -->
+  <div style="text-align:center; font-weight:bold; font-size:16pt; margin: 12px 0;">
+    CÔNG VĂN ĐỀ NGHỊ THANH TOÁN CÔNG NỢ
+  </div>
 
-    <!-- KÍNH GỬI -->
-    <div style="margin-bottom: 15px;">
-        <p style="margin: 0;"><span style="font-weight: bold; text-decoration: underline;">Kính gửi:</span> <strong>{{customer_company}}</strong></p>
-    </div>
+  <!-- Kính gửi -->
+  <p style="margin:8px 0; font-weight:bold;">Kính gửi: {{customer_company}}</p>
 
-    <!-- NỘI DUNG -->
-    <p style="margin-bottom: 15px;">Thực hiện Hợp đồng kinh tế số <strong>{{contract_number}}</strong> ký ngày {{contract_date}} giữa {{customer_company}} và Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie về việc {{service_description}}, chúng tôi đã bàn giao đầy đủ hàng hoá và giấy tờ quy định tại Điều 1 của hợp đồng. Đại diện hai bên đã ký Biên bản bàn giao và nghiệm thu ngày {{date_day}} tháng {{date_month}} năm {{date_year}}.</p>
+  <!-- Nội dung -->
+  <p style="margin:8px 0; text-align:justify;">
+    Thực hiện Hợp đồng kinh tế số {{contract_number}} ký ngày {{contract_date}} giữa {{customer_company}} và Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie về việc {{service_description}}, chúng tôi đã bàn giao đầy đủ hàng hoá và giấy tờ quy định tại Điều 1 của hợp đồng. Đại diện hai bên đã ký Biên bản bàn giao và nghiệm thu thiết bị ngày {{delivery_date}}.
+  </p>
 
-    <p style="margin-bottom: 15px;">Theo điều khoản Thanh toán hợp đồng (Điều 2), Bên sử dụng dịch vụ sẽ thanh toán cho Bên cung cấp dịch vụ 100% giá trị hợp đồng trong vòng năm (05) ngày kể từ ngày ký Biên bản bàn giao và nghiệm thu hàng hóa.</p>
+  <p style="margin:8px 0; text-align:justify;">
+    Theo điều khoản Thanh toán hợp đồng (Điều 2), Bên sử dụng dịch vụ sẽ thanh toán cho Bên cung cấp dịch vụ {{payment_percentage}} giá trị hợp đồng trong vòng năm (05) ngày kể từ ngày ký Biên bản bàn giao và nghiệm thu hàng hóa.
+  </p>
 
-    <p style="margin-bottom: 20px;">Vậy, chúng tôi kính đề nghị quý cơ quan thanh toán 100% giá trị hợp đồng tương đương số tiền: <strong>{{payment_amount}} VND</strong> (Bằng chữ: <strong>{{amount_in_words}}</strong>) theo đúng quy định trong hợp đồng.</p>
+  <p style="margin:8px 0; text-align:justify;">
+    Vậy, chúng tôi kính đề nghị quý cơ quan thanh toán {{payment_percentage}} giá trị hợp đồng tương đương số tiền: {{payment_amount}} (Bằng chữ: {{amount_in_words}}) theo đúng quy định trong hợp đồng.
+  </p>
 
-    <p style="margin-bottom: 10px; font-weight: bold;">Thông tin thanh toán:</p>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-        <tr><td style="width: 35%; padding: 2px 0;">- Số tiền cần thanh toán:</td><td style="font-weight: bold;">{{payment_amount}}</td></tr>
-        <tr><td style="padding: 2px 0;">- Tên tài khoản thụ hưởng:</td><td style="font-weight: bold;">Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</td></tr>
-        <tr><td style="padding: 3px 0;">- Số tài khoản:</td><td style="font-weight: bold;">86683979</td></tr>
-        <tr><td style="padding: 3px 0;">- Ngân hàng:</td><td style="font-weight: bold;">TMCP Kỹ Thương Việt Nam (Techcombank)</td></tr>
-        <tr><td style="padding: 3px 0;">- Chi nhánh:</td><td style="font-weight: bold;">Trung tâm giao dịch Hội Sở</td></tr>
-    </table>
+  <!-- Thông tin thanh toán -->
+  <p style="margin:12px 0 4px 0; font-weight:bold;">Thông tin thanh toán:</p>
+  <table style="margin-left:8px; margin-bottom:12px;">
+    <tr><td style="padding:2px 8px;">- Số tiền cần thanh toán:</td><td style="font-weight:bold;">{{payment_amount}}</td></tr>
+    <tr><td style="padding:2px 8px;">- Tên tài khoản thụ hưởng:</td><td style="font-weight:bold;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td></tr>
+    <tr><td style="padding:2px 8px;">- Số tài khoản:</td><td style="font-weight:bold;">86683979</td></tr>
+    <tr><td style="padding:2px 8px;">- Ngân hàng</td><td style="font-weight:bold;">TMCP Kỹ Thương Việt Nam (Techcombank)</td></tr>
+    <tr><td style="padding:2px 8px;">- Chi nhánh:</td><td style="font-weight:bold;">Trung tâm giao dịch Hội Sở</td></tr>
+  </table>
 
-    <p style="margin-bottom: 10px;">Rất mong nhận được sự hợp tác từ quý cơ quan.</p>
-    <p style="margin-bottom: 40px;">Xin trân trọng cảm ơn!</p>
+  <p style="margin:12px 0;">Rất mong nhận được sự hợp tác từ quý cơ quan.</p>
+  <p style="margin:4px 0; font-weight:bold;">Xin trân trọng cảm ơn!</p>
 
-    <!-- CHỮ KÝ -->
-    <table style="width: 100%; border-collapse: collapse; text-align: center; page-break-inside: avoid;">
-        <tr>
-            <td style="width: 40%;"></td>
-            <td style="width: 60%;">
-                <p style="font-weight: bold; margin: 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</p>
-                <p style="margin: 0; font-size: 10pt;">(Ký, ghi rõ họ tên và đóng dấu)</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="height: 100px;"></td>
-            <td style="height: 100px;"></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <p style="font-weight: bold; margin: 0;">Ông Nguyễn Thanh Tùng</p>
-            </td>
-        </tr>
-    </table>
-
+  <!-- Chữ ký -->
+  <div style="text-align:right; margin-top: 24px;">
+    <p style="font-weight:bold; margin:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</p>
+    <div style="height:80px;"></div>
+  </div>
 </div>
-`
+`;
