@@ -340,7 +340,10 @@ export default function QuotationDetailPage() {
                                     <div className="absolute inset-0 opacity-10 pointer-events-none"
                                         style={{ backgroundImage: "radial-gradient(#fff 0.5px, transparent 0.5px)", backgroundSize: "12px 12px" }}></div>
                                     <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
-                                        <TableHead className="pl-6 py-3 font-bold text-white text-[11px] min-w-[200px] h-auto align-middle">
+                                        <TableHead className="w-12 text-center py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                            #
+                                        </TableHead>
+                                        <TableHead className="pl-4 py-3 font-bold text-white text-[11px] min-w-[200px] h-auto align-middle">
                                             Hạng mục & Mô tả <br />
                                             <span className="text-[10px] font-normal opacity-60 normal-case">/ Items</span>
                                         </TableHead>
@@ -382,7 +385,7 @@ export default function QuotationDetailPage() {
                                             <React.Fragment key={sIdx}>
                                                 {(sectionName || sectionEntries.length > 1) && (
                                                     <TableRow className="group/section hover:bg-transparent">
-                                                        <TableCell colSpan={5} className="p-0 border-b border-slate-200">
+                                                        <TableCell colSpan={6} className="p-0 border-b border-slate-200">
                                                             <div className="relative bg-slate-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
@@ -402,15 +405,15 @@ export default function QuotationDetailPage() {
                                                     const currentGlobalIdx = ++globalItemIndex;
                                                     return (
                                                         <TableRow key={item.id} className="hover:bg-slate-50/50 group/row">
-                                                            <TableCell className="pl-6 py-4">
-                                                                <div className="flex gap-3">
-                                                                    <span className="text-zinc-400 font-bold tabular-nums w-4 mt-0.5 text-[10px] group-hover/row:text-zinc-900 transition-colors">{currentGlobalIdx}.</span>
-                                                                    <div className="flex-1">
-                                                                        <p className="font-bold text-slate-900 text-[13px]">{item.product_name}</p>
-                                                                        {item.description && (
-                                                                            <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 max-w-xl whitespace-pre-line border-l-2 border-stone-200 pl-3 py-0.5 font-medium">{item.description}</p>
-                                                                        )}
-                                                                    </div>
+                                                            <TableCell className="text-center py-4 bg-slate-50/30 font-bold border-r border-slate-100 text-zinc-400 group-hover/row:text-zinc-900 transition-colors">
+                                                                <span className="text-[10px] tabular-nums">{currentGlobalIdx}</span>
+                                                            </TableCell>
+                                                            <TableCell className="pl-4 py-4 align-top">
+                                                                <div className="flex-1">
+                                                                    <p className="font-bold text-slate-900 text-[13px] leading-tight">{item.product_name}</p>
+                                                                    {item.description && (
+                                                                        <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 max-w-xl whitespace-pre-line border-l-2 border-stone-200 pl-3 py-0.5 font-medium">{item.description}</p>
+                                                                    )}
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell className="text-center w-20 whitespace-nowrap align-top py-4 font-medium text-slate-600 text-[13px]">
