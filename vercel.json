@@ -1,0 +1,23 @@
+{
+    "cleanUrls": true,
+    "functions": {
+        "app/**/*.ts": {
+            "memory": 1024,
+            "maxDuration": 30
+        }
+    },
+    "images": {
+        "sizes": [
+            256,
+            384,
+            512,
+            640
+        ],
+        "minimumCacheTTL": 60,
+        "formats": [
+            "image/avif",
+            "image/webp"
+        ]
+    },
+    "trailingSlash": false
+}

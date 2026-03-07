@@ -1,0 +1,191 @@
+'use server'
+
+import { createClient } from '../server'
+import { getQuotationByToken } from './quotation-service'
+
+export async function getPortalDataByToken(token: string) {
+    try {
+        const supabase = await createClient()
+
+        // 1. Get primary quotation
+        const { data: qData } = await supabase
+            .from('quotations')
+            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*)')
+            .eq('public_token', token)
+            .single()
+
+        if (!qData) return null
+        const primaryQuotation = qData as any
+
+        const projectId = primaryQuotation.project_id
+        let allQuotations = [primaryQuotation]
+        let allContracts: any[] = []
+        let allInvoices: any[] = []
+        let allTasks: any[] = []
+
+        let extraMilestones: any[] = []
+
+        // Fetch Grouped Data
+        if (projectId) {
+            // 1. Get all quotations in this project
+            const { data: siblingQuotes } = await supabase
+                .from('quotations')
+                .select('*, customer:customers!customer_id(*), items:quotation_items(*)')
+                .eq('project_id', projectId)
+
+            if (siblingQuotes) allQuotations = siblingQuotes
+
+            // 2. Get all contracts in this project
+            const { data: siblingContracts } = await supabase
+                .from('contracts')
+                .select('*, milestones:contract_milestones(*)')
+                .eq('project_id', projectId)
+
+            if (siblingContracts) allContracts = siblingContracts
+
+            // 3. Get Project-level milestones
+            const { data: projectMilestones } = await supabase
+                .from('contract_milestones')
+                .select('*')
+                .eq('project_id', projectId)
+
+            if (projectMilestones) {
+                const contractMilestoneIds = new Set(allContracts.flatMap(c => c.milestones?.map((m: any) => m.id) || []))
+                extraMilestones = projectMilestones.filter(m => !contractMilestoneIds.has(m.id))
+            }
+
+            // 4. Get all tasks in this project
+            const { data: projectTasks } = await supabase
+                .from('project_tasks')
+                .select('*')
+                .eq('project_id', projectId)
+
+            if (projectTasks) allTasks = projectTasks
+        } else {
+            // Standalone mode: Only fetch descendants (Contract + Invoices) for this specific quote
+            const { data: contract } = await supabase
+                .from('contracts')
+                .select('*, milestones:contract_milestones(*)')
+                .eq('quotation_id', primaryQuotation.id)
+                .single()
+
+            if (contract) allContracts = [contract]
+        }
+
+        // Fetch Invoices for all identified quotations/contracts
+        const qIds = allQuotations.map(q => q.id)
+        const cIds = allContracts.map(c => c.id)
+
+        const orFilters = []
+        if (qIds.length > 0) orFilters.push(`quotation_id.in.(${qIds.map(id => `'${id}'`).join(',')})`)
+        if (cIds.length > 0) orFilters.push(`contract_id.in.(${cIds.map(id => `'${id}'`).join(',')})`)
+
+        if (orFilters.length > 0) {
+            const { data: matchingInvoices } = await supabase
+                .from('invoices')
+                .select('*, payments:invoice_payments(*)')
+                .or(orFilters.join(','))
+                .order('created_at', { ascending: false })
+            if (matchingInvoices) allInvoices = matchingInvoices
+        }
+
+        // 2. Build consolidated timeline
+        const timeline: any[] = []
+
+        // Add all Quotation milestones
+        allQuotations.forEach(q => {
+            timeline.push({
+                id: `quote-created-${q.id}`,
+                type: 'milestone',
+                title: `Khởi tạo báo giá #${q.quotation_number}`,
+                description: q.title || `Báo giá đã được tạo`,
+                date: q.created_at,
+                status: 'completed'
+            })
+
+            if (q.accepted_at) {
+                timeline.push({
+                    id: `quote-accepted-${q.id}`,
+                    type: 'milestone',
+                    title: `Phê duyệt báo giá #${q.quotation_number}`,
+                    description: 'Khách hàng đã xác nhận đồng ý',
+                    date: q.accepted_at,
+                    status: 'completed'
+                })
+            }
+        })
+
+        // Add all Contract milestones
+        allContracts.forEach(c => {
+            const isOrder = c.type === 'order'
+            timeline.push({
+                id: `contract-created-${c.id}`,
+                type: 'milestone',
+                title: isOrder ? `Đơn hàng #${c.contract_number} đã xác nhận` : `Hợp đồng #${c.contract_number} đã xác lập`,
+                description: c.title || `Dự án chính thức được triển khai`,
+                date: c.created_at,
+                status: 'completed'
+            })
+
+            if (c.milestones) {
+                c.milestones.forEach((m: any) => {
+                    timeline.push({
+                        id: `milestone-${m.id}`,
+                        type: m.type === 'payment' ? 'payment' : 'work',
+                        title: m.name,
+                        description: m.description + (m.delay_reason ? `\nLý do chậm trễ: ${m.delay_reason}` : ''),
+                        date: m.status === 'completed' && m.completed_at ? m.completed_at : m.due_date,
+                        planned_date: m.due_date,
+                        status: m.status === 'completed' ? 'completed' :
+                            (new Date(m.due_date) < new Date() ? 'overdue' : 'upcoming'),
+                        is_late: m.status === 'completed' && m.completed_at && new Date(m.completed_at) > new Date(m.due_date)
+                    })
+                })
+            }
+        })
+
+        // Add extra Project-level milestones
+        extraMilestones.forEach((m: any) => {
+            timeline.push({
+                id: `milestone-${m.id}`,
+                type: m.type === 'payment' ? 'payment' : 'work',
+                title: m.name,
+                description: m.description + (m.delay_reason ? `\nLý do chậm trễ: ${m.delay_reason}` : ''),
+                date: m.status === 'completed' && m.completed_at ? m.completed_at : m.due_date,
+                planned_date: m.due_date,
+                status: m.status === 'completed' ? 'completed' :
+                    (new Date(m.due_date) < new Date() ? 'overdue' : 'upcoming'),
+                is_late: m.status === 'completed' && m.completed_at && new Date(m.completed_at) > new Date(m.due_date)
+            })
+        })
+
+        // Add all Invoice milestones
+        allInvoices.forEach(inv => {
+            timeline.push({
+                id: `invoice-${inv.id}`,
+                type: 'payment',
+                title: `Yêu cầu thanh toán: ${inv.invoice_number}`,
+                description: `Số tiền: ${inv.total_amount.toLocaleString('vi-VN')} VNĐ`,
+                date: inv.issue_date,
+                status: inv.status === 'paid' ? 'completed' : 'pending',
+                amount: inv.total_amount
+            })
+        })
+
+        // Sort by date
+        timeline.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+        return {
+            quotation: primaryQuotation, // Keep this for password check if needed
+            quotations: allQuotations,
+            contracts: allContracts,
+            invoices: allInvoices,
+            tasks: allTasks,
+            timeline,
+            customer: primaryQuotation.customer
+        }
+    } catch (err) {
+        console.error('Error fetching portal data:', err)
+        return null
+    }
+}
