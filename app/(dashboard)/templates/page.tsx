@@ -26,21 +26,22 @@ const getTypeIcon = (type: DocumentTemplate['type']) => {
 const getTypeBadge = (type: DocumentTemplate['type']) => {
     switch (type) {
         case 'contract':
-            return <Badge className="bg-purple-500">Hợp đồng</Badge>
+            return <Badge variant="outline">Hợp đồng</Badge>
         case 'invoice':
-            return <Badge className="bg-blue-500">Hóa đơn</Badge>
+            return <Badge variant="outline">Hóa đơn</Badge>
         case 'payment_request':
-            return <Badge className="bg-green-500">Đề nghị TT</Badge>
+            return <Badge variant="outline">Đề nghị TT</Badge>
         case 'quotation':
-            return <Badge className="bg-orange-500">Báo giá</Badge>
+            return <Badge variant="outline">Báo giá</Badge>
         case 'order':
-            return <Badge className="bg-cyan-500">Đơn hàng</Badge>
+            return <Badge variant="outline">Đơn hàng</Badge>
         case 'delivery_minutes':
-            return <Badge className="bg-emerald-500">Nghiệm thu</Badge>
+            return <Badge variant="outline">Nghiệm thu</Badge>
         default:
-            return <Badge>Khác</Badge>
+            return <Badge variant="outline">Khác</Badge>
     }
 }
+
 
 export default async function TemplatesPage() {
     const templates = await getDocumentTemplates()
@@ -69,7 +70,7 @@ export default async function TemplatesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <div className="p-3 rounded-full bg-neutral-100 text-neutral-700">
                                 <FileSignature className="h-6 w-6" />
                             </div>
                             <div>
@@ -84,7 +85,7 @@ export default async function TemplatesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <div className="p-3 rounded-full bg-neutral-100 text-neutral-700">
                                 <Receipt className="h-6 w-6" />
                             </div>
                             <div>
@@ -99,7 +100,7 @@ export default async function TemplatesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-green-100 text-green-600">
+                            <div className="p-3 rounded-full bg-neutral-100 text-neutral-700">
                                 <Wallet className="h-6 w-6" />
                             </div>
                             <div>
@@ -114,7 +115,7 @@ export default async function TemplatesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-gray-100 text-gray-600">
+                            <div className="p-3 rounded-full bg-neutral-100 text-neutral-700">
                                 <FileText className="h-6 w-6" />
                             </div>
                             <div>

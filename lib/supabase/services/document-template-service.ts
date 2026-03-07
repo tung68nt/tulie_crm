@@ -61,27 +61,34 @@ const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at
     }
 ]
 
-// Get all templates
+// Get all templates - always includes built-in defaults
 export async function getDocumentTemplates() {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('document_templates')
-        .select('*')
-        .order('created_at', { ascending: false })
+    // Always include built-in defaults
+    const builtInTemplates = defaultTemplates.map((t, i) => ({
+        ...t,
+        id: `default-${i}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+    })) as DocumentTemplate[]
 
-    if (error) {
-        console.error('Error fetching templates:', error)
-        // Return default templates with temporary IDs
-        return defaultTemplates.map((t, i) => ({
-            ...t,
-            id: `default-${i}`,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        })) as DocumentTemplate[]
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('document_templates')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        if (error || !data) {
+            return builtInTemplates
+        }
+
+        // Merge: built-in first, then custom DB templates
+        return [...builtInTemplates, ...(data as DocumentTemplate[])]
+    } catch {
+        return builtInTemplates
     }
-
-    return data as DocumentTemplate[]
 }
+
 
 // Get template by ID
 export async function getTemplateById(id: string) {
