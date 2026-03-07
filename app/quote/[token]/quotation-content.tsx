@@ -174,23 +174,26 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         }
                     } catch (e) { /* safe fallback */ }
 
-                    // CRITICAL: Sanitize all modern CSS color functions inside <style> tags
                     // html2canvas CSS parser crashes completely on oklch() and color-mix().
                     try {
                         const styleTags = doc.querySelectorAll('style');
                         for (let i = 0; i < styleTags.length; i++) {
                             let css = styleTags[i].innerHTML;
-                            if (css && (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab') || css.includes('oklch('))) {
-                                // Super aggressive replacement
-                                css = css.replace(/color-mix\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklch\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklab\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklch\([^)]+\)/g, '#0f172a');
+                            if (css && (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab'))) {
+                                // Neutralize color-mix and oklch by replacing with a safe hex
+                                // We use a pattern that avoids eating semicolons to preserve other properties
+                                css = css.replace(/color-mix\([^;}]+\)/g, '#0f172a');
+                                css = css.replace(/oklch\([^;}]+\)/g, '#0f172a');
+                                css = css.replace(/oklab\([^;}]+\)/g, '#0f172a');
                                 styleTags[i].innerHTML = css;
                             }
                         }
+
+                        // Also clear root oklch variables that might be injected inline
                         const root = doc.documentElement;
-                        if (root.style.cssText.includes('oklch')) root.style.cssText = '';
+                        if (root.style.cssText.includes('oklch')) {
+                            root.style.cssText = root.style.cssText.replace(/--[^:]+:[^;]+oklch[^;]+;/g, '');
+                        }
                     } catch (e) { console.error('PDF Sanitize Error:', e); }
 
                     const style = doc.createElement('style');
@@ -480,26 +483,26 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             <div className="border border-slate-200 rounded-lg overflow-hidden">
                                 <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
                                     <thead>
-                                        <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
-                                            <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case">#</th>
-                                            <th className="py-2.5 px-3 font-semibold normal-case">
+                                        <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' } as any}>
+                                            <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case bg-transparent! border-none!">#</th>
+                                            <th className="py-2.5 px-3 font-semibold normal-case bg-transparent! border-none!">
                                                 Hạng mục & Mô tả <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
                                             </th>
-                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case">
+                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case bg-transparent! border-none!">
                                                 ĐVT <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Unit</span>
                                             </th>
-                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case">
+                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case bg-transparent! border-none!">
                                                 SL <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Qty</span>
                                             </th>
-                                            <th className="py-2.5 px-3 font-semibold text-right w-24 normal-case">
+                                            <th className="py-2.5 px-3 font-semibold text-right w-24 normal-case bg-transparent! border-none!">
                                                 Đơn giá <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Price</span>
                                             </th>
-                                            {hasDiscount && <th className="py-2.5 px-3 font-semibold text-center w-16 normal-case text-[10px]">CK(%)</th>}
-                                            <th className="py-2.5 px-4 font-semibold text-right w-28 normal-case">
+                                            {hasDiscount && <th className="py-2.5 px-3 font-semibold text-center w-16 normal-case text-[10px] bg-transparent! border-none!">CK(%)</th>}
+                                            <th className="py-2.5 px-4 font-semibold text-right w-28 normal-case bg-transparent! border-none!">
                                                 Thành tiền <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Amount</span>
                                             </th>

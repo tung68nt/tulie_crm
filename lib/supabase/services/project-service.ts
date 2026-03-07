@@ -33,7 +33,7 @@ export async function getProjects(customerId?: string) {
 export async function getProjectById(id: string) {
     try {
         const supabase = await createClient()
-        // Simplify select to avoid relationship ambiguities on empty/new projects
+        // Explicitly name relationships to avoid ambiguity (Two-way links exist between Project and Contract)
         const { data, error } = await supabase
             .from('projects')
             .select(`
@@ -42,8 +42,8 @@ export async function getProjectById(id: string) {
                 assigned_user:users(*),
                 acceptance_reports(*),
                 quotations(*),
-                contracts(*),
-                milestones:contract_milestones(*)
+                contracts:contracts!project_id(*),
+                milestones:contract_milestones!project_id(*)
             `)
             .eq('id', id)
             .single()
