@@ -340,10 +340,26 @@ export default function QuotationDetailPage() {
                                     <div className="absolute inset-0 opacity-10 pointer-events-none"
                                         style={{ backgroundImage: "radial-gradient(#fff 0.5px, transparent 0.5px)", backgroundSize: "12px 12px" }}></div>
                                     <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
-                                        <TableHead className="pl-6 font-bold text-white text-[10px] h-12">Dịch vụ / Sản phẩm</TableHead>
-                                        <TableHead className="text-center w-24 font-bold text-white text-[10px] h-12">Số lượng</TableHead>
-                                        <TableHead className="text-right w-32 font-bold text-white text-[10px] h-12">Đơn giá</TableHead>
-                                        <TableHead className="text-right w-36 pr-6 font-bold text-white text-[10px] h-12">Thành tiền</TableHead>
+                                        <TableHead className="pl-6 py-3 font-bold text-white text-[11px] min-w-[200px] h-auto align-middle">
+                                            Hạng mục & Mô tả <br />
+                                            <span className="text-[10px] font-normal opacity-60 normal-case">/ Items</span>
+                                        </TableHead>
+                                        <TableHead className="text-center w-20 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                            ĐVT <br />
+                                            <span className="text-[10px] font-normal opacity-60 normal-case">/ Unit</span>
+                                        </TableHead>
+                                        <TableHead className="text-center w-20 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                            SL <br />
+                                            <span className="text-[10px] font-normal opacity-60 normal-case">/ Qty</span>
+                                        </TableHead>
+                                        <TableHead className="text-right w-28 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                            Đơn giá <br />
+                                            <span className="text-[10px] font-normal opacity-60 normal-case">/ Price</span>
+                                        </TableHead>
+                                        <TableHead className="text-right w-32 pr-6 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                            Thành tiền <br />
+                                            <span className="text-[10px] font-normal opacity-60 normal-case">/ Amount</span>
+                                        </TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -366,7 +382,7 @@ export default function QuotationDetailPage() {
                                             <React.Fragment key={sIdx}>
                                                 {(sectionName || sectionEntries.length > 1) && (
                                                     <TableRow className="group/section hover:bg-transparent">
-                                                        <TableCell colSpan={4} className="p-0 border-b border-slate-200">
+                                                        <TableCell colSpan={5} className="p-0 border-b border-slate-200">
                                                             <div className="relative bg-slate-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
@@ -397,13 +413,16 @@ export default function QuotationDetailPage() {
                                                                     </div>
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-center whitespace-nowrap align-top py-4 font-bold text-slate-900">
-                                                                {item.quantity} <span className="text-[10px] text-zinc-400 font-medium">{item.unit}</span>
+                                                            <TableCell className="text-center w-20 whitespace-nowrap align-top py-4 font-medium text-slate-600 text-[13px]">
+                                                                {item.unit}
                                                             </TableCell>
-                                                            <TableCell className="text-right align-top py-4 tabular-nums font-bold text-slate-900">
+                                                            <TableCell className="text-center w-20 whitespace-nowrap align-top py-4 font-bold text-slate-900 text-[13px]">
+                                                                {item.quantity}
+                                                            </TableCell>
+                                                            <TableCell className="text-right w-28 align-top py-4 tabular-nums font-bold text-slate-900 text-[13px]">
                                                                 {formatCurrency(item.unit_price || 0)}
                                                             </TableCell>
-                                                            <TableCell className="text-right font-bold pr-6 align-top py-4 tabular-nums bg-slate-50/30">
+                                                            <TableCell className="text-right w-32 font-bold pr-6 align-top py-4 tabular-nums bg-slate-50/30 text-[13px]">
                                                                 {formatCurrency(item.total_price || 0)}
                                                             </TableCell>
                                                         </TableRow>
