@@ -73,11 +73,11 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
     }
 
     return (
-        <Card className="border-primary/20">
+        <Card>
             <CardHeader className="flex flex-row items-center justify-between bg-muted/30">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-primary" />
+                        <FileText className="h-5 w-5 text-slate-700" />
                         Lịch trình triển khai & Thanh toán (Portal View)
                     </CardTitle>
                     <CardDescription className="font-normal">Các mốc thời gian này sẽ hiển thị trực tiếp trên Portal của khách hàng.</CardDescription>

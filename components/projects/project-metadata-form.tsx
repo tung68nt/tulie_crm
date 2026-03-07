@@ -42,7 +42,7 @@ export function ProjectMetadataForm({ project }: ProjectMetadataFormProps) {
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-primary" />
+                        <Globe className="h-4 w-4 text-slate-700" />
                         Link Source / Landing
                     </Label>
                     <div className="flex gap-2">
@@ -63,7 +63,7 @@ export function ProjectMetadataForm({ project }: ProjectMetadataFormProps) {
 
                 <div className="space-y-2">
                     <Label className="flex items-center gap-2">
-                        <FolderArchive className="h-4 w-4 text-purple-500" />
+                        <FolderArchive className="h-4 w-4 text-slate-700" />
                         Thư mục AI Assets (Google Drive/Dropbox)
                     </Label>
                     <div className="flex gap-2">

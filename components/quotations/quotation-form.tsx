@@ -394,7 +394,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             {!hideHeader && (
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild>
+                        <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                             <Link href={quotation ? `/quotations/${quotation.id}` : "/quotations"}>
                                 <ArrowLeft className="h-5 w-5" />
                             </Link>
@@ -492,7 +492,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {type === 'proposal' && (
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between">
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div>
                                     <CardTitle>Nội dung Proposal</CardTitle>
                                     <CardDescription>Mô tả chi tiết giải pháp, phạm vi, đội ngũ và các cam kết cho khách hàng</CardDescription>
@@ -508,69 +508,70 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                {/* Row 1: Introduction */}
-                                <div className="space-y-4 mb-12 pb-8 border-b border-slate-100 last:border-0 last:pb-0">
-                                    <div>
-                                        <Label className="text-[15px] font-bold text-slate-900 block mb-2">Mục tiêu & Giới thiệu</Label>
-                                        <p className="text-[13px] text-slate-500 leading-relaxed mb-4">Nêu bật vấn đề, nhu cầu của khách hàng và tổng quan giải pháp đề xuất.</p>
+                                {/* Proposal Contents: 8 items in a 2x4 grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-10 pb-8 border-b border-slate-100 items-stretch">
+                                    {/* 1. Introduction */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Mục tiêu & Giới thiệu</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Nêu bật vấn đề, nhu cầu của khách hàng và tổng quan giải pháp đề xuất.</p>
+                                        </div>
+                                        <Textarea
+                                            rows={4}
+                                            placeholder="VD: Với mong muốn nâng cao hình ảnh thương hiệu và gia tăng chuyển đổi qua kênh digital, chúng tôi xin đề xuất giải pháp toàn diện bao gồm..."
+                                            value={proposalContent?.introduction || ''}
+                                            onChange={(e) => setProposalContent({ ...proposalContent, introduction: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
+                                        />
                                     </div>
-                                    <Textarea
-                                        rows={4}
-                                        placeholder="VD: Với mong muốn nâng cao hình ảnh thương hiệu và gia tăng chuyển đổi qua kênh digital, chúng tôi xin đề xuất giải pháp toàn diện bao gồm..."
-                                        value={proposalContent?.introduction || ''}
-                                        onChange={(e) => setProposalContent({ ...proposalContent, introduction: e.target.value })}
-                                        className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all p-4 rounded-xl shadow-sm min-h-[140px]"
-                                    />
-                                </div>
 
-                                {/* Row 2: Scope of Work */}
-                                <div className="space-y-4 mb-12 pb-8 border-b border-slate-100 last:border-0 last:pb-0">
-                                    <div>
-                                        <Label className="text-[15px] font-bold text-slate-900 block mb-2">Phạm vi công việc (Scope of Work)</Label>
-                                        <p className="text-[13px] text-slate-500 leading-relaxed mb-4">Mô tả chi tiết từng hạng mục, số lượng, tần suất và chất lượng đầu ra mong muốn.</p>
+                                    {/* 2. Scope of Work */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Phạm vi công việc (Scope of Work)</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Mô tả chi tiết từng hạng mục, số lượng, tần suất và chất lượng đầu ra mong muốn.</p>
+                                        </div>
+                                        <Textarea
+                                            rows={4}
+                                            placeholder={"VD:\n• Thiết kế bộ nhận diện: Logo, name card, banner, profile công ty\n• Website: Thiết kế UI/UX, phát triển frontend + backend, tích hợp CRM\n• Marketing: 12 bài content/tháng, 4 video reels, quản lý fanpage\n• Sự kiện: Thiết kế backdrop, standee, giấy mời, tờ rơi"}
+                                            value={proposalContent?.scope_of_work || ''}
+                                            onChange={(e) => setProposalContent({ ...proposalContent, scope_of_work: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
+                                        />
                                     </div>
-                                    <Textarea
-                                        rows={6}
-                                        placeholder={"VD:\n• Thiết kế bộ nhận diện: Logo, name card, banner, profile công ty\n• Website: Thiết kế UI/UX, phát triển frontend + backend, tích hợp CRM\n• Marketing: 12 bài content/tháng, 4 video reels, quản lý fanpage\n• Sự kiện: Thiết kế backdrop, standee, giấy mời, tờ rơi"}
-                                        value={proposalContent?.scope_of_work || ''}
-                                        onChange={(e) => setProposalContent({ ...proposalContent, scope_of_work: e.target.value })}
-                                        className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all p-4 rounded-xl shadow-sm min-h-[180px]"
-                                    />
-                                </div>
 
-                                {/* Row 3: Methodology */}
-                                <div className="space-y-4 mb-12 pb-8 border-b border-slate-100 last:border-0 last:pb-0">
-                                    <div>
-                                        <Label className="text-[15px] font-bold text-slate-900 block mb-2">Phương pháp & Cách tiếp cận</Label>
-                                        <p className="text-[13px] text-slate-500 leading-relaxed mb-4">Mô tả cách thức triển khai, công nghệ, quy trình và tiêu chuẩn áp dụng.</p>
+                                    {/* 3. Methodology */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Phương pháp & Cách tiếp cận</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Mô tả cách thức triển khai, công nghệ, quy trình và tiêu chuẩn áp dụng.</p>
+                                        </div>
+                                        <Textarea
+                                            rows={4}
+                                            placeholder={"VD: Áp dụng quy trình Agile with sprint 2 tuần, review định kỳ cùng khách hàng.\nThiết kế: Design Thinking → Wireframe → UI → Review → Hoàn thiện\nDev: Git-based, CI/CD, testing trước bàn giao"}
+                                            value={proposalContent?.methodology || ''}
+                                            onChange={(e) => setProposalContent({ ...proposalContent, methodology: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
+                                        />
                                     </div>
-                                    <Textarea
-                                        rows={4}
-                                        placeholder={"VD: Áp dụng quy trình Agile with sprint 2 tuần, review định kỳ cùng khách hàng.\nThiết kế: Design Thinking → Wireframe → UI → Review → Hoàn thiện\nDev: Git-based, CI/CD, testing trước bàn giao"}
-                                        value={proposalContent?.methodology || ''}
-                                        onChange={(e) => setProposalContent({ ...proposalContent, methodology: e.target.value })}
-                                        className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all p-4 rounded-xl shadow-sm min-h-[140px]"
-                                    />
-                                </div>
 
-                                {/* Row 4: Deliverables */}
-                                <div className="space-y-4 mb-12 pb-8 border-b border-slate-100 last:border-0 last:pb-0">
-                                    <div>
-                                        <Label className="text-[15px] font-bold text-slate-900 block mb-2">Sản phẩm bàn giao (Deliverables)</Label>
-                                        <p className="text-[13px] text-slate-500 leading-relaxed mb-4">Liệt kê cụ thể sản phẩm đầu ra bàn giao cho khách hàng.</p>
+                                    {/* 4. Deliverables */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Sản phẩm bàn giao (Deliverables)</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Liệt kê cụ thể sản phẩm đầu ra bàn giao cho khách hàng.</p>
+                                        </div>
+                                        <Textarea
+                                            rows={4}
+                                            placeholder={"VD:\n• File thiết kế gốc (AI, PSD, Figma)\n• Source code + tài liệu hướng dẫn sử dụng\n• Báo cáo hiệu quả chiến dịch hàng tháng\n• Video gốc full HD + phụ đề"}
+                                            value={proposalContent?.deliverables || ''}
+                                            onChange={(e) => setProposalContent({ ...proposalContent, deliverables: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
+                                        />
                                     </div>
-                                    <Textarea
-                                        rows={4}
-                                        placeholder={"VD:\n• File thiết kế gốc (AI, PSD, Figma)\n• Source code + tài liệu hướng dẫn sử dụng\n• Báo cáo hiệu quả chiến dịch hàng tháng\n• Video gốc full HD + phụ đề"}
-                                        value={proposalContent?.deliverables || ''}
-                                        onChange={(e) => setProposalContent({ ...proposalContent, deliverables: e.target.value })}
-                                        className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all p-4 rounded-xl shadow-sm min-h-[140px]"
-                                    />
-                                </div>
 
-                                {/* Row 5: Team + Timeline side by side */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-10 pb-6 border-b border-slate-100">
-                                    <div className="space-y-4">
+                                    {/* 5. Team */}
+                                    <div className="flex flex-col space-y-4 h-full">
                                         <div>
                                             <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Đội ngũ & Nhân sự</Label>
                                             <p className="text-xs text-muted-foreground leading-relaxed">Cấu trúc team triển khai và vai trò chính.</p>
@@ -580,10 +581,12 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             placeholder="VD: Senior Designer (4 năm exp), Project Manager, 2 Content Creator..."
                                             value={proposalContent?.team || ''}
                                             onChange={(e) => setProposalContent({ ...proposalContent, team: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all"
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
                                         />
                                     </div>
-                                    <div className="space-y-4">
+
+                                    {/* 6. Timeline */}
+                                    <div className="flex flex-col space-y-4 h-full">
                                         <div>
                                             <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Tiến độ & Timeline</Label>
                                             <p className="text-xs text-muted-foreground leading-relaxed">Cột mốc quan trọng và thời gian hoàn thành từng giai đoạn.</p>
@@ -593,31 +596,37 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             placeholder="VD: Tuần 1: Research, Tuần 2: Design, Tuần 3-4: Development..."
                                             value={proposalContent?.timeline || ''}
                                             onChange={(e) => setProposalContent({ ...proposalContent, timeline: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all"
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
                                         />
                                     </div>
-                                </div>
 
-                                {/* Row 6: Warranty + Why Us side by side */}
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <div className="space-y-2.5 mb-6">
-                                        <Label className="text-sm font-bold">Chính sách bảo hành & Hỗ trợ</Label>
-                                        <p className="text-xs text-muted-foreground mt-1.5">Cam kết hỗ trợ sau bàn giao và bảo chì dịch vụ</p>
+                                    {/* 7. Warranty */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Chính sách bảo hành & Hỗ trợ</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Cam kết hỗ trợ sau bàn giao và bảo trì dịch vụ</p>
+                                        </div>
                                         <Textarea
-                                            rows={3}
+                                            rows={4}
                                             placeholder="VD: Bảo hành code 12 tháng, hỗ trợ vận hành 2h/ngày trong tuần đầu..."
                                             value={proposalContent?.warranty || ''}
                                             onChange={(e) => setProposalContent({ ...proposalContent, warranty: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
                                         />
                                     </div>
-                                    <div className="space-y-2.5 mb-6">
-                                        <Label className="text-sm font-bold">Vì sao chọn chúng tôi?</Label>
-                                        <p className="text-xs text-muted-foreground mt-1.5">Lợi thế cạnh tranh, điểm mạnh riêng</p>
+
+                                    {/* 8. Why Us */}
+                                    <div className="flex flex-col space-y-4 h-full">
+                                        <div>
+                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Vì sao chọn chúng tôi?</Label>
+                                            <p className="text-xs text-muted-foreground leading-relaxed">Lợi thế cạnh tranh, điểm mạnh riêng</p>
+                                        </div>
                                         <Textarea
                                             rows={4}
                                             placeholder={"VD:\n• 5+ năm kinh nghiệm ngành F&B, Bất động sản\n• Đội ngũ in-house, không outsource\n• Quy trình chuyên nghiệp, minh bạch\n• Đã phục vụ 200+ khách hàng"}
                                             value={proposalContent?.why_us || ''}
                                             onChange={(e) => setProposalContent({ ...proposalContent, why_us: e.target.value })}
+                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
                                         />
                                     </div>
                                 </div>
@@ -636,7 +645,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                                 {/* Row 8: Custom Sections */}
                                 <div className="space-y-3 pt-2 border-t">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                         <div>
                                             <Label className="text-sm font-semibold">Nội dung bổ sung</Label>
                                             <p className="text-xs text-muted-foreground">Thêm các mục tùy chỉnh vào proposal (VD: Phụ lục, Tài liệu tham khảo...)</p>
@@ -701,7 +710,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {/* Items */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between px-6">
+                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 gap-4">
                             <div>
                                 <CardTitle>Sản phẩm / Dịch vụ</CardTitle>
                                 <CardDescription>Danh sách hạng mục báo giá được phân loại</CardDescription>
@@ -709,7 +718,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             <div className="flex gap-2">
                                 <Button type="button" variant="outline" size="sm" onClick={addSection}>
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Thêm phần mới
+                                    <span className="hidden sm:inline">Thêm phần mới</span>
+                                    <span className="sm:hidden">Thêm mục</span>
                                 </Button>
                                 <Button type="button" size="sm" onClick={addItem}>
                                     <Plus className="mr-2 h-4 w-4" />
@@ -727,8 +737,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 sectionGroups.map((group, groupIdx) => (
                                     <div key={groupIdx} className="bg-white rounded-xl shadow-sm border overflow-hidden">
                                         {/* Section Header */}
-                                        <div className="bg-zinc-900 px-4 py-2 text-white flex items-center justify-between">
-                                            <div className="flex items-center gap-2 flex-1 max-w-md">
+                                        <div className="bg-zinc-900 px-4 py-2 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2 flex-1 w-full max-w-md">
                                                 <span className="text-white/60 font-bold">{groupIdx + 1}.</span>
                                                 <Input
                                                     value={group.name}
@@ -748,156 +758,158 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             </Button>
                                         </div>
 
-                                        <Table>
-                                            <TableHeader className="bg-zinc-50">
-                                                <TableRow className="hover:bg-transparent">
-                                                    <TableHead className="w-[50px]"></TableHead>
-                                                    <TableHead className="pl-0 min-w-[250px]">Sản phẩm / Dịch vụ</TableHead>
-                                                    <TableHead className="min-w-[100px]">ĐVT</TableHead>
-                                                    <TableHead className="min-w-[80px]">SL</TableHead>
-                                                    <TableHead className="min-w-[140px]">Đơn giá</TableHead>
-                                                    <TableHead className="min-w-[80px]">Chiết khấu %</TableHead>
-                                                    <TableHead className="min-w-[130px] text-right">Thành tiền</TableHead>
-                                                    <TableHead className="w-[40px] pr-4"></TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {(() => {
-                                                    // Linear numbering calculation
-                                                    let globalStartIndex = 0;
-                                                    for (let i = 0; i < groupIdx; i++) {
-                                                        globalStartIndex += (sectionGroups[i]?.items?.length || 0);
-                                                    }
+                                        <div className="w-full overflow-x-auto pb-4">
+                                            <Table className="min-w-[900px]">
+                                                <TableHeader className="bg-zinc-50">
+                                                    <TableRow className="hover:bg-transparent">
+                                                        <TableHead className="w-[50px]"></TableHead>
+                                                        <TableHead className="pl-0 min-w-[250px]">Sản phẩm / Dịch vụ</TableHead>
+                                                        <TableHead className="min-w-[100px]">ĐVT</TableHead>
+                                                        <TableHead className="min-w-[80px]">SL</TableHead>
+                                                        <TableHead className="min-w-[140px]">Đơn giá</TableHead>
+                                                        <TableHead className="min-w-[80px]">Chiết khấu %</TableHead>
+                                                        <TableHead className="min-w-[130px] text-right">Thành tiền</TableHead>
+                                                        <TableHead className="w-[40px] pr-4"></TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {(() => {
+                                                        // Linear numbering calculation
+                                                        let globalStartIndex = 0;
+                                                        for (let i = 0; i < groupIdx; i++) {
+                                                            globalStartIndex += (sectionGroups[i]?.items?.length || 0);
+                                                        }
 
-                                                    return group.items.map((item, itemIdx) => (
-                                                        <TableRow key={item.id} className="group/row">
-                                                            <TableCell className="pl-4 py-4 align-top">
-                                                                <div className="flex flex-col gap-1 items-center">
-                                                                    <span className="text-[10px] font-bold text-slate-400 mb-1">{globalStartIndex + itemIdx + 1}</span>
-                                                                    <div className="flex flex-col gap-1 opacity-20 group-hover/row:opacity-100 transition-opacity">
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            className="h-6 w-6"
-                                                                            onClick={() => moveItem(item.actualIndex!, 'up')}
-                                                                            disabled={item.actualIndex === 0}
-                                                                        >
-                                                                            <ArrowUp className="h-3 w-3" />
-                                                                        </Button>
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="ghost"
-                                                                            size="icon"
-                                                                            className="h-6 w-6"
-                                                                            onClick={() => moveItem(item.actualIndex!, 'down')}
-                                                                            disabled={item.actualIndex === items.length - 1}
-                                                                        >
-                                                                            <ArrowDown className="h-3 w-3" />
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell className="align-top py-4">
-                                                                <div className="space-y-2">
-                                                                    <div className="flex gap-1">
-                                                                        <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id!, { product_id: v })}>
-                                                                            <SelectTrigger className="h-9">
-                                                                                <SelectValue placeholder="Chọn sản phẩm" />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                {products?.map((p) => (
-                                                                                    <SelectItem key={p.id} value={p.id}>
-                                                                                        {p.name}
-                                                                                    </SelectItem>
-                                                                                ))}
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                        {item.product_id && (
+                                                        return group.items.map((item, itemIdx) => (
+                                                            <TableRow key={item.id} className="group/row">
+                                                                <TableCell className="pl-4 py-4 align-top">
+                                                                    <div className="flex flex-col gap-1 items-center">
+                                                                        <span className="text-[10px] font-bold text-slate-400 mb-1">{globalStartIndex + itemIdx + 1}</span>
+                                                                        <div className="flex flex-col gap-1 opacity-20 group-hover/row:opacity-100 transition-opacity">
                                                                             <Button
                                                                                 type="button"
                                                                                 variant="ghost"
                                                                                 size="icon"
-                                                                                onClick={() => {
-                                                                                    updateItem(item.id!, { product_id: '', product_name: '' })
-                                                                                }}
-                                                                                title="Xóa lựa chọn"
-                                                                                className="h-9 w-9 shrink-0"
+                                                                                className="h-6 w-6"
+                                                                                onClick={() => moveItem(item.actualIndex!, 'up')}
+                                                                                disabled={item.actualIndex === 0}
                                                                             >
-                                                                                <X className="h-4 w-4" />
+                                                                                <ArrowUp className="h-3 w-3" />
                                                                             </Button>
-                                                                        )}
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                className="h-6 w-6"
+                                                                                onClick={() => moveItem(item.actualIndex!, 'down')}
+                                                                                disabled={item.actualIndex === items.length - 1}
+                                                                            >
+                                                                                <ArrowDown className="h-3 w-3" />
+                                                                            </Button>
+                                                                        </div>
                                                                     </div>
+                                                                </TableCell>
+                                                                <TableCell className="align-top py-4">
+                                                                    <div className="space-y-2">
+                                                                        <div className="flex gap-1">
+                                                                            <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id!, { product_id: v })}>
+                                                                                <SelectTrigger className="h-9">
+                                                                                    <SelectValue placeholder="Chọn sản phẩm" />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {products?.map((p) => (
+                                                                                        <SelectItem key={p.id} value={p.id}>
+                                                                                            {p.name}
+                                                                                        </SelectItem>
+                                                                                    ))}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                            {item.product_id && (
+                                                                                <Button
+                                                                                    type="button"
+                                                                                    variant="ghost"
+                                                                                    size="icon"
+                                                                                    onClick={() => {
+                                                                                        updateItem(item.id!, { product_id: '', product_name: '' })
+                                                                                    }}
+                                                                                    title="Xóa lựa chọn"
+                                                                                    className="h-9 w-9 shrink-0"
+                                                                                >
+                                                                                    <X className="h-4 w-4" />
+                                                                                </Button>
+                                                                            )}
+                                                                        </div>
 
+                                                                        <Input
+                                                                            placeholder="Tên sản phẩm/dịch vụ"
+                                                                            value={item.product_name}
+                                                                            onChange={(e) => updateItem(item.id!, { product_name: e.target.value })}
+                                                                            className="h-9 font-medium"
+                                                                        />
+
+                                                                        <Textarea
+                                                                            placeholder="Quy cách / Mô tả kỹ thuật (vd: A5 2 mặt, C150...)"
+                                                                            value={item.description || ""}
+                                                                            onChange={(e) => updateItem(item.id!, { description: e.target.value })}
+                                                                            className="h-16 text-[12px] min-h-[40px] resize-y"
+                                                                            rows={1}
+                                                                        />
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className="align-top py-4">
                                                                     <Input
-                                                                        placeholder="Tên sản phẩm/dịch vụ"
-                                                                        value={item.product_name}
-                                                                        onChange={(e) => updateItem(item.id!, { product_name: e.target.value })}
-                                                                        className="h-9 font-medium"
+                                                                        placeholder="ĐVT"
+                                                                        value={item.unit}
+                                                                        onChange={(e) => updateItem(item.id!, { unit: e.target.value })}
+                                                                        className="h-9"
                                                                     />
-
-                                                                    <Textarea
-                                                                        placeholder="Quy cách / Mô tả kỹ thuật (vd: A5 2 mặt, C150...)"
-                                                                        value={item.description || ""}
-                                                                        onChange={(e) => updateItem(item.id!, { description: e.target.value })}
-                                                                        className="h-16 text-[12px] min-h-[40px] resize-y"
-                                                                        rows={1}
+                                                                </TableCell>
+                                                                <TableCell className="align-top py-4">
+                                                                    <Input
+                                                                        type="number"
+                                                                        min={1}
+                                                                        value={item.quantity}
+                                                                        onChange={(e) => updateItem(item.id!, { quantity: parseInt(e.target.value) || 1 })}
+                                                                        className="h-9"
                                                                     />
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell className="align-top py-4">
-                                                                <Input
-                                                                    placeholder="ĐVT"
-                                                                    value={item.unit}
-                                                                    onChange={(e) => updateItem(item.id!, { unit: e.target.value })}
-                                                                    className="h-9"
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell className="align-top py-4">
-                                                                <Input
-                                                                    type="number"
-                                                                    min={1}
-                                                                    value={item.quantity}
-                                                                    onChange={(e) => updateItem(item.id!, { quantity: parseInt(e.target.value) || 1 })}
-                                                                    className="h-9"
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell className="align-top py-4">
-                                                                <PriceInput
-                                                                    value={item.unit_price || 0}
-                                                                    onChange={(val) => updateItem(item.id!, { unit_price: val })}
-                                                                    className="h-9"
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell className="align-top py-4">
-                                                                <Input
-                                                                    type="number"
-                                                                    min={0}
-                                                                    max={100}
-                                                                    value={item.discount}
-                                                                    onChange={(e) => updateItem(item.id!, { discount: parseInt(e.target.value) || 0 })}
-                                                                    className="h-9"
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell className="text-right font-medium align-top py-6">
-                                                                {formatCurrency(Number(item.total_price) || 0)}
-                                                            </TableCell>
-                                                            <TableCell className="pr-4 align-top py-4 text-right">
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    onClick={() => removeItem(item.id!)}
-                                                                    className="h-8 w-8 text-zinc-300 hover:text-red-500 hover:bg-red-50"
-                                                                >
-                                                                    <X className="h-4 w-4" />
-                                                                </Button>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ));
-                                                })()}
-                                            </TableBody>
-                                        </Table>
+                                                                </TableCell>
+                                                                <TableCell className="align-top py-4">
+                                                                    <PriceInput
+                                                                        value={item.unit_price || 0}
+                                                                        onChange={(val) => updateItem(item.id!, { unit_price: val })}
+                                                                        className="h-9"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell className="align-top py-4">
+                                                                    <Input
+                                                                        type="number"
+                                                                        min={0}
+                                                                        max={100}
+                                                                        value={item.discount}
+                                                                        onChange={(e) => updateItem(item.id!, { discount: parseInt(e.target.value) || 0 })}
+                                                                        className="h-9"
+                                                                    />
+                                                                </TableCell>
+                                                                <TableCell className="text-right font-medium align-top py-6">
+                                                                    {formatCurrency(Number(item.total_price) || 0)}
+                                                                </TableCell>
+                                                                <TableCell className="pr-4 align-top py-4 text-right">
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        onClick={() => removeItem(item.id!)}
+                                                                        className="h-8 w-8 text-zinc-300 hover:text-red-500 hover:bg-red-50"
+                                                                    >
+                                                                        <X className="h-4 w-4" />
+                                                                    </Button>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ));
+                                                    })()}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
 
                                         <div className="bg-slate-50/50 p-2 border-t">
                                             <Button

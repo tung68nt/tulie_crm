@@ -37,7 +37,7 @@ export default async function ProjectDetailPage({ params }: any) {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                         <Link href="/projects">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
@@ -67,10 +67,10 @@ export default async function ProjectDetailPage({ params }: any) {
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-6">
                     {/* Overview & Metadata */}
-                    <Card className="border-primary/20">
+                    <Card>
                         <CardHeader className="bg-muted/30">
                             <CardTitle className="flex items-center gap-2">
-                                <Layout className="h-5 w-5 text-primary" />
+                                <Layout className="h-5 w-5 text-slate-700" />
                                 Tài nguyên dự án (Agency Assets)
                             </CardTitle>
                             <CardDescription>Các liên kết quan trọng phục vụ bàn giao và triển khai dự án.</CardDescription>
@@ -88,14 +88,14 @@ export default async function ProjectDetailPage({ params }: any) {
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <div>
                                 <CardTitle className="text-xl flex items-center gap-2">
-                                    <Receipt className="h-5 w-5 text-indigo-500" />
+                                    <Receipt className="h-5 w-5 text-slate-700" />
                                     Tài chính & Pháp lý
                                 </CardTitle>
                                 <CardDescription>Quản lý báo giá và hợp đồng liên quan đến dự án</CardDescription>
                             </div>
                             <div className="text-right">
                                 <p className="text-xs text-muted-foreground font-bold">Tổng giá trị dự án</p>
-                                <p className="text-2xl font-bold text-indigo-600">{formatCurrency(projectTotal)}</p>
+                                <p className="text-2xl font-bold text-slate-900">{formatCurrency(projectTotal)}</p>
                             </div>
                         </CardHeader>
                         <CardContent className="pt-4">
@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <h4 className="text-sm font-bold flex items-center gap-2">
-                                            <FileTextIcon className="h-4 w-4 text-blue-500" />
+                                            <FileTextIcon className="h-4 w-4 text-slate-700" />
                                             Danh sách Báo giá
                                         </h4>
                                         <Badge variant="outline" className="text-[10px]">{quotations.length} bản</Badge>
@@ -114,29 +114,29 @@ export default async function ProjectDetailPage({ params }: any) {
                                             <Link
                                                 key={q.id}
                                                 href={`/quotations/${q.id}`}
-                                                className="group flex items-center justify-between p-3 border rounded-xl hover:border-blue-200 hover:bg-blue-50/30 transition-all"
+                                                className="group flex items-center justify-between p-3 border rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                                                        <FileTextIcon className="h-4 w-4 text-blue-600" />
+                                                    <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-200 transition-colors">
+                                                        <FileTextIcon className="h-4 w-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-semibold">{q.quotation_number}</p>
+                                                        <p className="text-sm font-semibold text-slate-900">{q.quotation_number}</p>
                                                         <p className="text-[10px] text-muted-foreground">{formatDate(q.created_at)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right flex items-center gap-4">
                                                     <div>
-                                                        <p className="text-sm font-bold">{formatCurrency(q.total_amount)}</p>
+                                                        <p className="text-sm font-bold text-slate-900">{formatCurrency(q.total_amount)}</p>
                                                         <Badge variant="secondary" className="text-[9px] h-4 px-1 opacity-80">
                                                             {q.status}
                                                         </Badge>
                                                     </div>
-                                                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                                                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-slate-900 transition-colors" />
                                                 </div>
                                             </Link>
                                         )) : (
-                                            <p className="text-xs text-muted-foreground italic text-center py-2">Chưa có báo giá nào.</p>
+                                            <p className="text-xs text-muted-foreground text-center py-2 font-medium">Chưa có báo giá nào.</p>
                                         )}
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <h4 className="text-sm font-bold flex items-center gap-2">
-                                            <FileCheck className="h-4 w-4 text-emerald-500" />
+                                            <FileCheck className="h-4 w-4 text-slate-700" />
                                             Danh sách Hợp đồng / Đơn hàng
                                         </h4>
                                         <Badge variant="outline" className="text-[10px]">{contracts.length} bản</Badge>
@@ -157,29 +157,29 @@ export default async function ProjectDetailPage({ params }: any) {
                                             <Link
                                                 key={c.id}
                                                 href={`/contracts/${c.id}`}
-                                                className="group flex items-center justify-between p-3 border border-emerald-100 rounded-xl hover:border-emerald-200 hover:bg-emerald-50/30 transition-all font-sans"
+                                                className="group flex items-center justify-between p-3 border rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all font-sans cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors">
-                                                        <FileCheck className="h-4 w-4 text-emerald-600" />
+                                                    <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-slate-200 transition-colors">
+                                                        <FileCheck className="h-4 w-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-bold text-emerald-900">{c.contract_number}</p>
+                                                        <p className="text-sm font-bold text-slate-900">{c.contract_number}</p>
                                                         <p className="text-[10px] text-muted-foreground">{formatDate(c.created_at)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right flex items-center gap-4">
                                                     <div>
-                                                        <p className="text-sm font-bold text-emerald-700">{formatCurrency(c.total_amount)}</p>
-                                                        <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-[9px] h-4 px-1">
+                                                        <p className="text-sm font-bold text-slate-900">{formatCurrency(c.total_amount)}</p>
+                                                        <Badge variant="secondary" className="text-[9px] h-4 px-1 opacity-80">
                                                             {c.status}
                                                         </Badge>
                                                     </div>
-                                                    <ArrowUpRight className="h-4 w-4 text-emerald-400 group-hover:text-emerald-600 transition-colors" />
+                                                    <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-slate-900 transition-colors" />
                                                 </div>
                                             </Link>
                                         )) : (
-                                            <p className="text-xs text-muted-foreground italic text-center py-2">Chưa có hợp đồng nào.</p>
+                                            <p className="text-xs text-muted-foreground text-center py-2 font-medium">Chưa có hợp đồng nào.</p>
                                         )}
                                     </div>
                                 </div>
@@ -196,7 +196,7 @@ export default async function ProjectDetailPage({ params }: any) {
                             <CardTitle className="text-lg">Mô tả dự án</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-sm p-4 bg-muted/20 rounded-xl border border-dashed border-slate-200 whitespace-pre-line leading-relaxed italic">
+                            <div className="text-sm p-4 bg-muted/20 rounded-xl border border-dashed border-slate-200 whitespace-pre-line leading-relaxed">
                                 {project.description || "Chưa có mô tả chi tiết cho dự án này."}
                             </div>
                         </CardContent>
@@ -249,7 +249,7 @@ export default async function ProjectDetailPage({ params }: any) {
                             {project.acceptance_reports && project.acceptance_reports.length > 0 ? (
                                 <div className="space-y-2">
                                     {project.acceptance_reports.map((report: any) => (
-                                        <div key={report.id} className="p-3 border rounded-md text-sm bg-muted/10 flex justify-between items-center group transition-all hover:border-primary/50">
+                                        <div key={report.id} className="p-3 border rounded-md text-sm bg-muted/10 flex justify-between items-center group transition-all hover:border-slate-300">
                                             <div>
                                                 <p className="font-medium">{report.report_number}</p>
                                                 <p className="text-xs text-muted-foreground">{formatDate(report.created_at)}</p>
@@ -270,7 +270,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                     ))}
                                 </div>
                             ) : (
-                                <p className="text-sm text-muted-foreground italic text-center py-4">Chưa có biên bản nghiệm thu.</p>
+                                <p className="text-sm text-muted-foreground text-center py-4 font-medium">Chưa có biên bản nghiệm thu.</p>
                             )}
                             <Button className="w-full" variant="outline">Tạo biên bản nghiệm thu mới</Button>
                         </CardContent>
