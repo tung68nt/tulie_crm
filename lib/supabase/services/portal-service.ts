@@ -189,3 +189,44 @@ export async function getPortalDataByToken(token: string) {
         return null
     }
 }
+
+export async function updatePortalCustomerInfo(token: string, customerId: string, updateData: any) {
+    try {
+        const supabase = await createClient()
+
+        // 1. Verify token belongs to this customer
+        const { data: qData } = await supabase
+            .from('quotations')
+            .select('customer_id')
+            .eq('public_token', token)
+            .single()
+
+        if (!qData || qData.customer_id !== customerId) {
+            throw new Error('Unauthorized or invalid token.')
+        }
+
+        // 2. Perform the update and lock the profile
+        const { error } = await supabase
+            .from('customers')
+            .update({
+                company_name: updateData.company_name,
+                representative: updateData.representative,
+                position: updateData.position,
+                tax_code: updateData.tax_code,
+                email: updateData.email,
+                phone: updateData.phone,
+                address: updateData.address,
+                invoice_address: updateData.invoice_address,
+                is_info_unlocked: false // lock after updating
+            })
+            .eq('id', customerId)
+            .eq('is_info_unlocked', true) // ensure it was actually unlocked
+
+        if (error) throw error
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Error updating customer info from portal:', err)
+        return { success: false, error: err.message }
+    }
+}

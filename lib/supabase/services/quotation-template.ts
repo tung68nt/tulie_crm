@@ -18,7 +18,7 @@ export const quotationTemplate = `
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
         <tr>
             <td style="width: 40%; text-align: left;">Số: {{quotation_number}}</td>
-            <td style="width: 60%; text-align: right; font-style: italic;">Hà Nội, ngày {{quotation_date}}</td>
+            <td style="width: 60%; text-align: right;">Hà Nội, ngày {{quotation_date}}</td>
         </tr>
     </table>
 
@@ -56,7 +56,7 @@ export const quotationTemplate = `
             <td>
                 Tổng giá trị thanh toán:<br/>
                 Bằng số: <strong>{{total_amount_number}} VNĐ</strong><br/>
-                Bằng chữ: <em>{{amount_in_words}}</em>
+                Bằng chữ: <strong>{{amount_in_words}}</strong>
             </td>
         </tr>
         <tr>

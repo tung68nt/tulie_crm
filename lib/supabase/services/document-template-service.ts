@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import { DocumentTemplate, DocumentBundle } from '@/types'
 import { readNumberToWords } from '@/lib/utils/format'
 
@@ -293,7 +294,7 @@ export async function getDocumentData(
     relationId?: string,
     additionalMetadata?: Record<string, any>
 ) {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // 1. Get Customer
     const { data: customer } = await supabase

@@ -85,7 +85,6 @@ export const docStyles = StyleSheet.create({
     },
     docDate: {
         fontSize: 10,
-        fontStyle: 'italic',
     },
     title: {
         fontSize: 16,
@@ -115,7 +114,6 @@ export const docStyles = StyleSheet.create({
     },
     lawItem: {
         fontSize: 9,
-        fontStyle: 'italic',
         marginBottom: 2,
     },
     partySection: {

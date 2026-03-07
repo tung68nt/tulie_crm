@@ -39,6 +39,9 @@ export interface Customer {
   industry?: string
   company_size?: string
   website?: string
+  representative?: string
+  position?: string
+  is_info_unlocked: boolean
   status: CustomerStatus
   assigned_to: string
   assigned_user?: User

@@ -102,7 +102,7 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
 
                 <View style={{ marginTop: 15 }}>
                     <Text style={styles.text}>- Tổng giá trị đơn hàng: <Text style={styles.bold}>{formatCurrency(total_amount)}</Text></Text>
-                    <Text style={styles.text}>- Bằng chữ: <Text style={styles.italic}>{amount_in_words}</Text></Text>
+                    <Text style={styles.text}>- Bằng chữ: <Text>{amount_in_words}</Text></Text>
                     <Text style={styles.text}>- Thời gian giao hàng: {delivery_time}</Text>
                     <Text style={styles.text}>- Hình thức thanh toán: {payment_method}</Text>
                 </View>
@@ -110,13 +110,13 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
                 <View style={styles.signatureSection} wrap={false}>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên A</Text>
-                        <Text style={styles.italic}>(Ký tên)</Text>
+                        <Text>(Ký tên)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>{customer.representative || ''}</Text>
                     </View>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên B</Text>
-                        <Text style={styles.italic}>(Ký và đóng dấu)</Text>
+                        <Text>(Ký và đóng dấu)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>Nguyễn Thanh Tùng</Text>
                     </View>

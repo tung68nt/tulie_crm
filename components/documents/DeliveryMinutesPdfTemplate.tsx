@@ -103,13 +103,13 @@ const DeliveryMinutesPdfTemplate: React.FC<DeliveryMinutesPdfTemplateProps> = ({
                 <View style={styles.signatureSection} wrap={false}>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên A</Text>
-                        <Text style={styles.italic}>(Ký và ghi rõ họ tên)</Text>
+                        <Text>(Ký và ghi rõ họ tên)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>{customer.representative || ''}</Text>
                     </View>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên B</Text>
-                        <Text style={styles.italic}>(Ký và ghi rõ họ tên)</Text>
+                        <Text>(Ký và ghi rõ họ tên)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>Ông Nguyễn Thanh Tùng</Text>
                     </View>

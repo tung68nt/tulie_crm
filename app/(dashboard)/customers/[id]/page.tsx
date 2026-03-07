@@ -25,6 +25,7 @@ import { getQuotations } from '@/lib/supabase/services/quotation-service'
 import { getContracts } from '@/lib/supabase/services/contract-service'
 import { getContactsByCustomerId } from '@/lib/supabase/services/contact-service'
 import { ContactList } from '@/components/customers/contact-list'
+import { UnlockPortalButton } from '@/components/customers/unlock-portal-button'
 import { notFound } from 'next/navigation'
 
 interface CustomerPageProps {
@@ -81,6 +82,7 @@ export default async function CustomerDetailPage({ params }: any) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    <UnlockPortalButton customerId={customer.id} isUnlocked={customer.is_info_unlocked} />
                     <Button variant="outline" asChild>
                         <Link href={`/quotations/new?customer=${customer.id}`}>
                             <FileText className="mr-2 h-4 w-4" />

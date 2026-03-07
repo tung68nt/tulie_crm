@@ -126,20 +126,20 @@ const ContractPdfTemplate: React.FC<ContractPdfTemplateProps> = ({ data }) => {
 
                 <Text style={styles.subtitle}>Điều 2: Giá trị hợp đồng và phương thức thanh toán</Text>
                 <Text style={styles.text}>2.1. Tổng giá trị hợp đồng (đã bao gồm thuế GTGT): <Text style={styles.bold}>{formatCurrency(total_amount)}</Text></Text>
-                <Text style={styles.text}>(Bằng chữ: <Text style={styles.italic}>{amount_in_words}</Text>)</Text>
+                <Text style={styles.text}>(Bằng chữ: <Text>{amount_in_words}</Text>)</Text>
                 <Text style={styles.text}>2.2. Hình thức thanh toán: Chuyển khoản hoặc tiền mặt.</Text>
                 <Text style={styles.text}>2.3. Thời hạn thanh toán: Trong vòng 05 ngày kể từ ngày nhận đầy đủ hóa đơn.</Text>
 
                 <View style={styles.signatureSection} wrap={false}>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên A</Text>
-                        <Text style={styles.italic}>(Ký và đóng dấu)</Text>
+                        <Text>(Ký và đóng dấu)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>{customer.representative || ''}</Text>
                     </View>
                     <View style={styles.signatureBlock}>
                         <Text style={styles.bold}>Đại diện Bên B</Text>
-                        <Text style={styles.italic}>(Ký và đóng dấu)</Text>
+                        <Text>(Ký và đóng dấu)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>Ông Nguyễn Thanh Tùng</Text>
                     </View>
