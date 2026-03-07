@@ -366,16 +366,16 @@ export default function QuotationDetailPage() {
                                             <React.Fragment key={sIdx}>
                                                 {(sectionName || sectionEntries.length > 1) && (
                                                     <TableRow className="group/section hover:bg-transparent">
-                                                        <TableCell colSpan={4} className="p-0 border-b border-stone-200">
-                                                            <div className="relative bg-stone-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                        <TableCell colSpan={4} className="p-0 border-b border-slate-200">
+                                                            <div className="relative bg-slate-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
-                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-stone-700 border border-stone-200">
+                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-slate-700 border border-slate-200">
                                                                         <span className="text-xs font-bold">{sIdx + 1}</span>
                                                                     </div>
-                                                                    <div className="flex flex-col text-stone-800">
+                                                                    <div className="flex flex-col text-slate-800">
                                                                         <h3 className="text-[13px] font-bold leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
-                                                                        <p className="text-[9px] text-stone-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
+                                                                        <p className="text-[9px] text-slate-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -345,18 +345,18 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                     {/* Always show section header if there are multiple sections or a name is provided */}
                                                     {(sectionName || activeSections.length > 1) && (
                                                         <tr className="relative overflow-hidden group/section">
-                                                            <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-stone-200">
-                                                                <div className="relative bg-stone-100 px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                            <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-slate-200">
+                                                                <div className="relative bg-slate-100 px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                     {/* Content Layer */}
                                                                     <div className="relative z-10 flex items-center gap-4">
-                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-stone-700 border border-stone-200">
+                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-slate-700 border border-slate-200">
                                                                             <span className="text-xs font-bold">{sectionIndex + 1}</span>
                                                                         </div>
                                                                         <div className="flex flex-col">
-                                                                            <h3 className="text-[13px] font-bold text-stone-800 leading-none mb-0.5">
+                                                                            <h3 className="text-[13px] font-bold text-slate-800 leading-none mb-0.5">
                                                                                 {sectionName || `Hạng mục ${sectionIndex + 1}`}
                                                                             </h3>
-                                                                            <p className="text-[9px] text-stone-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
+                                                                            <p className="text-[9px] text-slate-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
