@@ -1,17 +1,18 @@
 'use server'
 import { createClient } from '../server'
-import crypto from 'crypto'
-import { DocumentTemplate, DocumentBundle, GeneratedDocument } from '@/types'
+import { DocumentTemplate, DocumentBundle } from '@/types'
 import { readNumberToWords } from '@/lib/utils/format'
 
 import { contractTemplate } from './contract-template'
 import { paymentTemplate } from './payment-template'
 import { quotationTemplate } from './quotation-template'
 
-// Default templates with common variables
+/**
+ * Standard templates with common variables for HTML fallback and variable definition
+ */
 const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at'>[] = [
     {
-        name: 'Hợp đồng dịch vụ',
+        name: 'Hợp đồng dịch vụ (Mẫu chuẩn)',
         type: 'contract',
         content: contractTemplate,
         variables: [
@@ -23,7 +24,7 @@ const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at
         ]
     },
     {
-        name: 'Đề nghị thanh toán',
+        name: 'Đề nghị thanh toán (Mẫu chuẩn)',
         type: 'payment_request',
         content: paymentTemplate,
         variables: [
@@ -36,7 +37,7 @@ const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at
         ]
     },
     {
-        name: 'Báo giá / Đơn đặt hàng',
+        name: 'Báo giá / Đơn đặt hàng (Mẫu chuẩn)',
         type: 'quotation',
         content: quotationTemplate,
         variables: [
@@ -57,10 +58,10 @@ export async function getDocumentTemplates() {
 
     if (error) {
         console.error('Error fetching templates:', error)
-        // Return default templates if table doesn't exist
+        // Return default templates with temporary IDs
         return defaultTemplates.map((t, i) => ({
             ...t,
-            id: `default -${i} `,
+            id: `default-${i}`,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         })) as DocumentTemplate[]
@@ -100,54 +101,36 @@ export async function getTemplateById(id: string) {
 
         return data as DocumentTemplate
     } catch (err) {
-        console.error('Fatal error in getTemplateById:', err)
+        console.error('Error in getTemplateById:', err)
         return null
     }
 }
 
 // Create template
 export async function createDocumentTemplate(template: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at'>) {
-    try {
-        const supabase = await createClient()
-        const { data, error } = await supabase
-            .from('document_templates')
-            .insert([template])
-            .select()
-            .single()
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('document_templates')
+        .insert([template])
+        .select()
+        .single()
 
-        if (error) {
-            console.error('Error creating template:', error)
-            throw error
-        }
-
-        return data as DocumentTemplate
-    } catch (err: any) {
-        console.error('Fatal error in createDocumentTemplate:', err)
-        throw new Error(err.message || 'Lỗi hệ thống khi tạo mẫu')
-    }
+    if (error) throw error
+    return data as DocumentTemplate
 }
 
 // Update template
 export async function updateDocumentTemplate(id: string, template: Partial<DocumentTemplate>) {
-    try {
-        const supabase = await createClient()
-        const { data, error } = await supabase
-            .from('document_templates')
-            .update(template)
-            .eq('id', id)
-            .select()
-            .single()
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('document_templates')
+        .update(template)
+        .eq('id', id)
+        .select()
+        .single()
 
-        if (error) {
-            console.error('Error updating template:', error)
-            throw error
-        }
-
-        return data as DocumentTemplate
-    } catch (err: any) {
-        console.error('Fatal error in updateDocumentTemplate:', err)
-        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật mẫu')
-    }
+    if (error) throw error
+    return data as DocumentTemplate
 }
 
 // Fill template with variables
@@ -160,7 +143,7 @@ export async function fillTemplate(template: string, variables: Record<string, s
     return result
 }
 
-// Generate document from template and customer data
+// Generate document from template and customer data (HTML version)
 export async function generateDocument(
     templateId: string,
     customerId: string,
@@ -188,84 +171,82 @@ export async function generateDocument(
         if (contractId) {
             const { data } = await supabase
                 .from('contracts')
-                .select('*, milestones:contract_milestones(*)')
+                .select('*, milestones:contract_milestones(*), items:quotation_items(*)')
                 .eq('id', contractId)
                 .single()
             contract = data
         }
 
+        const now = new Date()
+
         // Build variables map
         const variables: Record<string, string> = {
             // Customer variables
-            customer_company: customer.company_name || '',
+            customer_company: customer.company_name || customer.name || '',
             customer_address: customer.address || '',
             customer_tax_code: customer.tax_code || '',
             customer_email: customer.email || '',
             customer_phone: customer.phone || '',
-            customer_representative: '', // To be filled by user
-            customer_position: '',
+            customer_representative: customer.representative || '',
+            customer_position: customer.position || '',
 
-            // Provider variables (default company info)
+            // Provider variables
             provider_company: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',
-            provider_address: 'Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam',
+            provider_address: 'Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Hà Nội',
             provider_tax_code: '0110163102',
             provider_representative: 'Nguyễn Thanh Tùng',
             provider_position: 'Giám đốc',
-            bank_name: 'TMCP Kỹ Thương Việt Nam (Techcombank)',
+            bank_name: 'Techcombank',
             bank_account: '86683979',
             account_holder: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',
 
             // Date variables
-            contract_date: new Date().toLocaleDateString('vi-VN'),
-            quotation_date: new Date().toLocaleDateString('vi-VN'),
-            payment_date: new Date().toLocaleDateString('vi-VN'),
+            contract_date: now.toLocaleDateString('vi-VN'),
+            date_day: now.getDate().toString(),
+            date_month: (now.getMonth() + 1).toString(),
+            date_year: now.getFullYear().toString(),
+            quotation_date: now.toLocaleDateString('vi-VN'),
             location: 'Hà Nội',
 
-            // Default specific numbers if not provided
-            quotation_number: `QT-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-            payment_number: `REQ-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-
+            // Default specific numbers
+            quotation_number: `QT-${now.getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+            payment_number: `REQ-${now.getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
             ...additionalVariables
         }
 
-        // Handle amount_in_words if payment_amount or total_amount is in additionalVariables
+        // Handle amount_in_words
         if (additionalVariables?.payment_amount && !variables.amount_in_words) {
-            const amount = parseFloat(additionalVariables.payment_amount.replace(/[^0-9]/g, ''))
-            if (!isNaN(amount)) {
-                variables.amount_in_words = readNumberToWords(amount)
-            }
+            const amountValue = parseFloat(additionalVariables.payment_amount.replace(/[^0-9]/g, ''))
+            if (!isNaN(amountValue)) variables.amount_in_words = readNumberToWords(amountValue)
         }
 
-        // Add contract variables if available
+        // Add contract variables
         if (contract) {
             variables.contract_number = contract.contract_number || ''
             variables.contract_date = contract.created_at ? new Date(contract.created_at).toLocaleDateString('vi-VN') : variables.contract_date
             variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || 0)
-            if (!variables.amount_in_words) {
-                variables.amount_in_words = readNumberToWords(contract.total_amount || 0)
-            }
+            if (!variables.amount_in_words) variables.amount_in_words = readNumberToWords(contract.total_amount || 0)
             variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
-            variables.end_date = contract.end_date ? new Date(contract.end_date).toLocaleDateString('vi-VN') : ''
             variables.service_description = contract.description || ''
 
-            // Build items table dynamically
+            // Build items table (HTML)
             let itemsHtml = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">'
             itemsHtml += '<tr><th style="border: 1px solid #000; padding: 8px; text-align: center;">STT</th><th style="border: 1px solid #000; padding: 8px;">Tên hàng hoá, dịch vụ</th><th style="border: 1px solid #000; padding: 8px; text-align: center;">ĐVT</th><th style="border: 1px solid #000; padding: 8px; text-align: center;">SL</th><th style="border: 1px solid #000; padding: 8px; text-align: right;">Đơn giá</th><th style="border: 1px solid #000; padding: 8px; text-align: right;">Thành tiền</th></tr>'
             if (contract.items && contract.items.length > 0) {
                 contract.items.forEach((item: any, index: number) => {
                     itemsHtml += `<tr>
                         <td style="border: 1px solid #000; padding: 8px; text-align: center;">${index + 1}</td>
-                        <td style="border: 1px solid #000; padding: 8px;">${item.name}</td>
+                        <td style="border: 1px solid #000; padding: 8px;">${item.product_name}</td>
                         <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.unit}</td>
                         <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.quantity}</td>
                         <td style="border: 1px solid #000; padding: 8px; text-align: right;">${new Intl.NumberFormat('vi-VN').format(item.unit_price)}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${new Intl.NumberFormat('vi-VN').format(item.total)}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${new Intl.NumberFormat('vi-VN').format(item.total_price)}</td>
                     </tr>`
                 })
             }
             itemsHtml += '</table>'
             variables.contract_items_table = itemsHtml
-            variables.quotation_items_table = itemsHtml // Reuse for quotation if needed
+            variables.quotation_items_table = itemsHtml
 
             // Payment schedule
             let paymentHtml = '<ul style="margin-top: 5px;">'
@@ -279,55 +260,92 @@ export async function generateDocument(
             variables.payment_schedule = paymentHtml
         }
 
-        // Fill the template
         const filledContent = await fillTemplate(template.content, variables)
 
         return {
-            template,
-            customer,
-            contract,
-            filledContent,
-            variables,
-            missingVariables: template.variables.filter(v => !variables[v] || variables[v] === '')
+            content: filledContent,
+            variables
         }
-    } catch (err: any) {
-        console.error('Fatal error in generateDocument:', err)
-        throw new Error(err.message || 'Lỗi hệ thống khi tạo tài liệu')
+    } catch (error) {
+        console.error('Error generating document:', error)
+        throw error
     }
 }
 
-// Create a shareable bundle
-export async function createDocumentBundle(
+/**
+ * Fetches all necessary data to populate a PDF template (React-PDF)
+ */
+export async function getDocumentData(
+    type: 'contract' | 'order' | 'payment_request' | 'delivery_minutes' | 'quotation',
     customerId: string,
-    contractId: string,
-    templateIds: string[],
-    name: string
+    relationId?: string,
+    additionalMetadata?: Record<string, any>
 ) {
-    try {
-        // Generate a secure share token
-        const shareToken = crypto.randomUUID().replace(/-/g, '')
-        const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+    const supabase = await createClient()
 
-        const bundle: DocumentBundle = {
-            id: crypto.randomUUID(),
-            name,
-            customer_id: customerId,
-            contract_id: contractId,
-            templates: templateIds,
-            generated_documents: [],
-            share_token: shareToken,
-            expires_at: expiresAt.toISOString(),
-            created_at: new Date().toISOString()
-        }
+    // 1. Get Customer
+    const { data: customer } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', customerId)
+        .single()
 
-        // In a real implementation, save to database
-        // For now, return the bundle structure
-        return {
-            bundle,
-            shareUrl: `/portal/${shareToken}`
+    // 2. Get Related Entity (Contract or Quotation or Invoice)
+    let relationData: any = null
+    let items: any[] = []
+
+    if (relationId) {
+        if (type === 'contract' || type === 'delivery_minutes' || type === 'payment_request') {
+            const { data } = await supabase
+                .from('contracts')
+                .select('*, items:quotation_items(*)')
+                .eq('id', relationId)
+                .single()
+            relationData = data
+            items = data?.items || []
+        } else if (type === 'quotation') {
+            const { data } = await supabase
+                .from('quotations')
+                .select('*, items:quotation_items(*)')
+                .eq('id', relationId)
+                .single()
+            relationData = data
+            items = data?.items || []
         }
-    } catch (err) {
-        console.error('Fatal error in createDocumentBundle:', err)
-        return null
     }
+
+    const now = new Date()
+
+    return {
+        type,
+        day: now.getDate(),
+        month: now.getMonth() + 1,
+        year: now.getFullYear(),
+        customer,
+        items,
+        contract_number: relationData?.contract_number || relationData?.quotation_number,
+        total_amount: relationData?.total_amount || 0,
+        amount_in_words: relationData?.total_amount ? readNumberToWords(relationData.total_amount) : '',
+        start_date: relationData?.start_date ? new Date(relationData.start_date).toLocaleDateString('vi-VN') : '',
+        contract_date: relationData?.created_at ? new Date(relationData.created_at).toLocaleDateString('vi-VN') : now.toLocaleDateString('vi-VN'),
+        ...additionalMetadata
+    }
+}
+
+// Create Document Bundle
+export async function createDocumentBundle(bundle: Omit<DocumentBundle, 'id' | 'created_at' | 'updated_at'>) {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('document_bundles')
+        .insert([bundle])
+        .select()
+        .single()
+
+    if (error) throw error
+    return data as DocumentBundle
+}
+
+// Generate secure share token using global crypto (Node/Browser compatible)
+export async function generateShareToken() {
+    return (globalThis.crypto as any).randomUUID().replace(/-/g, '')
 }

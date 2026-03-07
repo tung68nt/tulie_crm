@@ -92,7 +92,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
     // Proposal content helpers
     const pc = quotation.proposal_content || {}
-    const hasProposal = quotation.type === 'proposal' && pc
+    const hasProposal = pc && Object.values(pc).some(v => v && String(v).trim().length > 0)
 
     const handlePrint = () => {
         window.print();
@@ -464,10 +464,11 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 {!hasProposal && <span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Service Details</span>}
                                 {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
                             </h3>
-                            <div className="rounded-lg overflow-hidden border border-slate-200">
-                                {/* Table Header - mimics the Proposal Header approach with separate dot pattern overlay */}
+                            <div className="rounded-xl overflow-hidden border border-slate-200">
+                                {/* Table Header - Premium style with gradient and dots */}
                                 <div className="relative overflow-hidden" style={{ backgroundImage: 'linear-gradient(to right, #09090b, #171717, #404040)' }}>
-                                    <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}></div>
+                                    <div className="absolute inset-0 opacity-15 pointer-events-none"
+                                        style={{ backgroundImage: "radial-gradient(#fff 0.5px, transparent 0.5px)", backgroundSize: "12px 12px" }}></div>
                                     <table className="w-full text-left text-[11px] relative z-10">
                                         <thead>
                                             <tr className="text-white">
@@ -503,41 +504,78 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                         <tr><th>#</th><th>Item</th><th>Unit</th><th>Qty</th><th>Price</th>{hasDiscount && <th>%</th>}<th>Amount</th></tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
-                                        {sectionEntries.map(([sectionName, sectionItems], sectionIndex) => (
-                                            <React.Fragment key={sectionIndex}>
-                                                {sectionName && (
-                                                    <tr className="bg-slate-100 border-b border-slate-200">
-                                                        <td colSpan={hasDiscount ? 7 : 6} className="px-3 py-2.5 font-bold text-slate-900 text-[13px] normal-case">
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold">
-                                                                    {sectionIndex + 1}
-                                                                </span>
-                                                                <span>{sectionName}</span>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                )}
+                                        {(() => {
+                                            let globalItemIndex = 0;
+                                            // Handle cases where sections might be empty but we want to show 1-2-3-4
+                                            const activeSections = sectionEntries.filter(([name, items]) => name || items.length > 0);
 
-                                                {sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any, index: number) => (
-                                                    <tr key={`${sectionIndex}-${index}`} className="quotation-item-row hover:bg-slate-50/50 transition-colors">
-                                                        <td className="px-3 text-slate-500 align-top text-center py-2">{index + 1}</td>
-                                                        <td className="px-3 align-top py-2">
-                                                            <p className="font-semibold text-slate-900 leading-tight">{item.product_name}</p>
-                                                            {item.description && (
-                                                                <p className="text-slate-500 text-[10px] mt-0.5 leading-snug whitespace-pre-line border-l-2 border-slate-100 pl-2 py-0.5 mt-1">{item.description}</p>
-                                                            )}
-                                                        </td>
-                                                        <td className="px-3 text-center text-slate-600 align-top py-2">{item.unit}</td>
-                                                        <td className="px-3 text-center text-slate-600 align-top py-2">{item.quantity}</td>
-                                                        <td className="px-3 text-right text-slate-600 align-top py-2">{formatCurrency(item.unit_price)}</td>
-                                                        {hasDiscount && (
-                                                            <td className="px-3 text-center text-slate-500 align-top py-2">{item.discount || 0}%</td>
-                                                        )}
-                                                        <td className="px-3 text-right font-bold text-slate-900 align-top py-2">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
-                                                    </tr>
-                                                ))}
-                                            </React.Fragment>
-                                        ))}
+                                            return activeSections.map(([sectionName, sectionItems], sectionIndex) => (
+                                                <React.Fragment key={sectionIndex}>
+                                                    {/* Always show section header if there are multiple sections or a name is provided */}
+                                                    {(sectionName || activeSections.length > 1) && (
+                                                        <tr className="relative overflow-hidden group/section">
+                                                            <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-stone-800">
+                                                                <div className="relative bg-stone-900 px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                                    {/* Background Layer: Gradient + Dots */}
+                                                                    <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-900 to-stone-800 opacity-90" />
+                                                                    <div
+                                                                        className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay"
+                                                                        style={{
+                                                                            backgroundImage: `radial-gradient(#fff 0.5px, transparent 0.5px)`,
+                                                                            backgroundSize: '12px 12px'
+                                                                        }}
+                                                                    />
+
+                                                                    {/* Content Layer */}
+                                                                    <div className="relative z-10 flex items-center gap-4">
+                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
+                                                                            <span className="text-xs font-black tracking-widest">{sectionIndex + 1}</span>
+                                                                        </div>
+                                                                        <div className="flex flex-col">
+                                                                            <h3 className="text-[13px] font-black uppercase tracking-tight text-white leading-none mb-0.5">
+                                                                                {sectionName || `Hạng mục ${sectionIndex + 1}`}
+                                                                            </h3>
+                                                                            <p className="text-[9px] text-white/40 uppercase tracking-widest font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="relative z-10 hidden sm:flex items-center gap-2 pr-2">
+                                                                        <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-sm">
+                                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                                                                            <span className="text-[9px] font-black text-white/60 tracking-[0.2em] uppercase">Active</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )}
+
+                                                    {sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any, index: number) => {
+                                                        const currentGlobalIdx = ++globalItemIndex;
+                                                        return (
+                                                            <tr key={`${sectionIndex}-${index}`} className="quotation-item-row hover:bg-zinc-50/50 transition-colors group/row">
+                                                                <td className="px-4 text-zinc-400 text-center py-4 bg-zinc-50/30 font-bold border-r border-zinc-100 group-hover/row:text-zinc-900 transition-colors">
+                                                                    <span className="text-[10px] tabular-nums">{currentGlobalIdx}</span>
+                                                                </td>
+                                                                <td className="px-2 sm:px-4 align-top py-4">
+                                                                    <p className="font-bold text-stone-900 leading-tight text-[12px]">{item.product_name}</p>
+                                                                    {item.description && (
+                                                                        <p className="text-zinc-500 text-[10px] mt-1.5 leading-relaxed whitespace-pre-line border-l-2 border-emerald-500/30 pl-3 py-0.5 font-medium">{item.description}</p>
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-4 text-center text-zinc-600 align-top py-4 tabular-nums font-medium">{item.unit}</td>
+                                                                <td className="px-4 text-center text-zinc-600 align-top py-4 tabular-nums font-bold">{item.quantity}</td>
+                                                                <td className="px-4 text-right text-stone-900 align-top py-4 tabular-nums font-bold">{formatCurrency(item.unit_price)}</td>
+                                                                {hasDiscount && (
+                                                                    <td className="px-4 text-center text-emerald-600 align-top py-4 tabular-nums font-black italic bg-emerald-50/10">-{item.discount || 0}%</td>
+                                                                )}
+                                                                <td className="px-4 text-right font-black text-stone-900 align-top py-4 tabular-nums bg-stone-50/30">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </React.Fragment>
+                                            ));
+                                        })()}
                                     </tbody>
                                 </table>
                             </div>

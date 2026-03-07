@@ -28,7 +28,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-
+import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
+import { Progress } from '@/components/ui/progress'
 
 interface PortalContentProps {
     data: any
@@ -36,17 +37,16 @@ interface PortalContentProps {
 }
 
 const getStatusBadge = (status: string, isLate?: boolean) => {
-    if (isLate) {
-        return <Badge variant="destructive" className="bg-red-900 text-neutral-50 border-none dark:bg-red-600">Phát sinh trễ</Badge>
-    }
+    if (isLate) return <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-200 border-red-200">Trễ hạn</Badge>
+
     switch (status) {
         case 'completed':
-        case 'signed':
         case 'paid':
-        case 'accepted':
-            return <Badge className="bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200">Hoàn thành</Badge>
-        case 'overdue':
-            return <Badge variant="destructive" className="bg-red-500 text-white dark:bg-red-700">Quá hạn</Badge>
+        case 'signed':
+            return <Badge variant="secondary" className="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-black border-neutral-900 dark:border-neutral-100">Hoàn thành</Badge>
+        case 'in_progress':
+        case 'partial_paid':
+            return <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">Đang thực hiện</Badge>
         case 'pending':
         case 'sent':
         case 'pending_signature':
@@ -79,11 +79,11 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     const [isSigning, setIsSigning] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-    // Primary project identity (if part of a deal, use deal title)
+    // Primary project identity
     const dealTitle = quotation.deal?.title
     const projectTitle = dealTitle || (contracts?.length > 0 ? contracts[0].title : (quotations?.length > 0 ? quotations[0].title : quotation.title))
 
-    // Build documents list from all related data
+    // Build documents list
     const documents: any[] = []
 
     if (quotations && quotations.length > 0) {
@@ -93,8 +93,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 name: `Báo giá #${q.quotation_number}`,
                 type: 'quotation',
                 status: q.status === 'accepted' ? 'signed' : 'pending_signature',
-                public_token: q.public_token, // Use its own token if we want to deep link
-                pdf_url: `/quote/${q.public_token || token}`
+                public_token: q.public_token
             })
         })
     } else {
@@ -103,7 +102,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             name: `Báo giá #${quotation.quotation_number}`,
             type: 'quotation',
             status: quotation.status === 'accepted' ? 'signed' : 'pending_signature',
-            pdf_url: `/quote/${token}`
         })
     }
 
@@ -124,183 +122,100 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 id: inv.id,
                 name: `Yêu cầu thanh toán ${inv.invoice_number}`,
                 type: 'payment_request',
-                status: inv.status,
-                pdf_url: inv.pdf_url,
-                lookup_info: inv.lookup_info
+                status: inv.status
             })
         })
     }
 
     const totalPaid = invoices?.filter((inv: any) => inv.status === 'paid').reduce((sum: number, inv: any) => sum + inv.total_amount, 0) || 0
-
-    // Aggregated value. If there are contracts, use total of contracts. Otherwise total of accepted quotations.
     const totalValueFromContracts = contracts?.reduce((sum: number, c: any) => sum + (c.total_amount || 0), 0) || 0
     const totalValueFromQuotes = quotations?.filter((q: any) => q.status === 'accepted').reduce((sum: number, q: any) => sum + q.total_amount, 0) || 0
-
     const totalValue = totalValueFromContracts || totalValueFromQuotes || quotation.total_amount
     const paymentProgress = totalValue > 0 ? (totalPaid / totalValue) * 100 : 0
-
-    // Tasks for Gantt
     const tasks = data.tasks || []
-
-
 
     return (
         <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans">
             {/* Header */}
-            <header className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <img src="/logo.png" alt="Tulie" className="h-10 w-auto object-contain" />
-                            <div>
-                                <h1 className="font-bold text-neutral-900 dark:text-neutral-100 text-lg">Tulie Agency</h1>
-                                <p className="text-[10px] text-neutral-500 font-medium tracking-normal">Portal khách hàng</p>
-                            </div>
+            <header className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md">
+                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
+                            <Building2 className="h-5 w-5 text-white dark:text-neutral-900" />
                         </div>
-                        <div className="text-right">
-                            <p className="font-medium">{customer?.company_name}</p>
-                            <p className="text-sm text-neutral-500">{customer?.email}</p>
+                        <span className="font-bold text-lg tracking-tight">Tulie CRM</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:flex flex-col items-end">
+                            <span className="text-xs text-neutral-500 font-medium">Khách hàng</span>
+                            <span className="text-sm font-bold">{customer?.company_name || customer?.name}</span>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 py-8 space-y-8">
-                {/* Overview */}
-                <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
-                    <CardHeader className="pb-4">
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <CardTitle className="flex items-center gap-2 text-xl font-bold">
-                                    <FileSignature className="h-5 w-5 text-primary" />
-                                    {projectTitle}
-                                </CardTitle>
-                                <CardDescription className="mt-1 text-neutral-500 font-normal">
-                                    Tiến độ tổng thể dự án
-                                </CardDescription>
-                            </div>
-                            {contracts && contracts.length > 0 ? (
-                                <Badge className="bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 font-medium">
-                                    {contracts[0].type === 'order' ? 'Đơn hàng đang thực hiện' : 'Hợp đồng đang triển khai'}
-                                </Badge>
-                            ) : (
-                                getStatusBadge(quotation.status)
-                            )}
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-6 md:grid-cols-4">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700">
-                                    <Wallet className="h-4 w-4" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-medium text-neutral-500">Tổng giá trị</p>
-                                    <p className="font-bold text-base">
-                                        {formatCurrency(totalValue)}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700">
-                                    <CheckCircle className="h-4 w-4" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-medium text-neutral-500">Đã thanh toán</p>
-                                    <p className="font-bold text-base">
-                                        {formatCurrency(totalPaid)}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700">
-                                    <Calendar className="h-4 w-4" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-medium text-neutral-500">Ngày bắt đầu</p>
-                                    <p className="font-bold text-base">
-                                        {formatDate(contracts?.[0]?.start_date || quotations?.[0]?.created_at || quotation.created_at)}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-md bg-neutral-100 text-neutral-900 border border-neutral-200 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700">
-                                    <Clock className="h-4 w-4" />
-                                </div>
-                                <div className="space-y-0.5">
-                                    <p className="text-xs font-medium text-neutral-500">Loại hồ sơ</p>
-                                    <p className="font-bold text-base">
-                                        {contracts?.length > 0 ? (contracts[0].type === 'order' ? 'Đơn hàng' : 'Hợp đồng') : 'Báo giá'}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+            <main className="container mx-auto px-4 py-8 max-w-6xl">
+                {/* Hero / Overview */}
+                <div className="mb-10 space-y-2">
+                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                        {projectTitle}
+                    </h1>
+                    <p className="text-neutral-500 max-w-2xl font-normal">
+                        Dưới đây là thông báo về tiến độ dự án, tài liệu liên quan và các yêu cầu thanh toán dành cho Quý khách.
+                    </p>
+                </div>
 
-                        {/* Payment Progress */}
-                        <div className="mt-8">
-                            <div className="flex justify-between text-xs font-medium mb-2">
-                                <span className="text-neutral-500">Tiến độ thanh toán</span>
-                                <span className="text-neutral-900 dark:text-neutral-100">{paymentProgress.toFixed(0)}%</span>
-                            </div>
-                            <div className="h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-700">
-                                <div
-                                    className="h-full bg-neutral-900 dark:bg-neutral-100 rounded-full transition-all duration-500"
-                                    style={{ width: `${paymentProgress}%` }}
-                                />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Detailed Schedule Section (Gantt & Tasks) */}
-                {tasks.length > 0 && (
-                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
-                        <CardHeader className="pb-6">
-                            <CardTitle className="text-lg font-bold">Lịch trình & Kế hoạch chi tiết</CardTitle>
-                            <CardDescription className="text-neutral-500 font-normal">Biểu đồ Gantt và danh sách công việc triển khai thực tế.</CardDescription>
+                {/* Status Dashboard */}
+                <div className="grid gap-6 md:grid-cols-3 mb-10">
+                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 overflow-hidden">
+                        <CardHeader className="pb-2 space-y-1">
+                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Tiến độ thanh toán</CardTitle>
+                            <CardTitle className="text-2xl font-bold">{formatCurrency(totalPaid)}</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-8">
-                            {/* Simple CSS Gantt Chart */}
-                            <div className="overflow-x-auto pb-4">
-                                <div className="min-w-[800px] space-y-2">
-                                    {/* Month labels (approximate) */}
-                                    <div className="flex border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-4">
-                                        <div className="w-1/4"></div>
-                                        <div className="flex-1 flex justify-between px-4 text-[10px] font-bold text-neutral-400">
-                                            <span>Bắt đầu</span>
-                                            <span>Triển khai</span>
-                                            <span>Hoàn thiện</span>
-                                            <span>Kết thúc</span>
-                                        </div>
-                                    </div>
-                                    {tasks.map((task: any) => {
-                                        // Simple percentage calculation for demo gantt
-                                        // In real app, calculate based on project min/max dates
-                                        const start = 10 + (Math.random() * 20)
-                                        const width = 20 + (Math.random() * 40)
-                                        return (
-                                            <div key={task.id} className="flex items-center group">
-                                                <div className="w-1/4 text-xs font-medium pr-4 truncate group-hover:text-primary transition-colors">
-                                                    {task.title}
-                                                </div>
-                                                <div className="flex-1 h-6 bg-neutral-50 dark:bg-neutral-900 rounded relative overflow-hidden">
-                                                    <div
-                                                        className={`absolute top-1 bottom-1 rounded transition-all duration-500 ${task.status === 'completed' ? 'bg-neutral-900 dark:bg-neutral-100' :
-                                                            task.status === 'in_progress' ? 'bg-blue-500' : 'bg-neutral-200 dark:bg-neutral-700'
-                                                            }`}
-                                                        style={{ left: `${start}%`, width: `${width}%` }}
-                                                    >
-                                                        {task.status === 'completed' && <CheckCircle className="h-3 w-3 absolute right-1 top-1/2 -translate-y-1/2 text-white dark:text-black opacity-50" />}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div>
+                        <CardContent>
+                            <Progress value={paymentProgress} className="h-1.5 mb-3 bg-neutral-100 dark:bg-neutral-800" />
+                            <p className="text-[11px] text-neutral-500 font-medium">
+                                Tổng giá trị dự án: {formatCurrency(totalValue)}
+                            </p>
+                        </CardContent>
+                    </Card>
 
-                            {/* Detailed To-Do List */}
+                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
+                        <CardHeader className="pb-2 space-y-1">
+                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Dự kiến hoàn thành</CardTitle>
+                            <CardTitle className="text-2xl font-bold">
+                                {timeline.length > 0 ? formatDate(timeline[timeline.length - 1].date) : 'Đang cập nhật'}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 font-medium">
+                                <Clock className="h-3 w-3" />
+                                <span>{timeline.filter((i: any) => i.status === 'completed').length}/{timeline.length} mốc quan trọng</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
+                        <CardHeader className="pb-2 space-y-1">
+                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Hỗ trợ nhanh</CardTitle>
+                            <CardTitle className="text-lg font-bold">098.898.4554</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-[11px] text-neutral-500 leading-relaxed font-normal">
+                                Nguyễn Thanh Tùng - Phụ trách dự án
+                            </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Kanban-like Tasks section if available */}
+                {tasks.length > 0 && (
+                    <Card className="mb-10 border-neutral-200 shadow-sm dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                        <CardHeader>
+                            <CardTitle className="text-lg font-bold">Công việc chi tiết</CardTitle>
+                            <CardDescription className="text-neutral-500 font-normal">Danh sách các nhiệm vụ đang được triển khai</CardDescription>
+                        </CardHeader>
+                        <CardContent>
                             <div className="grid gap-3 md:grid-cols-2">
                                 {tasks.map((task: any) => (
                                     <div key={task.id} className="flex items-center gap-3 p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg bg-neutral-50/50 dark:bg-neutral-900/30">
@@ -337,7 +252,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 <div className="relative space-y-0">
                                     {timeline.map((item: any, index: number) => (
                                         <div key={item.id} className="flex items-center gap-4 pb-8">
-                                            {/* Timeline Line */}
                                             <div className="flex flex-col items-center">
                                                 <div className={`p-2 rounded-md border ${item.status === 'completed' ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-neutral-100 dark:border-neutral-100 dark:text-black' :
                                                     item.status === 'pending' || item.status === 'overdue' ? 'bg-neutral-50 border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700' :
@@ -350,7 +264,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 )}
                                             </div>
 
-                                            {/* Content */}
                                             <div className="flex-1 pt-1">
                                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                                                     <div className="space-y-1">
@@ -365,11 +278,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                         <p className="text-xs sm:text-[13px] text-neutral-500 max-w-sm leading-relaxed whitespace-pre-line font-normal">
                                                             {item.description}
                                                         </p>
-                                                        {item.delay_reason && (
-                                                            <p className="text-[11px] text-red-500 dark:text-red-400 mt-1 font-medium">
-                                                                Lý do trễ: {item.delay_reason}
-                                                            </p>
-                                                        )}
                                                         {item.amount && (
                                                             <p className={`text-xs sm:text-[13px] font-bold mt-2 ${item.status === 'completed' ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500'}`}>
                                                                 {formatCurrency(item.amount)}
@@ -384,11 +292,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                             <p className="text-[11px] sm:text-xs text-neutral-600 dark:text-neutral-400 font-bold">
                                                                 {formatDate(item.date)}
                                                             </p>
-                                                            {item.planned_date && item.date !== item.planned_date && (
-                                                                <p className="text-[10px] text-neutral-400 line-through font-normal">
-                                                                    {formatDate(item.planned_date)}
-                                                                </p>
-                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -435,12 +338,15 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                     <span className="text-xs">Xem</span>
                                                 </a>
                                             </Button>
-                                            <Button variant="ghost" size="sm" asChild className="h-9 px-3 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-neutral-800 font-medium" disabled={!doc.pdf_url}>
-                                                <a href={doc.pdf_url || '#'} target="_blank">
-                                                    <Download className="h-4 w-4 mr-2" />
-                                                    <span className="text-xs">Tải PDF</span>
-                                                </a>
-                                            </Button>
+
+                                            <DocumentDownloadButton
+                                                type={doc.type}
+                                                documentId={doc.id}
+                                                customerId={customer?.id}
+                                                label="Tải PDF"
+                                                variant="ghost"
+                                                className="h-9 px-3 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 font-medium"
+                                            />
                                         </div>
                                     </div>
                                 ))}

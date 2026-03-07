@@ -75,6 +75,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [vatPercent, setVatPercent] = useState(quotation?.vat_percent || 10)
     const [type, setType] = useState<Quotation['type']>(quotation?.type || 'standard')
     const [proposalContent, setProposalContent] = useState<any>(quotation?.proposal_content || {})
+    const [isImportProposalOpen, setIsImportProposalOpen] = useState(false)
+    const [importText, setImportText] = useState('')
 
     // Bank info state
     const [bankName, setBankName] = useState(quotation?.bank_name || '')
@@ -257,6 +259,45 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const subtotal = items.reduce((sum, item) => sum + (Number(item.total_price) || 0), 0)
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
+
+    const handleImportProposal = () => {
+        if (!importText.trim()) return
+        try {
+            const data = JSON.parse(importText)
+            const newProposalContent = { ...proposalContent }
+            const fields = ['introduction', 'scope_of_work', 'methodology', 'deliverables', 'team', 'timeline', 'warranty', 'why_us']
+
+            let count = 0
+            fields.forEach(f => {
+                if (data[f]) {
+                    newProposalContent[f] = data[f]
+                    count++
+                }
+            })
+
+            if (data.attachments) {
+                newProposalContent.attachments = data.attachments
+                count++
+            }
+
+            if (data.custom_sections && Array.isArray(data.custom_sections)) {
+                newProposalContent.custom_sections = data.custom_sections
+                count++
+            }
+
+            if (count === 0) {
+                toast.error('Không tìm thấy trường dữ liệu hợp lệ nào để nhập')
+                return
+            }
+
+            setProposalContent(newProposalContent)
+            setIsImportProposalOpen(false)
+            setImportText('')
+            toast.success(`Đã cập nhật ${count} phần nội dung proposal`)
+        } catch (e) {
+            toast.error('Mã không hợp lệ. Vui lòng dán đúng định dạng JSON.')
+        }
+    }
 
     // Propagate changes to parent for preview
     useEffect(() => {
@@ -451,9 +492,20 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {type === 'proposal' && (
                         <Card>
-                            <CardHeader>
-                                <CardTitle>Nội dung Proposal</CardTitle>
-                                <CardDescription>Mô tả chi tiết giải pháp, phạm vi, đội ngũ và các cam kết cho khách hàng</CardDescription>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle>Nội dung Proposal</CardTitle>
+                                    <CardDescription>Mô tả chi tiết giải pháp, phạm vi, đội ngũ và các cam kết cho khách hàng</CardDescription>
+                                </div>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setIsImportProposalOpen(true)}
+                                    className="gap-2"
+                                >
+                                    <Plus className="h-4 w-4" /> Nhập nhanh từ JSON/Mã
+                                </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Row 1: Introduction */}
@@ -710,129 +762,140 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {group.items.map((item, itemIdx) => (
-                                                    <TableRow key={item.id} className="group/row">
-                                                        <TableCell className="pl-4 py-4 align-top">
-                                                            <div className="flex flex-col gap-1 opacity-20 group-hover/row:opacity-100 transition-opacity">
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="h-6 w-6"
-                                                                    onClick={() => moveItem(item.actualIndex, 'up')}
-                                                                    disabled={item.actualIndex === 0}
-                                                                >
-                                                                    <ArrowUp className="h-3 w-3" />
-                                                                </Button>
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="h-6 w-6"
-                                                                    onClick={() => moveItem(item.actualIndex, 'down')}
-                                                                    disabled={item.actualIndex === items.length - 1}
-                                                                >
-                                                                    <ArrowDown className="h-3 w-3" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="align-top py-4">
-                                                            <div className="space-y-2">
-                                                                <div className="flex gap-1">
-                                                                    <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id, { product_id: v })}>
-                                                                        <SelectTrigger className="h-9">
-                                                                            <SelectValue placeholder="Chọn sản phẩm" />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {products?.map((p) => (
-                                                                                <SelectItem key={p.id} value={p.id}>
-                                                                                    {p.name}
-                                                                                </SelectItem>
-                                                                            ))}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                    {item.product_id && (
+                                                {(() => {
+                                                    // Linear numbering calculation
+                                                    let globalStartIndex = 0;
+                                                    for (let i = 0; i < groupIdx; i++) {
+                                                        globalStartIndex += (sectionGroups[i]?.items?.length || 0);
+                                                    }
+
+                                                    return group.items.map((item, itemIdx) => (
+                                                        <TableRow key={item.id} className="group/row">
+                                                            <TableCell className="pl-4 py-4 align-top">
+                                                                <div className="flex flex-col gap-1 items-center">
+                                                                    <span className="text-[10px] font-bold text-slate-400 mb-1">{globalStartIndex + itemIdx + 1}</span>
+                                                                    <div className="flex flex-col gap-1 opacity-20 group-hover/row:opacity-100 transition-opacity">
                                                                         <Button
                                                                             type="button"
                                                                             variant="ghost"
                                                                             size="icon"
-                                                                            onClick={() => {
-                                                                                updateItem(item.id, { product_id: '', product_name: '' })
-                                                                            }}
-                                                                            title="Xóa lựa chọn"
-                                                                            className="h-9 w-9 shrink-0"
+                                                                            className="h-6 w-6"
+                                                                            onClick={() => moveItem(item.actualIndex!, 'up')}
+                                                                            disabled={item.actualIndex === 0}
                                                                         >
-                                                                            <X className="h-4 w-4" />
+                                                                            <ArrowUp className="h-3 w-3" />
                                                                         </Button>
-                                                                    )}
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="icon"
+                                                                            className="h-6 w-6"
+                                                                            onClick={() => moveItem(item.actualIndex!, 'down')}
+                                                                            disabled={item.actualIndex === items.length - 1}
+                                                                        >
+                                                                            <ArrowDown className="h-3 w-3" />
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
+                                                            </TableCell>
+                                                            <TableCell className="align-top py-4">
+                                                                <div className="space-y-2">
+                                                                    <div className="flex gap-1">
+                                                                        <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id!, { product_id: v })}>
+                                                                            <SelectTrigger className="h-9">
+                                                                                <SelectValue placeholder="Chọn sản phẩm" />
+                                                                            </SelectTrigger>
+                                                                            <SelectContent>
+                                                                                {products?.map((p) => (
+                                                                                    <SelectItem key={p.id} value={p.id}>
+                                                                                        {p.name}
+                                                                                    </SelectItem>
+                                                                                ))}
+                                                                            </SelectContent>
+                                                                        </Select>
+                                                                        {item.product_id && (
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="ghost"
+                                                                                size="icon"
+                                                                                onClick={() => {
+                                                                                    updateItem(item.id!, { product_id: '', product_name: '' })
+                                                                                }}
+                                                                                title="Xóa lựa chọn"
+                                                                                className="h-9 w-9 shrink-0"
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        )}
+                                                                    </div>
 
+                                                                    <Input
+                                                                        placeholder="Tên sản phẩm/dịch vụ"
+                                                                        value={item.product_name}
+                                                                        onChange={(e) => updateItem(item.id!, { product_name: e.target.value })}
+                                                                        className="h-9 font-medium"
+                                                                    />
+
+                                                                    <Textarea
+                                                                        placeholder="Quy cách / Mô tả kỹ thuật (vd: A5 2 mặt, C150...)"
+                                                                        value={item.description || ""}
+                                                                        onChange={(e) => updateItem(item.id!, { description: e.target.value })}
+                                                                        className="h-16 text-[12px] min-h-[40px] resize-y"
+                                                                        rows={1}
+                                                                    />
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="align-top py-4">
                                                                 <Input
-                                                                    placeholder="Tên sản phẩm/dịch vụ"
-                                                                    value={item.product_name}
-                                                                    onChange={(e) => updateItem(item.id, { product_name: e.target.value })}
-                                                                    className="h-9 font-medium"
+                                                                    placeholder="ĐVT"
+                                                                    value={item.unit}
+                                                                    onChange={(e) => updateItem(item.id!, { unit: e.target.value })}
+                                                                    className="h-9"
                                                                 />
-
-                                                                <Textarea
-                                                                    placeholder="Quy cách / Mô tả kỹ thuật (vd: A5 2 mặt, C150...)"
-                                                                    value={item.description || ""}
-                                                                    onChange={(e) => updateItem(item.id, { description: e.target.value })}
-                                                                    className="h-16 text-[12px] min-h-[40px] resize-y"
-                                                                    rows={1}
+                                                            </TableCell>
+                                                            <TableCell className="align-top py-4">
+                                                                <Input
+                                                                    type="number"
+                                                                    min={1}
+                                                                    value={item.quantity}
+                                                                    onChange={(e) => updateItem(item.id!, { quantity: parseInt(e.target.value) || 1 })}
+                                                                    className="h-9"
                                                                 />
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="align-top py-4">
-                                                            <Input
-                                                                placeholder="ĐVT"
-                                                                value={item.unit}
-                                                                onChange={(e) => updateItem(item.id, { unit: e.target.value })}
-                                                                className="h-9"
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell className="align-top py-4">
-                                                            <Input
-                                                                type="number"
-                                                                min={1}
-                                                                value={item.quantity}
-                                                                onChange={(e) => updateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
-                                                                className="h-9"
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell className="align-top py-4">
-                                                            <PriceInput
-                                                                value={item.unit_price}
-                                                                onChange={(val) => updateItem(item.id, { unit_price: val })}
-                                                                className="h-9"
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell className="align-top py-4">
-                                                            <Input
-                                                                type="number"
-                                                                min={0}
-                                                                max={100}
-                                                                value={item.discount}
-                                                                onChange={(e) => updateItem(item.id, { discount: parseInt(e.target.value) || 0 })}
-                                                                className="h-9"
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell className="text-right font-medium align-top py-6">
-                                                            {formatCurrency(Number(item.total_price) || 0)}
-                                                        </TableCell>
-                                                        <TableCell className="pr-4 align-top py-4 text-right">
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => removeItem(item.id)}
-                                                                className="h-8 w-8 text-zinc-300 hover:text-red-500 hover:bg-red-50"
-                                                            >
-                                                                <X className="h-4 w-4" />
-                                                            </Button>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                            </TableCell>
+                                                            <TableCell className="align-top py-4">
+                                                                <PriceInput
+                                                                    value={item.unit_price || 0}
+                                                                    onChange={(val) => updateItem(item.id!, { unit_price: val })}
+                                                                    className="h-9"
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell className="align-top py-4">
+                                                                <Input
+                                                                    type="number"
+                                                                    min={0}
+                                                                    max={100}
+                                                                    value={item.discount}
+                                                                    onChange={(e) => updateItem(item.id!, { discount: parseInt(e.target.value) || 0 })}
+                                                                    className="h-9"
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell className="text-right font-medium align-top py-6">
+                                                                {formatCurrency(Number(item.total_price) || 0)}
+                                                            </TableCell>
+                                                            <TableCell className="pr-4 align-top py-4 text-right">
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={() => removeItem(item.id!)}
+                                                                    className="h-8 w-8 text-zinc-300 hover:text-red-500 hover:bg-red-50"
+                                                                >
+                                                                    <X className="h-4 w-4" />
+                                                                </Button>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ));
+                                                })()}
                                             </TableBody>
                                         </Table>
 
@@ -1021,6 +1084,38 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         >
                             Thêm ngay
                         </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
+                <DialogContent className="max-w-2xl sm:max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>Nhập nhanh Proposal Content</DialogTitle>
+                        <DialogDescription>
+                            Dán mã JSON chứa các phần nội dung (introduction, scope_of_work, methodology, deliverables, team, timeline, warranty, why_us).
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Mã JSON hoặc Script:</label>
+                            <Textarea
+                                placeholder='{ "introduction": "...", "scope_of_work": "...", ... }'
+                                value={importText}
+                                onChange={(e) => setImportText(e.target.value)}
+                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50"
+                            />
+                        </div>
+                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">
+                            <p className="font-bold mb-1">Ví dụ định dạng:</p>
+                            <code className="block whitespace-pre opacity-80">
+                                {'{\n  "introduction": "Nội dung giới thiệu...",\n  "scope_of_work": "Chi tiết phạm vi...",\n  ...\n}'}
+                            </code>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
+                        <Button onClick={handleImportProposal} disabled={!importText.trim()}>Xác nhận nhập</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -29,7 +29,15 @@ import {
     Layout,
     Share2,
     Copy,
-    Loader2
+    Loader2,
+    Target,
+    ClipboardList,
+    Lightbulb,
+    Package,
+    Users,
+    Shield,
+    Award,
+    Info
 } from 'lucide-react'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
@@ -92,6 +100,32 @@ export default function QuotationDetailPage() {
             </div>
         )
     }
+
+    // Proposal content helpers
+    const pc = quotation.proposal_content || {}
+    const hasProposal = pc && Object.values(pc).some(v => v && String(v).trim().length > 0)
+
+    const sectionIcons: Record<string, React.ReactNode> = {
+        'introduction': <Target className="h-4 w-4" />,
+        'scope_of_work': <ClipboardList className="h-4 w-4" />,
+        'methodology': <Lightbulb className="h-4 w-4" />,
+        'deliverables': <Package className="h-4 w-4" />,
+        'team': <Users className="h-4 w-4" />,
+        'timeline': <Clock className="h-4 w-4" />,
+        'warranty': <Shield className="h-4 w-4" />,
+        'why_us': <Award className="h-4 w-4" />,
+    };
+
+    const proposalSections = [
+        { label: 'Mục tiêu & Giới thiệu', key: 'introduction' },
+        { label: 'Phạm vi công việc (Scope of Work)', key: 'scope_of_work' },
+        { label: 'Phương pháp & Cách tiếp cận', key: 'methodology' },
+        { label: 'Sản phẩm bàn giao (Deliverables)', key: 'deliverables' },
+        { label: 'Đội ngũ chuyên trách', key: 'team' },
+        { label: 'Lộ trình triển khai (Timeline)', key: 'timeline' },
+        { label: 'Bảo hành & Hỗ trợ', key: 'warranty' },
+        { label: 'Vì sao chọn chúng tôi?', key: 'why_us' },
+    ].filter(s => !!pc[s.key]);
 
     const publicUrl = quotation.public_token ? `${baseUrl}/quote/${quotation.public_token}` : null
     const portalUrl = quotation.public_token ? `${baseUrl}/portal/${quotation.public_token}` : null
@@ -230,6 +264,53 @@ export default function QuotationDetailPage() {
                         </CardContent>
                     </Card>
 
+                    {/* Proposal Content - Premium Timeline Style */}
+                    {hasProposal && proposalSections.length > 0 && (
+                        <Card className="mb-6 overflow-hidden border-slate-200 shadow-sm">
+                            <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative">
+                                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                                </div>
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div>
+                                        <CardTitle className="text-base font-bold">Đề xuất giải pháp</CardTitle>
+                                        <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Proposal — {proposalSections.length} hạng mục</CardDescription>
+                                    </div>
+                                    <Layout className="h-5 w-5 text-zinc-500" />
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 bg-white">
+                                <div className="relative pl-8 before:absolute before:left-[11px] before:top-[12px] before:bottom-0 before:w-[2px] before:bg-slate-100 before:rounded-full">
+                                    {proposalSections.map((section, idx) => {
+                                        const icon = sectionIcons[section.key] || <Info className="w-4 h-4" />;
+                                        return (
+                                            <div key={idx} className="relative mb-8 last:mb-0">
+                                                {/* Timeline dot */}
+                                                <div className="absolute -left-8 top-[12px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[10px] font-bold z-10 border-2 border-white shadow-sm">
+                                                    {idx + 1}
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center gap-2 text-zinc-900">
+                                                        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 text-zinc-600">
+                                                            {icon}
+                                                        </span>
+                                                        <h4 className="text-sm font-bold uppercase tracking-tight">
+                                                            {section.label}
+                                                        </h4>
+                                                    </div>
+                                                    <div className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100 whitespace-pre-line">
+                                                        {pc[section.key]}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {/* Items Card */}
                     <Card>
                         <CardHeader>
@@ -237,16 +318,20 @@ export default function QuotationDetailPage() {
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-slate-50">
-                                        <TableHead className="pl-6 font-bold text-slate-900">Dịch vụ / Sản phẩm</TableHead>
-                                        <TableHead className="text-center w-24 font-bold text-slate-900">Số lượng</TableHead>
-                                        <TableHead className="text-right w-32 font-bold text-slate-900">Đơn giá</TableHead>
-                                        <TableHead className="text-right w-36 pr-6 font-bold text-slate-900">Thành tiền</TableHead>
+                                <TableHeader className="relative overflow-hidden bg-zinc-950 border-b-0 rounded-t-xl group">
+                                    <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                                    </div>
+                                    <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
+                                        <TableHead className="pl-6 font-black text-white uppercase text-[10px] tracking-widest h-12">Dịch vụ / Sản phẩm</TableHead>
+                                        <TableHead className="text-center w-24 font-black text-white uppercase text-[10px] tracking-widest h-12">Số lượng</TableHead>
+                                        <TableHead className="text-right w-32 font-black text-white uppercase text-[10px] tracking-widest h-12">Đơn giá</TableHead>
+                                        <TableHead className="text-right w-36 pr-6 font-black text-white uppercase text-[10px] tracking-widest h-12">Thành tiền</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {(() => {
+                                        let globalItemIndex = 0;
                                         const sections: Record<string, QuotationItem[]> = (quotation.items || []).reduce((acc: any, item: any) => {
                                             const sectionName = item.section_name || '';
                                             if (!acc[sectionName]) acc[sectionName] = [];
@@ -262,44 +347,62 @@ export default function QuotationDetailPage() {
 
                                         return sectionEntries.map(([sectionName, sectionItems], sIdx) => (
                                             <React.Fragment key={sIdx}>
-                                                {sectionName && (
-                                                    <TableRow className="bg-slate-100 hover:bg-slate-100 border-y border-slate-200">
-                                                        <TableCell colSpan={4} className="pl-6 py-2.5">
-                                                            <div className="flex items-center gap-3">
-                                                                <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold">
-                                                                    {sIdx + 1}
-                                                                </span>
-                                                                <span className="font-bold text-slate-900 text-[13px]">
-                                                                    {sectionName}
-                                                                </span>
+                                                {(sectionName || sectionEntries.length > 1) && (
+                                                    <TableRow className="group/section hover:bg-transparent">
+                                                        <TableCell colSpan={4} className="p-0 border-b border-stone-800">
+                                                            <div className="relative bg-stone-900 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                                {/* Background Layer: Gradient + Dots */}
+                                                                <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-900 to-stone-800 opacity-90" />
+                                                                <div
+                                                                    className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay"
+                                                                    style={{
+                                                                        backgroundImage: `radial-gradient(#fff 0.5px, transparent 0.5px)`,
+                                                                        backgroundSize: '12px 12px'
+                                                                    }}
+                                                                />
+
+                                                                {/* Content Layer */}
+                                                                <div className="relative z-10 flex items-center gap-4">
+                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
+                                                                        <span className="text-xs font-black tracking-widest">{sIdx + 1}</span>
+                                                                    </div>
+                                                                    <div className="flex flex-col text-white">
+                                                                        <h3 className="text-[13px] font-black uppercase tracking-tight leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
+                                                                        <p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="relative z-10 flex h-6 items-center px-2 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/40 tracking-tighter uppercase">Section {sIdx + 1}</div>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
                                                 )}
-                                                {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => (
-                                                    <TableRow key={item.id} className="hover:bg-slate-50/50">
-                                                        <TableCell className="pl-6">
-                                                            <div className="flex gap-2">
-                                                                <span className="text-slate-400 tabular-nums w-4">{iIdx + 1}.</span>
-                                                                <div>
-                                                                    <p className="font-semibold text-slate-900">{item.product_name}</p>
-                                                                    {item.description && (
-                                                                        <p className="text-xs text-muted-foreground leading-relaxed mt-1 max-w-xl">{item.description}</p>
-                                                                    )}
+                                                {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => {
+                                                    const currentGlobalIdx = ++globalItemIndex;
+                                                    return (
+                                                        <TableRow key={item.id} className="hover:bg-slate-50/50 group/row">
+                                                            <TableCell className="pl-6 py-4">
+                                                                <div className="flex gap-3">
+                                                                    <span className="text-zinc-400 font-bold tabular-nums w-4 mt-0.5 text-[10px] group-hover/row:text-zinc-900 transition-colors">{currentGlobalIdx}.</span>
+                                                                    <div className="flex-1">
+                                                                        <p className="font-bold text-slate-900 text-[13px]">{item.product_name}</p>
+                                                                        {item.description && (
+                                                                            <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 max-w-xl whitespace-pre-line border-l-2 border-stone-200 pl-3 py-0.5 font-medium">{item.description}</p>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="text-center whitespace-nowrap">
-                                                            {item.quantity} {item.unit}
-                                                        </TableCell>
-                                                        <TableCell className="text-right">
-                                                            {formatCurrency(item.unit_price || 0)}
-                                                        </TableCell>
-                                                        <TableCell className="text-right font-bold pr-6">
-                                                            {formatCurrency(item.total_price || 0)}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
+                                                            </TableCell>
+                                                            <TableCell className="text-center whitespace-nowrap align-top py-4 font-bold text-slate-900">
+                                                                {item.quantity} <span className="text-[10px] text-zinc-400 font-medium">{item.unit}</span>
+                                                            </TableCell>
+                                                            <TableCell className="text-right align-top py-4 tabular-nums font-bold text-slate-900">
+                                                                {formatCurrency(item.unit_price || 0)}
+                                                            </TableCell>
+                                                            <TableCell className="text-right font-black pr-6 align-top py-4 tabular-nums bg-slate-50/30">
+                                                                {formatCurrency(item.total_price || 0)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
                                             </React.Fragment>
                                         ))
                                     })()}

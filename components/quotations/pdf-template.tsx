@@ -79,11 +79,19 @@ const styles = StyleSheet.create({
     },
     tableHeader: {
         flexDirection: 'row',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#1a1a1a',
         borderBottomWidth: 1,
         borderBottomColor: '#000',
-        paddingVertical: 8,
+        paddingVertical: 10,
         alignItems: 'center',
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+    },
+    tableHeaderChild: {
+        color: '#ffffff',
+        fontSize: 8,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     tableRow: {
         flexDirection: 'row',
@@ -92,13 +100,13 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         alignItems: 'flex-start', // Align top for multiline description
     },
-    col1: { width: '5%', textAlign: 'center' }, // STT
-    col2: { width: '30%', paddingRight: 5 }, // Description/Specs
+    col1: { width: '4%', textAlign: 'center' }, // #
+    col2: { width: '38%', paddingRight: 5 }, // Product
     col3: { width: '10%', textAlign: 'center' }, // Unit
-    col4: { width: '8%', textAlign: 'center' }, // Qty
+    col4: { width: '6%', textAlign: 'center' }, // Qty
     col5: { width: '12%', textAlign: 'right' }, // Price
-    col6: { width: '10%', textAlign: 'center' }, // CK%
-    col7: { width: '10%', textAlign: 'center' }, // VAT%
+    col6: { width: '8%', textAlign: 'center' }, // CK%
+    col7: { width: '7%', textAlign: 'center' }, // VAT%
     col8: { width: '15%', textAlign: 'right' }, // Total
 
     productName: {
@@ -201,12 +209,12 @@ interface PdfTemplateProps {
 const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
     // Group items by section
     const sections: Record<string, QuotationItem[]> = {};
-
-    // Default section for items without one
-    const DEFAULT_SECTION = 'Chi tiết';
+    const DEFAULT_SECTION = 'Chi tiết hạng mục';
 
     const items = quotation.items || [];
     const hasDiscount = items.some((item: any) => item.discount > 0);
+    const pc = quotation.proposal_content || {};
+    const hasProposal = pc && Object.values(pc).some(v => v && String(v).trim().length > 0);
 
     items.forEach((item: any) => {
         const sectionName = item.section_name || DEFAULT_SECTION;
@@ -216,150 +224,152 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
         sections[sectionName].push(item);
     });
 
-    // Dynamic column widths
-    const col2Width = hasDiscount ? '40%' : '50%';
-    const col6Width = hasDiscount ? '10%' : '0%';
-    const col7Width = '0%'; // Always hide VAT col in table as requested
-    const col8Width = '15%';
+    const sectionEntries = Object.entries(sections).sort((a, b) => {
+        if (a[0] === DEFAULT_SECTION) return 1;
+        if (b[0] === DEFAULT_SECTION) return -1;
+        return (a[1][0].sort_order || 0) - (b[1][0].sort_order || 0);
+    });
+
+    let globalItemIndex = 0;
 
     return (
-        <Document>
+        <Document title={`Bao gia ${quotation.quotation_number || ''}`}>
             <Page size="A4" style={styles.page}>
                 {/* Header */}
-                <View style={styles.header}>
+                <View style={[styles.header, { borderBottomColor: '#000', borderBottomWidth: 2 }]}>
                     <View style={styles.companyInfo}>
-                        <Image src="/logo.png" style={styles.logo} />
-                        <Text style={styles.companyName}>TULIE AGENCY</Text>
-                        <Text>Design • Branding • Marketing • Events</Text>
-                        <Text>123 Đường ABC, Quận XYZ, TP.HCM</Text>
-                        <Text>Hotline: 090 123 4567 | Email: hello@tulie.agency</Text>
+                        <Text style={[styles.companyName, { fontSize: 22, letterSpacing: -0.5 }]}>THIỆP NHANH</Text>
+                        <Text style={{ fontSize: 9, color: '#666', marginBottom: 8, fontWeight: 'bold' }}>THIỆP MỜI & QUÀ TẶNG CAO CẤP</Text>
+                        <Text style={{ fontSize: 8 }}>Website: thiepnhanh.vn</Text>
+                        <Text style={{ fontSize: 8 }}>Email: hello@thiepnhanh.vn</Text>
+                        <Text style={{ fontSize: 8 }}>Hotline: 098.898.4554</Text>
                     </View>
                     <View style={styles.metaInfo}>
-                        <Text style={styles.title}>BÁO GIÁ</Text>
-                        <Text>Số: {quotation.quote_number || 'BG-XXXX'}</Text>
-                        <Text>Ngày: {new Date().toLocaleDateString('vi-VN')}</Text>
-                        <Text>Hiệu lực: {quotation.valid_days || 30} ngày</Text>
+                        <Text style={[styles.title, { fontSize: 20, letterSpacing: 0, marginBottom: 4 }]}>BÁO GIÁ DỊCH VỤ</Text>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold' }}>SỐ: {quotation.quotation_number || 'BG-XXXX'}</Text>
+                        <Text style={{ fontSize: 9, color: '#666' }}>Ngày lập: {new Date().toLocaleDateString('vi-VN')}</Text>
+                        <Text style={{ fontSize: 9, color: '#666' }}>Hiệu lực: {quotation.valid_days || 30} ngày</Text>
                     </View>
                 </View>
 
                 {/* Customer Info */}
-                <View style={styles.billTo}>
-                    <Text style={{ fontFamily: 'Roboto', marginBottom: 5 }}>Khách hàng:</Text>
-                    <Text style={{ fontSize: 12, fontFamily: 'Roboto' }}>{quotation.customer?.company_name || 'Khách hàng'}</Text>
-                    <Text>{quotation.customer?.address || ''}</Text>
-                    <Text>Liên hệ: {quotation.customer?.phone || ''}</Text>
+                <View style={{ marginBottom: 25, backgroundColor: '#f9f9f9', padding: 15, borderRadius: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#666', textTransform: 'uppercase', marginBottom: 4, fontWeight: 'bold' }}>Khách hàng / Client:</Text>
+                    <Text style={{ fontSize: 14, fontFamily: 'Roboto', color: '#000' }}>{quotation.customer?.company_name || 'Quý khách hàng'}</Text>
+                    {quotation.customer?.address && <Text style={{ fontSize: 9, marginTop: 4, color: '#444' }}>Địa chỉ: {quotation.customer.address}</Text>}
+                    <View style={{ flexDirection: 'row', marginTop: 6, gap: 20 }}>
+                        <Text style={{ fontSize: 9, color: '#444' }}>SĐT: {quotation.customer?.phone || 'N/A'}</Text>
+                        <Text style={{ fontSize: 9, color: '#444' }}>Email: {quotation.customer?.email || 'N/A'}</Text>
+                    </View>
                 </View>
+
+                {/* Proposal Section (Simplified) */}
+                {hasProposal && (
+                    <View style={{ marginBottom: 20 }}>
+                        <Text style={[styles.sectionTitle, { backgroundColor: '#000', color: '#fff', padding: 6, borderBottomWidth: 0 }]}>ĐỀ XUẤT GIẢI PHÁP / PROPOSAL</Text>
+                        {Object.entries({
+                            introduction: 'Giới thiệu',
+                            scope_of_work: 'Phạm vi công việc',
+                            timeline: 'Tiến độ thực hiện'
+                        }).map(([key, label]) => pc[key] ? (
+                            <View key={key} style={{ marginTop: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#eee' }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 }}>{label}:</Text>
+                                <Text style={{ fontSize: 9, color: '#444', lineHeight: 1.4 }}>{pc[key]}</Text>
+                            </View>
+                        ) : null)}
+                    </View>
+                )}
 
                 {/* Table Content */}
                 <View style={styles.table}>
+                    <Text style={[styles.sectionTitle, { backgroundColor: '#000', color: '#fff', padding: 6, borderBottomWidth: 0, marginBottom: 0 }]}>CHI TIẾT HẠNG MỤC / INVESTMENT PLAN</Text>
+
                     {/* Table Header */}
                     <View style={styles.tableHeader}>
-                        <Text style={styles.col1}>STT</Text>
-                        <Text style={[styles.col2, { width: col2Width }]}>Hạng mục / Mô tả</Text>
-                        <Text style={styles.col3}>ĐVT</Text>
-                        <Text style={styles.col4}>SL</Text>
-                        <Text style={styles.col5}>Đơn giá</Text>
-                        {hasDiscount && <Text style={[styles.col6, { width: col6Width }]}>CK (%)</Text>}
-                        <Text style={[styles.col8, { width: col8Width }]}>Thành tiền</Text>
+                        <Text style={[styles.col1, styles.tableHeaderChild]}>#</Text>
+                        <Text style={[styles.col2, styles.tableHeaderChild, { width: hasDiscount ? '38%' : '46%' }]}>DỊCH VỤ / SẢN PHẨM</Text>
+                        <Text style={[styles.col3, styles.tableHeaderChild]}>ĐVT</Text>
+                        <Text style={[styles.col4, styles.tableHeaderChild]}>SL</Text>
+                        <Text style={[styles.col5, styles.tableHeaderChild]}>ĐƠN GIÁ</Text>
+                        {hasDiscount && <Text style={[styles.col6, styles.tableHeaderChild]}>CK%</Text>}
+                        <Text style={[styles.col7, styles.tableHeaderChild]}>VAT</Text>
+                        <Text style={[styles.col8, styles.tableHeaderChild]}>THÀNH TIỀN</Text>
                     </View>
 
                     {/* Render items by section */}
-                    {Object.entries(sections).map(([sectionName, sectionItems], sectionIdx) => (
+                    {sectionEntries.map(([sectionName, sectionItems], sectionIdx) => (
                         <View key={sectionIdx} wrap={false}>
-                            {/* Section Header */}
-                            <Text style={styles.sectionTitle}>
-                                {(() => {
-                                    const toRoman = (num: number) => {
-                                        const lookup: any = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
-                                        let roman = '';
-                                        for (let i in lookup) { while (num >= lookup[i]) { roman += i; num -= lookup[i]; } }
-                                        return roman;
-                                    };
-                                    return toRoman(sectionIdx + 1);
-                                })()}. {sectionName}
-                            </Text>
+                            {/* Section Header - Show if a name is provided OR if there are multiple sections */}
+                            {(sectionName !== DEFAULT_SECTION || sectionEntries.length > 1) && (
+                                <View style={{ backgroundColor: '#f9f9f9', paddingVertical: 6, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                    <View style={{ backgroundColor: '#000', borderRadius: 2, paddingHorizontal: 4, paddingVertical: 1 }}>
+                                        <Text style={{ color: '#fff', fontSize: 8, fontWeight: 'bold' }}>{sectionIdx + 1}</Text>
+                                    </View>
+                                    <Text style={{ fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>
+                                        {sectionName || `Hạng mục ${sectionIdx + 1}`}
+                                    </Text>
+                                </View>
+                            )}
 
                             {/* Items in Section */}
-                            {sectionItems.map((item, idx) => (
-                                <View style={styles.tableRow} key={item.id}>
-                                    <Text style={styles.col1}>{idx + 1}</Text>
-                                    <View style={[styles.col2, { width: col2Width }]}>
-                                        <Text style={styles.productName}>{item.product_name}</Text>
-                                        {item.description && (
-                                            <Text style={styles.productDesc}>{item.description}</Text>
-                                        )}
+                            {sectionItems.map((item, idx) => {
+                                globalItemIndex++;
+                                return (
+                                    <View style={styles.tableRow} key={item.id}>
+                                        <Text style={styles.col1}>{globalItemIndex}</Text>
+                                        <View style={[styles.col2, { width: hasDiscount ? '38%' : '46%' }]}>
+                                            <Text style={[styles.productName, { fontWeight: 'bold' }]}>{item.product_name}</Text>
+                                            {item.description && (
+                                                <Text style={[styles.productDesc, { marginTop: 2, fontSize: 8 }]}>{item.description}</Text>
+                                            )}
+                                        </View>
+                                        <Text style={styles.col3}>{item.unit}</Text>
+                                        <Text style={styles.col4}>{item.quantity}</Text>
+                                        <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)}</Text>
+                                        {hasDiscount && <Text style={styles.col6}>{item.discount || 0}%</Text>}
+                                        <Text style={styles.col7}>{quotation.vat_percent}%</Text>
+                                        <Text style={[styles.col8, { fontWeight: 'bold' }]}>{new Intl.NumberFormat('vi-VN').format(item.total_price)}</Text>
                                     </View>
-                                    <Text style={styles.col3}>{item.unit}</Text>
-                                    <Text style={styles.col4}>{item.quantity}</Text>
-                                    <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)}</Text>
-                                    {hasDiscount && <Text style={[styles.col6, { width: col6Width }]}>{item.discount || 0}%</Text>}
-                                    <Text style={[styles.col8, { width: col8Width }]}>{new Intl.NumberFormat('vi-VN').format(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</Text>
-                                </View>
-                            ))}
+                                );
+                            })}
                         </View>
                     ))}
                 </View>
 
-                {/* Totals */}
-                <View style={styles.totals}>
-                    <View style={{ width: '100%' }}>
-                        <View style={styles.totalRow}>
-                            <Text style={styles.totalLabel}>Tạm tính:</Text>
-                            <Text style={styles.totalValue}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.subtotal || 0)}</Text>
+                {/* Summary & Footer */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                    <View style={{ width: '55%' }}>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>ĐIỀU KHOẢN THANH TOÁN:</Text>
+                        <Text style={{ fontSize: 8, color: '#666', lineHeight: 1.4 }}>{quotation.terms || '• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành bàn giao'}</Text>
+
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
+                        <View style={{ fontSize: 8, color: '#444' }}>
+                            <Text>Chủ TK: {quotation.bank_account_name || 'NGUYEN MANH TUNG'}</Text>
+                            <Text>Số TK: {quotation.bank_account_no || '190368686868'}</Text>
+                            <Text>Ngân hàng: {quotation.bank_name || 'Techcombank'} - {quotation.bank_branch || 'Chi nhánh Hà Nội'}</Text>
                         </View>
-                        {quotation.vat_percent > 0 && (
-                            <View style={styles.totalRow}>
-                                <Text style={styles.totalLabel}>VAT ({quotation.vat_percent}%):</Text>
-                                <Text style={styles.totalValue}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.vat_amount || 0)}</Text>
+                    </View>
+
+                    <View style={{ width: '40%' }}>
+                        <View style={{ borderTopWidth: 1, borderTopColor: '#000', paddingTop: 10 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <Text style={{ fontSize: 9 }}>Tạm tính:</Text>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.subtotal || 0)}</Text>
                             </View>
-                        )}
-                        <View style={styles.grandTotal}>
-                            <Text style={[styles.totalLabel, { fontSize: 12 }]}>TỔNG CỘNG:</Text>
-                            <Text style={[styles.grandTotalValue, { color: '#000' }]}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.grand_total || quotation.total_amount || 0)}</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                                <Text style={{ fontSize: 9 }}>VAT ({quotation.vat_percent}%):</Text>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.vat_amount || 0)}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#eee', backgroundColor: '#000', padding: 8, borderRadius: 2 }}>
+                                <Text style={{ fontSize: 11, color: '#fff', fontWeight: 'bold' }}>TỔNG CỘNG:</Text>
+                                <Text style={{ fontSize: 11, color: '#fff', fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.total_amount || 0)}</Text>
+                            </View>
                         </View>
-                    </View>
-                </View>
-
-                {/* Footer / Terms */}
-                <View style={styles.terms} wrap={false}>
-                    <Text style={styles.sectionTitle}>ĐIỀU KHOẢN & GHI CHÚ / TERMS & NOTES</Text>
-                    <View style={{ marginBottom: 10 }}>
-                        <Text style={styles.termsTitle}>Điều khoản thanh toán / Payment Terms:</Text>
-                        <Text style={styles.termsText}>{quotation.terms || '• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành'}</Text>
-                    </View>
-                    <View>
-                        <Text style={styles.termsTitle}>Ghi chú / Notes:</Text>
-                        <Text style={styles.termsText}>
-                            {quotation.notes || '• Báo giá có hiệu lực trong vòng 07 ngày.\n• Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\n• Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.'}
-                        </Text>
-                    </View>
-                </View>
-
-                {/* Bank Info */}
-                <View style={styles.bankInfo} wrap={false}>
-                    <View style={{ width: '100%', marginBottom: 5 }}>
-                        <Text style={[styles.termsTitle, { marginBottom: 5 }]}>THÔNG TIN CHUYỂN KHOẢN / BANK TRANSFER</Text>
-                    </View>
-                    <View style={styles.bankRow}>
-                        <Text style={styles.bankLabel}>Ngân hàng / Bank:</Text>
-                        <Text style={styles.bankValue}>{quotation.bank_name || 'TECHCOMBANK'}</Text>
-                    </View>
-                    <View style={styles.bankRow}>
-                        <Text style={styles.bankLabel}>Số TK / Account No:</Text>
-                        <Text style={styles.bankValue}>{quotation.bank_account_no || '190368686868'}</Text>
-                    </View>
-                    <View style={styles.bankRow}>
-                        <Text style={styles.bankLabel}>Chủ TK / Acc Name:</Text>
-                        <Text style={styles.bankValue}>{quotation.bank_account_name || 'CONG TY TNHH TULIE'}</Text>
-                    </View>
-                    <View style={styles.bankRow}>
-                        <Text style={styles.bankLabel}>Chi nhánh / Branch:</Text>
-                        <Text style={styles.bankValue}>{quotation.bank_branch || 'Thanh Xuân - Hà Nội'}</Text>
                     </View>
                 </View>
 
                 <View style={styles.footer}>
-                    <Text>Cảm ơn quý khách đã tin tưởng dịch vụ của Tulie Agency!</Text>
+                    <Text>Cảm ơn quý khách đã tin tưởng dịch vụ của Thiệp Nhanh (thiepnhanh.vn)!</Text>
                 </View>
             </Page>
         </Document>
