@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Plus, Eye, Edit, Copy, FileSignature, Receipt, Wallet } from 'lucide-react'
+import { FileText, Plus, Eye, Edit, Copy, FileSignature, Receipt, Wallet, FileCheck } from 'lucide-react'
 import Link from 'next/link'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
 import { DocumentTemplate } from '@/types'
@@ -14,6 +14,10 @@ const getTypeIcon = (type: DocumentTemplate['type']) => {
             return <Receipt className="h-5 w-5" />
         case 'payment_request':
             return <Wallet className="h-5 w-5" />
+        case 'delivery_minutes':
+            return <FileCheck className="h-5 w-5" />
+        case 'order':
+            return <Plus className="h-5 w-5" />
         default:
             return <FileText className="h-5 w-5" />
     }
@@ -31,6 +35,8 @@ const getTypeBadge = (type: DocumentTemplate['type']) => {
             return <Badge className="bg-orange-500">Báo giá</Badge>
         case 'order':
             return <Badge className="bg-cyan-500">Đơn hàng</Badge>
+        case 'delivery_minutes':
+            return <Badge className="bg-emerald-500">Nghiệm thu</Badge>
         default:
             return <Badge>Khác</Badge>
     }

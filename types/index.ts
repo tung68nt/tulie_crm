@@ -434,7 +434,7 @@ export interface AlertItem {
 export interface DocumentTemplate {
   id: string
   name: string
-  type: 'contract' | 'invoice' | 'payment_request' | 'quotation' | 'order'
+  type: 'contract' | 'invoice' | 'payment_request' | 'quotation' | 'order' | 'delivery_minutes'
   content: string // HTML content with {{variables}}
   variables: string[] // List of variable names used in template
   created_at: string

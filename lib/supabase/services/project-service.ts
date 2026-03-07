@@ -44,8 +44,9 @@ export async function getProjectById(id: string) {
                 customer:customers(*),
                 assigned_user:users(*),
                 acceptance_reports(*),
-                quotations(*),
-                contracts(*)
+                quotations:quotations!project_id(*),
+                contracts:contracts!project_id(*),
+                milestones:contract_milestones!project_id(*)
             `)
             .eq('id', id)
             .single()
