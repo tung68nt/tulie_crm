@@ -29,7 +29,7 @@ Font.register({
 
 export const docStyles = StyleSheet.create({
     page: {
-        padding: '1cm 1.5cm',
+        padding: '2.5cm',
         fontFamily: 'Roboto-Regular',
         fontSize: 10,
         color: '#000',
