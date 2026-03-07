@@ -346,9 +346,9 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                     {(sectionName || activeSections.length > 1) && (
                                                         <tr className="relative overflow-hidden group/section">
                                                             <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-stone-800">
-                                                                <div className="relative bg-stone-900 px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
-                                                                    {/* Background Layer: Gradient + Dots */}
-                                                                    <div className="absolute inset-0 bg-gradient-to-r from-stone-950 via-stone-900 to-stone-800 opacity-90" />
+                                                                <div className="relative bg-[#27272a] px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                                    {/* Background Layer */}
+                                                                    <div className="absolute inset-0 bg-[#27272a]" />
                                                                     <div
                                                                         className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay"
                                                                         style={{
