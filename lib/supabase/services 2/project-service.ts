@@ -33,32 +33,20 @@ export async function getProjects(customerId?: string) {
 export async function getProjectById(id: string) {
     try {
         const supabase = await createClient()
-        // Use explicit FK constraint names to avoid PostgREST ambiguity
-        // projects has contract_id -> contracts (singular FK from getProjects)
-        // contracts has project_id -> projects (reverse 1:many)
-        // contract_milestones has project_id -> projects (reverse 1:many)
         const { data, error } = await supabase
             .from('projects')
-            .select(`
-                *,
-                customer:customers(*),
-                assigned_user:users(*),
-                acceptance_reports(*),
-                quotations!quotations_project_id_fkey(*),
-                contracts:contracts!contracts_project_id_fkey(*),
-                milestones:contract_milestones!contract_milestones_project_id_fkey(*)
-            `)
+            .select('*, customer:customers(*), assigned_user:users(*), contract:contracts!projects_contract_id_fkey(*), acceptance_reports(*), milestones:contract_milestones(*), quotations(*), contracts(*)')
             .eq('id', id)
             .single()
 
         if (error) {
-            console.error(`Error fetching project by id [${id}]:`, error)
+            console.error('Error fetching project by id:', error)
             return null
         }
 
         return data as Project
     } catch (err) {
-        console.error(`Fatal error in getProjectById [${id}]:`, err)
+        console.error('Fatal error in getProjectById:', err)
         return null
     }
 }

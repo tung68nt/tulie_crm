@@ -154,92 +154,76 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                 backgroundColor: '#ffffff',
                 windowWidth: 1200,
                 onclone: (doc: Document) => {
-                    // Sanitize any inline oklch() colors directly on elements
+                    // ===== STEP 1: Nuke ALL <style> tags that contain oklch/color-mix =====
+                    // html2canvas CSS parser crashes on oklch(). Instead of regex-replacing,
+                    // we simply REMOVE the entire <style> tag if it contains modern color functions.
+                    // Then we inject our own safe CSS variables.
                     try {
-                        const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT);
-                        let node: Node | null;
-                        while (node = walker.nextNode()) {
-                            const el = node as HTMLElement;
-                            if (el.style && el.style.cssText && el.style.cssText.includes('oklch')) {
-                                el.style.cssText = el.style.cssText.replace(/oklch\([^)]*\)/g, (match) => {
-                                    const lMatch = match.match(/oklch\(([\d.]+)/);
-                                    const l = lMatch ? parseFloat(lMatch[1]) : 0.5;
-                                    if (l > 0.85) return '#ffffff';
-                                    if (l > 0.7) return '#f1f5f9';
-                                    if (l > 0.5) return '#94a3b8';
-                                    if (l > 0.3) return '#475569';
-                                    return '#0f172a';
-                                });
+                        const styleTags = Array.from(doc.querySelectorAll('style'));
+                        for (const tag of styleTags) {
+                            const css = tag.innerHTML || '';
+                            if (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab')) {
+                                tag.remove();
                             }
                         }
-                    } catch (e) { /* safe fallback */ }
+                    } catch (e) { console.warn('Style cleanup:', e); }
 
-                    // html2canvas CSS parser crashes completely on oklch() and color-mix().
+                    // ===== STEP 2: Sanitize inline oklch on elements =====
                     try {
-                        const styleTags = doc.querySelectorAll('style');
-                        for (let i = 0; i < styleTags.length; i++) {
-                            let css = styleTags[i].innerHTML;
-                            if (css && (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab'))) {
-                                // Neutralize color-mix and oklch by replacing with a safe hex
-                                // We use a pattern that avoids eating semicolons to preserve other properties
-                                css = css.replace(/color-mix\([^;}]+\)/g, '#0f172a');
-                                css = css.replace(/oklch\([^;}]+\)/g, '#0f172a');
-                                css = css.replace(/oklab\([^;}]+\)/g, '#0f172a');
-                                styleTags[i].innerHTML = css;
+                        const allEls = doc.querySelectorAll('*');
+                        for (let i = 0; i < allEls.length; i++) {
+                            const el = allEls[i] as HTMLElement;
+                            if (el.style?.cssText?.includes('oklch')) {
+                                el.style.cssText = el.style.cssText.replace(/oklch\([^)]*\)/g, '#64748b');
                             }
                         }
-
-                        // Also clear root oklch variables that might be injected inline
-                        const root = doc.documentElement;
-                        if (root.style.cssText.includes('oklch')) {
-                            root.style.cssText = root.style.cssText.replace(/--[^:]+:[^;]+oklch[^;]+;/g, '');
+                        // Also clean root element
+                        if (doc.documentElement.style.cssText.includes('oklch')) {
+                            doc.documentElement.style.cssText = '';
                         }
-                    } catch (e) { console.error('PDF Sanitize Error:', e); }
+                    } catch (e) { console.warn('Inline cleanup:', e); }
 
+                    // ===== STEP 3: Inject safe CSS =====
                     const style = doc.createElement('style');
                     style.innerHTML = `
                         @page { size: A4; margin: 0; }
-                        body { background: white !important; font-family: sans-serif !important; }
+                        body { background: white !important; font-family: sans-serif !important; color: #0f172a !important; }
                         * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; box-sizing: border-box !important; }
                         
-                        /* Override ALL CSS custom properties that may use oklch */
-                        :root, *, *::before, *::after {
-                            --background: #ffffff !important;
-                            --foreground: #0f172a !important;
-                            --card: #ffffff !important;
-                            --card-foreground: #0f172a !important;
-                            --popover: #ffffff !important;
-                            --popover-foreground: #0f172a !important;
-                            --primary: #000000 !important;
-                            --primary-foreground: #ffffff !important;
-                            --secondary: #f1f5f9 !important;
-                            --secondary-foreground: #0f172a !important;
-                            --muted: #f8fafc !important;
-                            --muted-foreground: #64748b !important;
-                            --accent: #f1f5f9 !important;
-                            --accent-foreground: #0f172a !important;
-                            --destructive: #ef4444 !important;
-                            --border: #e2e8f0 !important;
-                            --input: #e2e8f0 !important;
-                            --ring: #94a3b8 !important;
-                            --sidebar-background: #ffffff !important;
-                            --sidebar-foreground: #0f172a !important;
-                            --sidebar-primary: #000000 !important;
-                            --sidebar-primary-foreground: #ffffff !important;
-                            --sidebar-accent: #f1f5f9 !important;
-                            --sidebar-accent-foreground: #0f172a !important;
-                            --sidebar-border: #e2e8f0 !important;
-                            --sidebar-ring: #94a3b8 !important;
+                        :root {
+                            --background: #ffffff; --foreground: #0f172a;
+                            --card: #ffffff; --card-foreground: #0f172a;
+                            --popover: #ffffff; --popover-foreground: #0f172a;
+                            --primary: #000000; --primary-foreground: #ffffff;
+                            --secondary: #f1f5f9; --secondary-foreground: #0f172a;
+                            --muted: #f8fafc; --muted-foreground: #64748b;
+                            --accent: #f1f5f9; --accent-foreground: #0f172a;
+                            --destructive: #ef4444;
+                            --border: #e2e8f0; --input: #e2e8f0; --ring: #94a3b8;
                         }
 
-                        /* Force desktop layout for PDF - override sm: breakpoints */
                         .quotation-paper { min-height: auto !important; }
                         .quotation-inner { display: block !important; min-height: auto !important; }
                         .fixed.bottom-0 { display: none !important; }
+                        
+                        .text-muted-foreground { color: #64748b !important; }
+                        .text-primary { color: #000000 !important; }
+                        .text-black { color: #000000 !important; }
+                        .text-white { color: #ffffff !important; }
+                        .text-slate-500, .text-slate-600, .text-slate-700 { color: #475569 !important; }
+                        .text-slate-900, .text-zinc-900 { color: #0f172a !important; }
+                        .text-zinc-300 { color: #d4d4d8 !important; }
+                        .bg-white { background-color: #ffffff !important; }
+                        .bg-slate-50 { background-color: #f8fafc !important; }
+                        .bg-slate-100 { background-color: #f1f5f9 !important; }
+                        .bg-zinc-900, .bg-zinc-950 { background-color: #09090b !important; }
+                        .border-slate-100 { border-color: #f1f5f9 !important; }
+                        .border-slate-200 { border-color: #e2e8f0 !important; }
+                        .border-black { border-color: #000000 !important; }
                     `;
                     doc.head.appendChild(style);
 
-                    // Force crossOrigin for images
+                    // ===== STEP 4: Force crossOrigin for images =====
                     const images = doc.getElementsByTagName('img');
                     for (let n = 0; n < images.length; n++) {
                         images[n].crossOrigin = 'anonymous';
@@ -480,33 +464,43 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 {!hasProposal && <span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Service Details</span>}
                                 {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
                             </h3>
-                            <div className="border border-slate-200 rounded-lg overflow-hidden">
+                            <div className="rounded-lg overflow-hidden border border-slate-200">
+                                {/* Table Header - mimics the Proposal Header approach with separate dot pattern overlay */}
+                                <div className="relative overflow-hidden" style={{ backgroundImage: 'linear-gradient(to right, #09090b, #171717, #404040)' }}>
+                                    <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}></div>
+                                    <table className="w-full text-left text-[11px] relative z-10">
+                                        <thead>
+                                            <tr className="text-white">
+                                                <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case">#</th>
+                                                <th className="py-2.5 px-3 font-semibold normal-case">
+                                                    Hạng mục & Mô tả <br />
+                                                    <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
+                                                </th>
+                                                <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case">
+                                                    ĐVT <br />
+                                                    <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Unit</span>
+                                                </th>
+                                                <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case">
+                                                    SL <br />
+                                                    <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Qty</span>
+                                                </th>
+                                                <th className="py-2.5 px-3 font-semibold text-right w-24 normal-case">
+                                                    Đơn giá <br />
+                                                    <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Price</span>
+                                                </th>
+                                                {hasDiscount && <th className="py-2.5 px-3 font-semibold text-center w-16 normal-case text-[10px]">CK(%)</th>}
+                                                <th className="py-2.5 px-4 font-semibold text-right w-28 normal-case">
+                                                    Thành tiền <br />
+                                                    <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Amount</span>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                                {/* Table Body */}
                                 <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
-                                    <thead>
-                                        <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' } as any}>
-                                            <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case bg-transparent! border-none!">#</th>
-                                            <th className="py-2.5 px-3 font-semibold normal-case bg-transparent! border-none!">
-                                                Hạng mục & Mô tả <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
-                                            </th>
-                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case bg-transparent! border-none!">
-                                                ĐVT <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Unit</span>
-                                            </th>
-                                            <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case bg-transparent! border-none!">
-                                                SL <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Qty</span>
-                                            </th>
-                                            <th className="py-2.5 px-3 font-semibold text-right w-24 normal-case bg-transparent! border-none!">
-                                                Đơn giá <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Price</span>
-                                            </th>
-                                            {hasDiscount && <th className="py-2.5 px-3 font-semibold text-center w-16 normal-case text-[10px] bg-transparent! border-none!">CK(%)</th>}
-                                            <th className="py-2.5 px-4 font-semibold text-right w-28 normal-case bg-transparent! border-none!">
-                                                Thành tiền <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Amount</span>
-                                            </th>
-                                        </tr>
+                                    <thead className="sr-only">
+                                        <tr><th>#</th><th>Item</th><th>Unit</th><th>Qty</th><th>Price</th>{hasDiscount && <th>%</th>}<th>Amount</th></tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
                                         {sectionEntries.map(([sectionName, sectionItems], sectionIndex) => (
@@ -786,15 +780,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         min-width: 0 !important;
                     }
                     
-                    th {
-                        background-color: #000 !important;
-                        color: #fff !important;
-                        padding: 6px 10px !important;
-                        font-weight: 600 !important;
-                        font-size: 9px !important;
-                        border: none !important;
-                    }
-                    
+                    /* Table body cells only - NOT header */
                     td {
                         border-bottom: 0.5px solid #e2e8f0 !important;
                         padding: 5px 10px !important;
@@ -856,12 +842,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                     .p-5 { padding: 10px !important; }
                     .rounded-xl { border-radius: 12px !important; }
                     .rounded-lg { border-radius: 8px !important; }
-                    
-                    .table-header-gradient, thead tr {
-                        background: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E"), linear-gradient(to right, #09090b, #171717, #404040) !important;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                    }
                 }
             ` }} />
 
