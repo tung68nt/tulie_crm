@@ -267,8 +267,8 @@ export default function QuotationDetailPage() {
 
                     {/* Proposal Content - Premium Timeline Style */}
                     {hasProposal && proposalSections.length > 0 && (
-                        <Card className="mb-6 overflow-hidden border-slate-200">
-                            <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative">
+                        <Card className="mb-6 overflow-hidden border-slate-200 p-0 gap-0">
+                            <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
                                 <div className="absolute inset-0 opacity-10 pointer-events-none"
                                     style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
                                 </div>
@@ -281,26 +281,29 @@ export default function QuotationDetailPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="p-6 bg-white">
-                                <div className="relative pl-8 before:absolute before:left-[11px] before:top-[12px] before:bottom-0 before:w-[2px] before:bg-slate-100 before:rounded-full">
+                                <div className="relative pl-8 before:absolute before:left-[11px] before:top-[23px] before:bottom-2 before:w-[2px] before:bg-slate-200 before:rounded-full">
                                     {proposalSections.map((section, idx) => {
                                         const icon = sectionIcons[section.key] || <Info className="w-4 h-4" />;
                                         return (
-                                            <div key={idx} className="relative mb-8 last:mb-0">
+                                            <div key={idx} className="proposal-section relative mb-5 last:mb-0">
                                                 {/* Timeline dot */}
-                                                <div className="absolute -left-8 top-[12px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[10px] font-bold z-10 border-2 border-white ">
+                                                <div className="absolute -left-8 top-[23px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[9px] font-bold z-10">
                                                     {idx + 1}
                                                 </div>
 
-                                                <div className="space-y-3">
-                                                    <div className="flex items-center gap-2 text-zinc-900">
-                                                        <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 text-zinc-600">
+                                                {/* Content Card */}
+                                                <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                                                    {/* Card Header */}
+                                                    <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900">
+                                                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white ">
                                                             {icon}
                                                         </span>
-                                                        <h4 className="text-sm font-bold uppercase tracking-tight">
+                                                        <h4 className="text-[13px] font-bold leading-tight">
                                                             {section.label}
                                                         </h4>
                                                     </div>
-                                                    <div className="text-[13px] text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100 whitespace-pre-line">
+                                                    {/* Card Body */}
+                                                    <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">
                                                         {pc[section.key]}
                                                     </div>
                                                 </div>
@@ -313,8 +316,8 @@ export default function QuotationDetailPage() {
                     )}
 
                     {/* Items Card */}
-                    <Card className="mb-6 overflow-hidden border-slate-200">
-                        <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative">
+                    <Card className="mb-6 overflow-hidden border-slate-200 p-0 gap-0">
+                        <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
                             <div className="absolute inset-0 opacity-10 pointer-events-none"
                                 style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
                             </div>
