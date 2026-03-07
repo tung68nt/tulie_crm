@@ -6,9 +6,9 @@ export async function GET() {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('customers')
-            .select('id, name, company_name, address, tax_code, email, phone, representative, position')
+            .select('id, company_name, address, tax_code, email, phone, representative, position')
             .order('company_name', { ascending: true })
-            .limit(100)
+            .limit(200)
 
         if (error) {
             console.error('Error fetching customers:', error)

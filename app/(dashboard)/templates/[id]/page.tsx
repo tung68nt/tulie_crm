@@ -22,7 +22,6 @@ interface Template {
 
 interface Customer {
     id: string
-    name: string
     company_name: string
     address?: string
     tax_code?: string
@@ -86,7 +85,7 @@ export default function TemplateDetailPage() {
         if (customer) {
             setVariables(prev => ({
                 ...prev,
-                customer_company: customer.company_name || customer.name || '',
+                customer_company: customer.company_name || '',
                 customer_address: customer.address || '',
                 customer_tax_code: customer.tax_code || '',
                 customer_email: customer.email || '',
@@ -214,7 +213,7 @@ export default function TemplateDetailPage() {
                         {template.name}
                     </h1>
                     <p className="text-muted-foreground">
-                        Điền thông tin để tạo giấy tờ — xem trước realtime bên phải
+                        Điền thông tin để tạo giấy tờ từ mẫu này
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -248,7 +247,7 @@ export default function TemplateDetailPage() {
                                 <SelectContent>
                                     {customers.map(c => (
                                         <SelectItem key={c.id} value={c.id}>
-                                            {c.company_name || c.name}
+                                            {c.company_name}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -327,9 +326,9 @@ export default function TemplateDetailPage() {
                 {/* Real-time Preview */}
                 <Card>
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base">Xem trước (realtime)</CardTitle>
+                        <CardTitle className="text-base">Xem trước</CardTitle>
                         <CardDescription>
-                            Nội dung tự cập nhật khi bạn nhập thông tin
+                            Nội dung giấy tờ sau khi điền biến
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
