@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
 
 // Add missing types for PDF libs
 declare global {
@@ -96,176 +97,6 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
     const handlePrint = () => {
         window.print();
-    };
-
-    const handleDownloadPDF = async () => {
-        if (isDownloading) return;
-        const element = printRef.current;
-        if (!element) return;
-
-        setIsDownloading(true);
-        const toastId = toast.loading('Đang chuẩn bị bản in PDF...');
-
-        try {
-            // Load libraries with reliable checks
-            const loadScript = (src: string, globalCheck: string): Promise<any> => {
-                return new Promise((resolve, reject) => {
-                    const existing = document.querySelector(`script[src="${src}"]`);
-                    if ((window as any)[globalCheck] || (globalCheck.includes('.') && getGlobalByString(globalCheck))) {
-                        return resolve((window as any)[globalCheck]);
-                    }
-
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.async = true;
-                    script.onload = () => {
-                        // Small delay to ensure global is bound
-                        setTimeout(() => resolve((window as any)[globalCheck]), 100);
-                    };
-                    script.onerror = () => reject(new Error(`Failed to load ${src}`));
-                    document.body.appendChild(script);
-                });
-            };
-
-            const getGlobalByString = (path: string) => {
-                return path.split('.').reduce((obj, key) => obj && obj[key], window as any);
-            };
-
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
-
-            const html2canvas = (window as any).html2canvas;
-            const jspdfLib = (window as any).jspdf;
-
-            if (!html2canvas || !jspdfLib) {
-                throw new Error('PDF Libraries not ready after loading');
-            }
-
-            const { jsPDF } = jspdfLib;
-
-            // Wait longer for images/styles to settle
-            await new Promise(r => setTimeout(r, 2000));
-
-            const canvas = await html2canvas(element, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: 1200,
-                onclone: (doc: Document) => {
-                    // ===== STEP 1: Nuke ALL <style> tags that contain oklch/color-mix =====
-                    // html2canvas CSS parser crashes on oklch(). Instead of regex-replacing,
-                    // we simply REMOVE the entire <style> tag if it contains modern color functions.
-                    // Then we inject our own safe CSS variables.
-                    try {
-                        const styleTags = Array.from(doc.querySelectorAll('style'));
-                        for (const tag of styleTags) {
-                            const css = tag.innerHTML || '';
-                            if (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab')) {
-                                tag.remove();
-                            }
-                        }
-                    } catch (e) { console.warn('Style cleanup:', e); }
-
-                    // ===== STEP 2: Sanitize inline oklch on elements =====
-                    try {
-                        const allEls = doc.querySelectorAll('*');
-                        for (let i = 0; i < allEls.length; i++) {
-                            const el = allEls[i] as HTMLElement;
-                            if (el.style?.cssText?.includes('oklch')) {
-                                el.style.cssText = el.style.cssText.replace(/oklch\([^)]*\)/g, '#64748b');
-                            }
-                        }
-                        // Also clean root element
-                        if (doc.documentElement.style.cssText.includes('oklch')) {
-                            doc.documentElement.style.cssText = '';
-                        }
-                    } catch (e) { console.warn('Inline cleanup:', e); }
-
-                    // ===== STEP 3: Inject safe CSS =====
-                    const style = doc.createElement('style');
-                    style.innerHTML = `
-                        @page { size: A4; margin: 0; }
-                        body { background: white !important; font-family: sans-serif !important; color: #0f172a !important; }
-                        * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; box-sizing: border-box !important; }
-                        
-                        :root {
-                            --background: #ffffff; --foreground: #0f172a;
-                            --card: #ffffff; --card-foreground: #0f172a;
-                            --popover: #ffffff; --popover-foreground: #0f172a;
-                            --primary: #000000; --primary-foreground: #ffffff;
-                            --secondary: #f1f5f9; --secondary-foreground: #0f172a;
-                            --muted: #f8fafc; --muted-foreground: #64748b;
-                            --accent: #f1f5f9; --accent-foreground: #0f172a;
-                            --destructive: #ef4444;
-                            --border: #e2e8f0; --input: #e2e8f0; --ring: #94a3b8;
-                        }
-
-                        .quotation-paper { min-height: auto !important; }
-                        .quotation-inner { display: block !important; min-height: auto !important; }
-                        .fixed.bottom-0 { display: none !important; }
-                        
-                        .text-muted-foreground { color: #64748b !important; }
-                        .text-primary { color: #000000 !important; }
-                        .text-black { color: #000000 !important; }
-                        .text-white { color: #ffffff !important; }
-                        .text-slate-500, .text-slate-600, .text-slate-700 { color: #475569 !important; }
-                        .text-slate-900, .text-zinc-900 { color: #0f172a !important; }
-                        .text-zinc-300 { color: #d4d4d8 !important; }
-                        .bg-white { background-color: #ffffff !important; }
-                        .bg-slate-50 { background-color: #f8fafc !important; }
-                        .bg-slate-100 { background-color: #f1f5f9 !important; }
-                        .bg-zinc-900, .bg-zinc-950 { background-color: #09090b !important; }
-                        .border-slate-100 { border-color: #f1f5f9 !important; }
-                        .border-slate-200 { border-color: #e2e8f0 !important; }
-                        .border-black { border-color: #000000 !important; }
-                    `;
-                    doc.head.appendChild(style);
-
-                    // ===== STEP 4: Force crossOrigin for images =====
-                    const images = doc.getElementsByTagName('img');
-                    for (let n = 0; n < images.length; n++) {
-                        images[n].crossOrigin = 'anonymous';
-                    }
-                }
-            });
-
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                compress: true
-            });
-
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-            // Handle multi-page if content is too long
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            let heightLeft = pdfHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
-            heightLeft -= pageHeight;
-
-            while (heightLeft >= 0) {
-                position = heightLeft - pdfHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
-                heightLeft -= pageHeight;
-            }
-
-            pdf.save(`Bao_gia_${quotation.quotation_number || 'draft'}.pdf`);
-            toast.success('Đã tải PDF thành công!', { id: toastId });
-        } catch (err) {
-            console.error('PDF Generation Detail:', err);
-            toast.error('Lỗi tạo PDF tự động. Vui lòng nhấn "In báo giá" và chọn "Lưu thành PDF".', { id: toastId });
-            throw err;
-        } finally {
-            setIsDownloading(false);
-        }
     };
 
     // Build proposal sections for rendering
@@ -689,10 +520,15 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 <Printer className="mr-1.5 h-3.5 w-3.5" />
                                 In báo giá
                             </Button>
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2" onClick={handleDownloadPDF} disabled={isDownloading}>
-                                <Download className="mr-1.5 h-3.5 w-3.5" />
-                                {isDownloading ? 'Đang tạo...' : 'Tải báo giá'}
-                            </Button>
+                            <DocumentDownloadButton
+                                type="quotation"
+                                label="Tải báo giá"
+                                variant="outline"
+                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2"
+                                documentId={quotation.id}
+                                customerId={quotation.customer_id}
+                                fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
+                            />
                             <Button variant="ghost" className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600 order-4 sm:order-3">
                                 Từ chối
                             </Button>
