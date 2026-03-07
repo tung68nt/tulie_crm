@@ -159,7 +159,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             <main className="container mx-auto px-4 py-8 max-w-6xl">
                 {/* Hero / Overview */}
                 <div className="mb-10 space-y-2">
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+                    <h1 className="text-3xl md:text-4xl font-bold  text-neutral-900 dark:text-neutral-100">
                         {projectTitle}
                     </h1>
                     <p className="text-neutral-500 max-w-2xl font-normal">
@@ -210,18 +210,18 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                 {/* Status Dashboard */}
                 <div className="grid gap-6 md:grid-cols-3 mb-10">
-                    <Card className="border-none bg-white dark:bg-neutral-900 shadow-sm border-b-2 border-b-emerald-500 rounded-xl overflow-hidden">
+                    <Card className="border-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden">
                         <CardHeader className="pb-2 space-y-1">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Tiến độ thanh toán</CardTitle>
+                                <CardTitle className="text-xs font-bold text-neutral-500  ">Tiến độ thanh toán</CardTitle>
                                 <Wallet className="h-4 w-4 text-emerald-500" />
                             </div>
-                            <CardTitle className="text-2xl font-black">{formatCurrency(totalPaid)}</CardTitle>
+                            <CardTitle className="text-2xl font-bold">{formatCurrency(totalPaid)}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="flex justify-between items-end mb-1.5">
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase">Đã thanh toán {Math.round(paymentProgress)}%</p>
-                                <p className="text-[10px] text-neutral-400 font-bold uppercase">Còn lại {formatCurrency(totalValue - totalPaid)}</p>
+                                <p className="text-[10px] text-neutral-400 font-bold ">Đã thanh toán {Math.round(paymentProgress)}%</p>
+                                <p className="text-[10px] text-neutral-400 font-bold ">Còn lại {formatCurrency(totalValue - totalPaid)}</p>
                             </div>
                             <Progress value={paymentProgress} className="h-2 bg-neutral-100 dark:bg-neutral-800" />
                             <p className="text-[11px] text-neutral-500 mt-3 font-medium flex justify-between">
@@ -231,13 +231,13 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none bg-white dark:bg-neutral-900 shadow-sm border-b-2 border-b-blue-500 rounded-xl">
+                    <Card className="border-none bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl">
                         <CardHeader className="pb-2 space-y-1">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Tiến độ dự án</CardTitle>
+                                <CardTitle className="text-xs font-bold text-neutral-500  ">Tiến độ dự án</CardTitle>
                                 <Clock className="h-4 w-4 text-blue-500" />
                             </div>
-                            <CardTitle className="text-2xl font-black">
+                            <CardTitle className="text-2xl font-bold">
                                 {Math.round((timeline.filter((i: any) => i.status === 'completed').length / (timeline.length || 1)) * 100)}%
                             </CardTitle>
                         </CardHeader>
@@ -253,19 +253,19 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-none bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 shadow-lg rounded-xl">
+                    <Card className="border-none bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 border border-neutral-200 dark:border-neutral-800 bg-neutral-900 text-white dark:bg-white dark:text-neutral-900">
                         <CardHeader className="pb-2 space-y-1">
                             <div className="flex items-center justify-between">
-                                <CardTitle className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">Hỗ trợ 24/7</CardTitle>
+                                <CardTitle className="text-xs font-bold text-neutral-400 dark:text-neutral-500  ">Hỗ trợ 24/7</CardTitle>
                                 <AlertCircle className="h-4 w-4 text-amber-400" />
                             </div>
-                            <CardTitle className="text-2xl font-black">098.898.4554</CardTitle>
+                            <CardTitle className="text-2xl font-bold">098.898.4554</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-[11px] text-neutral-400 dark:text-neutral-500 font-bold uppercase mb-2">
+                            <p className="text-[11px] text-neutral-400 dark:text-neutral-500 font-bold  mb-2">
                                 Nguyễn Thanh Tùng - Quản lý dự án
                             </p>
-                            <Button variant="outline" size="sm" className="w-full text-[10px] font-bold uppercase tracking-widest border-neutral-700 dark:border-neutral-200 hover:bg-neutral-800 dark:hover:bg-neutral-100 h-8" asChild>
+                            <Button variant="outline" size="sm" className="w-full text-[10px] font-bold   border-neutral-700 dark:border-neutral-200 hover:bg-neutral-800 dark:hover:bg-neutral-100 h-8" asChild>
                                 <a href="tel:0988984554">Gọi hỗ trợ ngay</a>
                             </Button>
                         </CardContent>
@@ -326,7 +326,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                             <div key={item.id} className="flex gap-6 pb-10 relative group">
                                                 <div className="flex flex-col items-center">
                                                     <div className={`z-10 h-11 w-11 flex items-center justify-center rounded-xl border-2 transition-all duration-300 ${isCompleted ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-black scale-100' :
-                                                        isCurrent ? 'bg-blue-600 border-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] scale-110' :
+                                                        isCurrent ? 'bg-blue-600 border-blue-600 text-white scale-110' :
                                                             'bg-white border-neutral-200 text-neutral-400 dark:bg-neutral-900 dark:border-neutral-800 scale-90'
                                                         }`}>
                                                         {getTimelineIcon(item.type, item.status)}
@@ -334,25 +334,25 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 </div>
 
                                                 <div className="flex-1 -mt-0.5">
-                                                    <Card className={`border-none shadow-sm transition-all duration-300 ${isCurrent ? 'bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-100 dark:ring-blue-900/30' :
+                                                    <Card className={`border border-neutral-100 dark:border-neutral-800 transition-all duration-300 ${isCurrent ? 'bg-blue-50/50 dark:bg-blue-900/10 ring-1 ring-blue-100 dark:ring-blue-900/30' :
                                                         'bg-white dark:bg-neutral-900/50'
                                                         }`}>
                                                         <CardContent className="p-4">
                                                             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                                                                 <div className="space-y-1.5">
                                                                     <div className="flex flex-wrap items-center gap-2">
-                                                                        <h4 className={`font-black text-sm sm:text-lg ${isUpcoming ? 'text-neutral-400' : 'text-neutral-900 dark:text-neutral-100'}`}>
+                                                                        <h4 className={`font-bold text-sm sm:text-lg ${isUpcoming ? 'text-neutral-400' : 'text-neutral-900 dark:text-neutral-100'}`}>
                                                                             {item.title}
                                                                         </h4>
                                                                         {getStatusBadge(item.status, item.is_late)}
                                                                     </div>
-                                                                    <p className="text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 max-w-xl leading-relaxed whitespace-pre-line font-medium italic">
+                                                                    <p className="text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 max-w-xl leading-relaxed whitespace-pre-line font-medium ">
                                                                         {item.description}
                                                                     </p>
                                                                     {item.amount && (
                                                                         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-50 dark:border-neutral-800/50">
                                                                             <Wallet className="h-3 w-3 text-neutral-400" />
-                                                                            <span className="text-xs font-black text-neutral-900 dark:text-neutral-100 uppercase tracking-wider">
+                                                                            <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100  ">
                                                                                 Giá trị: {formatCurrency(item.amount)}
                                                                             </span>
                                                                         </div>
@@ -361,7 +361,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <div className="shrink-0 text-left sm:text-right flex items-center sm:items-end gap-2 sm:flex-col">
                                                                     <div className="flex items-center gap-1.5 px-2 py-1 bg-neutral-100 dark:bg-neutral-800 rounded-md">
                                                                         <Calendar className="h-3.5 w-3.5 text-neutral-500" />
-                                                                        <span className="text-[11px] sm:text-xs text-neutral-700 dark:text-neutral-300 font-black tracking-tight">
+                                                                        <span className="text-[11px] sm:text-xs text-neutral-700 dark:text-neutral-300 font-bold ">
                                                                             {formatDate(item.date)}
                                                                         </span>
                                                                     </div>
@@ -374,7 +374,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         )
                                     })}
                                     {timeline.length === 0 && (
-                                        <div className="text-center py-20 text-neutral-500 text-sm font-bold uppercase tracking-widest opacity-50">
+                                        <div className="text-center py-20 text-neutral-500 text-sm font-bold   opacity-50">
                                             Đang cập nhật lộ trình...
                                         </div>
                                     )}
@@ -450,7 +450,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
             {/* Footer */}
             <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 mt-12">
-                <div className="container mx-auto px-4 py-6 text-center text-xs font-medium text-neutral-500 tracking-normal">
+                <div className="container mx-auto px-4 py-6 text-center text-xs font-medium text-neutral-500 ">
                     <p>© {new Date().getFullYear()} Tulie Agency. All rights reserved.</p>
                 </div>
             </footer>

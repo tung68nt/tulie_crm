@@ -118,6 +118,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    font-style: normal !important;
   }
 
   body {
@@ -128,4 +131,51 @@
   [role="button"] {
     cursor: pointer;
   }
+}
+/* Global Style Overrides - Brand Identity */
+@layer base {
+  body {
+    font-family: var(--font-brand), var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6, b, strong, .font-bold, .font-semibold {
+    font-weight: 700 !important;
+  }
+
+  /* Remove shadow boxes globally */
+  .shadow-sm, .shadow, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl, 
+  [class*="shadow-"], [class^="shadow-"] {
+    box-shadow: none !important;
+  }
+
+  /* Force borders for cards and containers instead of shadows */
+  .card, .rounded-xl.border, .rounded-lg.border {
+    box-shadow: none !important;
+    border: 1px solid var(--border) !important;
+  }
+}
+
+/* Custom Brand Font Integration */
+@font-face {
+  font-family: 'DFVN Neue Kaine';
+  src: url('/fonts/DFVN-Neue-Kaine-Regular.woff2') format('woff2'),
+       url('/fonts/DFVN-Neue-Kaine-Regular.woff') format('woff'),
+       url('/fonts/DFVN-Neue-Kaine-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DFVN Neue Kaine';
+  src: url('/fonts/DFVN-Neue-Kaine-Bold.woff2') format('woff2'),
+       url('/fonts/DFVN-Neue-Kaine-Bold.woff') format('woff'),
+       url('/fonts/DFVN-Neue-Kaine-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-brand: 'DFVN Neue Kaine', 'Inter', system-ui, sans-serif;
 }

@@ -14,12 +14,12 @@ import {
     getProductCategories,
     createProductCategory,
     deleteProductCategory,
-    getSystemSetting,
-    updateSystemSetting,
     getProductUnits,
     updateProductUnits,
     getTelegramConfig,
-    updateTelegramConfig
+    updateTelegramConfig,
+    getBrandConfig,
+    updateBrandConfig
 } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
 
@@ -28,9 +28,11 @@ export default function SettingsPage() {
         name: "Tulie Agency",
         tax_code: "",
         address: "",
-        email: "",
+        email: "info@tulie.vn",
         phone: "",
-        website: ""
+        website: "tulie.vn",
+        logo_url: "/file/tulie-agency-logo.png",
+        favicon_url: "/logo-icon.png"
     })
 
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
@@ -51,14 +53,25 @@ export default function SettingsPage() {
     const [isSavingTelegram, setIsSavingTelegram] = useState(false)
 
     useEffect(() => {
-        const saved = localStorage.getItem('company_settings')
-        if (saved) {
-            setCompanySettings(JSON.parse(saved))
-        }
+        loadCompanySettings()
         loadCategories()
         loadUnits()
         loadTelegram()
     }, [])
+
+    async function loadCompanySettings() {
+        const config = await getBrandConfig()
+        setCompanySettings({
+            name: config.brand_name || "Tulie Agency",
+            tax_code: config.tax_code || "",
+            address: config.address || "",
+            email: config.email || "info@tulie.vn",
+            phone: config.phone || "",
+            website: config.website || "tulie.vn",
+            logo_url: config.logo_url || "/file/tulie-agency-logo.png",
+            favicon_url: config.favicon_url || "/logo-icon.png"
+        })
+    }
 
     async function loadTelegram() {
         const config = await getTelegramConfig()
@@ -109,11 +122,26 @@ export default function SettingsPage() {
         }
     }
 
-    const handleSaveCompanySettings = () => {
-        localStorage.setItem('company_settings', JSON.stringify(companySettings))
-        // Here you would also save to DB in a real scenario
-        // toast.success("Đã lưu thông tin công ty")
-        alert("Đã lưu thông tin công ty thành công!")
+    const [isSavingCompany, setIsSavingCompany] = useState(false)
+    const handleSaveCompanySettings = async () => {
+        setIsSavingCompany(true)
+        try {
+            await updateBrandConfig({
+                brand_name: companySettings.name,
+                tax_code: companySettings.tax_code,
+                address: companySettings.address,
+                email: companySettings.email,
+                phone: companySettings.phone,
+                website: companySettings.website,
+                logo_url: companySettings.logo_url,
+                favicon_url: companySettings.favicon_url
+            })
+            toast.success("Đã lưu thông tin thương hiệu thành công!")
+        } catch (error) {
+            toast.error("Lỗi khi lưu cấu hình thương hiệu")
+        } finally {
+            setIsSavingCompany(false)
+        }
     }
 
     const handleAddUnit = async () => {
@@ -306,13 +334,54 @@ export default function SettingsPage() {
                                             id="website"
                                             value={companySettings.website}
                                             onChange={(e) => setCompanySettings({ ...companySettings, website: e.target.value })}
-                                            placeholder="tulie.agency"
+                                            placeholder="tulie.vn"
                                         />
                                     </div>
                                 </div>
                                 <Separator />
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-medium">Cấu hình nhận diện thương hiệu</h4>
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="logo_url">Đường dẫn Logo (Hệ thống & Portal)</Label>
+                                            <Input
+                                                id="logo_url"
+                                                value={companySettings.logo_url}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, logo_url: e.target.value })}
+                                                placeholder="/file/tulie-agency-logo.png"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="favicon_url">Đường dẫn Favicon (Biểu tượng trình duyệt)</Label>
+                                            <Input
+                                                id="favicon_url"
+                                                value={companySettings.favicon_url}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, favicon_url: e.target.value })}
+                                                placeholder="/logo-icon.png"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4 p-4 bg-muted/50 rounded-lg">
+                                        <div className="space-y-1 flex-1">
+                                            <p className="text-xs text-muted-foreground">Xem trước Logo:</p>
+                                            <div className="h-12 flex items-center bg-white p-2 rounded border">
+                                                <img src={companySettings.logo_url} alt="Logo Preview" className="h-full object-contain" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1 w-24">
+                                            <p className="text-xs text-muted-foreground">Favicon:</p>
+                                            <div className="h-12 w-12 flex items-center justify-center bg-white p-2 rounded border">
+                                                <img src={companySettings.favicon_url} alt="Favicon Preview" className="h-8 w-8 object-contain" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Separator />
                                 <div className="flex justify-end">
-                                    <Button onClick={handleSaveCompanySettings}>Lưu thay đổi</Button>
+                                    <Button onClick={handleSaveCompanySettings} disabled={isSavingCompany}>
+                                        {isSavingCompany && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Lưu thay đổi
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

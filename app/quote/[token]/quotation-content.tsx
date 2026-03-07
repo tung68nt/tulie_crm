@@ -187,21 +187,21 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             <div className="text-left sm:text-right w-full sm:w-auto">
                                 {/* Title Section - Height matches Logo for alignment */}
                                 <div className="h-auto sm:h-24 flex flex-col justify-end mb-4">
-                                    <h2 className="text-4xl sm:text-5xl font-black text-black leading-none" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Báo giá</h2>
+                                    <h2 className="text-4xl sm:text-5xl font-bold text-black leading-none" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Báo giá</h2>
                                     <p className="text-xl sm:text-2xl text-black font-medium mt-1" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Quotation</p>
                                 </div>
 
                                 <div className="space-y-0.5 text-[12px] sm:text-[13px] text-black">
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span>
+                                        <span className="font-medium text-black">Số<span className="text-[0.8em] not-italic font-normal opacity-70">/ No</span>:</span>
                                         <span>{quotation.quotation_number}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span>
+                                        <span className="font-medium text-black">Ngày<span className="text-[0.8em] not-italic font-normal opacity-70">/ Date</span>:</span>
                                         <span>{formatDate(quotation.created_at)}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span>
+                                        <span className="font-medium text-black">Hết hạn<span className="text-[0.8em] not-italic font-normal opacity-70">/ Valid until</span>:</span>
                                         <span>{formatDate(quotation.valid_until)}</span>
                                     </p>
                                 </div>
@@ -213,24 +213,24 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                         <div className="mb-6">
                             <h3 className="text-[13px] font-semibold text-black mb-2 border-l-4 border-black pl-3 leading-none h-3.5 flex items-center">
-                                Thông tin khách hàng<span className="text-[0.8em] italic font-normal opacity-70">/ Customer</span>
+                                Thông tin khách hàng<span className="text-[0.8em] not-italic font-normal opacity-70">/ Customer</span>
                             </h3>
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-2 text-[12px] sm:text-[13px]">
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Đơn vị<span className="text-[0.8em] italic font-normal opacity-70">/ Company</span>:</span>
+                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Đơn vị<span className="text-[0.8em] not-italic font-normal opacity-70">/ Company</span>:</span>
                                     <span className="font-semibold text-black">{quotation.customer?.company_name || "N/A"}</span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Địa chỉ<span className="text-[0.8em] italic font-normal opacity-70">/ Address</span>:</span>
+                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Địa chỉ<span className="text-[0.8em] not-italic font-normal opacity-70">/ Address</span>:</span>
                                     <span className="text-black">{quotation.customer?.address || "N/A"}</span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
-                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Người liên hệ<span className="text-[0.8em] italic font-normal opacity-70">/ Attn</span>:</span>
+                                    <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Người liên hệ<span className="text-[0.8em] not-italic font-normal opacity-70">/ Attn</span>:</span>
                                     <span className="font-medium text-black">{quotation.customer?.contact_name || "N/A"}</span>
                                 </div>
                                 {quotation.customer?.tax_code && (
                                     <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
-                                        <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Mã số thuế<span className="text-[0.8em] italic font-normal opacity-70">/ Tax ID</span>:</span>
+                                        <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Mã số thuế<span className="text-[0.8em] not-italic font-normal opacity-70">/ Tax ID</span>:</span>
                                         <span className="text-black">{quotation.customer.tax_code}</span>
                                     </div>
                                 )}
@@ -292,7 +292,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             <h3 className="text-[14px] font-bold text-black mb-6 border-l-4 border-black pl-3 flex items-center">
                                 <span className="text-primary mr-2">{hasProposal ? `${proposalSections.length + 1}.` : ''}</span>
                                 {hasProposal ? 'Kế hoạch đầu tư' : 'Chi tiết dịch vụ'}
-                                {!hasProposal && <span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Service Details</span>}
+                                {!hasProposal && <span className="text-[0.8em] not-italic font-normal opacity-70 ml-1">/ Service Details</span>}
                                 {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
                             </h3>
                             <div className="rounded-xl overflow-hidden border border-slate-200">
@@ -415,7 +415,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                         <span className="font-bold text-slate-900 text-sm">Tổng cộng:</span>
                                         <span className="font-bold text-lg text-slate-900">{formatCurrency(finalAmount)}</span>
                                     </div>
-                                    <div className="text-right pt-2 text-[10px] italic text-slate-500">
+                                    <div className="text-right pt-2 text-[10px] font-normal text-slate-500">
                                         {readNumberToWords(finalAmount)}./.
                                     </div>
                                 </div>
@@ -426,7 +426,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 {/* Left Column: Notes & Terms */}
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-4 h-full">
                                     <div>
-                                        <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
+                                        <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Ghi chú <span className="text-[0.8em] not-italic font-normal opacity-70">/ Notes</span>:</h4>
                                         <ul className="list-disc pl-4 space-y-1 text-xs text-black leading-relaxed">
                                             {quotation.notes ? (
                                                 <li className="list-none -ml-4 whitespace-pre-line">{quotation.notes}</li>
@@ -440,7 +440,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                         </ul>
                                     </div>
                                     <div className="border-t border-slate-200 pt-3 mt-auto">
-                                        <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
+                                        <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Điều khoản thanh toán <span className="text-[0.8em] not-italic font-normal opacity-70">/ Payment Terms</span>:</h4>
                                         <div className="text-xs text-black leading-relaxed whitespace-pre-line">
                                             {quotation.terms || "• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành"}
                                         </div>
@@ -449,7 +449,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                                 {/* Right Column: Bank Transfer */}
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 h-fit">
-                                    <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Thông tin chuyển khoản<span className="text-[0.8em] italic font-normal opacity-70 ml-1 normal-case">/ Bank Transfer</span></h4>
+                                    <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Thông tin chuyển khoản<span className="text-[0.8em] not-italic font-normal opacity-70 ml-1 normal-case">/ Bank Transfer</span></h4>
                                     <div className="space-y-2 text-xs">
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Ngân hàng<span className="text-[0.8em] italic opacity-70">/ Bank</span>:</span>

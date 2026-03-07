@@ -101,6 +101,20 @@ export async function updateTelegramConfig(config: any) {
     return updateSystemSetting('telegram_config', config)
 }
 
+export async function getBrandConfig() {
+    const config = await getSystemSetting('brand_config')
+    return config || {
+        logo_url: '/file/tulie-agency-logo.png',
+        favicon_url: '/logo-icon.png',
+        brand_name: 'Tulie Agency',
+        email: 'info@tulie.vn'
+    }
+}
+
+export async function updateBrandConfig(config: any) {
+    return updateSystemSetting('brand_config', config)
+}
+
 export async function verifySepaySignature(payload: any, signature: string) {
     try {
         const config = await getSystemSetting('telegram_config')

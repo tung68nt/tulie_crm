@@ -21,11 +21,11 @@ Font.register({
     fontWeight: 'bold',
 });
 
-Font.register({
-    family: 'Roboto-Italic',
-    src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf',
-    fontStyle: 'italic',
-});
+// Font.register({
+//     family: 'Roboto-Italic',
+//     src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-italic-webfont.ttf',
+//     fontStyle: 'italic',
+// });
 
 export const docStyles = StyleSheet.create({
     page: {
@@ -107,7 +107,7 @@ export const docStyles = StyleSheet.create({
         fontFamily: 'Roboto-Bold',
     },
     italic: {
-        fontStyle: 'italic',
+        fontStyle: 'normal',
     },
     lawSection: {
         marginVertical: 10,
