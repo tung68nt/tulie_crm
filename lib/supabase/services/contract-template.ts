@@ -42,10 +42,10 @@ export const contractTemplate = `
   </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
     <tr>
-      <td style="width:25%; white-space:nowrap;">Người đại diện pháp luật:</td>
-      <td style="width:25%; font-weight:bold;">{{customer_representative}}</td>
-      <td style="width:15%; white-space:nowrap;">Chức vụ:</td>
-      <td style="width:35%;">{{customer_position}}</td>
+      <td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; padding-right:16px;">{{customer_representative}}</td>
+      <td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td>
+      <td>{{customer_position}}</td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Địa chỉ liên hệ:</td>
@@ -80,10 +80,10 @@ export const contractTemplate = `
   </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
     <tr>
-      <td style="width:25%; white-space:nowrap;">Người đại diện pháp luật:</td>
-      <td style="width:25%; font-weight:bold;">Ông Nguyễn Thanh Tùng</td>
-      <td style="width:15%; white-space:nowrap;">Chức vụ:</td>
-      <td style="width:35%;">Giám đốc</td>
+      <td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; padding-right:16px;">Ông Nguyễn Thanh Tùng</td>
+      <td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td>
+      <td>Giám đốc</td>
     </tr>
     <tr>
       <td style="white-space:nowrap;">Địa chỉ liên hệ:</td>

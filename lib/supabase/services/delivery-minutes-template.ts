@@ -38,7 +38,7 @@ export const deliveryMinutesTemplate = `
     <tr><td style="font-weight:bold; padding:4px 0;" colspan="4">Bên nhận hàng (Bên A)</td></tr>
   </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
-    <tr><td style="width:25%; white-space:nowrap;">Người đại diện pháp luật:</td><td style="width:25%; font-weight:bold;">{{customer_representative}}</td><td style="width:15%; white-space:nowrap;">Chức vụ:</td><td style="width:35%;">{{customer_position}}</td></tr>
+    <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">{{customer_representative}}</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">{{customer_position}}</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">{{customer_address}}</td></tr>
     <tr><td>Điện thoại:</td><td>{{customer_phone}}</td><td>Di động:</td><td>{{customer_mobile}}</td></tr>
     <tr><td>Mã số thuế:</td><td>{{customer_tax_code}}</td><td>Email:</td><td>{{customer_email}}</td></tr>
@@ -53,7 +53,7 @@ export const deliveryMinutesTemplate = `
     </tr>
   </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
-    <tr><td style="width:25%; white-space:nowrap;">Người đại diện pháp luật:</td><td style="width:25%; font-weight:bold;">Ông Nguyễn Thanh Tùng</td><td style="width:15%; white-space:nowrap;">Chức vụ:</td><td style="width:35%;">Giám đốc</td></tr>
+    <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">Ông Nguyễn Thanh Tùng</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">Giám đốc</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
     <tr><td>Điện thoại:</td><td></td><td>Di động:</td><td>+84 98 898 4554</td></tr>
     <tr><td>Mã số thuế:</td><td>0110163102</td><td>Email:</td><td>info@tulie.vn</td></tr>

@@ -24,6 +24,7 @@ import { getContractById } from '@/lib/supabase/services/contract-service'
 import { notFound } from 'next/navigation'
 import { ContractStatus } from '@/types'
 import { ContractEmailButton } from '@/components/contracts/contract-email-button'
+import { ContractDocuments } from '@/components/contracts/contract-documents'
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
     const { id } = await params
@@ -235,6 +236,9 @@ export default async function ContractDetailPage({ params }: any) {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Document Templates */}
+                    <ContractDocuments contract={contract} />
                 </div>
             </div>
         </div>
