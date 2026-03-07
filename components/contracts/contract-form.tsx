@@ -43,7 +43,7 @@ interface MilestoneItem {
     status: string
     completed_at: Date | undefined
     delay_reason: string
-    type: 'payment' | 'work'
+    type: 'payment' | 'work' | 'delivery'
 }
 
 interface ContractFormProps {
@@ -79,7 +79,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
             name: m.name,
             amount: m.amount,
             due_date: m.due_date ? new Date(m.due_date) : undefined,
-            status: m.status,
+            status: m.status as any,
             completed_at: m.completed_at ? new Date(m.completed_at) : undefined,
             delay_reason: m.delay_reason || '',
             type: m.type || 'payment'

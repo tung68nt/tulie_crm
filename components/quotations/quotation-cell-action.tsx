@@ -32,8 +32,7 @@ import {
     DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
-    DialogContentProps
+    DialogTitle
 } from '@/components/ui/dialog'
 import { SendEmailDialog } from '@/components/shared/send-email-dialog'
 import { formatCurrency, formatDate } from '@/lib/utils/format'

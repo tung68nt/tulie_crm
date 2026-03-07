@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 5,
-        textTransform: '',
+        textTransform: 'none',
     },
     subTitle: {
         fontSize: 12,

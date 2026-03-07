@@ -11,8 +11,6 @@ import {
 import { getDealById } from './deal-service'
 import { getCustomerById } from './customer-service'
 
-import { getCustomerById } from './customer-service'
-
 export async function checkQuotationNumberExists(quotationNumber: string, excludeId?: string) {
     try {
         const supabase = await createClient()
@@ -49,13 +47,15 @@ async function checkAndExpireQuotation(quotation: any, fastUpdate = false) {
         if (new Date() > validDate) {
             quotation.status = 'expired';
 
-            // Async update without blocking
             if (fastUpdate) {
-                createClient().then(supabase => {
-                    supabase.from('quotations').update({ status: 'expired' }).eq('id', quotation.id).then(() => {
+                (async () => {
+                    try {
+                        const supabase = await createClient();
+                        await supabase.from('quotations').update({ status: 'expired' }).eq('id', quotation.id);
+                    } catch (err) {
                         // Suppress background errors
-                    }).catch(() => { });
-                }).catch(() => { });
+                    }
+                })();
             }
         }
     }

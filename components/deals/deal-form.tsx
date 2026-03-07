@@ -47,6 +47,8 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
         try {
             await createDeal({
                 ...formData,
+                status: formData.status as any,
+                priority: formData.priority as any,
                 budget: parseFloat(formData.budget)
             })
             toast.success('Đã tạo cơ hội mới thành công')

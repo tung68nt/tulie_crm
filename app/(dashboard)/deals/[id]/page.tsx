@@ -65,7 +65,7 @@ export default async function DealDetailPage({ params }: any) {
                                 <div className="p-4 bg-muted/20 rounded-xl border flex flex-col items-center justify-center text-center">
                                     <Wallet className="h-5 w-5 mb-2 text-green-600" />
                                     <p className="text-xs text-muted-foreground">Ngân sách dự kiến</p>
-                                    <p className="text-lg font-bold">{formatCurrency(deal.budget)}</p>
+                                    <p className="text-lg font-bold">{formatCurrency(deal.budget || 0)}</p>
                                 </div>
                                 <div className="p-4 bg-muted/20 rounded-xl border flex flex-col items-center justify-center text-center">
                                     <TrendingUp className="h-5 w-5 mb-2 text-blue-600" />
@@ -172,7 +172,7 @@ export default async function DealDetailPage({ params }: any) {
                             <CardTitle className="text-lg opacity-90">Tiềm năng dự án</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-3xl font-bold">{formatCurrency(deal.budget)}</p>
+                            <p className="text-3xl font-bold">{formatCurrency(deal.budget || 0)}</p>
                             <p className="text-xs opacity-70 mt-1 italic">Dựa trên ngân sách dự kiến của khách hàng.</p>
                         </CardContent>
                     </Card>
