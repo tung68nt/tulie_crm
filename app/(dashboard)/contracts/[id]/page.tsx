@@ -25,6 +25,7 @@ import { notFound } from 'next/navigation'
 import { ContractStatus } from '@/types'
 import { ContractEmailButton } from '@/components/contracts/contract-email-button'
 import { ContractDocuments } from '@/components/contracts/contract-documents'
+import { ContractLifecycle } from '@/components/contracts/contract-lifecycle'
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
     const { id } = await params
@@ -89,6 +90,9 @@ export default async function ContractDetailPage({ params }: any) {
             <div className="grid gap-6 lg:grid-cols-3">
                 {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
+                    {/* Lifecycle Timeline */}
+                    <ContractLifecycle contract={contract} />
+
                     {/* Payment Progress */}
                     <Card>
                         <CardHeader>
