@@ -28,10 +28,11 @@ export const orderTemplate = `
   <p style="text-align:center; font-weight:bold; font-size:18pt; margin: 16px 0 20px 0;">ĐƠN ĐẶT HÀNG</p>
 
   <!-- Bên A -->
-  <table style="width:100%; border-collapse:collapse; border-bottom:1px solid #000; margin-bottom:4px;">
-    <tr><td style="font-weight:bold; padding:4px 0;" colspan="4">Bên đặt hàng (Bên A)</td></tr>
-  </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
+    <tr style="border-bottom:1px solid #000;">
+      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên đặt hàng (Bên A)</td>
+      <td colspan="3" style="font-weight:bold; padding:4px 0;">{{customer_company}}</td>
+    </tr>
     <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">{{customer_representative}}</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">{{customer_position}}</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">{{customer_address}}</td></tr>
     <tr><td>Điện thoại:</td><td>{{customer_phone}}</td><td>Di động:</td><td>{{customer_mobile}}</td></tr>
@@ -40,13 +41,11 @@ export const orderTemplate = `
   </table>
 
   <!-- Bên B -->
-  <table style="width:100%; border-collapse:collapse; border-bottom:1px solid #000; margin-bottom:4px;">
-    <tr>
-      <td style="font-weight:bold; padding:4px 0;">Bên nhận đặt hàng (Bên B)</td>
-      <td style="font-weight:bold; padding:4px 0; text-align:right;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
-    </tr>
-  </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
+    <tr style="border-bottom:1px solid #000;">
+      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên nhận đặt hàng (Bên B)</td>
+      <td colspan="3" style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
+    </tr>
     <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">Ông Nguyễn Thanh Tùng</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">Giám đốc</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
     <tr><td>Điện thoại:</td><td></td><td>Di động:</td><td>+84 98 898 4554</td></tr>

@@ -332,10 +332,11 @@ export default function TemplateDetailPage() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div
-                            className="border rounded-lg bg-white min-h-[600px] overflow-auto shadow-inner"
-                            style={{ maxHeight: 'calc(100vh - 240px)' }}
-                            dangerouslySetInnerHTML={{ __html: previewHtml }}
+                        <iframe
+                            srcDoc={`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;padding:20px;font-family:Arial,sans-serif;font-size:10pt;}</style></head><body>${previewHtml}</body></html>`}
+                            className="w-full border rounded-lg bg-white shadow-inner"
+                            style={{ minHeight: '600px', maxHeight: 'calc(100vh - 240px)', height: '800px' }}
+                            title="Xem trước giấy tờ"
                         />
                     </CardContent>
                 </Card>
