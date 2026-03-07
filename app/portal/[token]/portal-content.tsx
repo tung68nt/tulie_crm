@@ -140,10 +140,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             <header className="sticky top-0 z-50 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
-                            <Building2 className="h-5 w-5 text-white dark:text-neutral-900" />
-                        </div>
-                        <span className="font-bold text-lg tracking-tight">Tulie CRM</span>
+                        <img src="/logo.png" alt="Tulie Agency" className="h-8 md:h-10 w-auto object-contain" />
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="hidden md:flex flex-col items-end">
@@ -363,7 +360,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <div className="space-y-1">
                                         <h4 className="font-bold">Cần hỗ trợ?</h4>
                                         <p className="text-[13px] text-neutral-400 dark:text-neutral-600 leading-relaxed font-normal">
-                                            Liên hệ Hotline 098.898.4554 hoặc email support@tulielab.vn để được giải đáp thắc mắc.
+                                            Liên hệ Hotline 098.898.4554 hoặc email info@tulie.vn để được giải đáp thắc mắc.
                                         </p>
                                     </div>
                                 </div>
@@ -376,7 +373,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             {/* Footer */}
             <footer className="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 mt-12">
                 <div className="container mx-auto px-4 py-6 text-center text-xs font-medium text-neutral-500 tracking-normal">
-                    <p>© {new Date().getFullYear()} Tulie CRM. Bản quyền thuộc về Tulie Agency.</p>
+                    <p>© {new Date().getFullYear()} Tulie Agency. All rights reserved.</p>
                 </div>
             </footer>
         </div>

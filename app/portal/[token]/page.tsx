@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     if (!data) {
         return {
-            title: 'Không tìm thấy thông tin - Tulie CRM'
+            title: 'Không tìm thấy thông tin - Tulie Agency'
         }
     }
 
     return {
-        title: `Dự án: ${data.customer?.company_name || 'Khách hàng'} - Tulie CRM`,
+        title: `Dự án: ${data.customer?.company_name || 'Khách hàng'} - Tulie Agency`,
         description: `Theo dõi tiến độ triển khai dành cho ${data.customer?.company_name}`,
     }
 }

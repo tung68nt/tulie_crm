@@ -174,7 +174,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                                     <div className="flex items-center gap-2 text-[12px] sm:text-[13px] text-slate-700">
                                         <Mail className="h-3 w-3 shrink-0" />
-                                        <span>support@tulielab.vn</span>
+                                        <span>info@tulie.vn</span>
                                     </div>
 
                                     <div className="flex items-center gap-2 text-[12px] sm:text-[13px] text-slate-700">
