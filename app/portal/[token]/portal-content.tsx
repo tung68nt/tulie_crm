@@ -167,7 +167,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                 {/* Status Dashboard */}
                 <div className="grid gap-6 md:grid-cols-3 mb-10">
-                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 overflow-hidden">
+                    <Card className="border-neutral-200  dark:border-neutral-800 overflow-hidden">
                         <CardHeader className="pb-2 space-y-1">
                             <CardTitle className="text-xs font-bold text-neutral-500">Tiến độ thanh toán</CardTitle>
                             <CardTitle className="text-2xl font-bold">{formatCurrency(totalPaid)}</CardTitle>
@@ -180,7 +180,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
+                    <Card className="border-neutral-200  dark:border-neutral-800">
                         <CardHeader className="pb-2 space-y-1">
                             <CardTitle className="text-xs font-bold text-neutral-500">Dự kiến hoàn thành</CardTitle>
                             <CardTitle className="text-2xl font-bold">
@@ -195,7 +195,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
+                    <Card className="border-neutral-200  dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
                         <CardHeader className="pb-2 space-y-1">
                             <CardTitle className="text-xs font-bold text-neutral-500">Hỗ trợ nhanh</CardTitle>
                             <CardTitle className="text-lg font-bold">098.898.4554</CardTitle>
@@ -210,7 +210,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                 {/* Kanban-like Tasks section if available */}
                 {tasks.length > 0 && (
-                    <Card className="mb-10 border-neutral-200 shadow-sm dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                    <Card className="mb-10 border-neutral-200  dark:border-neutral-800 bg-white dark:bg-neutral-950">
                         <CardHeader>
                             <CardTitle className="text-lg font-bold">Công việc chi tiết</CardTitle>
                             <CardDescription className="text-neutral-500 font-normal">Danh sách các nhiệm vụ đang được triển khai</CardDescription>
@@ -241,7 +241,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 <div className="grid gap-8 lg:grid-cols-3">
                     {/* Timeline */}
                     <div className="lg:col-span-2">
-                        <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
+                        <Card className="border-neutral-200  dark:border-neutral-800">
                             <CardHeader className="pb-6">
                                 <CardTitle className="text-lg font-bold">Các mốc quan trọng</CardTitle>
                                 <CardDescription className="text-neutral-500 font-normal">
@@ -310,7 +310,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     {/* Documents */}
                     <div className="space-y-6">
-                        <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
+                        <Card className="border-neutral-200  dark:border-neutral-800">
                             <CardHeader className="pb-4">
                                 <CardTitle className="text-lg font-bold">Tài liệu & Hồ sơ</CardTitle>
                                 <CardDescription className="text-neutral-500 font-normal">
@@ -354,7 +354,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </Card>
 
                         {/* Help */}
-                        <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 bg-neutral-900 text-neutral-50 dark:bg-neutral-100 dark:text-neutral-900">
+                        <Card className="border-neutral-200  dark:border-neutral-800 bg-neutral-900 text-neutral-50 dark:bg-neutral-100 dark:text-neutral-900">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-4">
                                     <div className="p-2 rounded-full bg-neutral-800 dark:bg-neutral-200 shrink-0">

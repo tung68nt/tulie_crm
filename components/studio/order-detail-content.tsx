@@ -66,7 +66,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
                 {/* Delivery Links Section */}
-                <Card className="border-primary/20 shadow-sm border-2">
+                <Card className="border-primary/20  border-2">
                     <CardHeader className="bg-primary/5">
                         <CardTitle className="text-sm font-bold   flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-primary" />
@@ -184,7 +184,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
             <div className="space-y-6">
                 {/* Payment Summary */}
-                <Card className="bg-primary text-primary-foreground border-none shadow-xl relative overflow-hidden">
+                <Card className="bg-primary text-primary-foreground border-none  relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16" />
                     <CardHeader>
                         <CardTitle className="text-xs font-bold   opacity-70 flex items-center gap-2">
@@ -245,7 +245,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             <Button
                                 onClick={handleRecordPayment}
                                 disabled={isRecordingPayment}
-                                className="w-full font-bold   shadow-lg shadow-primary/20"
+                                className="w-full font-bold shadow-none"
                             >
                                 {isRecordingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 Ghi nhận và thông báo

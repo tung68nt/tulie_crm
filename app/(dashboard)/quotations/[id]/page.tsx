@@ -28,6 +28,8 @@ import {
     CreditCard,
     Layout,
     Share2,
+    Receipt,
+    Info,
     Copy,
     Loader2,
     Target,
@@ -37,7 +39,6 @@ import {
     Users,
     Shield,
     Award,
-    Info
 } from 'lucide-react'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
@@ -266,7 +267,7 @@ export default function QuotationDetailPage() {
 
                     {/* Proposal Content - Premium Timeline Style */}
                     {hasProposal && proposalSections.length > 0 && (
-                        <Card className="mb-6 overflow-hidden border-slate-200 shadow-sm">
+                        <Card className="mb-6 overflow-hidden border-slate-200">
                             <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative">
                                 <div className="absolute inset-0 opacity-10 pointer-events-none"
                                     style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
@@ -286,7 +287,7 @@ export default function QuotationDetailPage() {
                                         return (
                                             <div key={idx} className="relative mb-8 last:mb-0">
                                                 {/* Timeline dot */}
-                                                <div className="absolute -left-8 top-[12px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[10px] font-bold z-10 border-2 border-white shadow-sm">
+                                                <div className="absolute -left-8 top-[12px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[10px] font-bold z-10 border-2 border-white ">
                                                     {idx + 1}
                                                 </div>
 
@@ -312,16 +313,29 @@ export default function QuotationDetailPage() {
                     )}
 
                     {/* Items Card */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Chi tiết hạng mục</CardTitle>
+                    <Card className="mb-6 overflow-hidden border-slate-200">
+                        <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative">
+                            <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                            </div>
+                            <div className="relative z-10 flex items-center justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <CardTitle className="text-base font-bold">Chi tiết hạng mục</CardTitle>
+                                        <div className="text-[10px] bg-white/20 px-2 py-0.5 rounded text-white font-mono">Quotation Items</div>
+                                    </div>
+                                    <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Chi tiết các hạng mục và chi phí dịch vụ</CardDescription>
+                                </div>
+                                <Receipt className="h-5 w-5 text-zinc-500" />
+                            </div>
                         </CardHeader>
                         <CardContent className="p-0">
                             <Table>
-                                <TableHeader className="relative overflow-hidden bg-zinc-950 border-b-0 rounded-t-xl group">
+                                <TableHeader className="relative overflow-hidden bg-zinc-950 border-b-0 rounded-t-xl group p-0">
+                                    <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                        style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}></div>
                                     <div className="absolute inset-0 opacity-10 pointer-events-none"
-                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
-                                    </div>
+                                        style={{ backgroundImage: "radial-gradient(#fff 0.5px, transparent 0.5px)", backgroundSize: "12px 12px" }}></div>
                                     <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
                                         <TableHead className="pl-6 font-bold text-white text-[10px] h-12">Dịch vụ / Sản phẩm</TableHead>
                                         <TableHead className="text-center w-24 font-bold text-white text-[10px] h-12">Số lượng</TableHead>
@@ -363,7 +377,7 @@ export default function QuotationDetailPage() {
 
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
-                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
+                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20  backdrop-blur-md">
                                                                         <span className="text-xs font-bold">{sIdx + 1}</span>
                                                                     </div>
                                                                     <div className="flex flex-col text-white">
@@ -446,7 +460,7 @@ export default function QuotationDetailPage() {
                             <CardContent className="space-y-4">
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-muted-foreground">Ghi chú</p>
-                                    <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed text-muted-foreground italic">
+                                    <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed">
                                         {quotation.notes || 'Không có ghi chú'}
                                     </div>
                                 </div>

@@ -135,7 +135,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         color-adjust: exact !important;
                     }
                     body { background: #e5e7eb; }
-                    .quotation-paper { box-shadow: none !important; margin: 0 !important; }
+                    .quotation-paper { box-: none !important; margin: 0 !important; }
                     .print\\:hidden { display: none !important; }
                 }
             `}} />
@@ -143,7 +143,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
             {/* A4 Container */}
             <div
                 ref={printRef}
-                className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden"
+                className="quotation-paper mx-auto bg-white  relative w-full max-w-[210mm] overflow-hidden"
             >
 
                 <div className="quotation-inner p-6 sm:p-10">
@@ -241,7 +241,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         {hasProposal && proposalSections.length > 0 && (
                             <div className="mb-10">
                                 {/* Proposal Header */}
-                                <div className="relative mb-6 py-4 px-5 rounded-xl text-white overflow-hidden shadow-sm bg-zinc-950"
+                                <div className="relative mb-6 py-4 px-5 rounded-xl text-white overflow-hidden  bg-zinc-950"
                                     style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}>
                                     {/* Dot pattern as a separate layer for html2canvas compatibility */}
                                     <div className="absolute inset-0 opacity-20 pointer-events-none"
@@ -268,7 +268,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                 <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                                     {/* Card Header */}
                                                     <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900">
-                                                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white shadow-sm">
+                                                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white ">
                                                             {icon}
                                                         </span>
                                                         <h4 className="text-[13px] font-bold leading-tight">
@@ -359,7 +359,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                                                                     {/* Content Layer */}
                                                                     <div className="relative z-10 flex items-center gap-4">
-                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
+                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20  backdrop-blur-md">
                                                                             <span className="text-xs font-bold">{sectionIndex + 1}</span>
                                                                         </div>
                                                                         <div className="flex flex-col">
@@ -372,7 +372,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                                                                     <div className="relative z-10 hidden sm:flex items-center gap-2 pr-2">
                                                                         <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-sm">
-                                                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                                                                            <div className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-pulse -[0_0_8px_rgba(168,162,158,0.5)]" />
                                                                             <span className="text-[9px] font-bold text-white/60">Active</span>
                                                                         </div>
                                                                     </div>
@@ -391,14 +391,14 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                                 <td className="px-2 sm:px-4 align-top py-4">
                                                                     <p className="font-bold text-stone-900 leading-tight text-[12px]">{item.product_name}</p>
                                                                     {item.description && (
-                                                                        <p className="text-zinc-500 text-[10px] mt-1.5 leading-relaxed whitespace-pre-line border-l-2 border-emerald-500/30 pl-3 py-0.5 font-medium">{item.description}</p>
+                                                                        <p className="text-zinc-500 text-[10px] mt-1.5 leading-relaxed whitespace-pre-line border-l-2 border-stone-200 pl-3 py-0.5 font-medium">{item.description}</p>
                                                                     )}
                                                                 </td>
                                                                 <td className="px-4 text-center text-zinc-600 align-top py-4 tabular-nums font-medium">{item.unit}</td>
                                                                 <td className="px-4 text-center text-zinc-600 align-top py-4 tabular-nums font-bold">{item.quantity}</td>
                                                                 <td className="px-4 text-right text-stone-900 align-top py-4 tabular-nums font-bold">{formatCurrency(item.unit_price)}</td>
                                                                 {hasDiscount && (
-                                                                    <td className="px-4 text-center text-emerald-600 align-top py-4 tabular-nums font-bold italic bg-emerald-50/10">-{item.discount || 0}%</td>
+                                                                    <td className="px-4 text-center text-stone-600 align-top py-4 tabular-nums font-bold bg-stone-50/50">-{item.discount || 0}%</td>
                                                                 )}
                                                                 <td className="px-4 text-right font-bold text-stone-900 align-top py-4 tabular-nums bg-stone-50/30">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
                                                             </tr>
@@ -420,8 +420,8 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     </div>
                                     {totalDiscount > 0 && (
                                         <div className="flex justify-between py-1.5 text-[12px]">
-                                            <span className="text-emerald-600 italic">Chiết khấu:</span>
-                                            <span className="text-emerald-700">-{formatCurrency(totalDiscount)}</span>
+                                            <span className="text-stone-600 font-medium">Chiết khấu:</span>
+                                            <span className="text-stone-700 font-medium">-{formatCurrency(totalDiscount)}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between py-1.5 text-[12px]">
@@ -509,7 +509,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 shadow-2xl z-50 print:hidden overflow-hidden">
+            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4  z-50 print:hidden overflow-hidden">
                 <div className="container max-w-4xl mx-auto">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div className="text-sm text-slate-700 hidden sm:block font-medium">
@@ -532,7 +532,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             <Button variant="ghost" className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600 order-4 sm:order-3">
                                 Từ chối
                             </Button>
-                            <Button className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 shadow-md font-semibold text-[13px] sm:text-sm px-6 order-1 sm:order-4" onClick={() => setShowConfirm(true)}>
+                            <Button className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900  font-semibold text-[13px] sm:text-sm px-6 order-1 sm:order-4" onClick={() => setShowConfirm(true)}>
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Chấp nhận ngay
                             </Button>
@@ -586,7 +586,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         padding: 0 !important;
                         width: 100% !important;
                         max-width: none !important;
-                        box-shadow: none !important;
+                        box-: none !important;
                         min-height: 0 !important;
                         height: auto !important;
                         overflow: visible !important;

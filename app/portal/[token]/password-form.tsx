@@ -47,7 +47,7 @@ export default function PortalPasswordForm({ token, companyName }: { token: stri
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 font-sans">
-            <Card className="w-full max-w-md border-neutral-200 shadow-xl dark:border-neutral-800">
+            <Card className="w-full max-w-md border-neutral-200  dark:border-neutral-800">
                 <CardHeader className="text-center space-y-4 pb-6 mt-4">
                     <div className="mx-auto h-12 w-12 rounded-full bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
                         <Lock className="h-6 w-6 text-neutral-50 dark:text-neutral-900" />
