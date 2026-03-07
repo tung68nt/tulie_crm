@@ -363,29 +363,18 @@ export default function QuotationDetailPage() {
                                             <React.Fragment key={sIdx}>
                                                 {(sectionName || sectionEntries.length > 1) && (
                                                     <TableRow className="group/section hover:bg-transparent">
-                                                        <TableCell colSpan={4} className="p-0 border-b border-stone-800">
-                                                            <div className="relative bg-[#27272a] px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
-                                                                {/* Background Layer */}
-                                                                <div className="absolute inset-0 bg-[#27272a]" />
-                                                                <div
-                                                                    className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay"
-                                                                    style={{
-                                                                        backgroundImage: `radial-gradient(#fff 0.5px, transparent 0.5px)`,
-                                                                        backgroundSize: '12px 12px'
-                                                                    }}
-                                                                />
-
+                                                        <TableCell colSpan={4} className="p-0 border-b border-stone-200">
+                                                            <div className="relative bg-stone-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
-                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20  backdrop-blur-md">
+                                                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-stone-700 border border-stone-200">
                                                                         <span className="text-xs font-bold">{sIdx + 1}</span>
                                                                     </div>
-                                                                    <div className="flex flex-col text-white">
+                                                                    <div className="flex flex-col text-stone-800">
                                                                         <h3 className="text-[13px] font-bold leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
-                                                                        <p className="text-[9px] text-zinc-400 font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
+                                                                        <p className="text-[9px] text-stone-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="relative z-10 flex h-6 items-center px-2 bg-white/5 border border-white/10 rounded text-[9px] font-bold text-white/40">Section {sIdx + 1}</div>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>

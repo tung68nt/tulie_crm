@@ -345,35 +345,18 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                     {/* Always show section header if there are multiple sections or a name is provided */}
                                                     {(sectionName || activeSections.length > 1) && (
                                                         <tr className="relative overflow-hidden group/section">
-                                                            <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-stone-800">
-                                                                <div className="relative bg-[#27272a] px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
-                                                                    {/* Background Layer */}
-                                                                    <div className="absolute inset-0 bg-[#27272a]" />
-                                                                    <div
-                                                                        className="absolute inset-0 opacity-[0.15] pointer-events-none mix-blend-overlay"
-                                                                        style={{
-                                                                            backgroundImage: `radial-gradient(#fff 0.5px, transparent 0.5px)`,
-                                                                            backgroundSize: '12px 12px'
-                                                                        }}
-                                                                    />
-
+                                                            <td colSpan={hasDiscount ? 7 : 6} className="p-0 border-b border-stone-200">
+                                                                <div className="relative bg-stone-100 px-4 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
                                                                     {/* Content Layer */}
                                                                     <div className="relative z-10 flex items-center gap-4">
-                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20  backdrop-blur-md">
+                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-stone-700 border border-stone-200">
                                                                             <span className="text-xs font-bold">{sectionIndex + 1}</span>
                                                                         </div>
                                                                         <div className="flex flex-col">
-                                                                            <h3 className="text-[13px] font-bold text-white leading-none mb-0.5">
+                                                                            <h3 className="text-[13px] font-bold text-stone-800 leading-none mb-0.5">
                                                                                 {sectionName || `Hạng mục ${sectionIndex + 1}`}
                                                                             </h3>
-                                                                            <p className="text-[9px] text-white/40 font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="relative z-10 hidden sm:flex items-center gap-2 pr-2">
-                                                                        <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-sm">
-                                                                            <div className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-pulse -[0_0_8px_rgba(168,162,158,0.5)]" />
-                                                                            <span className="text-[9px] font-bold text-white/60">Active</span>
+                                                                            <p className="text-[9px] text-stone-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
                                                                         </div>
                                                                     </div>
                                                                 </div>
