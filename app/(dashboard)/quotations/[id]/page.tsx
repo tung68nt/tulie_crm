@@ -122,9 +122,9 @@ export default function QuotationDetailPage() {
         { label: 'Phạm vi công việc (Scope of Work)', key: 'scope_of_work' },
         { label: 'Phương pháp & Cách tiếp cận', key: 'methodology' },
         { label: 'Sản phẩm bàn giao (Deliverables)', key: 'deliverables' },
-        { label: 'Đội ngũ chuyên trách', key: 'team' },
-        { label: 'Lộ trình triển khai (Timeline)', key: 'timeline' },
-        { label: 'Bảo hành & Hỗ trợ', key: 'warranty' },
+        { label: 'Đội ngũ & Nhân sự', key: 'team' },
+        { label: 'Tiến độ & Timeline', key: 'timeline' },
+        { label: 'Chính sách bảo hành & Hỗ trợ', key: 'warranty' },
         { label: 'Vì sao chọn chúng tôi?', key: 'why_us' },
     ].filter(s => !!pc[s.key]);
 
