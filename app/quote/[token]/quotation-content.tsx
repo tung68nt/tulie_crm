@@ -360,20 +360,20 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                                     {/* Content Layer */}
                                                                     <div className="relative z-10 flex items-center gap-4">
                                                                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
-                                                                            <span className="text-xs font-black tracking-widest">{sectionIndex + 1}</span>
+                                                                            <span className="text-xs font-bold">{sectionIndex + 1}</span>
                                                                         </div>
                                                                         <div className="flex flex-col">
-                                                                            <h3 className="text-[13px] font-black uppercase tracking-tight text-white leading-none mb-0.5">
+                                                                            <h3 className="text-[13px] font-bold text-white leading-none mb-0.5">
                                                                                 {sectionName || `Hạng mục ${sectionIndex + 1}`}
                                                                             </h3>
-                                                                            <p className="text-[9px] text-white/40 uppercase tracking-widest font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
+                                                                            <p className="text-[9px] text-white/40 font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
                                                                         </div>
                                                                     </div>
 
                                                                     <div className="relative z-10 hidden sm:flex items-center gap-2 pr-2">
                                                                         <div className="px-3 py-1 bg-white/10 rounded-full border border-white/10 flex items-center gap-2 backdrop-blur-sm">
                                                                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
-                                                                            <span className="text-[9px] font-black text-white/60 tracking-[0.2em] uppercase">Active</span>
+                                                                            <span className="text-[9px] font-bold text-white/60">Active</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -398,9 +398,9 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                                                 <td className="px-4 text-center text-zinc-600 align-top py-4 tabular-nums font-bold">{item.quantity}</td>
                                                                 <td className="px-4 text-right text-stone-900 align-top py-4 tabular-nums font-bold">{formatCurrency(item.unit_price)}</td>
                                                                 {hasDiscount && (
-                                                                    <td className="px-4 text-center text-emerald-600 align-top py-4 tabular-nums font-black italic bg-emerald-50/10">-{item.discount || 0}%</td>
+                                                                    <td className="px-4 text-center text-emerald-600 align-top py-4 tabular-nums font-bold italic bg-emerald-50/10">-{item.discount || 0}%</td>
                                                                 )}
-                                                                <td className="px-4 text-right font-black text-stone-900 align-top py-4 tabular-nums bg-stone-50/30">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
+                                                                <td className="px-4 text-right font-bold text-stone-900 align-top py-4 tabular-nums bg-stone-50/30">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
                                                             </tr>
                                                         );
                                                     })}

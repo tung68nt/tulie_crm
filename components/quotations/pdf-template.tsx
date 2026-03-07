@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         color: '#000',
         marginBottom: 10,
         textTransform: 'none',
-        letterSpacing: 2,
+        letterSpacing: 0,
     },
     billTo: {
         marginTop: 20,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 8,
         fontWeight: 'bold',
-        textTransform: 'uppercase',
+        textTransform: 'none',
     },
     tableRow: {
         flexDirection: 'row',

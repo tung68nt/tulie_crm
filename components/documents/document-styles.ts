@@ -51,7 +51,7 @@ export const docStyles = StyleSheet.create({
     companyName: {
         fontSize: 10,
         fontFamily: 'Roboto-Bold',
-        textTransform: 'uppercase',
+        textTransform: 'none',
     },
     brandName: {
         fontSize: 11,
@@ -61,7 +61,7 @@ export const docStyles = StyleSheet.create({
     nationalTitle: {
         fontSize: 10,
         fontFamily: 'Roboto-Bold',
-        textTransform: 'uppercase',
+        textTransform: 'none',
     },
     nationalMotto: {
         fontSize: 10,
@@ -92,7 +92,7 @@ export const docStyles = StyleSheet.create({
         fontFamily: 'Roboto-Bold',
         textAlign: 'center',
         marginVertical: 15,
-        textTransform: 'uppercase',
+        textTransform: 'none',
     },
     subtitle: {
         fontSize: 10,

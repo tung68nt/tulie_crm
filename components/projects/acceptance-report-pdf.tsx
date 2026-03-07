@@ -101,7 +101,7 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
         <Document>
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>BIÊN BẢN NGHIỆM THU VÀ BÀN GIAO</Text>
+                    <Text style={styles.title}>Biên bản nghiệm thu và bàn giao</Text>
                     <Text style={styles.subTitle}>Số: {report.report_number}</Text>
                 </View>
 
@@ -110,7 +110,7 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>BÊN A: BÊN GIAO (TULIE AGENCY)</Text>
+                    <Text style={styles.sectionTitle}>Bên A: Bên giao (Tulie Agency)</Text>
                     <View style={styles.row}>
                         <Text style={styles.label}>Đại diện:</Text>
                         <Text style={styles.value}>{project.assigned_user?.full_name || 'Tulie CRM Representative'}</Text>
@@ -118,7 +118,7 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>BÊN B: BÊN NHẬN (KHÁCH HÀNG)</Text>
+                    <Text style={styles.sectionTitle}>Bên B: Bên nhận (Khách hàng)</Text>
                     <View style={styles.row}>
                         <Text style={styles.label}>Công ty:</Text>
                         <Text style={styles.value}>{customer.company_name}</Text>
@@ -130,7 +130,7 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>NỘI DUNG NGHIỆM THU</Text>
+                    <Text style={styles.sectionTitle}>Nội dung nghiệm thu</Text>
                     <Text>Hai bên cùng tiến hành nghiệm thu và bàn giao các hạng mục thuộc dự án: {project.title}</Text>
 
                     <View style={styles.table}>
@@ -153,7 +153,7 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>KẾT LUẬN</Text>
+                    <Text style={styles.sectionTitle}>Kết luận</Text>
                     <Text>- Bên A đã bàn giao đầy đủ các tài nguyên và hướng dẫn sử dụng cho Bên B.</Text>
                     <Text>- Bên B xác nhận các hạng mục đạt yêu cầu như cam kết trong hợp đồng.</Text>
                     <Text>- Biên bản này làm cơ sở để tiến hành thanh lý hợp đồng và thanh toán đợt cuối.</Text>
@@ -161,12 +161,12 @@ export function AcceptanceReportPDF({ project, report, customer }: AcceptanceRep
 
                 <View style={styles.footer}>
                     <View style={styles.signatureBox}>
-                        <Text style={{ fontWeight: 'bold' }}>ĐẠI DIỆN BÊN A</Text>
+                        <Text style={{ fontWeight: 'bold' }}>Đại diện Bên A</Text>
                         <Text style={{ fontStyle: 'italic', fontSize: 9 }}>(Ký và ghi rõ họ tên)</Text>
                         <View style={styles.signatureSpace} />
                     </View>
                     <View style={styles.signatureBox}>
-                        <Text style={{ fontWeight: 'bold' }}>ĐẠI DIỆN BÊN B</Text>
+                        <Text style={{ fontWeight: 'bold' }}>Đại diện Bên B</Text>
                         <Text style={{ fontStyle: 'italic', fontSize: 9 }}>(Ký và ghi rõ họ tên)</Text>
                         <View style={styles.signatureSpace} />
                     </View>

@@ -53,7 +53,7 @@ export default function PortalPasswordForm({ token, companyName }: { token: stri
                         <Lock className="h-6 w-6 text-neutral-50 dark:text-neutral-900" />
                     </div>
                     <div>
-                        <CardTitle className="text-2xl font-bold ">Portal Khách Hàng</CardTitle>
+                        <CardTitle className="text-2xl font-bold ">Portal khách hàng</CardTitle>
                         <CardDescription className="text-neutral-500 mt-2">
                             {companyName ? `Tài liệu bảo mật dành cho ${companyName}` : 'Vui lòng nhập mật khẩu để tiếp tục'}
                         </CardDescription>

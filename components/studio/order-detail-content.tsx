@@ -68,7 +68,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                 {/* Delivery Links Section */}
                 <Card className="border-primary/20 shadow-sm border-2">
                     <CardHeader className="bg-primary/5">
-                        <CardTitle className="text-sm font-black   flex items-center gap-2">
+                        <CardTitle className="text-sm font-bold   flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-primary" />
                             Bàn giao tài nguyên (Delivery)
                         </CardTitle>
@@ -187,14 +187,14 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                 <Card className="bg-primary text-primary-foreground border-none shadow-xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16" />
                     <CardHeader>
-                        <CardTitle className="text-xs font-black   opacity-70 flex items-center gap-2">
+                        <CardTitle className="text-xs font-bold   opacity-70 flex items-center gap-2">
                             <CreditCard className="h-4 w-4" /> Thanh toán sòng phẳng
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-1">
                             <p className="text-xs font-bold opacity-60">Tổng giá trị</p>
-                            <p className="text-3xl font-black italic font-mono">{formatCurrency(order.total_amount)}</p>
+                            <p className="text-3xl font-bold italic font-mono">{formatCurrency(order.total_amount)}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
@@ -210,13 +210,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                         {remainingAmount > 0 ? (
                             <div className="pt-4 border-t border-white/10 space-y-4">
                                 <div className="bg-white p-3 rounded-lg flex flex-col items-center gap-2">
-                                    <p className="text-[10px] text-black font-black  mb-1">Quét QR thanh toán còn lại</p>
+                                    <p className="text-[10px] text-black font-bold  mb-1">Quét QR thanh toán còn lại</p>
                                     <img src={qrUrl} alt="QR Code" className="w-40 h-40" />
                                     <p className="text-[9px] text-muted-foreground text-center leading-tight">Mã QR gen tự động theo số tiền còn lại qua SePay.</p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="pt-4 flex items-center justify-center gap-2 text-green-300 font-black  text-xs">
+                            <div className="pt-4 flex items-center justify-center gap-2 text-green-300 font-bold  text-xs">
                                 <CheckCircle2 className="h-5 w-5" /> Đã thu hồi đủ vốn
                             </div>
                         )}
@@ -227,7 +227,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                 {remainingAmount > 0 && (
                     <Card className="border-dashed border-2">
                         <CardHeader>
-                            <CardTitle className="text-xs font-black   text-muted-foreground flex items-center gap-2">
+                            <CardTitle className="text-xs font-bold   text-muted-foreground flex items-center gap-2">
                                 <CreditCard className="h-4 w-4" /> Thu tiền thực tế
                             </CardTitle>
                         </CardHeader>
@@ -239,13 +239,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     placeholder={remainingAmount.toString()}
                                     value={paymentAmount}
                                     onChange={(e) => setPaymentAmount(e.target.value)}
-                                    className="h-11 font-black text-lg"
+                                    className="h-11 font-bold text-lg"
                                 />
                             </div>
                             <Button
                                 onClick={handleRecordPayment}
                                 disabled={isRecordingPayment}
-                                className="w-full font-black   shadow-lg shadow-primary/20"
+                                className="w-full font-bold   shadow-lg shadow-primary/20"
                             >
                                 {isRecordingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                 Ghi nhận và thông báo

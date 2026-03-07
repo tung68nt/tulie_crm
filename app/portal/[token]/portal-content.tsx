@@ -169,7 +169,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 <div className="grid gap-6 md:grid-cols-3 mb-10">
                     <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 overflow-hidden">
                         <CardHeader className="pb-2 space-y-1">
-                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Tiến độ thanh toán</CardTitle>
+                            <CardTitle className="text-xs font-bold text-neutral-500">Tiến độ thanh toán</CardTitle>
                             <CardTitle className="text-2xl font-bold">{formatCurrency(totalPaid)}</CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -182,7 +182,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <Card className="border-neutral-200 shadow-sm dark:border-neutral-800">
                         <CardHeader className="pb-2 space-y-1">
-                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Dự kiến hoàn thành</CardTitle>
+                            <CardTitle className="text-xs font-bold text-neutral-500">Dự kiến hoàn thành</CardTitle>
                             <CardTitle className="text-2xl font-bold">
                                 {timeline.length > 0 ? formatDate(timeline[timeline.length - 1].date) : 'Đang cập nhật'}
                             </CardTitle>
@@ -197,7 +197,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <Card className="border-neutral-200 shadow-sm dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
                         <CardHeader className="pb-2 space-y-1">
-                            <CardTitle className="text-xs font-bold text-neutral-500 uppercase tracking-wider">Hỗ trợ nhanh</CardTitle>
+                            <CardTitle className="text-xs font-bold text-neutral-500">Hỗ trợ nhanh</CardTitle>
                             <CardTitle className="text-lg font-bold">098.898.4554</CardTitle>
                         </CardHeader>
                         <CardContent>

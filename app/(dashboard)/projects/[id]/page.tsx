@@ -95,7 +95,7 @@ export default async function ProjectDetailPage({ params }: any) {
                             </div>
                             <div className="text-right">
                                 <p className="text-xs text-muted-foreground font-bold">Tổng giá trị dự án</p>
-                                <p className="text-2xl font-black text-indigo-600">{formatCurrency(projectTotal)}</p>
+                                <p className="text-2xl font-bold text-indigo-600">{formatCurrency(projectTotal)}</p>
                             </div>
                         </CardHeader>
                         <CardContent className="pt-4">
@@ -170,7 +170,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                                 </div>
                                                 <div className="text-right flex items-center gap-4">
                                                     <div>
-                                                        <p className="text-sm font-black text-emerald-700">{formatCurrency(c.total_amount)}</p>
+                                                        <p className="text-sm font-bold text-emerald-700">{formatCurrency(c.total_amount)}</p>
                                                         <Badge variant="default" className="bg-emerald-500 hover:bg-emerald-600 text-[9px] h-4 px-1">
                                                             {c.status}
                                                         </Badge>

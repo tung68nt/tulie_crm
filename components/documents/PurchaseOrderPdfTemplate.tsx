@@ -27,11 +27,11 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
                 {/* Header */}
                 <View style={styles.companyHeader}>
                     <View style={styles.headerLeft}>
-                        <Text style={styles.companyName}>CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP</Text>
-                        <Text style={styles.brandName}>CÔNG NGHỆ TULIE</Text>
+                        <Text style={styles.companyName}>Công ty TNHH Dịch vụ và Giải pháp</Text>
+                        <Text style={styles.brandName}>Công nghệ Tulie</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <Text style={styles.nationalTitle}>CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</Text>
+                        <Text style={styles.nationalTitle}>Cộng hoà Xã hội Chủ nghĩa Việt Nam</Text>
                         <Text style={styles.nationalMotto}>Độc lập - Tự do - Hạnh phúc</Text>
                         <View style={styles.underline} />
                     </View>
@@ -42,7 +42,7 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
                     <Text style={styles.docDate}>Hà Nội, ngày {day} tháng {month} năm {year}</Text>
                 </View>
 
-                <Text style={styles.title}>ĐƠN ĐẶT HÀNG</Text>
+                <Text style={styles.title}>Đơn đặt hàng</Text>
 
                 {/* Parties */}
                 <View style={styles.partySection}>
@@ -62,7 +62,7 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
                 </View>
 
                 <View style={styles.partySection}>
-                    <Text style={styles.partyTitle}>Bên nhận đặt hàng (Bên B): CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</Text>
+                    <Text style={styles.partyTitle}>Bên nhận đặt hàng (Bên B): Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</Text>
                     <View style={styles.partyInfo}>
                         <Text style={styles.partyLabel}>Người đại diện:</Text>
                         <Text style={[styles.partyValue, styles.bold]}>Ông Nguyễn Thanh Tùng</Text>
@@ -109,13 +109,13 @@ const PurchaseOrderPdfTemplate: React.FC<PurchaseOrderPdfTemplateProps> = ({ dat
 
                 <View style={styles.signatureSection} wrap={false}>
                     <View style={styles.signatureBlock}>
-                        <Text style={styles.bold}>ĐẠI DIỆN BÊN A</Text>
+                        <Text style={styles.bold}>Đại diện Bên A</Text>
                         <Text style={styles.italic}>(Ký tên)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>{customer.representative || ''}</Text>
                     </View>
                     <View style={styles.signatureBlock}>
-                        <Text style={styles.bold}>ĐẠI DIỆN BÊN B</Text>
+                        <Text style={styles.bold}>Đại diện Bên B</Text>
                         <Text style={styles.italic}>(Ký và đóng dấu)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>Nguyễn Thanh Tùng</Text>

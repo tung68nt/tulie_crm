@@ -26,11 +26,11 @@ const PaymentRequestPdfTemplate: React.FC<PaymentRequestPdfTemplateProps> = ({ d
                 {/* Header */}
                 <View style={styles.companyHeader}>
                     <View style={styles.headerLeft}>
-                        <Text style={styles.companyName}>CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP</Text>
-                        <Text style={styles.brandName}>CÔNG NGHỆ TULIE</Text>
+                        <Text style={styles.companyName}>Công ty TNHH Dịch vụ và Giải pháp</Text>
+                        <Text style={styles.brandName}>Công nghệ Tulie</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <Text style={styles.nationalTitle}>CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</Text>
+                        <Text style={styles.nationalTitle}>Cộng hoà Xã hội Chủ nghĩa Việt Nam</Text>
                         <Text style={styles.nationalMotto}>Độc lập - Tự do - Hạnh phúc</Text>
                         <View style={styles.underline} />
                     </View>
@@ -41,7 +41,7 @@ const PaymentRequestPdfTemplate: React.FC<PaymentRequestPdfTemplateProps> = ({ d
                     <Text style={styles.docDate}>Hà Nội, ngày {day} tháng {month} năm {year}</Text>
                 </View>
 
-                <Text style={[styles.title, { fontSize: 14 }]}>CÔNG VĂN ĐỀ NGHỊ THANH TOÁN CÔNG NỢ</Text>
+                <Text style={[styles.title, { fontSize: 14 }]}>Công văn đề nghị thanh toán công nợ</Text>
 
                 <View style={{ marginVertical: 20 }}>
                     <Text style={[styles.bold, styles.italic]}>Kính gửi: <Text style={{ textDecoration: 'none' }}>{customer.company_name || customer.name || '................'}</Text></Text>
@@ -76,8 +76,8 @@ const PaymentRequestPdfTemplate: React.FC<PaymentRequestPdfTemplateProps> = ({ d
 
                 <View style={[styles.signatureSection, { justifyContent: 'flex-end' }]} wrap={false}>
                     <View style={styles.signatureBlock}>
-                        <Text style={styles.bold}>CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP</Text>
-                        <Text style={styles.bold}>CÔNG NGHỆ TULIE</Text>
+                        <Text style={styles.bold}>Công ty TNHH Dịch vụ và Giải pháp</Text>
+                        <Text style={styles.bold}>Công nghệ Tulie</Text>
                         <Text style={styles.italic}>(Ký và đóng dấu)</Text>
                         <View style={styles.signatureSpace} />
                         <Text style={styles.signatureName}>Ông Nguyễn Thanh Tùng</Text>

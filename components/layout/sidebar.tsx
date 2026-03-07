@@ -100,7 +100,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                         )}
                     />
                     {!isCollapsed && (
-                        <span className="text-xl font-bold tracking-tight whitespace-nowrap opacity-100 transition-opacity duration-300">
+                        <span className="text-xl font-bold whitespace-nowrap opacity-100 transition-opacity duration-300">
                             Tulie CRM
                         </span>
                     )}

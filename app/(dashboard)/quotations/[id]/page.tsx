@@ -323,10 +323,10 @@ export default function QuotationDetailPage() {
                                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
                                     </div>
                                     <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
-                                        <TableHead className="pl-6 font-black text-white uppercase text-[10px] tracking-widest h-12">Dịch vụ / Sản phẩm</TableHead>
-                                        <TableHead className="text-center w-24 font-black text-white uppercase text-[10px] tracking-widest h-12">Số lượng</TableHead>
-                                        <TableHead className="text-right w-32 font-black text-white uppercase text-[10px] tracking-widest h-12">Đơn giá</TableHead>
-                                        <TableHead className="text-right w-36 pr-6 font-black text-white uppercase text-[10px] tracking-widest h-12">Thành tiền</TableHead>
+                                        <TableHead className="pl-6 font-bold text-white text-[10px] h-12">Dịch vụ / Sản phẩm</TableHead>
+                                        <TableHead className="text-center w-24 font-bold text-white text-[10px] h-12">Số lượng</TableHead>
+                                        <TableHead className="text-right w-32 font-bold text-white text-[10px] h-12">Đơn giá</TableHead>
+                                        <TableHead className="text-right w-36 pr-6 font-bold text-white text-[10px] h-12">Thành tiền</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -364,14 +364,14 @@ export default function QuotationDetailPage() {
                                                                 {/* Content Layer */}
                                                                 <div className="relative z-10 flex items-center gap-4">
                                                                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white border border-white/20 shadow-lg backdrop-blur-md">
-                                                                        <span className="text-xs font-black tracking-widest">{sIdx + 1}</span>
+                                                                        <span className="text-xs font-bold">{sIdx + 1}</span>
                                                                     </div>
                                                                     <div className="flex flex-col text-white">
-                                                                        <h3 className="text-[13px] font-black uppercase tracking-tight leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
-                                                                        <p className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
+                                                                        <h3 className="text-[13px] font-bold leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
+                                                                        <p className="text-[9px] text-zinc-400 font-bold">Category Details / <span className="italic opacity-60">Phân loại chi tiết</span></p>
                                                                     </div>
                                                                 </div>
-                                                                <div className="relative z-10 flex h-6 items-center px-2 bg-white/5 border border-white/10 rounded text-[9px] font-black text-white/40 tracking-tighter uppercase">Section {sIdx + 1}</div>
+                                                                <div className="relative z-10 flex h-6 items-center px-2 bg-white/5 border border-white/10 rounded text-[9px] font-bold text-white/40">Section {sIdx + 1}</div>
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -397,7 +397,7 @@ export default function QuotationDetailPage() {
                                                             <TableCell className="text-right align-top py-4 tabular-nums font-bold text-slate-900">
                                                                 {formatCurrency(item.unit_price || 0)}
                                                             </TableCell>
-                                                            <TableCell className="text-right font-black pr-6 align-top py-4 tabular-nums bg-slate-50/30">
+                                                            <TableCell className="text-right font-bold pr-6 align-top py-4 tabular-nums bg-slate-50/30">
                                                                 {formatCurrency(item.total_price || 0)}
                                                             </TableCell>
                                                         </TableRow>
