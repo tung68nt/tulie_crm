@@ -51,41 +51,42 @@ export default function DocumentDownloadButton({
 
     const finalFileName = fileName || `${type}_${documentId.substring(0, 8)}.pdf`;
 
-    if (!docData) {
-        return (
-            <Button
-                variant={variant}
-                size={size}
-                onClick={handlePrepare}
-                disabled={loading}
-                className={className}
-            >
-                {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-                <span className="text-xs">{label}</span>
-            </Button>
-        );
-    }
-
+    // Wrap in stable span to prevent position swap on re-render
     return (
-        <PDFDownloadLink
-            document={<UnifiedDocumentPdf type={type} data={docData} />}
-            fileName={finalFileName}
-        >
-            {({ blob, url, loading: pdfLoading, error }) => (
+        <span className="inline-flex">
+            {!docData ? (
                 <Button
                     variant={variant}
                     size={size}
-                    disabled={pdfLoading}
+                    onClick={handlePrepare}
+                    disabled={loading}
                     className={className}
                 >
-                    {pdfLoading ? (
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                        <Download className="h-4 w-4 mr-2" />
-                    )}
+                    {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
                     <span className="text-xs">{label}</span>
                 </Button>
+            ) : (
+                <PDFDownloadLink
+                    document={<UnifiedDocumentPdf type={type} data={docData} />}
+                    fileName={finalFileName}
+                >
+                    {({ loading: pdfLoading }) => (
+                        <Button
+                            variant={variant}
+                            size={size}
+                            disabled={pdfLoading}
+                            className={className}
+                        >
+                            {pdfLoading ? (
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            ) : (
+                                <Download className="h-4 w-4 mr-2" />
+                            )}
+                            <span className="text-xs">{label}</span>
+                        </Button>
+                    )}
+                </PDFDownloadLink>
             )}
-        </PDFDownloadLink>
+        </span>
     );
 }

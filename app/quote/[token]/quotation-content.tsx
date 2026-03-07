@@ -499,7 +499,7 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-2 sm:order-1" onClick={handlePrint}>
+                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
                                 <Printer className="mr-1.5 h-3.5 w-3.5" />
                                 In báo giá
                             </Button>
@@ -507,15 +507,15 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                 type="quotation"
                                 label="Tải báo giá"
                                 variant="outline"
-                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2"
+                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
                                 documentId={quotation.id}
                                 customerId={quotation.customer_id}
                                 fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
                             />
-                            <Button variant="ghost" className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600 order-4 sm:order-3">
+                            <Button variant="ghost" className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600">
                                 Từ chối
                             </Button>
-                            <Button className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900  font-semibold text-[13px] sm:text-sm px-6 order-1 sm:order-4" onClick={() => setShowConfirm(true)}>
+                            <Button className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 font-semibold text-[13px] sm:text-sm px-6" onClick={() => setShowConfirm(true)}>
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Chấp nhận ngay
                             </Button>
