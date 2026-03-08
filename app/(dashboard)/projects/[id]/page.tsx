@@ -1,4 +1,5 @@
 import { getProjectById } from '@/lib/supabase/services/project-service'
+import { getUsers } from '@/lib/supabase/services/user-service'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -6,31 +7,32 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/status'
-import { ArrowLeft, Edit, ExternalLink, Globe, FolderArchive, Link2, Layout, FileCheck, Users, Calendar, AlertCircle, FileDown } from 'lucide-react'
+import { ArrowLeft, Globe, Layout, FileCheck } from 'lucide-react'
 import Link from 'next/link'
 import { ProjectMetadataForm } from '@/components/projects/project-metadata-form'
-import { AcceptancePDFButton } from '@/components/projects/acceptance-pdf-button'
 import { ProjectMilestones } from '@/components/projects/project-milestones'
 import { ProjectTasks } from '@/components/projects/project-tasks'
 import { ProjectSidebar } from '@/components/projects/project-sidebar'
-import { getQuotations } from '@/lib/supabase/services/quotation-service'
 import { FileText as FileTextIcon, Receipt, ArrowUpRight } from 'lucide-react'
-import { getQuotationByProjectId } from '@/lib/supabase/services/quotation-service'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
-    const project = await getProjectById(id)
+    const [project, teamMembers] = await Promise.all([
+        getProjectById(id),
+        getUsers()
+    ])
 
     if (!project) notFound()
 
-    // Totals logic: contracts if any, else primary quotation only (not sum of all)
+    // Totals logic: contracts if any, else primary quotation only
     const contracts = project.contracts || []
     const quotations = project.quotations || []
 
-    // Fix: use contract total if exists, else sum only accepted quotations
-    const projectTotal = contracts.length > 0
-        ? contracts.reduce((sum, c) => sum + (c.total_amount || 0), 0)
-        : quotations.filter((q: any) => q.status === 'accepted').reduce((sum, q) => sum + (q.total_amount || 0), 0) || quotations.reduce((sum, q) => sum + (q.total_amount || 0), 0)
+    // Fix: use contract total if exists, else sum accepted quotations, fallback to all
+    const acceptedTotal = quotations.filter((q: any) => q.status === 'accepted').reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+    const allQuoteTotal = quotations.reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+    const contractTotal = contracts.reduce((sum: number, c: any) => sum + (c.total_amount || 0), 0)
+    const projectTotal = contractTotal > 0 ? contractTotal : (acceptedTotal > 0 ? acceptedTotal : allQuoteTotal)
 
     const portalUrl = quotations.length > 0 ? `/portal/${quotations[0].public_token}` : null
 
@@ -51,7 +53,7 @@ export default async function ProjectDetailPage({ params }: any) {
                             </Badge>
                         </div>
                         <p className="text-muted-foreground">
-                            Khach hang: <Link href={`/customers/${project.customer?.id}`} className="hover:underline font-medium">{project.customer?.company_name}</Link>
+                            Khách hàng: <Link href={`/customers/${project.customer?.id}`} className="hover:underline font-medium">{project.customer?.company_name}</Link>
                         </p>
                     </div>
                 </div>
@@ -72,9 +74,9 @@ export default async function ProjectDetailPage({ params }: any) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Layout className="h-5 w-5 text-muted-foreground" />
-                                Tai nguyen du an (Agency Assets)
+                                Tài nguyên dự án (Agency Assets)
                             </CardTitle>
-                            <CardDescription>Cac lien ket quan trong phuc vu ban giao va trien khai du an.</CardDescription>
+                            <CardDescription>Các liên kết quan trọng phục vụ bàn giao và triển khai dự án.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <ProjectMetadataForm project={project} />
@@ -90,12 +92,12 @@ export default async function ProjectDetailPage({ params }: any) {
                             <div>
                                 <CardTitle className="text-xl flex items-center gap-2">
                                     <Receipt className="h-5 w-5 text-muted-foreground" />
-                                    Tai chinh va Phap ly
+                                    Tài chính &amp; Pháp lý
                                 </CardTitle>
-                                <CardDescription>Quan ly bao gia va hop dong lien quan den du an</CardDescription>
+                                <CardDescription>Quản lý báo giá và hợp đồng liên quan đến dự án</CardDescription>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs text-muted-foreground font-semibold">Tong gia tri du an</p>
+                                <p className="text-xs text-muted-foreground font-semibold">Tổng giá trị dự án</p>
                                 <p className="text-2xl font-bold">{formatCurrency(projectTotal)}</p>
                             </div>
                         </CardHeader>
@@ -106,9 +108,9 @@ export default async function ProjectDetailPage({ params }: any) {
                                     <div className="flex items-center justify-between mb-3">
                                         <h4 className="text-sm font-semibold flex items-center gap-2">
                                             <FileTextIcon className="h-4 w-4 text-muted-foreground" />
-                                            Danh sach Bao gia
+                                            Danh sách Báo giá
                                         </h4>
-                                        <Badge variant="outline" className="text-[10px]">{quotations.length} ban</Badge>
+                                        <Badge variant="outline" className="text-[10px]">{quotations.length} bản</Badge>
                                     </div>
                                     <div className="grid gap-2">
                                         {quotations.length > 0 ? quotations.map((q: any) => (
@@ -137,7 +139,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                                 </div>
                                             </Link>
                                         )) : (
-                                            <p className="text-xs text-muted-foreground text-center py-2">Chua co bao gia nao.</p>
+                                            <p className="text-xs text-muted-foreground text-center py-2">Chưa có báo giá nào.</p>
                                         )}
                                     </div>
                                 </div>
@@ -149,9 +151,9 @@ export default async function ProjectDetailPage({ params }: any) {
                                     <div className="flex items-center justify-between mb-3">
                                         <h4 className="text-sm font-semibold flex items-center gap-2">
                                             <FileCheck className="h-4 w-4 text-muted-foreground" />
-                                            Danh sach Hop dong / Don hang
+                                            Danh sách Hợp đồng / Đơn hàng
                                         </h4>
-                                        <Badge variant="outline" className="text-[10px]">{contracts.length} ban</Badge>
+                                        <Badge variant="outline" className="text-[10px]">{contracts.length} bản</Badge>
                                     </div>
                                     <div className="grid gap-2">
                                         {contracts.length > 0 ? contracts.map((c: any) => (
@@ -180,7 +182,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                                 </div>
                                             </Link>
                                         )) : (
-                                            <p className="text-xs text-muted-foreground text-center py-2">Chua co hop dong nao.</p>
+                                            <p className="text-xs text-muted-foreground text-center py-2">Chưa có hợp đồng nào.</p>
                                         )}
                                     </div>
                                 </div>
@@ -194,18 +196,18 @@ export default async function ProjectDetailPage({ params }: any) {
                     {/* Description Section */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">Mo ta du an</CardTitle>
+                            <CardTitle className="text-lg">Mô tả dự án</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-sm p-4 bg-muted/20 rounded-xl border border-dashed whitespace-pre-line leading-relaxed">
-                                {project.description || "Chua co mo ta chi tiet cho du an nay."}
+                                {project.description || "Chưa có mô tả chi tiết cho dự án này."}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Sidebar - now client component with status change + acceptance report creation */}
-                <ProjectSidebar project={project} />
+                {/* Sidebar - client component with status, PM, dates, acceptance reports */}
+                <ProjectSidebar project={project} teamMembers={teamMembers} />
             </div>
         </div>
     )

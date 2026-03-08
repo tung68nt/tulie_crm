@@ -45,21 +45,21 @@ interface PortalContentProps {
 }
 
 const getStatusBadge = (status: string, isLate?: boolean) => {
-    if (isLate) return <Badge variant="destructive" className="text-[10px] font-medium">tre han</Badge>
+    if (isLate) return <Badge variant="destructive" className="text-[10px] font-medium">trễ hạn</Badge>
 
     switch (status) {
         case 'completed':
         case 'paid':
         case 'signed':
-            return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-medium">hoan thanh</Badge>
+            return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-medium">hoàn thành</Badge>
         case 'in_progress':
         case 'partial_paid':
-            return <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-medium">dang thuc hien</Badge>
+            return <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-medium">đang thực hiện</Badge>
         case 'pending':
         case 'pending_signature':
-            return <Badge variant="outline" className="text-[10px] font-medium">cho xu ly</Badge>
+            return <Badge variant="outline" className="text-[10px] font-medium">chờ xử lý</Badge>
         case 'upcoming':
-            return <Badge variant="secondary" className="text-[10px] font-medium">sap toi</Badge>
+            return <Badge variant="secondary" className="text-[10px] font-medium">sắp tới</Badge>
         default:
             return <Badge variant="outline" className="text-[10px] font-medium">{status}</Badge>
     }
@@ -101,7 +101,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         quotations.forEach((q: any) => {
             documents.push({
                 id: q.id,
-                name: `Bao gia #${q.quotation_number}`,
+                name: `Báo giá #${q.quotation_number}`,
                 type: 'quotation',
                 status: q.status === 'accepted' ? 'signed' : 'pending_signature',
                 public_token: q.public_token
@@ -110,7 +110,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     } else {
         documents.push({
             id: quotation.id,
-            name: `Bao gia #${quotation.quotation_number}`,
+            name: `Báo giá #${quotation.quotation_number}`,
             type: 'quotation',
             status: quotation.status === 'accepted' ? 'signed' : 'pending_signature',
         })
@@ -120,7 +120,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         contracts.forEach((c: any) => {
             documents.push({
                 id: c.id,
-                name: c.type === 'order' ? `Don hang #${c.contract_number}` : `Hop dong #${c.contract_number}`,
+                name: c.type === 'order' ? `Đơn hàng #${c.contract_number}` : `Hợp đồng #${c.contract_number}`,
                 type: 'contract',
                 status: c.status === 'active' || c.status === 'completed' ? 'signed' : 'pending_signature'
             })
@@ -131,7 +131,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         invoices.forEach((inv: any) => {
             documents.push({
                 id: inv.id,
-                name: `Yeu cau thanh toan ${inv.invoice_number}`,
+                name: `Yêu cầu thanh toán ${inv.invoice_number}`,
                 type: 'payment_request',
                 status: inv.status
             })
@@ -161,7 +161,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="hidden md:flex flex-col items-end">
-                            <span className="text-[11px] text-muted-foreground">Khach hang</span>
+                            <span className="text-[11px] text-muted-foreground">Khách hàng</span>
                             <span className="text-sm font-semibold">{customer?.company_name || customer?.name}</span>
                         </div>
                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -176,7 +176,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 <div className="mb-8">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">{projectTitle}</h1>
                     <p className="text-sm text-muted-foreground max-w-2xl">
-                        Thong bao tien do du an, tai lieu lien quan va cac yeu cau thanh toan danh cho Quy khach.
+                        Thông báo tiến độ dự án, tài liệu liên quan và các yêu cầu thanh toán dành cho Quý khách.
                     </p>
                 </div>
 
@@ -186,22 +186,22 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <CardHeader className="pb-3">
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
                                 <PenTool className="h-4 w-4" />
-                                Cap nhat thong tin khach hang
+                                Cập nhật thông tin khách hàng
                             </CardTitle>
                             <CardDescription>
-                                Vui long kiem tra va bo sung thong tin cong ty de hoan thien cac van ban, hop dong.
+                                Vui lòng kiểm tra và bổ sung thông tin công ty để hoàn thiện các văn bản, hợp đồng.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="pb-4">
                             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                 <DialogTrigger asChild>
-                                    <Button>Bat dau cap nhat</Button>
+                                    <Button>Bắt đầu cập nhật</Button>
                                 </DialogTrigger>
                                 <DialogContent className="sm:max-w-[700px]">
                                     <DialogHeader>
-                                        <DialogTitle>Cap nhat thong tin cong ty</DialogTitle>
+                                        <DialogTitle>Cập nhật thông tin công ty</DialogTitle>
                                         <DialogDescription>
-                                            Vui long dien chinh xac cac thong tin duoi day de chung toi cap nhat vao hop dong.
+                                            Vui lòng điền chính xác các thông tin dưới đây để chúng tôi cập nhật vào hợp đồng.
                                         </DialogDescription>
                                     </DialogHeader>
                                     <CustomerInfoForm
@@ -210,7 +210,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         onComplete={() => {
                                             setIsDialogOpen(false)
                                             router.refresh()
-                                            toast.success('Da cap nhat thong tin thanh cong!')
+                                            toast.success('Đã cập nhật thông tin thành công!')
                                         }}
                                     />
                                 </DialogContent>
@@ -225,17 +225,17 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <Card>
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Tien do thanh toan</span>
+                                <span className="text-sm text-muted-foreground">Tiến độ thanh toán</span>
                                 <CreditCard className="h-4 w-4 text-muted-foreground" />
                             </div>
                             <p className="text-2xl font-bold mb-1">{formatCurrency(totalPaid)}</p>
                             <div className="flex justify-between text-[11px] text-muted-foreground mb-2">
-                                <span>Da thanh toan {paymentProgress.toFixed(0)}%</span>
-                                <span>Con lai {formatCurrency(remainingAmount)}</span>
+                                <span>Đã thanh toán {paymentProgress.toFixed(0)}%</span>
+                                <span>Còn lại {formatCurrency(remainingAmount)}</span>
                             </div>
                             <Progress value={paymentProgress} className="h-1.5" />
                             <p className="text-[11px] text-muted-foreground mt-3 flex justify-between">
-                                <span>Tong hop dong:</span>
+                                <span>Tổng hợp đồng:</span>
                                 <span className="font-semibold">{formatCurrency(totalValue)}</span>
                             </p>
                         </CardContent>
@@ -245,17 +245,17 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <Card>
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Tien do du an</span>
+                                <span className="text-sm text-muted-foreground">Tiến độ dự án</span>
                                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
                             </div>
                             <p className="text-2xl font-bold mb-1">{projectProgress}%</p>
                             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-2">
                                 <Calendar className="h-3 w-3" />
-                                <span>Hoan thanh du kien: {timeline.length > 0 ? formatDate(timeline[timeline.length - 1].date) : '...'}</span>
+                                <span>Hoàn thành dự kiến: {timeline.length > 0 ? formatDate(timeline[timeline.length - 1].date) : '...'}</span>
                             </div>
                             <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md text-[11px] font-medium">
                                 <CheckCircle className="h-3.5 w-3.5 text-primary" />
-                                <span>{completedSteps}/{totalSteps} cong viec da hoan tat</span>
+                                <span>{completedSteps}/{totalSteps} công việc đã hoàn tất</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -264,10 +264,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <Card>
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Nguoi phu trach</span>
+                                <span className="text-sm text-muted-foreground">Người phụ trách</span>
                                 <User className="h-4 w-4 text-muted-foreground" />
                             </div>
-                            <p className="text-lg font-semibold mb-3">{salesPerson?.full_name || 'Chua phan cong'}</p>
+                            <p className="text-lg font-semibold mb-3">{salesPerson?.full_name || 'Chưa phân công'}</p>
                             <div className="space-y-1.5">
                                 {salesPerson?.email && (
                                     <a href={`mailto:${salesPerson.email}`} className="flex items-center gap-2 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
@@ -282,7 +282,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     </a>
                                 )}
                                 {!salesPerson?.phone && !salesPerson?.email && (
-                                    <p className="text-[11px] text-muted-foreground">Lien he: info@tulie.vn</p>
+                                    <p className="text-[11px] text-muted-foreground">Liên hệ: info@tulie.vn</p>
                                 )}
                             </div>
                         </CardContent>
@@ -294,9 +294,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <div className="lg:col-span-2">
                         <Card>
                             <CardHeader className="pb-4">
-                                <CardTitle className="text-base font-semibold">Cac moc quan trong</CardTitle>
+                                <CardTitle className="text-base font-semibold">Các mốc quan trọng</CardTitle>
                                 <CardDescription>
-                                    Lo trinh thuc hien va ban giao dich vu tong quat
+                                    Lộ trình thực hiện và bàn giao dịch vụ tổng quát
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -339,7 +339,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                     <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
                                                                         <Wallet className="h-3 w-3 text-muted-foreground" />
                                                                         <span className="text-xs font-semibold">
-                                                                            Gia tri: {formatCurrency(item.amount)}
+                                                                            Giá trị: {formatCurrency(item.amount)}
                                                                         </span>
                                                                     </div>
                                                                 )}
@@ -360,7 +360,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     })}
                                     {timeline.length === 0 && (
                                         <div className="text-center py-16 text-muted-foreground text-sm">
-                                            Dang cap nhat lo trinh...
+                                            Đang cập nhật lộ trình...
                                         </div>
                                     )}
                                 </div>
@@ -373,9 +373,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         {/* Documents */}
                         <Card>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-base font-semibold">Tai lieu va ho so</CardTitle>
+                                <CardTitle className="text-base font-semibold">Tài liệu và hồ sơ</CardTitle>
                                 <CardDescription>
-                                    Xem va tai ve cac van ban chinh thuc
+                                    Xem và tải về các văn bản chính thức
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-2">
@@ -415,8 +415,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         {tasks.length > 0 && (
                             <Card>
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-base font-semibold">Cong viec chi tiet</CardTitle>
-                                    <CardDescription>Cac nhiem vu dang duoc trien khai</CardDescription>
+                                    <CardTitle className="text-base font-semibold">Công việc chi tiết</CardTitle>
+                                    <CardDescription>Các nhiệm vụ đang được triển khai</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-2">
                                     {tasks.map((task: any) => (
@@ -430,7 +430,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-0.5">
                                                     <span className="text-[10px] text-muted-foreground">{formatDate(task.end_date)}</span>
-                                                    {task.priority === 'high' && <Badge variant="outline" className="text-[9px] h-4 px-1 border-red-200 text-red-600">uu tien</Badge>}
+                                                    {task.priority === 'high' && <Badge variant="outline" className="text-[9px] h-4 px-1 border-red-200 text-red-600">ưu tiên</Badge>}
                                                 </div>
                                             </div>
                                         </div>
@@ -447,9 +447,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         <AlertCircle className="h-4 w-4 text-primary" />
                                     </div>
                                     <div>
-                                        <h4 className="text-sm font-semibold mb-1">Can ho tro?</h4>
+                                        <h4 className="text-sm font-semibold mb-1">Cần hỗ trợ?</h4>
                                         <p className="text-xs text-muted-foreground leading-relaxed">
-                                            Lien he {salesPerson?.full_name || 'Tulie Agency'} qua email{' '}
+                                            Liên hệ {salesPerson?.full_name || 'Tulie Agency'} qua email{' '}
                                             <a href={`mailto:${salesPerson?.email || 'info@tulie.vn'}`} className="underline font-medium">
                                                 {salesPerson?.email || 'info@tulie.vn'}
                                             </a>

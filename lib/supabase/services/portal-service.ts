@@ -10,12 +10,22 @@ export async function getPortalDataByToken(token: string) {
         // 1. Get primary quotation
         const { data: qData } = await supabase
             .from('quotations')
-            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*), creator:users!created_by(id, full_name, email, phone)')
+            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*)')
             .eq('public_token', token)
             .single()
 
         if (!qData) return null
         const primaryQuotation = qData as any
+
+        // Fetch creator (sales person) separately
+        if (primaryQuotation.created_by) {
+            const { data: creatorData } = await supabase
+                .from('users')
+                .select('id, full_name, email, phone')
+                .eq('id', primaryQuotation.created_by)
+                .single()
+            if (creatorData) primaryQuotation.creator = creatorData
+        }
 
         const projectId = primaryQuotation.project_id
         let allQuotations = [primaryQuotation]

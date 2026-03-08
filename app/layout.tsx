@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { getBrandConfig } from "@/lib/supabase/services/settings-service";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,14 +9,17 @@ const inter = Inter({
   subsets: ["latin", "vietnamese"],
 });
 
-export const metadata: Metadata = {
-  title: "Tulie CRM - Quản trị Khách hàng",
-  description: "Hệ thống CRM toàn diện cho Tulie Agency - Quản lý khách hàng, báo giá, hợp đồng và tài chính",
-  keywords: ["CRM", "Tulie Agency", "quản lý khách hàng", "báo giá", "hợp đồng"],
-  icons: {
-    icon: "/logo-icon.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = await getBrandConfig()
+  return {
+    title: `${brand.brand_name || 'Tulie'} CRM - Quản trị Khách hàng`,
+    description: "Hệ thống CRM toàn diện cho Tulie Agency - Quản lý khách hàng, báo giá, hợp đồng và tài chính",
+    keywords: ["CRM", "Tulie Agency", "quản lý khách hàng", "báo giá", "hợp đồng"],
+    icons: {
+      icon: brand.favicon_url || "/logo-icon.png",
+    },
+  }
+}
 
 import { Toaster } from 'sonner'
 
@@ -40,4 +44,3 @@ export default function RootLayout({
     </html>
   );
 }
-
