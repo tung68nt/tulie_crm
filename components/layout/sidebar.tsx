@@ -43,7 +43,7 @@ const navGroups: NavGroup[] = [
     {
         title: 'Tulie Agency',
         items: [
-            { title: 'Cơ hội (Deals)', href: '/deals', icon: TrendingUp },
+            { title: 'Cơ hội Agency', href: '/deals', icon: TrendingUp },
             { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
             { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
@@ -55,7 +55,7 @@ const navGroups: NavGroup[] = [
     {
         title: 'Tulie Studio',
         items: [
-            { title: 'Cơ hội (B2C)', href: '/studio/deals', icon: TrendingUp },
+            { title: 'Cơ hội Studio', href: '/studio/deals', icon: TrendingUp },
             { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
         ]
     },
@@ -149,8 +149,13 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             <div className="flex flex-col gap-0.5">
                                 {group.items.map((item) => {
                                     const Icon = item.icon
+                                    // More precise isActive logic:
+                                    // - Exact match always takes precedence.
+                                    // - For sub-path matching, ensure it's not the root path '/'
+                                    //   and that the pathname starts with the item's href followed by a slash,
+                                    //   or if the item's href is '/studio', it only matches exactly '/studio'.
                                     const isActive = pathname === item.href ||
-                                        (item.href !== '/' && pathname.startsWith(item.href))
+                                        (item.href !== '/' && item.href !== '/studio' && pathname.startsWith(item.href + '/'))
 
                                     return (
                                         <Link key={item.href} href={item.href}>

@@ -2,19 +2,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
-import { DEAL_STATUS_LABELS } from "@/lib/constants/status"
+import { DEAL_STATUS_LABELS, DEAL_CHART_COLORS as COLORS } from "@/lib/constants/status"
 import { formatCurrency } from "@/lib/utils/format"
 
 interface DealProjectionChartProps {
     stats: any
-}
-
-const COLORS: Record<string, string> = {
-    new: '#6366f1',          // indigo
-    briefing: '#8b5cf6',     // violet
-    proposal_sent: '#0ea5e9', // sky
-    closed_won: '#10b981',    // emerald
-    closed_lost: '#ef4444'    // red
 }
 
 export function DealProjectionChart({ stats }: DealProjectionChartProps) {
@@ -100,7 +92,7 @@ export function DealProjectionChart({ stats }: DealProjectionChartProps) {
                                         {barData.map((entry, index) => (
                                             <Cell
                                                 key={`cell-${index}`}
-                                                fill={COLORS[entry.key] || '#6366f1'}
+                                                fill={(COLORS as any)[entry.key] || '#6366f1'}
                                             />
                                         ))}
                                     </Bar>
@@ -112,7 +104,7 @@ export function DealProjectionChart({ stats }: DealProjectionChartProps) {
                             {data.map((item) => (
                                 <div key={item.key} className="space-y-1 p-3 rounded-lg border bg-muted/30">
                                     <div className="flex items-center gap-2">
-                                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[item.key] }} />
+                                        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: (COLORS as any)[item.key] }} />
                                         <span className="text-xs text-muted-foreground">
                                             {DEAL_STATUS_LABELS[item.key as keyof typeof DEAL_STATUS_LABELS]?.split('(')[0]}
                                         </span>

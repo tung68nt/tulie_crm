@@ -10,11 +10,11 @@ export const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
 }
 
 export const CUSTOMER_STATUS_COLORS: Record<CustomerStatus, string> = {
-    lead: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    prospect: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    customer: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    vip: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-    churned: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    lead: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
+    prospect: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200',
+    customer: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-950',
+    vip: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold',
+    churned: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
 }
 
 // Quotation Status
@@ -29,13 +29,13 @@ export const QUOTATION_STATUS_LABELS: Record<QuotationStatus, string> = {
 }
 
 export const QUOTATION_STATUS_COLORS: Record<QuotationStatus, string> = {
-    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    sent: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    viewed: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
-    accepted: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    expired: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300',
-    converted: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
+    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    viewed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    accepted: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
+    rejected: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
+    expired: 'bg-zinc-100 text-zinc-400',
+    converted: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900',
 }
 
 // Contract Status
@@ -48,11 +48,11 @@ export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
 }
 
 export const CONTRACT_STATUS_COLORS: Record<ContractStatus, string> = {
-    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    completed: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    suspended: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    active: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
+    completed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
+    cancelled: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
+    suspended: 'bg-zinc-100 text-zinc-600',
 }
 
 // Invoice Status
@@ -66,12 +66,12 @@ export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
 }
 
 export const INVOICE_STATUS_COLORS: Record<InvoiceStatus, string> = {
-    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-    sent: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    paid: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    partial: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    overdue: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
-    cancelled: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500',
+    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    paid: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
+    partial: 'bg-zinc-100 text-zinc-800 border-zinc-200',
+    overdue: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-bold',
+    cancelled: 'bg-zinc-100 text-zinc-400 line-through opacity-50',
 }
 
 // Deal Status
@@ -83,12 +83,20 @@ export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
     closed_lost: 'Đã hủy (Thất bại)',
 }
 
+export const DEAL_CHART_COLORS: Record<DealStatus, string> = {
+    new: '#d4d4d8',          // zinc-300
+    briefing: '#a1a1aa',     // zinc-400
+    proposal_sent: '#71717a', // zinc-500
+    closed_won: '#18181b',    // zinc-900
+    closed_lost: '#f4f4f5'    // zinc-100
+}
+
 export const DEAL_STATUS_COLORS: Record<DealStatus, string> = {
-    new: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    briefing: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300',
-    proposal_sent: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-300',
-    closed_won: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-    closed_lost: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+    new: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    briefing: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    proposal_sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    closed_won: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
+    closed_lost: 'bg-zinc-100 text-zinc-400',
 }
 
 // Project Status
@@ -100,8 +108,8 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
 }
 
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-    todo: 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
-    in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
-    review: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+    todo: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
+    in_progress: 'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-200 font-medium',
+    review: 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900',
+    completed: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950 font-bold',
 }

@@ -20,11 +20,11 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-    pending: 'bg-gray-100 text-gray-800',
-    shooting: 'bg-blue-100 text-blue-800',
-    editing: 'bg-purple-100 text-purple-800',
-    completed: 'bg-green-100 text-green-800',
-    cancelled: 'bg-red-100 text-red-800',
+    pending: 'bg-zinc-100 text-zinc-500',
+    shooting: 'bg-zinc-100 text-zinc-800 font-medium border border-zinc-200',
+    editing: 'bg-zinc-800 text-zinc-100',
+    completed: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950',
+    cancelled: 'bg-zinc-100 text-zinc-300 border-zinc-100',
 }
 
 export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {

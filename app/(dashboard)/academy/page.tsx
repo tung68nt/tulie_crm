@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { Layout, RefreshCcw, Key, Database, Globe } from 'lucide-react'
+import { Layout, RefreshCcw, Key, Database, Globe, TrendingUp } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -56,8 +56,8 @@ export default function LabPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/30 flex items-center justify-center">
-                        <Layout className="h-6 w-6 text-indigo-600" />
+                    <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <Layout className="h-6 w-6 text-zinc-600 dark:text-zinc-400" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-semibold">Tulie Lab Control</h1>
@@ -67,7 +67,7 @@ export default function LabPage() {
                 <Button
                     onClick={handleSync}
                     disabled={isSyncing}
-                    className="bg-indigo-600 hover:bg-indigo-700"
+                    className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-900"
                 >
                     {isSyncing ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCcw className="mr-2 h-4 w-4" />}
                     Đồng bộ ngay
@@ -78,7 +78,7 @@ export default function LabPage() {
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
                     <CardHeader className="bg-muted/30 border-b border-border/50">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <Key className="h-4 w-4 text-indigo-500" />
+                            <Key className="h-4 w-4 text-zinc-500" />
                             Cấu hình kết nôi
                         </CardTitle>
                         <CardDescription>Nhập API Key để kết nối với hệ thống Lab ngoại vi.</CardDescription>
@@ -105,22 +105,38 @@ export default function LabPage() {
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
                     <CardHeader className="bg-muted/30 border-b border-border/50">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <Database className="h-4 w-4 text-indigo-500" />
-                            Trạng thái dữ liệu
+                            <Database className="h-4 w-4 text-zinc-500" />
+                            Trạng thái Lab
                         </CardTitle>
-                        <CardDescription>Thông tin lần đồng bộ cuối cùng.</CardDescription>
+                        <CardDescription>Kiểm tra tình trạng kết nối tới máy chủ trung tâm.</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6 space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Lần đồng bộ cuối:</p>
-                                <p className="font-medium">Vừa xong</p>
+                    <CardContent className="pt-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800/50">
+                                <div className="flex items-center gap-3">
+                                    <Globe className="h-4 w-4 text-zinc-500" />
+                                    <span className="text-sm font-medium">thelab.tulie.vn</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                    <span className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase">Trực tuyến</span>
+                                </div>
                             </div>
-                            <div className="space-y-1">
-                                <p className="text-sm text-muted-foreground">Dữ liệu nguồn:</p>
-                                <div className="flex items-center gap-1 text-indigo-600">
-                                    <Globe className="h-3 w-3" />
-                                    <span className="text-xs">thelab.tulie.vn</span>
+
+                            <div className="space-y-2">
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground uppercase font-bold tracking-tighter opacity-50">Lần đồng bộ cuối</span>
+                                    <span className="font-mono">Chưa bao giờ</span>
+                                </div>
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground uppercase font-bold tracking-tighter opacity-50">Dung lượng dữ liệu</span>
+                                    <span className="font-mono">-- MB</span>
+                                </div>
+                                <div className="pt-4">
+                                    <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
+                                        <TrendingUp className="h-3 w-3" />
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">Hiệu suất đồng bộ: 100%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

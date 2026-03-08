@@ -577,7 +577,7 @@ export default function QuotationDetailPage() {
                             <div className="space-y-4">
                                 {quotation.status === 'converted' && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-purple-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-900 dark:bg-white" />
                                         <div>
                                             <p className="text-sm font-medium">Đã chuyển hợp đồng</p>
                                             <p className="text-xs text-muted-foreground">{formatDate(quotation.updated_at)}</p>
@@ -586,34 +586,34 @@ export default function QuotationDetailPage() {
                                 )}
                                 {quotation.status === 'expired' && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-orange-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-300" />
                                         <div>
-                                            <p className="text-sm font-medium text-orange-600">Đã hết hạn</p>
+                                            <p className="text-sm font-medium text-zinc-500">Đã hết hạn</p>
                                             <p className="text-xs text-muted-foreground">Qua hạn {quotation.valid_until && formatDate(quotation.valid_until)}</p>
                                         </div>
                                     </div>
                                 )}
                                 {quotation.rejected_at && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-red-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-400 border border-zinc-500" />
                                         <div>
-                                            <p className="text-sm font-medium text-red-600">Đã từ chối</p>
+                                            <p className="text-sm font-medium text-zinc-600">Đã từ chối</p>
                                             <p className="text-xs text-muted-foreground">{formatDate(quotation.rejected_at)}</p>
                                         </div>
                                     </div>
                                 )}
                                 {quotation.accepted_at && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-green-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-950 dark:bg-zinc-100" />
                                         <div>
-                                            <p className="text-sm font-medium text-green-600">Đã chấp nhận</p>
+                                            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Đã chấp nhận</p>
                                             <p className="text-xs text-muted-foreground">{formatDate(quotation.accepted_at)}</p>
                                         </div>
                                     </div>
                                 )}
                                 {quotation.viewed_at && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-blue-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-600" />
                                         <div>
                                             <p className="text-sm font-medium">Khách hàng đã xem</p>
                                             <p className="text-xs text-muted-foreground">{formatDate(quotation.viewed_at)}</p>
@@ -622,7 +622,7 @@ export default function QuotationDetailPage() {
                                 )}
                                 {quotation.status === 'sent' && !quotation.viewed_at && (
                                     <div className="flex gap-3">
-                                        <div className="h-2 w-2 mt-2 rounded-full bg-cyan-500" />
+                                        <div className="h-2 w-2 mt-2 rounded-full bg-zinc-500" />
                                         <div>
                                             <p className="text-sm font-medium">Đã gửi hệ thống</p>
                                             <p className="text-xs text-muted-foreground">{formatDate(quotation.updated_at)}</p>
