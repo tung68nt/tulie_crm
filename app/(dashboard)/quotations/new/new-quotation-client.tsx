@@ -156,7 +156,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
 
             {/* Preview Modal */}
             <QuotationPreview
-                data={formData}
+                data={{ ...formData, brandConfig }}
                 open={showPreview}
                 onOpenChange={setShowPreview}
             />

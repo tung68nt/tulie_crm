@@ -344,9 +344,9 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
 
                         <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
                         <View style={{ fontSize: 8, color: '#444' }}>
-                            <Text>Chủ TK: {quotation.bank_account_name || 'NGUYEN MANH TUNG'}</Text>
-                            <Text>Số TK: {quotation.bank_account_no || '190368686868'}</Text>
-                            <Text>Ngân hàng: {quotation.bank_name || 'Techcombank'} - {quotation.bank_branch || 'Chi nhánh Hà Nội'}</Text>
+                            <Text>Chủ TK: {quotation.bank_account_name || quotation.brandConfig?.bank_account_name || 'Chưa cấu hình'}</Text>
+                            <Text>Số TK: {quotation.bank_account_no || quotation.brandConfig?.bank_account_no || 'Chưa cấu hình'}</Text>
+                            <Text>Ngân hàng: {quotation.bank_name || quotation.brandConfig?.bank_name || 'Chưa cấu hình'} - {quotation.bank_branch || quotation.brandConfig?.bank_branch || ''}</Text>
                         </View>
                     </View>
 

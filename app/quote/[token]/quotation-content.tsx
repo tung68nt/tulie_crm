@@ -29,9 +29,10 @@ declare global {
 
 interface QuotationContentProps {
     quotation: any
+    brandConfig?: any
 }
 
-export function QuotationContent({ quotation }: QuotationContentProps) {
+export function QuotationContent({ quotation, brandConfig }: QuotationContentProps) {
     const [showConfirm, setShowConfirm] = useState(false)
     const [showReject, setShowReject] = useState(false)
     const [rejectReason, setRejectReason] = useState('')
@@ -491,18 +492,22 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                             {quotation.notes ? (
                                                 <li className="list-none -ml-4 whitespace-pre-line">{quotation.notes}</li>
                                             ) : (
-                                                <>
-                                                    <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
-                                                    <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
-                                                    <li>Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.</li>
-                                                </>
+                                                brandConfig?.default_notes ? (
+                                                    <li className="list-none -ml-4 whitespace-pre-line">{brandConfig.default_notes}</li>
+                                                ) : (
+                                                    <>
+                                                        <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
+                                                        <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
+                                                        <li>Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.</li>
+                                                    </>
+                                                )
                                             )}
                                         </ul>
                                     </div>
                                     <div className="border-t border-slate-200 pt-3 mt-auto">
                                         <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Điều khoản thanh toán <span className="text-[0.8em] not-italic font-normal opacity-70">/ Payment Terms</span>:</h4>
                                         <div className="text-xs text-black leading-relaxed whitespace-pre-line">
-                                            {quotation.terms || "• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành"}
+                                            {quotation.terms || brandConfig?.default_payment_terms || "• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành"}
                                         </div>
                                     </div>
                                 </div>
@@ -513,19 +518,19 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                     <div className="space-y-2 text-xs">
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Ngân hàng<span className="text-[0.8em] italic opacity-70">/ Bank</span>:</span>
-                                            <span className="font-semibold text-black">{quotation.bank_name || "Techcombank"}</span>
+                                            <span className="font-semibold text-black">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Số TK<span className="text-[0.8em] italic opacity-70">/ Account No</span>:</span>
-                                            <span className="font-mono text-sm font-semibold text-black leading-none">{quotation.bank_account_no || "190368686868"}</span>
+                                            <span className="font-mono text-sm font-semibold text-black leading-none">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Chủ TK<span className="text-[0.8em] italic opacity-70">/ Account Name</span>:</span>
-                                            <span className=" font-semibold text-black">{quotation.bank_account_name || "Công ty TNHH Tulie"}</span>
+                                            <span className=" font-semibold text-black">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Chi nhánh<span className="text-[0.8em] italic opacity-70">/ Branch</span>:</span>
-                                            <span className="font-semibold text-black">{quotation.bank_branch || "Thanh Xuân - Hà Nội"}</span>
+                                            <span className="font-semibold text-black">{quotation.bank_branch || brandConfig?.bank_branch || "Chưa cấu hình"}</span>
                                         </div>
                                     </div>
                                 </div>

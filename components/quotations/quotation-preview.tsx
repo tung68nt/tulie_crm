@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Quotation } from '@/types'
 
 interface QuotationPreviewProps {
-    data: Partial<Quotation>
+    data: Partial<Quotation> & { brandConfig?: any }
     open?: boolean
     onOpenChange?: (open: boolean) => void
 }
@@ -39,7 +39,8 @@ export default function QuotationPreview({ data, open, onOpenChange }: Quotation
 
     const previewData = {
         ...data,
-        company_info: companyInfo
+        company_info: companyInfo,
+        brandConfig: data.brandConfig || null
     }
 
     return (

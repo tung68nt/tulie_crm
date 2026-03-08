@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { QuotationContent } from './quotation-content'
 import { getQuotationByToken } from '@/lib/supabase/services/quotation-service'
+import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
@@ -11,16 +12,19 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { token } = await params
-    const quotation = await getQuotationByToken(token)
+    const [quotation, brand] = await Promise.all([
+        getQuotationByToken(token),
+        getBrandConfig()
+    ])
 
     if (!quotation) {
         return {
-            title: 'Không tìm thấy báo giá - Tulie CRM'
+            title: `Không tìm thấy báo giá - ${brand?.brand_name || 'Tulie CRM'}`
         }
     }
 
     return {
-        title: `Báo giá #${quotation.quotation_number} - Tulie CRM`,
+        title: `Báo giá #${quotation.quotation_number} - ${brand?.brand_name || 'Tulie CRM'}`,
         description: `Xem chi tiết báo giá dành cho ${quotation.customer?.company_name}`,
     }
 }
@@ -28,13 +32,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PublicQuotationPage({ params }: Props) {
     try {
         const { token } = await params
-        const quotation = await getQuotationByToken(token)
+        const [quotation, brandConfig] = await Promise.all([
+            getQuotationByToken(token),
+            getBrandConfig()
+        ])
 
         if (!quotation) {
             notFound()
         }
 
-        return <QuotationContent quotation={quotation} />
+        return <QuotationContent quotation={quotation} brandConfig={brandConfig} />
     } catch (error) {
         console.error('Error rendering public quotation page:', error)
         return (

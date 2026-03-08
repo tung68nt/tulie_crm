@@ -54,12 +54,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from 'sonner'
 import { getQuotationById } from '@/lib/supabase/services/quotation-service'
+import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { useParams } from 'next/navigation'
 
 export default function QuotationDetailPage() {
     const params = useParams()
     const id = params.id as string
     const [quotation, setQuotation] = useState<Quotation | null>(null)
+    const [brandConfig, setBrandConfig] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [baseUrl, setBaseUrl] = useState('')
 
@@ -70,8 +72,12 @@ export default function QuotationDetailPage() {
 
         const fetchData = async () => {
             try {
-                const data = await getQuotationById(id)
+                const [data, brand] = await Promise.all([
+                    getQuotationById(id),
+                    getBrandConfig()
+                ])
                 setQuotation(data)
+                setBrandConfig(brand)
             } catch (error) {
                 console.error('Error fetching quotation:', error)
                 toast.error('Không thể tải dữ liệu báo giá')
@@ -480,13 +486,13 @@ export default function QuotationDetailPage() {
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-muted-foreground">Ghi chú</p>
                                     <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed">
-                                        {quotation.notes || 'Không có ghi chú'}
+                                        {quotation.notes || brandConfig?.default_notes || 'Không có ghi chú'}
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-muted-foreground">Điều khoản thanh toán</p>
                                     <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed">
-                                        {quotation.terms || 'Theo quy định công ty'}
+                                        {quotation.terms || brandConfig?.default_payment_terms || 'Theo quy định công ty'}
                                     </div>
                                 </div>
                             </CardContent>
@@ -503,15 +509,15 @@ export default function QuotationDetailPage() {
                                 <div className="space-y-3 text-sm">
                                     <div className="flex flex-col gap-0.5">
                                         <span className="text-xs text-muted-foreground">Ngân hàng</span>
-                                        <span className="font-semibold">{quotation.bank_name || "Techcombank"}</span>
+                                        <span className="font-semibold">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</span>
                                     </div>
                                     <div className="flex flex-col gap-0.5">
                                         <span className="text-xs text-muted-foreground">Số tài khoản</span>
-                                        <span className="font-mono text-base font-bold text-primary">{quotation.bank_account_no || "190368686868"}</span>
+                                        <span className="font-mono text-base font-bold text-primary">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</span>
                                     </div>
                                     <div className="flex flex-col gap-0.5">
                                         <span className="text-xs text-muted-foreground">Chủ tài khoản</span>
-                                        <span className="font-medium ">{quotation.bank_account_name || "Công ty TNHH Tulie"}</span>
+                                        <span className="font-medium">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</span>
                                     </div>
                                 </div>
                             </CardContent>
