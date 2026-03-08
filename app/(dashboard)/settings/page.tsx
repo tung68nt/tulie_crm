@@ -595,10 +595,10 @@ export default function SettingsPage() {
                                 <Separator />
                                 <div className="space-y-4">
                                     <div className="space-y-4">
-                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Agency (Công ty)</h4>
+                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Agency</h4>
                                         <div className="grid gap-4 sm:grid-cols-2">
                                             <div className="space-y-2">
-                                                <Label htmlFor="bank_name">Ngân hàng</Label>
+                                                <Label htmlFor="bank_name">Ngân hàng (Agency)</Label>
                                                 <Input
                                                     id="bank_name"
                                                     value={companySettings.bank_name}

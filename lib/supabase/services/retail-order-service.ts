@@ -10,21 +10,21 @@ import {
 } from './telegram-service'
 
 // Helper to generate Retail Order ID: DH_YY_MMDD_STT_VALUE_IN_K
-export async function generateRetailOrderId(amount: number, date: Date = new Date()): Promise<{ orderNumber: string, stt: number }> {
+export async function generateRetailOrderId(amount: number, orderDate?: string): Promise<{ orderNumber: string, stt: number }> {
     const supabase = await createClient()
 
-    // Get year, month, day
+    // Use the provided order_date or fallback to today
+    const date = orderDate ? new Date(orderDate) : new Date()
     const yy = date.getFullYear().toString().slice(-2)
     const mm = (date.getMonth() + 1).toString().padStart(2, '0')
     const dd = date.getDate().toString().padStart(2, '0')
     const mmdd = `${mm}${dd}`
 
-    // Get value in thousands (K)
+    // Price: total / 1000, drop trailing zeros (179000 => 179, 79000 => 79)
     const kValue = Math.floor(amount / 1000)
 
-    // Get next STT (Sequence in day or global?) 
-    // From Lark image, STT seems global or per-year. 790, 791... 
-    // Let's get the max STT and +1
+    // STT: global sequential number, continuing from legacy system (~810+)
+    // Get the max STT from existing records, or start from 810 if empty
     const { data: maxSttData } = await supabase
         .from('retail_orders')
         .select('stt')
@@ -32,13 +32,14 @@ export async function generateRetailOrderId(amount: number, date: Date = new Dat
         .limit(1)
         .maybeSingle()
 
-    const nextStt = (maxSttData?.stt || 0) + 1
+    const nextStt = maxSttData?.stt ? maxSttData.stt + 1 : 810
 
     return {
         orderNumber: `DH_${yy}_${mmdd}_${nextStt}_${kValue}`,
         stt: nextStt
     }
 }
+
 
 export async function getRetailOrders() {
     try {
@@ -83,7 +84,7 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
 
         // Auto-generate ID if not provided
         if (!orderData.order_number) {
-            const { orderNumber, stt } = await generateRetailOrderId(orderData.total_amount || 0)
+            const { orderNumber, stt } = await generateRetailOrderId(orderData.total_amount || 0, orderData.order_date)
             orderData.order_number = orderNumber
             orderData.stt = stt
         }

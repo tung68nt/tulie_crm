@@ -31,6 +31,7 @@ import { PriceInput } from '@/components/ui/price-input'
 const productSchema = z.object({
     name: z.string().min(2, 'Tên sản phẩm phải có ít nhất 2 ký tự'),
     sku: z.string().optional(),
+    brand: z.enum(['agency', 'studio', 'academy']),
     category: z.string().optional(),
     description: z.string().optional(),
     unit: z.string().min(1, 'Đơn vị tính là bắt buộc'),
@@ -64,6 +65,7 @@ export default function NewProductPage() {
         defaultValues: {
             is_active: true,
             unit: 'dự án',
+            brand: 'agency',
         },
     })
 
@@ -141,8 +143,30 @@ export default function NewProductPage() {
                                     <Input id="sku" placeholder="WEB-DEV-001" {...register('sku')} />
                                 </div>
                                 <div className="space-y-2">
+                                    <Label htmlFor="brand">Thương hiệu / Brand</Label>
+                                    <Select
+                                        value={watch('brand')}
+                                        onValueChange={(value) => setValue('brand', value as any)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Chọn thương hiệu" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="agency">Tulie Agency</SelectItem>
+                                            <SelectItem value="studio">Tulie Studio</SelectItem>
+                                            <SelectItem value="academy">Tulie Academy</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
                                     <Label htmlFor="category">Danh mục</Label>
-                                    <Select onValueChange={(value) => setValue('category', value)}>
+                                    <Select
+                                        value={watch('category')}
+                                        onValueChange={(value) => setValue('category', value)}
+                                    >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Chọn danh mục" />
                                         </SelectTrigger>
@@ -161,7 +185,10 @@ export default function NewProductPage() {
                                 <Label htmlFor="unit">
                                     Đơn vị tính <span className="text-destructive">*</span>
                                 </Label>
-                                <Select onValueChange={(value) => setValue('unit', value)}>
+                                <Select
+                                    value={watch('unit')}
+                                    onValueChange={(value) => setValue('unit', value)}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Chọn ĐVT" />
                                     </SelectTrigger>
@@ -174,6 +201,7 @@ export default function NewProductPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
+
 
                             <div className="space-y-2">
                                 <Label htmlFor="description">Mô tả</Label>

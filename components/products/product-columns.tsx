@@ -72,6 +72,23 @@ export const productColumns: ColumnDef<Product>[] = [
         },
     },
     {
+        accessorKey: 'brand',
+        header: 'Thương hiệu',
+        cell: ({ row }) => {
+            const brand = row.getValue('brand') as string
+            const labels: any = {
+                agency: 'Tulie Agency',
+                studio: 'Tulie Studio',
+                academy: 'Tulie Academy'
+            }
+            return (
+                <Badge variant="outline" className="font-bold border-zinc-900">
+                    {labels[brand] || brand}
+                </Badge>
+            )
+        },
+    },
+    {
         accessorKey: 'category',
         header: 'Danh mục',
         cell: ({ row }) => {

@@ -103,6 +103,7 @@ export interface Product {
   id: string
   name: string
   sku?: string
+  brand: Brand
   category?: string
   description?: string
   unit: string

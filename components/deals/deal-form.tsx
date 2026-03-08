@@ -139,9 +139,9 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="agency">🏢 Tulie Agency</SelectItem>
-                                    <SelectItem value="studio">📸 Tulie Studio</SelectItem>
-                                    <SelectItem value="academy">🎓 Tulie Academy</SelectItem>
+                                    <SelectItem value="agency">Tulie Agency</SelectItem>
+                                    <SelectItem value="studio">Tulie Studio</SelectItem>
+                                    <SelectItem value="academy">Tulie Academy</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -156,9 +156,9 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="low">🧊 Thấp</SelectItem>
-                                    <SelectItem value="medium">⚡ Trung bình</SelectItem>
-                                    <SelectItem value="high">🔥 Cao</SelectItem>
+                                    <SelectItem value="low">Thấp</SelectItem>
+                                    <SelectItem value="medium">Trung bình</SelectItem>
+                                    <SelectItem value="high">Cao</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

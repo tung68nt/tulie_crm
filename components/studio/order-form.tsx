@@ -15,19 +15,21 @@ import {
 } from '@/components/ui/select'
 import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
-import { Loader2, Save, Sparkles, Phone, User, Wallet, CheckCircle2, Trash2, Plus, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode } from 'lucide-react'
+import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { getProducts } from '@/lib/supabase/services/product-service'
 import { ProductCombobox } from '@/components/quotations/product-combobox'
+import { PriceInput } from '@/components/ui/price-input'
 
 export function RetailOrderForm() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [products, setProducts] = useState<any[]>([])
     const [selectedItems, setSelectedItems] = useState<any[]>([])
+    const today = new Date().toISOString().split('T')[0]
     const [formData, setFormData] = useState({
         customer_name: '',
         customer_phone: '',
@@ -39,6 +41,7 @@ export function RetailOrderForm() {
         order_status: 'pending' as any,
         resource_link: '',
         notes: '',
+        order_date: today,
         delivery_date: '',
         needs_vat: false,
         brand: 'studio' as any,
@@ -49,8 +52,9 @@ export function RetailOrderForm() {
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getProducts()
-            const studioProducts = data.filter(p => p.category === 'Studio')
-            setProducts(studioProducts.length > 0 ? studioProducts : data)
+            // Filter products for Studio brand, or those with no brand yet (migration period)
+            const studioProducts = data.filter(p => !p.brand || p.brand === 'studio')
+            setProducts(studioProducts)
         }
         const fetchConfig = async () => {
             const config = await import('@/lib/supabase/services/settings-service').then(m => m.getBrandConfig())
@@ -97,13 +101,14 @@ export function RetailOrderForm() {
     const [orderIdPreview, setOrderIdPreview] = useState('DH_YY_MMDD_STT_Value')
 
     useEffect(() => {
-        const date = new Date()
-        const yy = date.getFullYear().toString().slice(-2)
-        const mm = (date.getMonth() + 1).toString().padStart(2, '0')
-        const dd = date.getDate().toString().padStart(2, '0')
-        const kValue = Math.floor((formData.total_amount || 0) / 1000)
-        setOrderIdPreview(`DH_${yy}_MMDD_XXX_${kValue}`)
-    }, [formData.total_amount])
+        const dateStr = formData.order_date || today
+        const d = new Date(dateStr)
+        const yy = d.getFullYear().toString().slice(-2)
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0')
+        const dd = d.getDate().toString().padStart(2, '0')
+        const priceK = Math.floor((formData.total_amount || 0) / 1000)
+        setOrderIdPreview(`DH_${yy}_${mm}${dd}_XXX_${priceK}`)
+    }, [formData.total_amount, formData.order_date, today])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -111,63 +116,80 @@ export function RetailOrderForm() {
             toast.error('Vui lòng nhập tên khách hàng')
             return
         }
+        if (selectedItems.length === 0) {
+            toast.error('Vui lòng chọn ít nhất một sản phẩm')
+            return
+        }
 
         setIsLoading(true)
         try {
             await createRetailOrder({
                 ...formData,
-                order_date: new Date().toISOString().split('T')[0],
                 items: selectedItems
-            })
+            } as any)
             toast.success('Đã tạo đơn hàng mới thành công')
             router.push('/studio')
             router.refresh()
         } catch (error) {
+            console.error('Create order error:', error)
             toast.error('Có lỗi xảy ra khi tạo đơn hàng')
         } finally {
             setIsLoading(false)
         }
     }
 
-    const BANK_ID = brandConfig?.bank_name || 'MB'
-    const ACCOUNT_NO = brandConfig?.bank_account_no || '111222333'
-    const ACCOUNT_NAME = brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
+    // Use STUDIO bank account (personal), not Agency
+    const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
+    const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
+    const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
     const balance = formData.total_amount - formData.deposit_amount
     const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${orderIdPreview}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-3">
-                <div className="lg:col-span-2 space-y-6">
+            <div className="grid gap-6 lg:grid-cols-5">
+                <div className="lg:col-span-3 space-y-6">
                     {/* Customer Info */}
-                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
-                        <CardHeader className="bg-muted/30 border-b border-border/50 py-4">
-                            <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                                <User className="h-5 w-5 text-primary" />
-                                Thông tin khách hàng
+                    <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
+                        <CardHeader className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-5">
+                            <CardTitle className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                                <User className="h-4 w-4" />
+                                Khách hàng
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-6 space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="customer_name" className="text-xs font-semibold text-muted-foreground">Tên khách hàng *</Label>
+                        <CardContent className="p-5 space-y-4">
+                            <div className="grid gap-4 md:grid-cols-3">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="customer_name" className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Họ tên *</Label>
                                     <Input
                                         id="customer_name"
-                                        placeholder="VD: Nguyễn Văn A"
+                                        placeholder="Nguyễn Văn A"
                                         value={formData.customer_name}
                                         onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                                        className="h-10"
+                                        className="h-10 border-zinc-200 dark:border-zinc-700"
                                         required
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="customer_phone" className="text-xs font-semibold text-muted-foreground">Điện thoại</Label>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="customer_phone" className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Điện thoại</Label>
                                     <Input
                                         id="customer_phone"
-                                        placeholder="09xx..."
+                                        placeholder="09xx xxx xxx"
                                         value={formData.customer_phone}
                                         onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                                        className="h-10"
+                                        className="h-10 border-zinc-200 dark:border-zinc-700"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="order_date" className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide flex items-center gap-1">
+                                        <CalendarIcon className="h-3 w-3" /> Ngày lên đơn
+                                    </Label>
+                                    <Input
+                                        id="order_date"
+                                        type="date"
+                                        value={formData.order_date}
+                                        onChange={(e) => setFormData({ ...formData, order_date: e.target.value })}
+                                        className="h-10 border-zinc-200 dark:border-zinc-700"
                                     />
                                 </div>
                             </div>
@@ -175,59 +197,54 @@ export function RetailOrderForm() {
                     </Card>
 
                     {/* Product Selection */}
-                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
-                        <CardHeader className="bg-muted/30 border-b border-border/50 py-4 flex flex-row items-center justify-between">
-                            <div className="space-y-0.5">
-                                <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                                    <Package className="h-5 w-5 text-primary" />
-                                    Sản phẩm & Dịch vụ
-                                </CardTitle>
-                                <CardDescription className="text-[10px]">Chọn gói sản phẩm từ danh mục có sẵn.</CardDescription>
-                            </div>
+                    <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
+                        <CardHeader className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-5 flex flex-row items-center justify-between">
+                            <CardTitle className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                                <Package className="h-4 w-4" />
+                                Sản phẩm & Dịch vụ
+                            </CardTitle>
+                            <Badge variant="outline" className="text-[10px] font-semibold">{selectedItems.length} mục</Badge>
                         </CardHeader>
-                        <CardContent className="pt-6 space-y-4">
-                            <div className="flex gap-2">
-                                <div className="flex-1">
-                                    <ProductCombobox
-                                        products={products}
-                                        value=""
-                                        onSelect={addItem}
-                                        placeholder="Tìm và thêm sản phẩm..."
-                                    />
-                                </div>
-                            </div>
+                        <CardContent className="p-5 space-y-4">
+                            <ProductCombobox
+                                products={products}
+                                value=""
+                                onSelect={addItem}
+                                placeholder="Tìm và thêm sản phẩm..."
+                            />
 
                             {selectedItems.length > 0 ? (
-                                <div className="border rounded-lg overflow-hidden">
+                                <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
                                     <table className="w-full text-sm">
-                                        <thead className="bg-muted/50 text-[10px] uppercase font-bold text-muted-foreground border-b text-left">
+                                        <thead className="bg-zinc-50 dark:bg-zinc-900/50 text-[10px] uppercase font-bold text-zinc-500 border-b border-zinc-200 dark:border-zinc-700 text-left">
                                             <tr>
-                                                <th className="px-3 py-2">Sản phẩm</th>
-                                                <th className="px-3 py-2 w-20 text-center">SL</th>
-                                                <th className="px-3 py-2 text-right">Đơn giá</th>
-                                                <th className="px-3 py-2 text-right">Thành tiền</th>
-                                                <th className="px-3 py-2 w-10"></th>
+                                                <th className="px-4 py-2.5">Sản phẩm</th>
+                                                <th className="px-4 py-2.5 w-20 text-center">SL</th>
+                                                <th className="px-4 py-2.5 text-right">Đơn giá</th>
+                                                <th className="px-4 py-2.5 text-right">Thành tiền</th>
+                                                <th className="px-4 py-2.5 w-10"></th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y">
+                                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                                             {selectedItems.map((item, index) => (
-                                                <tr key={index} className="hover:bg-muted/20">
-                                                    <td className="px-3 py-2 font-medium">{item.product_name}</td>
-                                                    <td className="px-3 py-2">
+                                                <tr key={index} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30">
+                                                    <td className="px-4 py-2.5 font-medium text-zinc-900 dark:text-zinc-100">{item.product_name}</td>
+                                                    <td className="px-4 py-2.5">
                                                         <Input
                                                             type="number"
                                                             value={item.quantity}
                                                             onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
-                                                            className="h-8 text-center px-1"
+                                                            className="h-8 text-center px-1 w-16 mx-auto border-zinc-200 dark:border-zinc-700"
                                                         />
                                                     </td>
-                                                    <td className="px-3 py-2 text-right">{formatCurrency(item.unit_price)}</td>
-                                                    <td className="px-3 py-2 text-right font-semibold">{formatCurrency(item.total_price)}</td>
-                                                    <td className="px-3 py-2">
+                                                    <td className="px-4 py-2.5 text-right text-zinc-600 dark:text-zinc-400">{formatCurrency(item.unit_price)}</td>
+                                                    <td className="px-4 py-2.5 text-right font-bold text-zinc-900 dark:text-zinc-100">{formatCurrency(item.total_price)}</td>
+                                                    <td className="px-4 py-2.5">
                                                         <Button
+                                                            type="button"
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                            className="h-7 w-7 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
                                                             onClick={() => removeItem(index)}
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
@@ -236,174 +253,184 @@ export function RetailOrderForm() {
                                                 </tr>
                                             ))}
                                         </tbody>
-                                        <tfoot className="bg-muted/30 border-t">
+                                        <tfoot className="bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-200 dark:border-zinc-700">
                                             <tr>
-                                                <td colSpan={3} className="px-3 py-2 text-right text-xs font-semibold">Tạm tính sản phẩm:</td>
-                                                <td className="px-3 py-2 text-right font-bold">{formatCurrency(selectedItems.reduce((s, i) => s + i.total_price, 0))}</td>
+                                                <td colSpan={3} className="px-4 py-2.5 text-right text-xs font-bold text-zinc-500 uppercase">Tạm tính:</td>
+                                                <td className="px-4 py-2.5 text-right font-black text-zinc-900 dark:text-zinc-100">{formatCurrency(selectedItems.reduce((s, i) => s + i.total_price, 0))}</td>
                                                 <td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                             ) : (
-                                <div className="py-8 text-center text-muted-foreground border-2 border-dashed rounded-lg bg-muted/5">
-                                    <Package className="h-8 w-8 mx-auto mb-2 opacity-20" />
-                                    <p className="text-sm">Chưa có sản phẩm nào được chọn</p>
+                                <div className="py-10 text-center text-zinc-400 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-lg bg-zinc-50/50 dark:bg-zinc-900/20">
+                                    <Package className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                                    <p className="text-sm font-medium">Chưa có sản phẩm nào</p>
+                                    <p className="text-xs mt-1">Tìm kiếm và thêm sản phẩm ở trên</p>
                                 </div>
                             )}
 
-                            <div className="grid gap-4 md:grid-cols-2 pt-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="shipping_fee" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                                        <Truck className="h-3 w-3" /> Phí vận chuyển (nếu có)
+                            <div className="grid gap-4 md:grid-cols-3 pt-2">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="shipping_fee" className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide flex items-center gap-1">
+                                        <Truck className="h-3 w-3" /> Phí vận chuyển
                                     </Label>
-                                    <Input
+                                    <PriceInput
                                         id="shipping_fee"
-                                        type="number"
                                         value={formData.shipping_fee}
-                                        onChange={(e) => setFormData({ ...formData, shipping_fee: parseFloat(e.target.value) || 0 })}
-                                        className="h-10"
+                                        onChange={(val) => setFormData({ ...formData, shipping_fee: val })}
+                                        className="h-10 border-zinc-200 dark:border-zinc-700 font-bold"
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="delivery_date" className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                                        <CalendarIcon className="h-3 w-3" /> Hẹn bàn giao
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="delivery_date" className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide flex items-center gap-1">
+                                        <CalendarIcon className="h-3 w-3" /> Hẹn trả file
                                     </Label>
                                     <Input
                                         id="delivery_date"
                                         type="date"
                                         value={formData.delivery_date}
                                         onChange={(e) => setFormData({ ...formData, delivery_date: e.target.value })}
-                                        className="h-10"
+                                        className="h-10 border-zinc-200 dark:border-zinc-700"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="resource_link" className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide flex items-center gap-1">
+                                        <LinkIcon className="h-3 w-3" /> Link Drive bàn giao
+                                    </Label>
+                                    <Input
+                                        id="resource_link"
+                                        placeholder="https://drive.google.com/..."
+                                        value={formData.resource_link}
+                                        onChange={(e) => setFormData({ ...formData, resource_link: e.target.value })}
+                                        className="h-10 border-zinc-200 dark:border-zinc-700"
                                     />
                                 </div>
                             </div>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="notes" className="text-[11px] font-bold text-zinc-500 uppercase tracking-wide">Ghi chú</Label>
+                                <Textarea
+                                    id="notes"
+                                    placeholder="Yêu cầu riêng, địa chỉ nhận hàng..."
+                                    rows={2}
+                                    value={formData.notes}
+                                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                    className="border-zinc-200 dark:border-zinc-700"
+                                />
+                            </div>
                         </CardContent>
                     </Card>
-
-                    <div className="grid gap-4 md:grid-cols-2 pt-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="resource_link" className="font-semibold text-xs text-muted-foreground flex items-center gap-1.5">
-                                <LinkIcon className="h-3 w-3" /> Link Google Drive
-                            </Label>
-                            <Input
-                                id="resource_link"
-                                placeholder="https://drive.google.com/..."
-                                value={formData.resource_link}
-                                onChange={(e) => setFormData({ ...formData, resource_link: e.target.value })}
-                                className="bg-card/50"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="notes" className="font-semibold text-xs text-muted-foreground">Ghi chú đơn hàng</Label>
-                            <Textarea
-                                id="notes"
-                                placeholder="Yêu cầu riêng của khách, địa chỉ nhận hàng..."
-                                rows={1}
-                                value={formData.notes}
-                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                className="bg-card/50"
-                            />
-                        </div>
-                    </div>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Payment Summary Card */}
-                    <Card className="bg-zinc-900 text-zinc-50 border-none overflow-hidden relative shadow-md rounded-xl">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16" />
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-semibold opacity-80 flex items-center gap-2">
-                                <Wallet className="h-4 w-4" /> Tổng thanh toán
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Payment Summary */}
+                    <Card className="bg-zinc-950 text-zinc-50 border-none overflow-hidden shadow-lg rounded-xl">
+                        <CardHeader className="pb-3 pt-5 px-5">
+                            <CardTitle className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
+                                <CircleDollarSign className="h-4 w-4" /> Tổng thanh toán
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-6 pt-2">
-                            <div className="space-y-4">
-                                <div className="space-y-1">
-                                    <span className="text-[10px] uppercase font-bold text-zinc-500">Cần thanh toán</span>
-                                    <div className="text-3xl font-bold text-white">{formatCurrency(formData.total_amount)}</div>
-                                </div>
-
-                                <div className="space-y-2 pt-2">
-                                    <Label className="text-xs font-semibold text-zinc-400">Tiền cọc trước (VNĐ)</Label>
-                                    <Input
-                                        type="number"
-                                        value={formData.deposit_amount}
-                                        onChange={(e) => setFormData({ ...formData, deposit_amount: parseFloat(e.target.value) || 0 })}
-                                        className="bg-zinc-800 border-zinc-700 text-white text-lg font-bold h-11 focus:ring-primary/50"
-                                    />
-                                </div>
+                        <CardContent className="px-5 pb-5 space-y-5">
+                            <div className="space-y-1">
+                                <span className="text-[10px] uppercase font-bold text-zinc-400">Tổng giá trị đơn</span>
+                                <div className="text-4xl font-black text-white tracking-tight">{formatCurrency(formData.total_amount)}</div>
                             </div>
 
-                            <div className="pt-4 border-t border-zinc-800 space-y-3">
-                                <div className="flex justify-between items-center text-[10px]">
-                                    <span className="text-zinc-500 uppercase font-bold">Mã định danh đơn:</span>
-                                    <Badge className="bg-zinc-800 text-primary font-mono border-none">{orderIdPreview}</Badge>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Tiền cọc trước</Label>
+                                <PriceInput
+                                    value={formData.deposit_amount}
+                                    onChange={(val) => setFormData({ ...formData, deposit_amount: val })}
+                                    className="bg-zinc-800/80 border-zinc-700 text-white text-lg font-bold h-11"
+                                />
+                            </div>
+
+                            {balance > 0 && (
+                                <div className="flex justify-between items-center text-xs border-t border-zinc-800 pt-3">
+                                    <span className="text-zinc-500 font-bold">Còn phải thu:</span>
+                                    <span className="font-black text-white text-base">{formatCurrency(balance)}</span>
                                 </div>
+                            )}
+
+                            <div className="flex items-center justify-between text-[10px] bg-zinc-800/50 p-2.5 rounded-lg">
+                                <span className="text-zinc-500 uppercase font-bold flex items-center gap-1"><Hash className="h-3 w-3" />Mã đơn dự kiến</span>
+                                <Badge className="bg-zinc-700 text-zinc-200 font-mono border-none text-[10px]">{orderIdPreview}</Badge>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* QR Code Preview for Staff */}
-                    {!isLoading && balance > 0 && (
-                        <Card className="border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden rounded-xl border-dashed">
-                            <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
-                                <CardTitle className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
+                    {/* QR Code */}
+                    {balance > 0 && (
+                        <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
+                            <CardHeader className="py-3 px-5 flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
+                                <CardTitle className="text-[11px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
                                     <QrCode className="h-3.5 w-3.5" /> VietQR Preview
                                 </CardTitle>
-                                <Badge variant="outline" className="text-[9px] h-4">Giúp khách quét nhanh</Badge>
+                                <Badge variant="outline" className="text-[9px] font-semibold">STK cá nhân</Badge>
                             </CardHeader>
-                            <CardContent className="flex flex-col items-center pb-6">
-                                <div className="bg-white p-2 rounded-lg shadow-sm mb-3">
-                                    <img src={qrUrl} alt="QR Preview" className="w-56 h-56 object-contain" />
+                            <CardContent className="flex flex-col items-center py-5">
+                                <div className="bg-white p-4 rounded-xl shadow-sm border border-zinc-100 mb-3">
+                                    <img src={qrUrl} alt="QR Preview" className="w-64 h-64 object-contain" />
                                 </div>
-                                <p className="text-[10px] text-center text-muted-foreground px-4 italic leading-tight">
-                                    Mã QR này sẽ hiển thị trên Portal gửi cho khách.
+                                <p className="text-[10px] text-zinc-500 px-4 text-center font-medium">
+                                    {ACCOUNT_NAME} — {BANK_ID}
+                                </p>
+                                <p className="text-[10px] text-zinc-400 text-center mt-1">
+                                    STK: {ACCOUNT_NO}
                                 </p>
                             </CardContent>
                         </Card>
                     )}
 
-                    <div className="grid grid-cols-1 gap-4">
-                        <Card className="border-border/50 rounded-xl bg-card/50">
-                            <CardHeader className="py-3 px-4">
-                                <CardTitle className="text-xs font-semibold text-muted-foreground">Trạng thái thanh toán</CardTitle>
-                            </CardHeader>
-                            <CardContent className="px-4 pb-4">
-                                <Select
-                                    value={formData.payment_status}
-                                    onValueChange={(val: any) => setFormData({ ...formData, payment_status: val })}
-                                >
-                                    <SelectTrigger className="h-9">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="pending">⏳ Chờ thanh toán</SelectItem>
-                                        <SelectItem value="partial">🌗 Đã cọc/Một phần</SelectItem>
-                                        <SelectItem value="paid">✅ Đã xong 100%</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    {/* Payment Status */}
+                    <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
+                        <CardHeader className="py-3 px-5 border-b border-zinc-100 dark:border-zinc-800">
+                            <CardTitle className="text-[11px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
+                                <CreditCard className="h-3.5 w-3.5" /> Trạng thái thanh toán
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-5">
+                            <Select
+                                value={formData.payment_status}
+                                onValueChange={(val: any) => setFormData({ ...formData, payment_status: val })}
+                            >
+                                <SelectTrigger className="h-10 border-zinc-200 dark:border-zinc-700">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="pending">
+                                        <span className="flex items-center gap-2"><CircleDashed className="h-3.5 w-3.5 text-zinc-400" /> Chờ thanh toán</span>
+                                    </SelectItem>
+                                    <SelectItem value="partial">
+                                        <span className="flex items-center gap-2"><Clock className="h-3.5 w-3.5 text-zinc-500" /> Đã cọc / Một phần</span>
+                                    </SelectItem>
+                                    <SelectItem value="paid">
+                                        <span className="flex items-center gap-2"><CircleCheck className="h-3.5 w-3.5 text-zinc-900" /> Đã thanh toán 100%</span>
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </CardContent>
+                    </Card>
 
+                    {/* Actions */}
                     <div className="space-y-3">
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-semibold shadow-md active:scale-95 transition-transform"
+                            className="w-full h-12 text-sm font-bold bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 shadow-md active:scale-[0.98] transition-all rounded-xl"
                             disabled={isLoading}
                         >
                             {isLoading ? (
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
-                                <CheckCircle2 className="mr-2 h-5 w-5" />
+                                <CheckCircle2 className="mr-2 h-4 w-4" />
                             )}
                             Khởi tạo đơn hàng
                         </Button>
                         <Button
                             type="button"
                             variant="ghost"
-                            className="w-full text-muted-foreground font-semibold text-xs"
+                            className="w-full text-zinc-500 font-semibold text-xs"
                             onClick={() => router.back()}
                             disabled={isLoading}
                         >
