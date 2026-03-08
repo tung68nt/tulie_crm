@@ -445,12 +445,17 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-semibold mb-1">Cần hỗ trợ?</h4>
-                                        <p className="text-xs text-muted-foreground leading-relaxed">
-                                            Liên hệ {salesPerson?.full_name || 'Tulie Agency'} qua email{' '}
-                                            <a href={`mailto:${salesPerson?.email || 'info@tulie.vn'}`} className="underline font-medium">
-                                                {salesPerson?.email || 'info@tulie.vn'}
-                                            </a>
-                                        </p>
+                                        <div className="text-xs text-muted-foreground leading-relaxed space-y-1">
+                                            <p>
+                                                Liên hệ {salesPerson?.full_name || 'Tulie Agency'} qua email{' '}
+                                                <a href={`mailto:${salesPerson?.email || 'info@tulie.vn'}`} className="underline font-medium hover:text-foreground transition-colors">
+                                                    {salesPerson?.email || 'info@tulie.vn'}
+                                                </a>
+                                            </p>
+                                            <p>
+                                                Hotline: <a href="tel:0988984554" className="font-bold text-slate-900 hover:underline">098.898.4554</a>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </CardContent>
