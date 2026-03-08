@@ -34,6 +34,7 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
         status: 'new',
         description: '',
         assigned_to: '',
+        brand: 'agency',
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -49,7 +50,9 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                 ...formData,
                 status: formData.status as any,
                 priority: formData.priority as any,
-                budget: parseFloat(formData.budget)
+                budget: parseFloat(formData.budget),
+                assigned_to: formData.assigned_to === '' ? undefined : formData.assigned_to,
+                brand: formData.brand as any
             })
             toast.success('Đã tạo cơ hội mới thành công')
             router.push('/deals')
@@ -122,6 +125,23 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                                             {u.full_name}
                                         </SelectItem>
                                     ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="brand">Thương hiệu (Brand)</Label>
+                            <Select
+                                value={formData.brand}
+                                onValueChange={(val) => setFormData({ ...formData, brand: val })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="agency">🏢 Tulie Agency</SelectItem>
+                                    <SelectItem value="studio">📸 Tulie Studio</SelectItem>
+                                    <SelectItem value="academy">🎓 Tulie Academy</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

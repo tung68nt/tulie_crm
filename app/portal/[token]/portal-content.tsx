@@ -218,8 +218,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </div>
                             <Progress value={paymentProgress} className="h-1.5 bg-slate-100" />
                             <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-50">
-                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{totalDocuments} tài liệu</span>
-                                <span className="text-[11px] font-semibold text-slate-900">Paid: {formatCurrency(totalPaid)}</span>
+                                <span className="text-[10px] text-slate-400 font-medium lowercase-off">{totalDocuments} tài liệu</span>
+                                <span className="text-[11px] font-semibold text-slate-900">đã trả: {formatCurrency(totalPaid)}</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -290,7 +290,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                             {/* Group Header */}
                                             <div className="px-6 mb-6 flex items-center gap-3">
                                                 <div className="h-2 w-2 rounded-full bg-slate-900" />
-                                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest bg-slate-100/80 px-3 py-1 rounded-md">
+                                                <h3 className="text-xs font-bold text-slate-900 bg-slate-100/80 px-3 py-1 rounded-md">
                                                     {group.title.toLowerCase()}
                                                 </h3>
                                             </div>
@@ -412,7 +412,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         <div className="px-6 border-t border-slate-100 pt-8">
                                             <div className="mb-6 flex items-center gap-3">
                                                 <div className="h-2 w-2 rounded-full bg-slate-400" />
-                                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-md">
+                                                <h3 className="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1 rounded-md">
                                                     thanh toán & mốc dự án chung
                                                 </h3>
                                             </div>
@@ -502,7 +502,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <FileSignature className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 2</span>
+                                                                <span className="text-[10px] font-bold text-slate-400">bước 2</span>
                                                                 <h4 className="text-[13px] font-bold text-slate-900">hợp đồng kinh tế</h4>
                                                             </div>
                                                         </div>
@@ -548,7 +548,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <CheckCircle className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 3</span>
+                                                                <span className="text-[10px] font-bold text-slate-400">bước 3</span>
                                                                 <h4 className="text-[13px] font-bold text-slate-900">bàn giao</h4>
                                                             </div>
                                                         </div>

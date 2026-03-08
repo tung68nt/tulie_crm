@@ -9,7 +9,7 @@ export async function getDeals(customerId?: string) {
         const supabase = await createClient()
         let query = supabase
             .from('deals')
-            .select('*, customer:customers(id, company_name), assigned_user:users(*)')
+            .select('*, customer:customers(id, company_name), assigned_user:users!assigned_to(*)')
             .order('created_at', { ascending: false })
 
         if (customerId) {
@@ -35,7 +35,7 @@ export async function getDealById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('deals')
-            .select('*, customer:customers(*), assigned_user:users(*), creator:users(*), quotations(*)')
+            .select('*, customer:customers(*), assigned_user:users!assigned_to(*), creator:users!created_by(*), quotations(*)')
             .eq('id', id)
             .single()
 

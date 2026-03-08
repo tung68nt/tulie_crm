@@ -253,15 +253,15 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
 
                                 <div className="space-y-0.5 text-[12px] sm:text-[13px] text-black">
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Số<span className="text-[0.8em] not-italic font-normal opacity-70">/ No</span>:</span>
+                                        <span className="font-medium text-black">Số/ No:</span>
                                         <span>{quotation.quotation_number}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Ngày<span className="text-[0.8em] not-italic font-normal opacity-70">/ Date</span>:</span>
+                                        <span className="font-medium text-black">Ngày/ Date:</span>
                                         <span>{formatDate(quotation.created_at)}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
-                                        <span className="font-medium text-black">Hết hạn<span className="text-[0.8em] not-italic font-normal opacity-70">/ Valid until</span>:</span>
+                                        <span className="font-medium text-black">Hết hạn/ Valid until:</span>
                                         <span>{formatDate(quotation.valid_until)}</span>
                                     </p>
                                 </div>
@@ -308,8 +308,8 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
                                     </div>
                                     <div className="relative z-10">
-                                        <h3 className="text-[15px] font-bold">Đề xuất giải pháp</h3>
-                                        <p className="text-[11px] text-zinc-300 mt-0.5">Proposal — {proposalSections.length} hạng mục</p>
+                                        <h3 className="text-[15px] font-bold text-white uppercase-off">đề xuất giải pháp</h3>
+                                        <p className="text-[11px] text-zinc-300 mt-0.5">proposal — {proposalSections.length} hạng mục</p>
                                     </div>
                                 </div>
 
@@ -351,9 +351,9 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         <div className="mb-8 pt-6 border-t border-slate-100/50 mt-2">
                             <h3 className="text-[14px] font-bold text-black mb-6 border-l-4 border-black pl-3 flex items-center">
                                 <span className="text-primary mr-2">{hasProposal ? `${proposalSections.length + 1}.` : ''}</span>
-                                {hasProposal ? 'Kế hoạch đầu tư' : 'Chi tiết dịch vụ'}
-                                {!hasProposal && <span className="text-[0.8em] not-italic font-normal opacity-70 ml-1">/ Service Details</span>}
-                                {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
+                                {hasProposal ? 'kế hoạch đầu tư' : 'chi tiết dịch vụ'}
+                                {!hasProposal && <span className="text-[0.8em] font-normal opacity-70 ml-1">/ service details</span>}
+                                {hasProposal && <span className="text-[0.7em] font-normal opacity-50 ml-2">(investment plan)</span>}
                             </h3>
                             <div className="rounded-xl overflow-hidden border border-slate-200">
                                 {/* Table Header - Premium style with gradient and dots */}
