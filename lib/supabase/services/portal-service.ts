@@ -10,7 +10,7 @@ export async function getPortalDataByToken(token: string) {
         // 1. Get primary quotation
         const { data: qData } = await supabase
             .from('quotations')
-            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*)')
+            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*), creator:users!created_by(id, full_name, email, phone)')
             .eq('public_token', token)
             .single()
 
