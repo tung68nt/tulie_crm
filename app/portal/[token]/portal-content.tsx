@@ -36,6 +36,8 @@ import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { Progress } from '@/components/ui/progress'
 import { CustomerInfoForm } from '@/components/portal/customer-info-form'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
 
 interface PortalContentProps {
     data: any
@@ -377,34 +379,117 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Documents */}
+                        {/* Documents Timeline */}
                         <Card>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-base font-semibold">Tài liệu và hồ sơ</CardTitle>
+                                <CardTitle className="text-base font-semibold">Lộ trình hồ sơ & Tài liệu</CardTitle>
                                 <CardDescription>
-                                    Xem và tải về các văn bản chính thức
+                                    Quy trình pháp lý và bàn giao dự án
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-2">
-                                {documents.map((doc) => (
-                                    <a
-                                        key={doc.id}
-                                        href={doc.type === 'quotation' ? `/quote/${doc.public_token || token}` : '#'}
-                                        target="_blank"
-                                        className="flex items-center justify-between gap-3 p-3 rounded-lg border hover:bg-muted/50 hover:border-foreground/20 transition-all cursor-pointer group"
-                                    >
-                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                            <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
-                                                <FileText className="h-4 w-4 text-muted-foreground" />
+                            <CardContent className="px-0 pb-6">
+                                <div className="relative">
+                                    {/* Vertical Dotted Line */}
+                                    <div className="absolute left-[39px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
+
+                                    <div className="space-y-6">
+                                        {/* 1. Báo giá */}
+                                        <div className="relative flex items-start gap-4 px-6 group">
+                                            <div className={cn(
+                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                quotations?.length > 0 ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-300"
+                                            )}>
+                                                <FileText className="h-4 w-4" />
                                             </div>
-                                            <div className="min-w-0">
-                                                <p className="text-sm font-medium truncate">{doc.name}</p>
-                                                <div className="mt-0.5">{getStatusBadge(doc.status)}</div>
+                                            <div className="flex-1 space-y-3 pt-0.5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
+                                                    <h4 className="text-sm font-bold text-slate-900">Báo giá & Đề xuất</h4>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {documents.filter(d => d.type === 'quotation').map((doc) => (
+                                                        <a
+                                                            key={doc.id}
+                                                            href={`/quote/${doc.public_token || token}`}
+                                                            target="_blank"
+                                                            className="flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer group/item border-slate-100"
+                                                        >
+                                                            <div className="flex items-center gap-3 min-w-0">
+                                                                <div className="h-2 w-2 rounded-full bg-slate-400 shrink-0" />
+                                                                <p className="text-xs font-bold truncate text-slate-700">{doc.name}</p>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                {getStatusBadge(doc.status)}
+                                                                <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover/item:text-slate-900 transition-colors" />
+                                                            </div>
+                                                        </a>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
-                                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
-                                    </a>
-                                ))}
+
+                                        {/* 2. Hợp đồng */}
+                                        <div className="relative flex items-start gap-4 px-6 group">
+                                            <div className={cn(
+                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                contracts?.length > 0 ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
+                                            )}>
+                                                <FileSignature className="h-4 w-4" />
+                                            </div>
+                                            <div className="flex-1 space-y-3 pt-0.5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 2</span>
+                                                    <h4 className="text-sm font-bold text-slate-900">Hợp đồng kinh tế</h4>
+                                                </div>
+                                                {contracts?.length > 0 ? (
+                                                    <div className="space-y-2">
+                                                        {documents.filter(d => d.type === 'contract').map((doc) => (
+                                                            <div
+                                                                key={doc.id}
+                                                                className="flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 border-slate-100"
+                                                            >
+                                                                <div className="flex items-center gap-3 min-w-0">
+                                                                    <div className="h-2 w-2 rounded-full bg-slate-400 shrink-0" />
+                                                                    <p className="text-xs font-bold truncate text-slate-700">{doc.name}</p>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    {getStatusBadge(doc.status)}
+                                                                    <DocumentDownloadButton
+                                                                        type="contract"
+                                                                        documentId={doc.id}
+                                                                        customerId={customer.id}
+                                                                        label=""
+                                                                        variant="ghost"
+                                                                        className="h-8 w-8 p-0"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-[11px] text-slate-400 italic">Dự thảo sau khi báo giá được phê duyệt</p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* 3. Nghiệm thu */}
+                                        <div className="relative flex items-start gap-4 px-6 group">
+                                            <div className={cn(
+                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                timeline.some(t => t.type === 'delivery' && t.status === 'completed') ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
+                                            )}>
+                                                <CheckCircle className="h-4 w-4" />
+                                            </div>
+                                            <div className="flex-1 space-y-3 pt-0.5">
+                                                <div className="flex flex-col">
+                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 3</span>
+                                                    <h4 className="text-sm font-bold text-slate-900">Nghiệm thu & Bàn giao</h4>
+                                                </div>
+                                                <p className="text-[11px] text-slate-400 italic">Biên bản xác nhận hoàn tất dịch vụ</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </CardContent>
                         </Card>
 
