@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 
-export async function setQuotationPassword(quotationId: string, password: string) {
+export async function setEntityPassword(tableName: string, entityId: string, password: string) {
     try {
         const supabase = await createClient()
 
@@ -15,15 +15,15 @@ export async function setQuotationPassword(quotationId: string, password: string
         }
 
         const { error } = await supabase
-            .from('quotations')
+            .from(tableName)
             .update({ password_hash: passwordHash })
-            .eq('id', quotationId)
+            .eq('id', entityId)
 
         if (error) {
             throw error
         }
 
-        revalidatePath(`/quotations/${quotationId}`)
+        revalidatePath(`/${tableName}/${entityId}`)
         return { success: true }
     } catch (err: any) {
         console.error('Error setting password:', err)
@@ -31,14 +31,19 @@ export async function setQuotationPassword(quotationId: string, password: string
     }
 }
 
+// Deprecated: use setEntityPassword
+export async function setQuotationPassword(quotationId: string, password: string) {
+    return setEntityPassword('quotations', quotationId, password)
+}
+
 export async function verifyPortalPassword(token: string, password: string) {
     try {
         const supabase = await createClient()
 
-        // Fetch just the hash to verify
+        // 1. Fetch primary quotation and its project data
         const { data: quotation, error } = await supabase
             .from('quotations')
-            .select('password_hash')
+            .select('password_hash, project_id, project:projects(password_hash)')
             .eq('public_token', token)
             .single()
 
@@ -46,12 +51,15 @@ export async function verifyPortalPassword(token: string, password: string) {
             return { success: false, error: 'Không tìm thấy trang yêu cầu' }
         }
 
-        if (!quotation.password_hash) {
+        // Get effective hash (prefer quotation password, fallback to project password)
+        const passwordHash = quotation.password_hash || (quotation.project as any)?.password_hash
+
+        if (!passwordHash) {
             return { success: true } // No password required
         }
 
         // Compare hash
-        const isValid = await bcrypt.compare(password, quotation.password_hash)
+        const isValid = await bcrypt.compare(password, passwordHash)
 
         if (!isValid) {
             return { success: false, error: 'Mật khẩu không chính xác' }

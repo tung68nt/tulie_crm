@@ -212,6 +212,7 @@ export interface Contract {
   project?: Project
   deal_id?: string
   brand: Brand
+  password_hash?: string
   created_at: string
   updated_at: string
 }
@@ -286,6 +287,7 @@ export interface Project {
   quotations?: Quotation[]
   contracts?: Contract[]
   brand: Brand
+  password_hash?: string
   created_at: string
   updated_at: string
 }

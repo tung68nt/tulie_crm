@@ -26,6 +26,7 @@ import { ContractStatus } from '@/types'
 import { ContractEmailButton } from '@/components/contracts/contract-email-button'
 import { ContractDocuments } from '@/components/contracts/contract-documents'
 import { ContractLifecycle } from '@/components/contracts/contract-lifecycle'
+import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
     const { id } = await params
@@ -77,6 +78,11 @@ export default async function ContractDetailPage({ params }: any) {
                             Tạo hóa đơn
                         </Link>
                     </Button>
+                    <SetPasswordDialog
+                        entityId={contract.id}
+                        tableName="contracts"
+                        hasPassword={!!contract.password_hash}
+                    />
                     <ContractEmailButton contract={contract} />
                     <Button variant="outline" asChild>
                         <Link href={`/contracts/${contract.id}/edit`}>

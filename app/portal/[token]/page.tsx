@@ -36,7 +36,10 @@ export default async function PublicPortalPage({ params }: Props) {
             notFound()
         }
 
-        if (data.quotation.password_hash) {
+        // Check for password protection (Quotation password takes precedence, then Project password)
+        const passwordHash = data.quotation.password_hash || data.project?.password_hash
+
+        if (passwordHash) {
             const cookieStore = await cookies()
             const isAuthenticated = cookieStore.get(`portal_auth_${token}`)?.value === 'true'
 

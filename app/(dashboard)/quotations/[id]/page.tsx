@@ -42,7 +42,7 @@ import {
 } from 'lucide-react'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
-import { SetPasswordDialog } from '@/components/quotations/set-password-dialog'
+import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 import { ConvertQuotationButton } from '@/components/quotations/convert-quotation-button'
 import {
     DropdownMenu,
@@ -214,7 +214,12 @@ export default function QuotationDetailPage() {
 
                             <DropdownMenuSeparator />
                             <QuotationEmailButton quotation={quotation} triggerType="menuitem" />
-                            <SetPasswordDialog quotationId={quotation.id} hasPassword={!!quotation.password_hash} triggerType="menuitem" />
+                            <SetPasswordDialog
+                                entityId={quotation.id}
+                                tableName="quotations"
+                                hasPassword={!!quotation.password_hash}
+                                triggerType="menuitem"
+                            />
                         </DropdownMenuContent>
                     </DropdownMenu>
 

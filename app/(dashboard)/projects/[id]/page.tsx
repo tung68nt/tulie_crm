@@ -13,7 +13,8 @@ import { ProjectMetadataForm } from '@/components/projects/project-metadata-form
 import { ProjectMilestones } from '@/components/projects/project-milestones'
 import { ProjectTasks } from '@/components/projects/project-tasks'
 import { ProjectSidebar } from '@/components/projects/project-sidebar'
-import { FileText as FileTextIcon, Receipt, ArrowUpRight } from 'lucide-react'
+import { FileText as FileTextIcon, Receipt, ArrowUpRight, Lock } from 'lucide-react'
+import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
@@ -57,14 +58,21 @@ export default async function ProjectDetailPage({ params }: any) {
                         </p>
                     </div>
                 </div>
-                {portalUrl && (
-                    <Button variant="outline" asChild>
-                        <Link href={portalUrl} target="_blank">
-                            <Globe className="mr-2 h-4 w-4" />
-                            Xem Customer Portal
-                        </Link>
-                    </Button>
-                )}
+                <div className="flex items-center gap-2">
+                    <SetPasswordDialog
+                        entityId={project.id}
+                        tableName="projects"
+                        hasPassword={!!project.password_hash}
+                    />
+                    {portalUrl && (
+                        <Button variant="outline" asChild>
+                            <Link href={portalUrl} target="_blank">
+                                <Globe className="mr-2 h-4 w-4" />
+                                Xem Customer Portal
+                            </Link>
+                        </Button>
+                    )}
+                </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">

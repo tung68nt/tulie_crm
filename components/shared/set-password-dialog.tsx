@@ -16,15 +16,25 @@ import {
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Lock, Loader2, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
-import { setQuotationPassword } from '@/lib/supabase/services/portal-actions'
+import { setEntityPassword } from '@/lib/supabase/services/portal-actions'
 
 interface SetPasswordDialogProps {
-    quotationId: string
+    entityId: string
+    tableName: 'quotations' | 'projects' | 'contracts'
     hasPassword?: boolean
-    triggerType?: 'button' | 'menuitem'
+    triggerType?: 'button' | 'menuitem' | 'icon'
+    title?: string
+    description?: string
 }
 
-export function SetPasswordDialog({ quotationId, hasPassword, triggerType = 'button' }: SetPasswordDialogProps) {
+export function SetPasswordDialog({
+    entityId,
+    tableName,
+    hasPassword,
+    triggerType = 'button',
+    title = 'Mật khẩu bảo mật',
+    description = 'Thiết lập mật khẩu truy cập cho tài liệu này.'
+}: SetPasswordDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
@@ -33,7 +43,7 @@ export function SetPasswordDialog({ quotationId, hasPassword, triggerType = 'but
     const handleSave = async () => {
         setIsLoading(true)
         try {
-            const result = await setQuotationPassword(quotationId, password)
+            const result = await setEntityPassword(tableName, entityId, password)
             if (result.success) {
                 toast.success(password ? 'Đã cài đặt mật khẩu thành công' : 'Đã gỡ mật khẩu')
                 setIsOpen(false)
@@ -62,17 +72,22 @@ export function SetPasswordDialog({ quotationId, hasPassword, triggerType = 'but
                         <Lock className="h-4 w-4" />
                         {hasPassword ? 'Thay đổi mật khẩu' : 'Cài đặt mật khẩu'}
                     </DropdownMenuItem>
-                ) : (
-                    <Button variant={hasPassword ? "default" : "outline"} size="icon" title={hasPassword ? 'Đã có mật khẩu' : 'Thiết lập mật khẩu'}>
+                ) : triggerType === 'icon' ? (
+                    <Button variant={hasPassword ? "default" : "outline"} size="icon" className="h-8 w-8" title={hasPassword ? 'Đã có mật khẩu' : 'Thiết lập mật khẩu'}>
                         <Lock className="h-4 w-4" />
+                    </Button>
+                ) : (
+                    <Button variant={hasPassword ? "default" : "outline"} className="gap-2">
+                        <Lock className="h-4 w-4" />
+                        {hasPassword ? 'Thay đổi mật khẩu' : 'Cài đặt mật khẩu'}
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Mật khẩu truy cập Portal</DialogTitle>
+                    <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
-                        Bảo vệ trang portal của khách hàng bằng mật khẩu. {hasPassword && "Để trống nếu muốn gỡ bỏ mật khẩu hiện tại."}
+                        {description} {hasPassword && "Để trống nếu muốn gỡ bỏ mật khẩu hiện tại."}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
