@@ -131,7 +131,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                     "h-5 w-5 shrink-0 transition-colors",
                                     pathname === '/dashboard' ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                                 )} />
-                                {!isCollapsed && <span className="truncate font-bold">Dashboard</span>}
+                                {!isCollapsed && <span className="truncate">Dashboard</span>}
                             </Button>
                         </Link>
                     </div>
@@ -139,7 +139,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-1.5 mt-4 text-sm font-black uppercase tracking-widest text-black dark:text-white">
+                                <h4 className="px-3 py-1.5 mt-4 text-sm font-bold uppercase tracking-widest text-black dark:text-white">
                                     {group.title}
                                 </h4>
                             )}
