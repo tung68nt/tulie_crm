@@ -3,6 +3,7 @@ import { createClient } from '../server'
 import { Customer } from '@/types'
 import { revalidatePath } from 'next/cache'
 import { createNotification } from './notification-service'
+import { logActivity } from './activity-service'
 
 export async function getCustomers() {
     try {
@@ -86,6 +87,13 @@ export async function createCustomer(customer: Partial<Customer>) {
         if (data && data.length > 0) {
             revalidatePath('/customers')
 
+            await logActivity({
+                action: 'create',
+                entity_type: 'customer',
+                entity_id: data[0].id,
+                description: `Thêm khách hàng mới: ${data[0].company_name}`
+            })
+
             // Create a notification for the person assigned to the customer
             if (data[0].assigned_to) {
                 try {
@@ -127,6 +135,13 @@ export async function updateCustomer(id: string, customer: Partial<Customer>) {
 
         revalidatePath('/customers')
         revalidatePath(`/customers/${id}`)
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'customer',
+            entity_id: id,
+            description: `Cập nhật thông tin khách hàng: ${data[0].company_name}`
+        })
         return data[0] as Customer
     } catch (err: any) {
         console.error('[updateCustomer] Fatal error:', err)

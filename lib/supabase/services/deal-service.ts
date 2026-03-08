@@ -3,8 +3,9 @@
 import { createClient } from '../server'
 import { Deal, DealStatus } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { logActivity } from './activity-service'
 
-export async function getDeals(customerId?: string) {
+export async function getDeals(customerId?: string, brand?: string) {
     try {
         const supabase = await createClient()
         let query = supabase
@@ -14,6 +15,10 @@ export async function getDeals(customerId?: string) {
 
         if (customerId) {
             query = query.eq('customer_id', customerId)
+        }
+
+        if (brand) {
+            query = query.eq('brand', brand)
         }
 
         const { data, error } = await query
@@ -74,6 +79,14 @@ export async function createDeal(deal: Partial<Deal>) {
         }
 
         revalidatePath('/deals')
+
+        await logActivity({
+            action: 'create',
+            entity_type: 'deal',
+            entity_id: data.id,
+            description: `Tạo cơ hội mới: ${data.title}`
+        })
+
         return data as Deal
     } catch (err) {
         console.error('Service error creating deal:', err)
@@ -93,6 +106,14 @@ export async function updateDeal(id: string, deal: Partial<Deal>) {
             console.error('Error updating deal:', error)
             throw error
         }
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'deal',
+            entity_id: id,
+            description: `Cập nhật cơ hội: ${deal.title || id}`,
+            metadata: deal
+        })
 
         revalidatePath('/deals')
         revalidatePath(`/deals/${id}`)

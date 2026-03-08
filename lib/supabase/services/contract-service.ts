@@ -3,8 +3,9 @@
 import { createClient } from '../server'
 import { Contract, ContractMilestone } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { logActivity } from './activity-service'
 
-export async function getContracts(customerId?: string, type?: 'contract' | 'order') {
+export async function getContracts(customerId?: string, type?: 'contract' | 'order', brand?: string) {
     try {
         const supabase = await createClient()
         let query = supabase
@@ -18,6 +19,10 @@ export async function getContracts(customerId?: string, type?: 'contract' | 'ord
 
         if (type) {
             query = query.eq('type', type)
+        }
+
+        if (brand) {
+            query = query.eq('brand', brand)
         }
 
         const { data, error } = await query
@@ -88,6 +93,14 @@ export async function createContract(contract: Partial<Contract>, milestones: Pa
     }
 
     revalidatePath('/contracts')
+
+    await logActivity({
+        action: 'create',
+        entity_type: contract.type || 'contract',
+        entity_id: contractData.id,
+        description: `Tạo ${contract.type === 'order' ? 'đơn hàng' : 'hợp đồng'} mới: ${contract.title}`
+    })
+
     return contractData
 }
 
@@ -282,6 +295,13 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
         revalidatePath('/contracts')
         revalidatePath('/projects')
         revalidatePath('/deals')
+
+        await logActivity({
+            action: 'convert',
+            entity_type: type,
+            entity_id: contract.id,
+            description: `Chuyển đổi báo giá ${quotation.quotation_number} thành ${type === 'order' ? 'đơn hàng' : 'hợp đồng'} ${contract.contract_number}`
+        })
 
         return { success: true, id: contract.id }
     } catch (err: any) {

@@ -83,7 +83,7 @@ export async function createInvoice(invoice: Partial<Invoice>, items: Partial<In
     // 3. Notify via Telegram
     const invoiceWithDetails = await getInvoiceById(invoiceData.id)
     if (invoiceWithDetails) {
-        await sendTelegramNotification(await formatNewInvoice(invoiceWithDetails))
+        await sendTelegramNotification(await formatNewInvoice(invoiceWithDetails), 'notify_new_invoice')
     }
 
     revalidatePath('/invoices')
@@ -127,7 +127,7 @@ export async function recordInvoicePayment(id: string, amount: number, notes?: s
         if (invoiceUpdateError) throw invoiceUpdateError
 
         // 3. Notify via Telegram
-        await sendTelegramNotification(await formatPaymentReceived(invoice, amount, true))
+        await sendTelegramNotification(await formatPaymentReceived(invoice, amount, true), 'notify_b2b_payment')
 
         revalidatePath('/invoices')
         revalidatePath(`/invoices/${id}`)

@@ -10,6 +10,12 @@ Font.register({
     fontWeight: 'medium',
 });
 Font.register({
+    family: 'Roboto-Bold',
+    src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf',
+    fontWeight: 'bold',
+});
+
+Font.register({
     family: 'Roboto-Regular',
     src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf',
     fontWeight: 'normal',
@@ -360,11 +366,15 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                 </View>
 
                 {/* Summary & Footer */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
-                    <View style={{ width: '55%' }}>
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>ĐIỀU KHOẢN THANH TOÁN:</Text>
-                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4 }}>
-                            {String(quotation.terms ?? quotation.brandConfig?.default_payment_terms ?? '50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành bàn giao')
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
+                    <View style={{ width: '56%' }}>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>GHI CHÚ / NOTES:</Text>
+                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4, marginBottom: 12 }}>
+                            {String(
+                                (quotation.notes && quotation.notes.trim() !== '')
+                                    ? quotation.notes
+                                    : (quotation.brandConfig?.default_notes ?? "Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.")
+                            )
                                 .split('\n')
                                 .filter(Boolean)
                                 .map((line, i) => (
@@ -375,7 +385,24 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                                 ))}
                         </View>
 
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>ĐIỀU KHOẢN THANH TOÁN / TERMS:</Text>
+                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4, marginBottom: 12 }}>
+                            {String(
+                                (quotation.terms && quotation.terms.trim() !== '')
+                                    ? quotation.terms
+                                    : (quotation.brandConfig?.default_payment_terms ?? '50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành bàn giao')
+                            )
+                                .split('\n')
+                                .filter(Boolean)
+                                .map((line, i) => (
+                                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                        <Text style={{ width: 10 }}>•</Text>
+                                        <Text style={{ flex: 1 }}>{line.replace(/^[-•]\s*/, '')}</Text>
+                                    </View>
+                                ))}
+                        </View>
+
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
                         <View style={{ fontSize: 8, color: '#444' }}>
                             <Text>Chủ TK: {quotation.bank_account_name || quotation.brandConfig?.bank_account_name || 'Chưa cấu hình'}</Text>
                             <Text>Số TK: {quotation.bank_account_no || quotation.brandConfig?.bank_account_no || 'Chưa cấu hình'}</Text>
@@ -405,7 +432,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                     <Text>Cảm ơn quý khách đã tin tưởng dịch vụ của Thiệp Nhanh (thiepnhanh.vn)!</Text>
                 </View>
             </Page>
-        </Document>
+        </Document >
     );
 };
 

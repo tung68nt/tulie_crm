@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2 } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import {
     getProductCategories,
@@ -20,9 +20,16 @@ import {
     getTelegramConfig,
     updateTelegramConfig,
     getBrandConfig,
-    updateBrandConfig
+    updateBrandConfig,
+    getAppearanceConfig,
+    updateAppearanceConfig,
+    updateSystemSetting,
+    getSystemSetting
 } from '@/lib/supabase/services/settings-service'
+import { testTelegramConnection } from '@/lib/supabase/services/telegram-service'
+import { testSmtpConnection, sendEmail } from '@/lib/supabase/services/email-service'
 import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
 
 export default function SettingsPage() {
     const [companySettings, setCompanySettings] = useState({
@@ -58,13 +65,58 @@ export default function SettingsPage() {
         academy_webhook_key: ''
     })
     const [isSavingTelegram, setIsSavingTelegram] = useState(false)
+    const [isTestingTelegram, setIsTestingTelegram] = useState(false)
+    const [smtpConfig, setSmtpConfig] = useState({
+        host: '',
+        port: 587,
+        secure: false,
+        user: '',
+        pass: '',
+        from_name: 'Tulie CRM',
+        from_email: ''
+    })
+    const [isSavingSmtp, setIsSavingSmtp] = useState(false)
+    const [isTestingSmtp, setIsTestingSmtp] = useState(false)
+    const { theme, setTheme } = useTheme()
+    const [appearance, setAppearance] = useState({
+        sidebarCollapsed: false
+    })
+    const [brandConfig, setBrandConfig] = useState({
+        brand_name: 'Tulie Agency',
+        email: 'info@tulie.vn',
+        bank_name: '',
+        bank_account_no: '',
+        bank_account_name: '',
+        bank_branch: '',
+        default_notes: '',
+        default_payment_terms: ''
+    })
+    const [isSavingBrand, setIsSavingBrand] = useState(false)
 
     useEffect(() => {
         loadCompanySettings()
         loadCategories()
         loadUnits()
         loadTelegram()
+        loadAppearance()
+        loadSmtp()
+        loadBrand()
     }, [])
+
+    async function loadBrand() {
+        const config = await getBrandConfig()
+        if (config) setBrandConfig(config)
+    }
+
+    async function loadSmtp() {
+        const config = await getSystemSetting('smtp_config')
+        if (config) setSmtpConfig(config)
+    }
+
+    async function loadAppearance() {
+        const config = await getAppearanceConfig()
+        setAppearance({ sidebarCollapsed: !!config.sidebarCollapsed })
+    }
 
     async function loadCompanySettings() {
         const config = await getBrandConfig()
@@ -197,6 +249,20 @@ export default function SettingsPage() {
             toast.error('Lỗi khi xóa đơn vị tính')
         }
     }
+
+    const handleUpdateAppearance = async (field: string, value: any) => {
+        const newAppearance = { ...appearance, [field]: value }
+        setAppearance(newAppearance)
+        try {
+            await updateAppearanceConfig({
+                darkMode: theme === 'dark',
+                ...newAppearance,
+                [field]: value
+            })
+        } catch (error) {
+            console.error('Error saving appearance config:', error)
+        }
+    }
     const handleSaveTelegram = async () => {
         setIsSavingTelegram(true)
         try {
@@ -206,6 +272,66 @@ export default function SettingsPage() {
             toast.error('Lỗi khi lưu cấu hình Telegram')
         } finally {
             setIsSavingTelegram(false)
+        }
+    }
+
+    const handleTestTelegram = async () => {
+        setIsTestingTelegram(true)
+        try {
+            const success = await testTelegramConnection()
+            if (success) {
+                toast.success('Đã gửi tin nhắn thử nghiệm! Vui lòng kiểm tra Telegram.')
+            } else {
+                toast.error('Gửi tin nhắn thử nghiệm thất bại. Vui lòng kiểm tra lại Token và Chat ID.')
+            }
+        } catch (error) {
+            toast.error('Lỗi khi kết nối tới Telegram')
+        } finally {
+            setIsTestingTelegram(false)
+        }
+    }
+
+    const handleSaveSmtp = async () => {
+        setIsSavingSmtp(true)
+        try {
+            await updateSystemSetting('smtp_config', smtpConfig)
+            toast.success('Đã lưu cấu hình email SMTP')
+        } catch (error) {
+            toast.error('Lỗi khi lưu cấu hình SMTP')
+        } finally {
+            setIsSavingSmtp(false)
+        }
+    }
+
+    const handleSaveBrand = async () => {
+        setIsSavingBrand(true)
+        try {
+            await updateBrandConfig(brandConfig)
+            toast.success('Đã lưu cấu hình thương hiệu')
+        } catch (error) {
+            toast.error('Lỗi khi lưu cấu hình thương hiệu')
+        } finally {
+            setIsSavingBrand(false)
+        }
+    }
+
+    const handleTestSmtp = async () => {
+        if (!smtpConfig.host || !smtpConfig.user || !smtpConfig.pass) {
+            toast.error('Vui lòng nhập đầy đủ thông tin SMTP')
+            return
+        }
+        setIsTestingSmtp(true)
+        try {
+            const result = await testSmtpConnection(smtpConfig)
+            if (result.success) {
+                toast.success('Kết nối SMTP thành công! Email thử nghiệm đã được gửi.')
+            } else {
+                toast.error(`Lỗi kết nối: ${result.error}`)
+            }
+        } catch (error: any) {
+            toast.error(`Lỗi hệ thống: ${error.message}`)
+        } finally {
+            setIsTestingSmtp(false)
         }
     }
 
@@ -255,7 +381,21 @@ export default function SettingsPage() {
                             className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Send className="h-4 w-4" />
-                            Telegram Bot
+                            Cài đặt Telegram
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="mail"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                        >
+                            <Mail className="h-4 w-4" />
+                            Email SMTP
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="brand"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                        >
+                            <Globe className="h-4 w-4" />
+                            Thương hiệu
                         </TabsTrigger>
                         <TabsTrigger
                             value="notifications"
@@ -624,21 +764,21 @@ export default function SettingsPage() {
 
                     {/* Telegram Settings */}
                     <TabsContent value="telegram">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Send className="h-5 w-5 text-[#0088cc]" />
+                        <Card className="border-border/50 shadow-sm rounded-xl overflow-hidden">
+                            <CardHeader className="border-b bg-muted/20">
+                                <CardTitle className="flex items-center gap-2 text-lg font-bold">
+                                    <Send className="h-5 w-5 text-primary" />
                                     Cấu hình Telegram Bot
                                 </CardTitle>
-                                <CardDescription>
+                                <CardDescription className="text-xs">
                                     Tích hợp thông báo đơn hàng, thanh toán và hành động của khách hàng lên Telegram.
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-6">
-                                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border">
+                            <CardContent className="space-y-8 pt-6">
+                                <div className="flex items-center justify-between p-5 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base font-bold text-primary">Kích hoạt thông báo</Label>
-                                        <p className="text-sm text-muted-foreground">Bật/tắt toàn bộ thông báo gửi đến Telegram.</p>
+                                        <Label className="text-base font-bold text-zinc-900 dark:text-zinc-50">Kích hoạt thông báo</Label>
+                                        <p className="text-xs text-muted-foreground uppercase tracking-tight font-medium">Bật/tắt toàn bộ thông báo gửi đến Telegram.</p>
                                     </div>
                                     <Switch
                                         checked={telegramConfig.is_enabled}
@@ -646,114 +786,364 @@ export default function SettingsPage() {
                                     />
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="grid gap-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="bot_token" className="font-semibold text-xs text-muted-foreground">Bot Token (Từ @BotFather)</Label>
+                                        <Label htmlFor="bot_token" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">Bot Token (Từ @BotFather)</Label>
                                         <Input
                                             id="bot_token"
                                             placeholder="1234567890:ABCDE..."
                                             type="password"
                                             value={telegramConfig.bot_token}
                                             onChange={(e) => setTelegramConfig({ ...telegramConfig, bot_token: e.target.value })}
-                                            className="h-11 border-muted/50 focus:border-[#0088cc]/50"
+                                            className="h-11 border-zinc-200 dark:border-zinc-800 focus:ring-zinc-900 rounded-xl font-mono text-xs"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="chat_id" className="font-semibold text-xs text-muted-foreground">Chat ID (Group hoặc Cá nhân)</Label>
+                                        <Label htmlFor="chat_id" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">Chat ID (Group hoặc Cá nhân)</Label>
                                         <Input
                                             id="chat_id"
                                             placeholder="-100123456789"
                                             value={telegramConfig.chat_id}
                                             onChange={(e) => setTelegramConfig({ ...telegramConfig, chat_id: e.target.value })}
-                                            className="h-11 border-muted/50 focus:border-[#0088cc]/50"
+                                            className="h-11 border-zinc-200 dark:border-zinc-800 focus:ring-zinc-900 rounded-xl font-mono text-xs"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="sepay_api_key" className="font-semibold text-xs text-[#0088cc]">SePay API Key (Tuỳ chọn)</Label>
+                                            <Label htmlFor="sepay_api_key" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">SePay API Key</Label>
                                             <Input
                                                 id="sepay_api_key"
                                                 type="password"
                                                 placeholder="Để trống nếu không dùng"
                                                 value={telegramConfig.sepay_api_key || ''}
                                                 onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_api_key: e.target.value })}
-                                                className="h-11 border-muted/50 focus:border-[#0088cc]/50"
+                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="sepay_secret_key" className="font-semibold text-xs text-[#0088cc]">SePay Webhook Secret</Label>
+                                            <Label htmlFor="sepay_secret_key" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">SePay Webhook Secret</Label>
                                             <Input
                                                 id="sepay_secret_key"
                                                 type="password"
                                                 placeholder="Mật khẩu Webhook"
                                                 value={telegramConfig.sepay_secret_key || ''}
                                                 onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_secret_key: e.target.value })}
-                                                className="h-11 border-muted/50 focus:border-[#0088cc]/50"
+                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="p-4 bg-muted/30 rounded-lg border border-dashed">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-bold text-muted-foreground">SePay Webhook URL</h4>
-                                        <Badge variant="outline" className="text-[9px] font-bold bg-white">Automatic Matching</Badge>
+                                <div className="p-5 bg-muted/20 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-[10px] uppercase font-black tracking-widest text-zinc-500">SePay Webhook URL</h4>
+                                        <Badge variant="outline" className="text-[9px] font-bold bg-zinc-900 text-white border-none py-0.5 rounded-md">Realtime Sync</Badge>
                                     </div>
                                     <div className="flex gap-2">
-                                        <div className="flex-1 bg-white dark:bg-card border rounded p-2 text-[10px] font-mono break-all line-clamp-1 opacity-70">
+                                        <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
                                             {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/sepay` : '...'}
                                         </div>
-                                        <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold" onClick={() => {
+                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm" onClick={() => {
                                             const url = `${window.location.origin}/api/webhooks/sepay`
                                             navigator.clipboard.writeText(url)
                                             toast.success('Đã copy Webhook URL')
                                         }}>Copy</Button>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground mt-2 italic leading-tight">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
+                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
                                 </div>
 
-                                <div className="p-4 bg-muted/30 rounded-lg border border-dashed">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-bold text-muted-foreground">Academy Webhook URL</h4>
-                                        <Badge variant="outline" className="text-[9px] font-bold bg-orange-500 text-white border-none">Academy Push</Badge>
+                                <div className="p-5 bg-muted/20 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Academy Webhook URL</h4>
+                                        <Badge variant="outline" className="text-[9px] font-bold bg-white text-zinc-900 border-zinc-900 py-0.5 rounded-md">Academy Integration</Badge>
                                     </div>
-                                    <div className="flex gap-2 mb-4">
-                                        <div className="flex-1 bg-white dark:bg-card border rounded p-2 text-[10px] font-mono break-all line-clamp-1 opacity-70">
-                                            {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
+                                    <div className="flex gap-2 items-end">
+                                        <div className="flex-1 space-y-3">
+                                            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
+                                                {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="academy_webhook_key" className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Webhook API Key</Label>
+                                                <Input
+                                                    id="academy_webhook_key"
+                                                    placeholder="Nhập khóa để Academy xác thực"
+                                                    value={telegramConfig.academy_webhook_key || ''}
+                                                    onChange={(e) => setTelegramConfig({ ...telegramConfig, academy_webhook_key: e.target.value })}
+                                                    className="h-10 text-xs border-zinc-200 dark:border-zinc-800 rounded-xl"
+                                                />
+                                            </div>
                                         </div>
-                                        <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold" onClick={() => {
+                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm mb-[0px]" onClick={() => {
                                             const url = `${window.location.origin}/api/webhooks/academy`
                                             navigator.clipboard.writeText(url)
                                             toast.success('Đã copy Academy Webhook URL')
                                         }}>Copy</Button>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="academy_webhook_key" className="text-[10px] font-bold text-muted-foreground">Webhook API Key</Label>
-                                        <Input
-                                            id="academy_webhook_key"
-                                            placeholder="Nhập khóa để Academy xác thực"
-                                            value={telegramConfig.academy_webhook_key || ''}
-                                            onChange={(e) => setTelegramConfig({ ...telegramConfig, academy_webhook_key: e.target.value })}
-                                            className="h-9 text-xs border-muted/50"
-                                        />
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground mt-2 italic leading-tight">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
+                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
                                 </div>
 
-                                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                                    <h4 className="text-xs font-black  text-blue-700 dark:text-blue-300 mb-2">Hướng dẫn nhanh:</h4>
-                                    <ol className="text-xs space-y-1 text-blue-600 dark:text-blue-400 list-decimal pl-4">
-                                        <li>Tạo bot qua <b>@BotFather</b> để lấy Token.</li>
-                                        <li>Thêm bot vào nhóm và lấy <b>Chat ID</b> (Dùng bot @userinfobot hoặc @getidsbot).</li>
-                                        <li>Nhấn <b>Lưu cấu hình</b> để bắt đầu nhận thông báo.</li>
+                                <div className="p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 mb-4">Cấu hình loại thông báo:</h4>
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        {[
+                                            { key: 'notify_new_retail_order', label: 'Đơn hàng B2C mới' },
+                                            { key: 'notify_retail_payment', label: 'Thanh toán B2C' },
+                                            { key: 'notify_b2b_payment', label: 'Thanh toán B2B' },
+                                            { key: 'notify_new_quotation', label: 'Báo giá mới đã tạo' },
+                                            { key: 'notify_quotation_viewed', label: 'Khách xem báo giá' },
+                                            { key: 'notify_quotation_accepted', label: 'Khách duyệt báo giá' },
+                                            { key: 'notify_new_invoice', label: 'Hóa đơn mới đã xuất' },
+                                            { key: 'notify_unmatched_payment', label: 'Thanh toán không khớp' },
+                                        ].map((item) => (
+                                            <div key={item.key} className="flex items-center justify-between p-3 border rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border-zinc-100 dark:border-zinc-800">
+                                                <Label htmlFor={item.key} className="text-xs font-bold">{item.label}</Label>
+                                                <Switch
+                                                    id={item.key}
+                                                    checked={(telegramConfig as any)[item.key] !== false}
+                                                    onCheckedChange={(val) => setTelegramConfig({ ...telegramConfig, [item.key]: val })}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 mb-3">Hướng dẫn nhanh:</h4>
+                                    <ol className="text-xs space-y-2 text-zinc-600 dark:text-zinc-400 list-decimal pl-4 font-medium">
+                                        <li>Tạo bot qua <span className="text-zinc-900 dark:text-zinc-50 font-bold">@BotFather</span> để lấy Token.</li>
+                                        <li>Thêm bot vào nhóm và lấy <span className="text-zinc-900 dark:text-zinc-50 font-bold">Chat ID</span> (Dùng bot @userinfobot hoặc @getidsbot).</li>
+                                        <li>Nhấn <span className="text-zinc-900 dark:text-zinc-50 font-bold">Lưu cấu hình</span> để bắt đầu nhận thông báo.</li>
                                     </ol>
                                 </div>
 
-                                <Separator />
-                                <div className="flex justify-end">
-                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="bg-[#0088cc] hover:bg-[#0077bb]">
+                                <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-end items-stretch sm:items-center">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleTestTelegram}
+                                        disabled={isTestingTelegram || !telegramConfig.bot_token || !telegramConfig.chat_id}
+                                        className="h-12 px-6 rounded-xl font-bold border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 transition-all"
+                                    >
+                                        {isTestingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        Gửi tin nhắn thử
+                                    </Button>
+                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 h-12 px-8 rounded-xl font-bold shadow-lg shadow-zinc-200 dark:shadow-none transition-all active:scale-95">
                                         {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         Lưu cấu hình Telegram
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Email SMTP Settings */}
+                    <TabsContent value="mail">
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-2xl">
+                            <CardHeader className="bg-muted/30 border-b border-border/50 p-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-orange-100 dark:bg-orange-950/30 flex items-center justify-center">
+                                        <Mail className="h-5 w-5 text-orange-600" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold">Email SMTP</CardTitle>
+                                        <CardDescription className="text-sm font-medium">Cấu hình server gửi email cho khách hàng</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-6">
+                                <div className="grid gap-6 sm:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">SMTP Host</Label>
+                                        <Input
+                                            placeholder="smtp.gmail.com"
+                                            value={smtpConfig.host}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">SMTP Port</Label>
+                                        <Input
+                                            placeholder="587"
+                                            value={smtpConfig.port}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, port: Number(e.target.value) || 587 })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">User / Email</Label>
+                                        <Input
+                                            placeholder="email@example.com"
+                                            value={smtpConfig.user}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Password / App Password</Label>
+                                        <Input
+                                            type="password"
+                                            placeholder="****************"
+                                            value={smtpConfig.pass}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Tên người gửi (From Name)</Label>
+                                        <Input
+                                            placeholder="Tulie CRM"
+                                            value={smtpConfig.from_name}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Email hiển thị (From Email)</Label>
+                                        <Input
+                                            placeholder="info@tulie.vn"
+                                            value={smtpConfig.from_email}
+                                            onChange={e => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-2 p-4 border rounded-xl bg-orange-50/30 border-orange-100 dark:bg-orange-950/10 dark:border-orange-900/30">
+                                    <Switch
+                                        id="smtp_secure"
+                                        checked={smtpConfig.secure}
+                                        onCheckedChange={val => setSmtpConfig({ ...smtpConfig, secure: val })}
+                                    />
+                                    <Label htmlFor="smtp_secure" className="text-sm font-bold">Sử dụng SSL/TLS (Tắt nếu dùng Port 587 STARTTLS)</Label>
+                                </div>
+
+                                <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-end items-stretch sm:items-center border-t border-border/50">
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleTestSmtp}
+                                        disabled={isTestingSmtp || !smtpConfig.host || !smtpConfig.user}
+                                        className="h-12 px-6 rounded-xl font-bold border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 transition-all"
+                                    >
+                                        {isTestingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        Gửi email thử
+                                    </Button>
+                                    <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="bg-orange-600 hover:bg-orange-700 text-white h-12 px-8 rounded-xl font-bold shadow-lg shadow-orange-200 dark:shadow-none transition-all active:scale-95">
+                                        {isSavingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        Lưu cấu hình SMTP
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Brand Settings */}
+                    <TabsContent value="brand">
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-2xl">
+                            <CardHeader className="bg-muted/30 border-b border-border/50 p-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
+                                        <Globe className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold">Cấu hình thương hiệu</CardTitle>
+                                        <CardDescription className="text-sm font-medium">Thông tin hiển thị trên báo giá, hợp đồng & hóa đơn</CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-6 space-y-8">
+                                <div className="grid gap-6 sm:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Tên thương hiệu</Label>
+                                        <Input
+                                            value={brandConfig.brand_name}
+                                            onChange={e => setBrandConfig({ ...brandConfig, brand_name: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Email liên hệ</Label>
+                                        <Input
+                                            value={brandConfig.email}
+                                            onChange={e => setBrandConfig({ ...brandConfig, email: e.target.value })}
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                        />
+                                    </div>
+                                </div>
+
+                                <Separator className="bg-border/50" />
+
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+                                        Thông tin thanh toán (Bank Details)
+                                    </h4>
+                                    <div className="grid gap-6 sm:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Ngân hàng</Label>
+                                            <Input
+                                                value={brandConfig.bank_name}
+                                                onChange={e => setBrandConfig({ ...brandConfig, bank_name: e.target.value })}
+                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Số tài khoản</Label>
+                                            <Input
+                                                value={brandConfig.bank_account_no}
+                                                onChange={e => setBrandConfig({ ...brandConfig, bank_account_no: e.target.value })}
+                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Chủ tài khoản</Label>
+                                            <Input
+                                                value={brandConfig.bank_account_name}
+                                                onChange={e => setBrandConfig({ ...brandConfig, bank_account_name: e.target.value })}
+                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Chi nhánh</Label>
+                                            <Input
+                                                value={brandConfig.bank_branch}
+                                                onChange={e => setBrandConfig({ ...brandConfig, bank_branch: e.target.value })}
+                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Separator className="bg-border/50" />
+
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+                                        Ghi chú mặc định (Default Notes)
+                                    </h4>
+                                    <div className="grid gap-6">
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Ghi chú chân trang</Label>
+                                            <Textarea
+                                                value={brandConfig.default_notes}
+                                                onChange={e => setBrandConfig({ ...brandConfig, default_notes: e.target.value })}
+                                                className="min-h-[100px] rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Điều khoản thanh toán</Label>
+                                            <Textarea
+                                                value={brandConfig.default_payment_terms}
+                                                onChange={e => setBrandConfig({ ...brandConfig, default_payment_terms: e.target.value })}
+                                                className="min-h-[100px] rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 flex justify-end">
+                                    <Button onClick={handleSaveBrand} disabled={isSavingBrand} className="bg-zinc-900 dark:bg-zinc-50 dark:text-zinc-900 h-12 px-10 rounded-xl font-bold transition-all active:scale-95">
+                                        {isSavingBrand ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        Lưu cấu hình thương hiệu
                                     </Button>
                                 </div>
                             </CardContent>
@@ -830,7 +1220,14 @@ export default function SettingsPage() {
                                             Sử dụng giao diện tối để bảo vệ mắt
                                         </p>
                                     </div>
-                                    <Switch defaultChecked />
+                                    <Switch
+                                        checked={theme === 'dark'}
+                                        onCheckedChange={(val) => {
+                                            const newTheme = val ? 'dark' : 'light'
+                                            setTheme(newTheme)
+                                            updateAppearanceConfig({ ...appearance, darkMode: val })
+                                        }}
+                                    />
                                 </div>
                                 <Separator />
                                 <div className="flex items-center justify-between">
@@ -840,7 +1237,10 @@ export default function SettingsPage() {
                                             Mặc định thu gọn sidebar
                                         </p>
                                     </div>
-                                    <Switch />
+                                    <Switch
+                                        checked={appearance.sidebarCollapsed}
+                                        onCheckedChange={(val) => handleUpdateAppearance('sidebarCollapsed', val)}
+                                    />
                                 </div>
                             </CardContent>
                         </Card>

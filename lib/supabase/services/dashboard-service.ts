@@ -51,10 +51,28 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
         const contractTotalValue = activeContracts?.reduce((sum, c) => sum + (c.total_amount || 0), 0) || 0
 
+        // Fetch deals for conversion rate
+        const { data: deals } = await supabase
+            .from('deals')
+            .select('status')
+
+        const totalDeals = deals?.length || 0
+        const wonDeals = deals?.filter(d => d.status === 'closed_won').length || 0
+        const conversionRate = totalDeals > 0 ? (wonDeals / totalDeals) * 100 : 0
+
+        // Calculate health score: ratio of paid amount to total amount on output invoices
+        const totalOutputValue = invoices?.filter(i => i.type === 'output').reduce((sum, i) => sum + (i.total_amount || 0), 0) || 0
+        const healthScore = totalOutputValue > 0 ? (totalRevenue / totalOutputValue) * 100 : 100
+
+        // Calculate efficiency: ratio of paid invoices to total invoices
+        const totalInvoices = invoices?.filter(i => i.type === 'output').length || 0
+        const paidInvoices = invoices?.filter(i => i.type === 'output' && i.status === 'paid').length || 0
+        const efficiencyScore = totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 0
+
         return {
             revenue: {
                 total: totalRevenue,
-                change: totalPendingRevenue, // Using change as 'pending' for now to show on UI
+                change: totalPendingRevenue,
                 period: 'Chờ thanh toán'
             },
             customers: {
@@ -65,13 +83,16 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             contracts: {
                 active: activeContractsCount || 0,
                 pending: pendingContractsCount || 0,
-                change: contractTotalValue // Using change to store total active contract value
+                change: contractTotalValue
             },
             invoices: {
                 pending: pendingInvoicesCount,
                 overdue: 0,
                 total_outstanding: totalPendingRevenue
-            }
+            },
+            health_score: Math.round(healthScore),
+            conversion_rate: Math.round(conversionRate),
+            efficiency_score: Math.round(efficiencyScore)
         }
     } catch (err) {
         console.error('Fatal error in getDashboardStats:', err)
@@ -79,7 +100,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             revenue: { total: 0, change: 0, period: 'Tháng này' },
             customers: { total: 0, new: 0, change: 0 },
             contracts: { active: 0, pending: 0, change: 0 },
-            invoices: { pending: 0, overdue: 0, total_outstanding: 0 }
+            invoices: { pending: 0, overdue: 0, total_outstanding: 0 },
+            health_score: 0,
+            conversion_rate: 0,
+            efficiency_score: 0
         }
     }
 }

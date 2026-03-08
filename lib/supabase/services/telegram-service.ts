@@ -14,10 +14,15 @@ async function getTelegramConfig(): Promise<TelegramConfig | null> {
     return data.value as TelegramConfig
 }
 
-export async function sendTelegramNotification(message: string) {
+export async function sendTelegramNotification(message: string, type?: keyof TelegramConfig) {
     try {
         const config = await getTelegramConfig()
         if (!config || !config.is_enabled || !config.bot_token || !config.chat_id) {
+            return false
+        }
+
+        // If a type is provided, check if that specific notification is enabled
+        if (type && config[type] === false) {
             return false
         }
 
@@ -43,6 +48,16 @@ export async function sendTelegramNotification(message: string) {
         console.error('Fatal error in sendTelegramNotification:', err)
         return false
     }
+}
+
+export async function testTelegramConnection() {
+    return sendTelegramNotification(`
+<b>🔔 TEST CONNECTION SUCCESSFUL</b>
+━━━━━━━━━━━━━━━━━━
+Đây là tin nhắn thử nghiệm từ hệ thống Tulie CRM. 
+Cấu hình Telegram của bạn hiện đang hoạt động tốt.
+━━━━━━━━━━━━━━━━━━
+<i>Time: ${new Date().toLocaleString('vi-VN')}</i>`)
 }
 
 // Helper formats for common events - individual async functions satisfy "use server"

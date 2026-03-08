@@ -503,6 +503,9 @@ export interface DashboardStats {
     overdue: number
     total_outstanding: number
   }
+  health_score: number
+  conversion_rate: number
+  efficiency_score: number
 }
 
 export interface RevenueData {
@@ -623,6 +626,15 @@ export interface TelegramConfig {
   bot_token: string
   chat_id: string
   is_enabled: boolean
+  notify_new_retail_order?: boolean
+  notify_retail_payment?: boolean
+  notify_quotation_viewed?: boolean
+  notify_quotation_accepted?: boolean
+  notify_new_quotation?: boolean
+  notify_new_invoice?: boolean
+  notify_b2b_payment?: boolean
+  notify_unmatched_payment?: boolean
+  [key: string]: any
 }
 
 export interface SystemSettings {

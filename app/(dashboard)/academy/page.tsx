@@ -1,78 +1,132 @@
-import { Button } from '@/components/ui/button'
-import { GraduationCap, ShoppingBag, BookOpen, Clock } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+"use client"
 
-export default function AcademyPage() {
+import { Button } from '@/components/ui/button'
+import { Layout, RefreshCcw, Key, Database, Globe } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
+import { getSystemSetting, updateSystemSetting } from '@/lib/supabase/services/settings-service'
+
+export default function LabPage() {
+    const [apiKey, setApiKey] = useState('')
+    const [isSaving, setIsSaving] = useState(false)
+    const [isSyncing, setIsSyncing] = useState(false)
+
+    useEffect(() => {
+        loadSettings()
+    }, [])
+
+    async function loadSettings() {
+        const key = await getSystemSetting('tulie_lab_api_key')
+        if (key) setApiKey(key)
+    }
+
+    const handleSaveKey = async () => {
+        setIsSaving(true)
+        try {
+            await updateSystemSetting('tulie_lab_api_key', apiKey)
+            toast.success('Đã lưu API Key cho Tulie Lab')
+        } catch (error) {
+            toast.error('Lỗi khi lưu cấu hình')
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
+    const handleSync = async () => {
+        if (!apiKey) {
+            toast.error('Vui lòng nhập API Key trước khi đồng bộ')
+            return
+        }
+        setIsSyncing(true)
+        try {
+            // Mock sync trigger
+            await new Promise(resolve => setTimeout(resolve, 2000))
+            toast.success('Đồng bộ dữ liệu từ thelab.tulie.vn thành công')
+        } catch (error) {
+            toast.error('Lỗi khi đồng bộ dữ liệu')
+        } finally {
+            setIsSyncing(false)
+        }
+    }
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <GraduationCap className="h-6 w-6 text-primary" />
+                    <div className="h-10 w-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/30 flex items-center justify-center">
+                        <Layout className="h-6 w-6 text-indigo-600" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-semibold">Academy Shop</h1>
-                        <p className="text-muted-foreground">Các khóa học và tài liệu đào tạo chuyên sâu.</p>
+                        <h1 className="text-3xl font-semibold">Tulie Lab Control</h1>
+                        <p className="text-muted-foreground">Đồng bộ dữ liệu tập trung từ thelab.tulie.vn.</p>
                     </div>
                 </div>
-                <Button>
-                    <ShoppingBag className="mr-2 h-4 w-4" /> Quản lý sản phẩm
+                <Button
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                >
+                    {isSyncing ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCcw className="mr-2 h-4 w-4" />}
+                    Đồng bộ ngay
                 </Button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2">
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
                     <CardHeader className="bg-muted/30 border-b border-border/50">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-primary" />
-                            Khóa học hiện có
+                            <Key className="h-4 w-4 text-indigo-500" />
+                            Cấu hình kết nôi
                         </CardTitle>
+                        <CardDescription>Nhập API Key để kết nối với hệ thống Lab ngoại vi.</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="text-2xl font-bold">0</div>
-                        <p className="text-xs text-muted-foreground mt-1">Đang được giảng dạy</p>
+                    <CardContent className="pt-6 space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="api_key">API Key (thelab.tulie.vn)</Label>
+                            <Input
+                                id="api_key"
+                                type="password"
+                                value={apiKey}
+                                onChange={(e) => setApiKey(e.target.value)}
+                                placeholder="********************************"
+                            />
+                        </div>
+                        <div className="flex justify-end">
+                            <Button variant="outline" onClick={handleSaveKey} disabled={isSaving}>
+                                {isSaving ? "Đang lưu..." : "Lưu cấu hình"}
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
                     <CardHeader className="bg-muted/30 border-b border-border/50">
                         <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <Users className="h-4 w-4 text-blue-500" />
-                            Học viên mới
+                            <Database className="h-4 w-4 text-indigo-500" />
+                            Trạng thái dữ liệu
                         </CardTitle>
+                        <CardDescription>Thông tin lần đồng bộ cuối cùng.</CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="text-2xl font-bold">0</div>
-                        <p className="text-xs text-muted-foreground mt-1">Trong 30 ngày qua</p>
-                    </CardContent>
-                </Card>
-
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
-                    <CardHeader className="bg-muted/30 border-b border-border/50">
-                        <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-yellow-500" />
-                            Doanh thu Shop
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-6">
-                        <div className="text-2xl font-bold">0 VNĐ</div>
-                        <p className="text-xs text-muted-foreground mt-1">Tổng giá trị đơn hàng</p>
+                    <CardContent className="pt-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Lần đồng bộ cuối:</p>
+                                <p className="font-medium">Vừa xong</p>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm text-muted-foreground">Dữ liệu nguồn:</p>
+                                <div className="flex items-center gap-1 text-indigo-600">
+                                    <Globe className="h-3 w-3" />
+                                    <span className="text-xs">thelab.tulie.vn</span>
+                                </div>
+                            </div>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
-
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
-                <div className="p-12 text-center space-y-4">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                        <GraduationCap className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <h2 className="text-xl font-semibold">Chưa có khóa học nào</h2>
-                    <p className="text-muted-foreground max-w-sm mx-auto">
-                        Bắt đầu tạo khóa học đầu tiên của bạn để học viên có thể đăng ký và mua tài liệu.
-                    </p>
-                    <Button variant="outline">Tạo sản phẩm ngay</Button>
-                </div>
-            </Card>
         </div>
     )
 }

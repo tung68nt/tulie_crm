@@ -31,7 +31,7 @@ export function StatsCard({
                     {title}
                 </CardTitle>
                 {icon && (
-                    <div className="h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center text-primary/70">
+                    <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
                         {icon}
                     </div>
                 )}

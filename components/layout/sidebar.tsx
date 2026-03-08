@@ -41,22 +41,28 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
     {
-        title: 'Agency & Tư vấn (B2B)',
+        title: 'Tulie Agency',
         items: [
             { title: 'Cơ hội (Deals)', href: '/deals', icon: TrendingUp },
             { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
             { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
+            { title: 'Đơn hàng (B2B)', href: '/orders', icon: ShoppingCart },
             { title: 'Dự án', href: '/projects', icon: Rocket },
             { title: 'Hóa đơn', href: '/invoices', icon: Banknote },
         ]
     },
     {
-        title: 'Studio & Academy (B2C)',
+        title: 'Tulie Studio',
         items: [
-            { title: 'Studio (B2C)', href: '/studio', icon: Camera },
-            { title: 'Đơn hàng lẻ', href: '/orders', icon: ShoppingCart },
-            { title: 'Academy Shop', href: '/academy', icon: GraduationCap },
+            { title: 'Cơ hội (B2C)', href: '/studio/deals', icon: TrendingUp },
+            { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
+        ]
+    },
+    {
+        title: 'Tulie Lab',
+        items: [
+            { title: 'Hệ thống Lab', href: '/academy', icon: Layout },
         ]
     },
     {

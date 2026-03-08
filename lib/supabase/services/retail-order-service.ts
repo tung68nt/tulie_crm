@@ -119,7 +119,7 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
         }
 
         // Notification
-        await sendTelegramNotification(await formatNewRetailOrder(insertedOrder))
+        await sendTelegramNotification(await formatNewRetailOrder(insertedOrder), 'notify_new_retail_order')
 
         revalidatePath('/studio')
         return insertedOrder as RetailOrder
@@ -169,7 +169,7 @@ export async function recordRetailPayment(id: string, amount: number) {
         if (error) throw error
 
         // Notification
-        await sendTelegramNotification(await formatPaymentReceived(order, amount))
+        await sendTelegramNotification(await formatPaymentReceived(order, amount), 'notify_retail_payment')
 
         revalidatePath('/studio')
         return true

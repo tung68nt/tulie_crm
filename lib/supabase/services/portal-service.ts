@@ -2,6 +2,7 @@
 
 import { createClient } from '../server'
 import { getQuotationByToken } from './quotation-service'
+import { getBrandConfig } from './settings-service'
 
 export async function getPortalDataByToken(token: string) {
     try {
@@ -208,6 +209,9 @@ export async function getPortalDataByToken(token: string) {
         // Sort by date
         timeline.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
+        // Fetch Brand Config
+        const brandConfig = await getBrandConfig()
+
         return {
             quotation: primaryQuotation, // Keep this for password check if needed
             quotations: allQuotations,
@@ -217,7 +221,8 @@ export async function getPortalDataByToken(token: string) {
             timeline,
             customer: primaryQuotation.customer,
             project: primaryQuotation.project,
-            projectMetadata
+            projectMetadata,
+            brandConfig
         }
     } catch (err) {
         console.error('Error fetching portal data:', err)

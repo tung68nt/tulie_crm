@@ -83,7 +83,7 @@ const getTimelineIcon = (type: string, status: string) => {
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
-    const { quotation, quotations, contracts, invoices, timeline, customer, project, projectMetadata, tasks } = data
+    const { quotation, quotations, contracts, invoices, timeline, customer, project, projectMetadata, tasks, brandConfig } = data
     const [isSigning, setIsSigning] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const router = useRouter()
@@ -109,7 +109,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         ) || []
 
         return {
-            quotation: q,
+            quotation: { ...q, brandConfig },
             contracts: linkedContracts,
             invoices: linkedInvoices,
             timeline: (timeline as any[]).filter((t: any) => t.quotation_id === q.id),
@@ -626,7 +626,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 }`} />
                                             <div className="flex-1 min-w-0">
                                                 <p className={`text-sm font-medium truncate ${task.status === 'completed' ? 'text-muted-foreground line-through' : ''}`}>
-                                                    {task.title}
+                                                    {task.title.charAt(0).toUpperCase() + task.title.slice(1)}
                                                 </p>
                                                 <div className="flex items-center gap-2 mt-0.5">
                                                     <span className="text-[10px] text-muted-foreground">{formatDate(task.end_date)}</span>

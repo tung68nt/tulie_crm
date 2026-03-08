@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select'
 import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
-import { Loader2, Save, Sparkles, Phone, User, Wallet, CheckCircle2, Trash2, Plus, Calendar as CalendarIcon, Package, Truck } from 'lucide-react'
+import { Loader2, Save, Sparkles, Phone, User, Wallet, CheckCircle2, Trash2, Plus, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
@@ -37,17 +37,25 @@ export function RetailOrderForm() {
         shipping_fee: 0,
         payment_status: 'pending' as any,
         order_status: 'pending' as any,
+        resource_link: '',
         notes: '',
         delivery_date: '',
         needs_vat: false,
     })
+
+    const [brandConfig, setBrandConfig] = useState<any>(null)
 
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getProducts()
             setProducts(data)
         }
+        const fetchConfig = async () => {
+            const config = await import('@/lib/supabase/services/settings-service').then(m => m.getBrandConfig())
+            setBrandConfig(config)
+        }
         fetchProducts()
+        fetchConfig()
     }, [])
 
     // Recalculate total
@@ -92,7 +100,7 @@ export function RetailOrderForm() {
         const mm = (date.getMonth() + 1).toString().padStart(2, '0')
         const dd = date.getDate().toString().padStart(2, '0')
         const kValue = Math.floor((formData.total_amount || 0) / 1000)
-        setOrderIdPreview(`DH_${yy}_${mm}${dd}_XXX_${kValue}`)
+        setOrderIdPreview(`DH_${yy}_MMDD_XXX_${kValue}`)
     }, [formData.total_amount])
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -117,6 +125,12 @@ export function RetailOrderForm() {
             setIsLoading(false)
         }
     }
+
+    const BANK_ID = brandConfig?.bank_name || 'MB'
+    const ACCOUNT_NO = brandConfig?.bank_account_no || '111222333'
+    const ACCOUNT_NAME = brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
+    const balance = formData.total_amount - formData.deposit_amount
+    const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${orderIdPreview}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -264,16 +278,30 @@ export function RetailOrderForm() {
                         </CardContent>
                     </Card>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="notes" className="font-semibold text-xs text-muted-foreground">Ghi chú đơn hàng</Label>
-                        <Textarea
-                            id="notes"
-                            placeholder="Yêu cầu riêng của khách, địa chỉ nhận hàng..."
-                            rows={3}
-                            value={formData.notes}
-                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                            className="bg-card/50"
-                        />
+                    <div className="grid gap-4 md:grid-cols-2 pt-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="resource_link" className="font-semibold text-xs text-muted-foreground flex items-center gap-1.5">
+                                <LinkIcon className="h-3 w-3" /> Link Google Drive
+                            </Label>
+                            <Input
+                                id="resource_link"
+                                placeholder="https://drive.google.com/..."
+                                value={formData.resource_link}
+                                onChange={(e) => setFormData({ ...formData, resource_link: e.target.value })}
+                                className="bg-card/50"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="notes" className="font-semibold text-xs text-muted-foreground">Ghi chú đơn hàng</Label>
+                            <Textarea
+                                id="notes"
+                                placeholder="Yêu cầu riêng của khách, địa chỉ nhận hàng..."
+                                rows={1}
+                                value={formData.notes}
+                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                className="bg-card/50"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -312,6 +340,26 @@ export function RetailOrderForm() {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* QR Code Preview for Staff */}
+                    {!isLoading && balance > 0 && (
+                        <Card className="border-border/50 bg-card/30 backdrop-blur-sm overflow-hidden rounded-xl border-dashed">
+                            <CardHeader className="py-3 px-4 flex flex-row items-center justify-between">
+                                <CardTitle className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
+                                    <QrCode className="h-3.5 w-3.5" /> VietQR Preview
+                                </CardTitle>
+                                <Badge variant="outline" className="text-[9px] h-4">Giúp khách quét nhanh</Badge>
+                            </CardHeader>
+                            <CardContent className="flex flex-col items-center pb-6">
+                                <div className="bg-white p-2 rounded-lg shadow-sm mb-3">
+                                    <img src={qrUrl} alt="QR Preview" className="w-32 h-32 object-contain" />
+                                </div>
+                                <p className="text-[10px] text-center text-muted-foreground px-4 italic leading-tight">
+                                    Mã QR này sẽ hiển thị trên Portal gửi cho khách.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     <div className="grid grid-cols-1 gap-4">
                         <Card className="border-border/50 rounded-xl bg-card/50">

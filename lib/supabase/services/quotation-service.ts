@@ -8,6 +8,7 @@ import {
     formatQuotationViewed,
     formatQuotationAccepted
 } from './telegram-service'
+import { logActivity } from './activity-service'
 import { getDealById } from './deal-service'
 import { getCustomerById } from './customer-service'
 
@@ -62,7 +63,7 @@ async function checkAndExpireQuotation(quotation: any, fastUpdate = false) {
     return quotation;
 }
 
-export async function getQuotations(customerId?: string) {
+export async function getQuotations(customerId?: string, brand?: string) {
     try {
         const supabase = await createClient()
         let query = supabase
@@ -72,6 +73,10 @@ export async function getQuotations(customerId?: string) {
 
         if (customerId) {
             query = query.eq('customer_id', customerId)
+        }
+
+        if (brand) {
+            query = query.eq('brand', brand)
         }
 
         const { data, error } = await query
@@ -192,13 +197,21 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
         try {
             const quoteWithDetails = await getQuotationById(quoteData.id)
             if (quoteWithDetails) {
-                await sendTelegramNotification(await formatNewQuotation(quoteWithDetails))
+                await sendTelegramNotification(await formatNewQuotation(quoteWithDetails), 'notify_new_quotation')
             }
         } catch (notifierError) {
             console.error('Telegram notification failed:', notifierError)
         }
 
         revalidatePath('/quotations')
+
+        await logActivity({
+            action: 'create',
+            entity_type: 'quotation',
+            entity_id: quoteData.id,
+            description: `Tạo báo giá mới: ${quoteData.title}`
+        })
+
         return quoteData
     } catch (err: any) {
         console.error('Fatal error in createQuotation:', err)
@@ -274,6 +287,14 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
 
         revalidatePath('/quotations')
         revalidatePath(`/quotations/${id}`)
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'quotation',
+            entity_id: id,
+            description: `Cập nhật báo giá: ${quotation.title || 'Mã ' + (quotation.quotation_number || id)}`
+        })
+
         return true
     } catch (err: any) {
         console.error('Fatal error in updateQuotation:', err)
@@ -392,7 +413,7 @@ export async function recordQuotationView(id: string) {
                     .eq('id', id)
 
                 // 2. Notify via Telegram
-                await sendTelegramNotification(await formatQuotationViewed(current))
+                await sendTelegramNotification(await formatQuotationViewed(current), 'notify_quotation_viewed')
             }
         }
 
@@ -420,7 +441,14 @@ export async function acceptQuotationPortal(id: string, confirmerInfo: any) {
 
         const quote = await getQuotationById(id)
         if (quote) {
-            await sendTelegramNotification(await formatQuotationAccepted(quote))
+            await sendTelegramNotification(await formatQuotationAccepted(quote), 'notify_quotation_accepted')
+
+            await logActivity({
+                action: 'accept',
+                entity_type: 'quotation',
+                entity_id: id,
+                description: `Khách hàng đã chấp nhận báo giá qua Portal: ${quote.title}`
+            })
         }
 
         revalidatePath(`/portal/quotation/${id}`)

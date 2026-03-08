@@ -125,6 +125,15 @@ export async function updateBrandConfig(config: any) {
     return updateSystemSetting('brand_config', config)
 }
 
+export async function getAppearanceConfig() {
+    const config = await getSystemSetting('appearance_config')
+    return config || { darkMode: false, sidebarCollapsed: false }
+}
+
+export async function updateAppearanceConfig(config: any) {
+    return updateSystemSetting('appearance_config', config)
+}
+
 export async function verifySepaySignature(payload: any, signature: string) {
     try {
         const config = await getSystemSetting('telegram_config')
@@ -143,5 +152,38 @@ export async function verifySepaySignature(payload: any, signature: string) {
     } catch (err) {
         console.error('Error verifying SePay signature:', err)
         return false
+    }
+}
+
+export async function testSmtpConnection(config: any) {
+    try {
+        const nodemailer = require('nodemailer')
+
+        const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: Number(config.port),
+            secure: config.secure, // true for 465, false for other ports
+            auth: {
+                user: config.user,
+                pass: config.pass,
+            },
+        })
+
+        // Verify connection configuration
+        await transporter.verify()
+
+        // Send test email
+        await transporter.sendMail({
+            from: `"${config.from_name || 'Tulie CRM'}" <${config.from_email || config.user}>`,
+            to: config.user, // Send to self as test
+            subject: "Tulie CRM - Kiểm tra kết nối SMTP",
+            text: "Chúc mừng! Cấu hình SMTP của bạn đã hoạt động chính xác.",
+            html: "<b>Chúc mừng!</b><p>Cấu hình SMTP của bạn đã hoạt động chính xác.</p>"
+        })
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('SMTP Test Error:', err)
+        return { success: false, error: err.message || 'Lỗi không xác định khi kết nối SMTP' }
     }
 }

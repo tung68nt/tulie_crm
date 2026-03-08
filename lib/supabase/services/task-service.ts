@@ -3,6 +3,7 @@
 import { createClient } from '../server'
 import { ProjectTask } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { logActivity } from './activity-service'
 
 export async function getProjectTasks(projectId: string) {
     try {
@@ -69,6 +70,14 @@ export async function updateProjectTasks(projectId: string, tasks: any[]) {
         if (error) throw error
 
         revalidatePath(`/projects/${projectId}`)
+
+        await logActivity({
+            action: 'update_tasks',
+            entity_type: 'project',
+            entity_id: projectId,
+            description: `Cập nhật danh sách công việc dự án`
+        })
+
         return true
     } catch (err) {
         console.error('Error updating project tasks:', err)

@@ -17,7 +17,7 @@ import { contractColumns } from '@/components/contracts/contract-columns'
 
 export default async function OrdersPage() {
     // Filter by type 'order'
-    const orders = await getContracts(undefined, 'order')
+    const orders = await getContracts(undefined, 'order', 'agency')
 
     const activeOrders = orders.filter((c) => c.status === 'active').length
     const completedOrders = orders.filter((c) => c.status === 'completed').length

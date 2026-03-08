@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
 📝 Nội dung: <code>${description}</code>
 🏦 Giao dịch: ${transactionId}
 ━━━━━━━━━━━━━━━━━━
-<i>Vui lòng kiểm tra và ghi nhận thủ công!</i>`)
+<i>Vui lòng kiểm tra và ghi nhận thủ công!</i>`, 'notify_unmatched_payment')
 
         return NextResponse.json({ success: false, message: 'Could not match order/invoice' }, { status: 200 })
 

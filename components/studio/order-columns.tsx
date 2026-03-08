@@ -220,6 +220,18 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                                 </a>
                             </DropdownMenuItem>
                         )}
+                        <DropdownMenuItem onClick={() => {
+                            const portalUrl = `${window.location.origin}/order/${order.public_token}`
+                            navigator.clipboard.writeText(portalUrl)
+                            toast.success('Đã copy link Portal gửi khách!')
+                        }}>
+                            <LinkIcon className="mr-2 h-4 w-4" /> Copy Portal Link
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/order/${order.public_token}`} target="_blank">
+                                <ExternalLink className="mr-2 h-4 w-4" /> Xem Portal (Khách)
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             className="text-red-600 font-bold"
