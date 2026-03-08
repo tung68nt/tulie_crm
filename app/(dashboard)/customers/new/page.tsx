@@ -38,6 +38,7 @@ const customerSchema = z.object({
     industry: z.string().optional(),
     company_size: z.string().optional(),
     website: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
+    customer_type: z.enum(['individual', 'business']),
     status: z.enum(['lead', 'prospect', 'customer', 'vip', 'churned']),
     notes: z.string().optional(),
 })
@@ -60,6 +61,7 @@ export default function NewCustomerPage() {
         resolver: zodResolver(customerSchema),
         defaultValues: {
             status: 'lead',
+            customer_type: 'business',
         },
     })
 
@@ -79,6 +81,7 @@ export default function NewCustomerPage() {
             // Clean up data: convert empty strings to undefined for optional fields
             const cleanedData = {
                 ...data,
+                customer_type: data.customer_type,
                 tax_code: data.tax_code || undefined,
                 email: data.email || undefined,
                 phone: data.phone || undefined,
@@ -141,12 +144,30 @@ export default function NewCustomerPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
+                                <Label htmlFor="customer_type">Loại khách hàng</Label>
+                                <Select
+                                    defaultValue="business"
+                                    onValueChange={(value) =>
+                                        setValue('customer_type', value as 'individual' | 'business')
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Chọn loại khách hàng" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="business">Doanh nghiệp / Tổ chức</SelectItem>
+                                        <SelectItem value="individual">Cá nhân</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="company_name">
-                                    Tên công ty <span className="text-destructive">*</span>
+                                    Tên khách hàng / Công ty <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="company_name"
-                                    placeholder="Công ty TNHH ABC"
+                                    placeholder="Nguyễn Văn A / Công ty TNHH ABC"
                                     {...register('company_name')}
                                 />
                                 {errors.company_name && (
@@ -157,7 +178,7 @@ export default function NewCustomerPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="tax_code">Mã số thuế</Label>
+                                <Label htmlFor="tax_code">Mã số thuế / CCCD</Label>
                                 <Input
                                     id="tax_code"
                                     placeholder="0123456789"
@@ -191,7 +212,7 @@ export default function NewCustomerPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="website">Website</Label>
+                                <Label htmlFor="website">Website / Portfolio</Label>
                                 <Input
                                     id="website"
                                     placeholder="https://company.com"

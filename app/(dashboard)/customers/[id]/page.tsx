@@ -76,8 +76,13 @@ export default async function CustomerDetailPage({ params }: any) {
                                 <Badge className={CUSTOMER_STATUS_COLORS[customer.status] || 'bg-gray-100'}>
                                     {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
                                 </Badge>
+                                <Badge variant="outline" className="bg-background">
+                                    {customer.customer_type === 'individual' ? 'Cá nhân' : 'Doanh nghiệp'}
+                                </Badge>
                             </div>
-                            <p className="text-muted-foreground">MST: {customer.tax_code || 'Chưa cập nhật'}</p>
+                            <p className="text-muted-foreground">
+                                {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -98,181 +103,139 @@ export default async function CustomerDetailPage({ params }: any) {
                 </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
-                {/* Main Content */}
-                <div className="lg:col-span-2 space-y-6">
-                    <Tabs defaultValue="overview" className="space-y-4">
-                        <TabsList>
-                            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
-                            <TabsTrigger value="contacts">Liên hệ ({contacts.length})</TabsTrigger>
-                            <TabsTrigger value="quotations">Báo giá ({quotations.length})</TabsTrigger>
-                            <TabsTrigger value="contracts">Hợp đồng ({contracts.length})</TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="overview" className="space-y-4">
-                            {/* Contact Info */}
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Thông tin liên hệ</CardTitle>
-                                </CardHeader>
-                                <CardContent className="grid gap-4 sm:grid-cols-2">
-                                    <div className="flex items-center gap-3 sm:col-span-2">
-                                        <Building2 className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Mã số thuế</p>
-                                            <p className="font-medium">{customer.tax_code || 'Chưa cập nhật'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Mail className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Email</p>
-                                            <a href={`mailto:${customer.email}`} className="font-medium hover:underline">
-                                                {customer.email || 'Chưa cập nhật'}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Phone className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Điện thoại</p>
-                                            <a href={`tel:${customer.phone}`} className="font-medium hover:underline">
-                                                {customer.phone || 'Chưa cập nhật'}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 sm:col-span-2">
-                                        <MapPin className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Địa chỉ</p>
-                                            <p className="font-medium">{customer.address || 'Chưa cập nhật'}</p>
-                                        </div>
-                                    </div>
-                                    {customer.website && (
-                                        <div className="flex items-center gap-3">
-                                            <ExternalLink className="h-5 w-5 text-muted-foreground" />
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">Website</p>
-                                                <a href={customer.website} target="_blank" className="font-medium hover:underline">
-                                                    {customer.website}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="flex items-center gap-3">
-                                        <Building2 className="h-5 w-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Ngành nghề</p>
-                                            <p className="font-medium">{customer.industry || 'Chưa cập nhật'}</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="contacts">
-                            <ContactList customerId={customer.id} initialContacts={contacts} />
-                        </TabsContent>
-
-                        <TabsContent value="quotations">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Báo giá</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {quotations.map((quote) => (
-                                        <Link key={quote.id} href={`/quotations/${quote.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
-                                            <div>
-                                                <p className="font-medium">{quote.quotation_number}</p>
-                                                <p className="text-sm text-muted-foreground">{formatDate(quote.created_at)}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium">{formatCurrency(quote.total_amount)}</p>
-                                                <Badge variant="secondary">{quote.status}</Badge>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                    {quotations.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">Chưa có báo giá nào</p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-
-                        <TabsContent value="contracts">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Hợp đồng</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {contracts.map((contract) => (
-                                        <Link key={contract.id} href={`/contracts/${contract.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
-                                            <div>
-                                                <p className="font-medium">{contract.contract_number}</p>
-                                                <p className="text-sm text-muted-foreground">Bắt đầu: {formatDate(contract.start_date)}</p>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-medium">{formatCurrency(contract.total_amount)}</p>
-                                                <Badge variant="secondary">{contract.status}</Badge>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                    {contracts.length === 0 && (
-                                        <p className="text-sm text-muted-foreground text-center py-8">Chưa có hợp đồng nào</p>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </TabsContent>
-                    </Tabs>
-                </div>
-
-                {/* Sidebar */}
-                <div className="space-y-6">
-                    {/* Summary */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Tổng quan</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Báo giá</span>
-                                <span className="font-medium">{quotations.length}</span>
+            <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
+                {/* Contact Info */}
+                <Card className="h-full">
+                    <CardHeader>
+                        <CardTitle>Thông tin liên hệ</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 sm:grid-cols-2">
+                        <div className="flex items-center gap-3 sm:col-span-2">
+                            <Building2 className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Mã số thuế</p>
+                                <p className="font-medium">{customer.tax_code || 'Chưa cập nhật'}</p>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Hợp đồng</span>
-                                <span className="font-medium">{contracts.length}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Mail className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Email</p>
+                                <a href={`mailto:${customer.email}`} className="font-medium hover:underline">
+                                    {customer.email || 'Chưa cập nhật'}
+                                </a>
                             </div>
-                            <Separator />
-                            <div className="flex justify-between">
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Phone className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Điện thoại</p>
+                                <a href={`tel:${customer.phone}`} className="font-medium hover:underline">
+                                    {customer.phone || 'Chưa cập nhật'}
+                                </a>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3 sm:col-span-2">
+                            <MapPin className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Địa chỉ</p>
+                                <p className="font-medium">{customer.address || 'Chưa cập nhật'}</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Summary Box */}
+                <Card className="h-full">
+                    <CardHeader>
+                        <CardTitle>Tổng quan</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-muted/50 p-4 rounded-xl text-center">
+                                <p className="text-2xl font-bold">{quotations.length}</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-1">Báo giá</p>
+                            </div>
+                            <div className="bg-muted/50 p-4 rounded-xl text-center">
+                                <p className="text-2xl font-bold">{contracts.length}</p>
+                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-1">Hợp đồng</p>
+                            </div>
+                        </div>
+                        <Separator />
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center text-sm">
                                 <span className="text-muted-foreground">Ngày tạo</span>
                                 <span className="font-medium">{formatDate(customer.created_at)}</span>
                             </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">Phụ trách</span>
+                                <span className="font-medium">{customer.assigned_user?.full_name || 'Hệ thống'}</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <Tabs defaultValue="contacts" className="space-y-4">
+                <TabsList>
+                    <TabsTrigger value="contacts">Liên hệ ({contacts.length})</TabsTrigger>
+                    <TabsTrigger value="quotations">Báo giá ({quotations.length})</TabsTrigger>
+                    <TabsTrigger value="contracts">Hợp đồng ({contracts.length})</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="contacts">
+                    <ContactList customerId={customer.id} initialContacts={contacts} />
+                </TabsContent>
+                <TabsContent value="quotations">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Báo giá</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {quotations.map((quote) => (
+                                <Link key={quote.id} href={`/quotations/${quote.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
+                                    <div>
+                                        <p className="font-medium">{quote.quotation_number}</p>
+                                        <p className="text-sm text-muted-foreground">{formatDate(quote.created_at)}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-medium">{formatCurrency(quote.total_amount)}</p>
+                                        <Badge variant="secondary">{quote.status}</Badge>
+                                    </div>
+                                </Link>
+                            ))}
+                            {quotations.length === 0 && (
+                                <p className="text-sm text-muted-foreground text-center py-8">Chưa có báo giá nào</p>
+                            )}
                         </CardContent>
                     </Card>
+                </TabsContent>
 
-                    {/* Assigned User */}
-                    {customer.assigned_user && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Phụ trách</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center gap-3">
-                                    <Avatar>
-                                        <AvatarFallback className="bg-foreground text-background">
-                                            {customer.assigned_user.full_name?.charAt(0) || '?'}
-                                        </AvatarFallback>
-                                    </Avatar>
+                <TabsContent value="contracts">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Hợp đồng</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {contracts.map((contract) => (
+                                <Link key={contract.id} href={`/contracts/${contract.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
                                     <div>
-                                        <p className="font-medium">{customer.assigned_user.full_name}</p>
-                                        <p className="text-sm text-muted-foreground">{customer.assigned_user.email}</p>
+                                        <p className="font-medium">{contract.contract_number}</p>
+                                        <p className="text-sm text-muted-foreground">Bắt đầu: {formatDate(contract.start_date)}</p>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-            </div>
+                                    <div className="text-right">
+                                        <p className="font-medium">{formatCurrency(contract.total_amount)}</p>
+                                        <Badge variant="secondary">{contract.status}</Badge>
+                                    </div>
+                                </Link>
+                            ))}
+                            {contracts.length === 0 && (
+                                <p className="text-sm text-muted-foreground text-center py-8">Chưa có hợp đồng nào</p>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }

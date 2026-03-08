@@ -41,6 +41,7 @@ export interface Customer {
   website?: string
   representative?: string
   position?: string
+  customer_type: 'individual' | 'business'
   is_info_unlocked: boolean
   status: CustomerStatus
   assigned_to: string
