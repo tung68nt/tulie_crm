@@ -169,3 +169,56 @@
     border: 1px solid var(--border) !important;
   }
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide sidebar and UI elements */
+  nav,
+  aside,
+  header,
+  footer,
+  button,
+  .no-print,
+  [role="dialog"],
+  .sonner-toast {
+    display: none !important;
+  }
+
+  /* Show only the main content */
+  .flex-col.gap-6.pb-20 {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Force card backgrounds to show */
+  .card,
+  .bg-zinc-950,
+  .bg-slate-50,
+  .bg-primary\/5 {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    border: 1px solid #ddd !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: black !important;
+  }
+
+  /* Ensure table borders show */
+  table {
+    border-collapse: collapse !important;
+  }
+}

@@ -39,6 +39,7 @@ import {
     Users,
     Shield,
     Award,
+    Printer,
 } from 'lucide-react'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
@@ -230,6 +231,11 @@ export default function QuotationDetailPage() {
                     </DropdownMenu>
 
                     <Separator orientation="vertical" className="h-8 mx-1 hidden sm:block" />
+
+                    <Button variant="outline" onClick={() => window.print()} className="h-10 px-4 font-semibold gap-2">
+                        <Printer className="h-4 w-4" />
+                        In nhanh
+                    </Button>
 
                     <Button variant="outline" asChild className="h-10 px-4 font-semibold">
                         <Link href={`/quotations/${quotation.id}/edit`} className="flex items-center gap-2">
@@ -487,7 +493,7 @@ export default function QuotationDetailPage() {
                                     <p className="text-xs font-semibold text-muted-foreground">Ghi chú</p>
                                     <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
                                         <ul className="list-none space-y-1 text-muted-foreground">
-                                            {String(quotation.notes ?? brandConfig?.default_notes ?? 'Không có ghi chú')
+                                            {String(quotation.notes || brandConfig?.default_notes || 'Không có ghi chú')
                                                 .split('\n')
                                                 .filter(Boolean)
                                                 .map((line, i) => (
@@ -503,7 +509,7 @@ export default function QuotationDetailPage() {
                                     <p className="text-xs font-semibold text-muted-foreground">Điều khoản thanh toán</p>
                                     <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
                                         <ul className="list-none space-y-1 text-muted-foreground">
-                                            {String(quotation.terms ?? brandConfig?.default_payment_terms ?? 'Theo quy định công ty')
+                                            {String(quotation.terms || brandConfig?.default_payment_terms || 'Theo quy định công ty')
                                                 .split('\n')
                                                 .filter(Boolean)
                                                 .map((line, i) => (

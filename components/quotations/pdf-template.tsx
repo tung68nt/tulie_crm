@@ -269,8 +269,8 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                     <Text style={{ fontSize: 8, color: '#666', textTransform: 'uppercase', marginBottom: 4, fontWeight: 'bold' }}>Khách hàng / Client:</Text>
                     <Text style={{ fontSize: 14, fontFamily: 'Roboto', color: '#000' }}>{quotation.customer?.company_name || 'Quý khách hàng'}</Text>
                     {quotation.customer?.address && <Text style={{ fontSize: 9, marginTop: 4, color: '#444' }}>Địa chỉ: {quotation.customer.address}</Text>}
-                    <View style={{ flexDirection: 'row', marginTop: 6, gap: 20 }}>
-                        <Text style={{ fontSize: 9, color: '#444' }}>SĐT: {quotation.customer?.phone || 'N/A'}</Text>
+                    <View style={{ flexDirection: 'row', marginTop: 6 }}>
+                        <Text style={{ fontSize: 9, color: '#444', marginRight: 20 }}>SĐT: {quotation.customer?.phone || 'N/A'}</Text>
                         <Text style={{ fontSize: 9, color: '#444' }}>Email: {quotation.customer?.email || 'N/A'}</Text>
                     </View>
                 </View>
@@ -331,8 +331,8 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                         <View key={sectionIdx} wrap={false}>
                             {/* Section Header - Show if a name is provided OR if there are multiple sections */}
                             {(sectionName !== DEFAULT_SECTION || sectionEntries.length > 1) && (
-                                <View style={{ backgroundColor: '#f9f9f9', paddingVertical: 6, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#eee', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                    <View style={{ backgroundColor: '#000', borderRadius: 2, paddingHorizontal: 4, paddingVertical: 1 }}>
+                                <View style={{ backgroundColor: '#f9f9f9', paddingVertical: 6, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#eee', flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={{ backgroundColor: '#000', borderRadius: 2, paddingHorizontal: 4, paddingVertical: 1, marginRight: 8 }}>
                                         <Text style={{ color: '#fff', fontSize: 8, fontWeight: 'bold' }}>{sectionIdx + 1}</Text>
                                     </View>
                                     <Text style={{ fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>
@@ -340,8 +340,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                                     </Text>
                                 </View>
                             )}
-
-                            {/* Items in Section */}
+                            {/* Items */}
                             {sectionItems.map((item, idx) => {
                                 globalItemIndex++;
                                 return (
@@ -373,7 +372,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                             {String(
                                 (quotation.notes && quotation.notes.trim() !== '')
                                     ? quotation.notes
-                                    : (quotation.brandConfig?.default_notes ?? "Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.")
+                                    : (quotation.brandConfig?.default_notes || "Báo giá có hiệu lực trong vòng 07 ngày.")
                             )
                                 .split('\n')
                                 .filter(Boolean)
@@ -390,7 +389,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                             {String(
                                 (quotation.terms && quotation.terms.trim() !== '')
                                     ? quotation.terms
-                                    : (quotation.brandConfig?.default_payment_terms ?? '50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành bàn giao')
+                                    : (quotation.brandConfig?.default_payment_terms || '50% đặt cọc khi xác nhận báo giá')
                             )
                                 .split('\n')
                                 .filter(Boolean)
@@ -406,7 +405,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                         <View style={{ fontSize: 8, color: '#444' }}>
                             <Text>Chủ TK: {quotation.bank_account_name || quotation.brandConfig?.bank_account_name || 'Chưa cấu hình'}</Text>
                             <Text>Số TK: {quotation.bank_account_no || quotation.brandConfig?.bank_account_no || 'Chưa cấu hình'}</Text>
-                            <Text>Ngân hàng: {quotation.bank_name || quotation.brandConfig?.bank_name || 'Chưa cấu hình'} - {quotation.bank_branch || quotation.brandConfig?.bank_branch || ''}</Text>
+                            <Text>Ngân hàng: {quotation.bank_name || quotation.brandConfig?.bank_name || 'Chưa cấu hình'}{quotation.bank_branch || quotation.brandConfig?.bank_branch ? ` - ${quotation.bank_branch || quotation.brandConfig?.bank_branch}` : ''}</Text>
                         </View>
                     </View>
 
