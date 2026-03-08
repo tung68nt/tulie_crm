@@ -59,7 +59,7 @@ export default async function CustomerDetailPage({ params }: any) {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                         <Link href="/customers">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>

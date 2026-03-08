@@ -19,7 +19,7 @@ export default async function DealDetailPage({ params }: any) {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                         <Link href="/deals">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>

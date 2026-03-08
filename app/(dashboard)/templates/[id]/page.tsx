@@ -182,7 +182,7 @@ export default function TemplateDetailPage() {
         return (
             <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                         <Link href="/templates">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
@@ -202,7 +202,7 @@ export default function TemplateDetailPage() {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
+                <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                     <Link href="/templates">
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
