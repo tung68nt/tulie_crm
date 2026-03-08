@@ -16,10 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: "Hệ thống CRM toàn diện cho Tulie Agency - Quản lý khách hàng, báo giá, hợp đồng và tài chính",
     keywords: ["CRM", "Tulie Agency", "quản lý khách hàng", "báo giá", "hợp đồng"],
     icons: {
-      icon: [
-        { url: brand.favicon_url || "/logo-icon.png" },
-        { url: brand.favicon_url || "/logo-icon.png", sizes: "32x32", type: "image/png" },
-      ],
+      icon: brand.favicon_url || "/logo-icon.png",
       shortcut: brand.favicon_url || "/logo-icon.png",
       apple: brand.favicon_url || "/logo-icon.png",
     },

@@ -34,7 +34,10 @@ export default function SettingsPage() {
         website: "tulie.vn",
         logo_url: "/file/tulie-agency-logo.png",
         favicon_url: "/logo-icon.png",
-        bank_info: "",
+        bank_name: "",
+        bank_account_no: "",
+        bank_account_name: "",
+        bank_branch: "",
         default_notes: "",
         default_payment_terms: ""
     })
@@ -74,7 +77,10 @@ export default function SettingsPage() {
             website: config.website || "tulie.vn",
             logo_url: config.logo_url || "/file/tulie-agency-logo.png",
             favicon_url: config.favicon_url || "/logo-icon.png",
-            bank_info: config.bank_info || "",
+            bank_name: config.bank_name || "",
+            bank_account_no: config.bank_account_no || "",
+            bank_account_name: config.bank_account_name || "",
+            bank_branch: config.bank_branch || "",
             default_notes: config.default_notes || "",
             default_payment_terms: config.default_payment_terms || ""
         })
@@ -142,7 +148,10 @@ export default function SettingsPage() {
                 website: companySettings.website,
                 logo_url: companySettings.logo_url,
                 favicon_url: companySettings.favicon_url,
-                bank_info: companySettings.bank_info,
+                bank_name: companySettings.bank_name,
+                bank_account_no: companySettings.bank_account_no,
+                bank_account_name: companySettings.bank_account_name,
+                bank_branch: companySettings.bank_branch,
                 default_notes: companySettings.default_notes,
                 default_payment_terms: companySettings.default_payment_terms
             })
@@ -390,15 +399,43 @@ export default function SettingsPage() {
                                 <Separator />
                                 <div className="space-y-4">
                                     <h4 className="text-sm font-medium">Thông tin bổ sung (Hợp đồng & Hóa đơn)</h4>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="bank_info">Tài khoản ngân hàng</Label>
-                                        <Textarea
-                                            id="bank_info"
-                                            value={companySettings.bank_info}
-                                            onChange={(e) => setCompanySettings({ ...companySettings, bank_info: e.target.value })}
-                                            placeholder="Ví dụ: MB Bank - 123456789 - Tên chủ TK"
-                                            rows={2}
-                                        />
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="bank_name">Ngân hàng</Label>
+                                            <Input
+                                                id="bank_name"
+                                                value={companySettings.bank_name}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_name: e.target.value })}
+                                                placeholder="Ví dụ: MB Bank"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="bank_account_no">Số tài khoản</Label>
+                                            <Input
+                                                id="bank_account_no"
+                                                value={companySettings.bank_account_no}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_account_no: e.target.value })}
+                                                placeholder="Ví dụ: 0123456789"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="bank_account_name">Chủ tài khoản</Label>
+                                            <Input
+                                                id="bank_account_name"
+                                                value={companySettings.bank_account_name}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_account_name: e.target.value })}
+                                                placeholder="Ví dụ: CONG TY TNHH ABC"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="bank_branch">Chi nhánh</Label>
+                                            <Input
+                                                id="bank_branch"
+                                                value={companySettings.bank_branch}
+                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_branch: e.target.value })}
+                                                placeholder="Ví dụ: Thanh Xuân - Hà Nội"
+                                            />
+                                        </div>
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="default_payment_terms">Điều khoản thanh toán mặc định</Label>
