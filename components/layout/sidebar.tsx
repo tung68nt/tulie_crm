@@ -57,7 +57,6 @@ const navGroups: NavGroup[] = [
             { title: 'Studio (B2C)', href: '/studio', icon: Camera },
             { title: 'Đơn hàng lẻ', href: '/orders', icon: ShoppingCart },
             { title: 'Academy Shop', href: '/academy', icon: GraduationCap },
-            { title: 'Sản phẩm', href: '/products', icon: Box },
         ]
     },
     {
@@ -65,6 +64,7 @@ const navGroups: NavGroup[] = [
         items: [
             { title: 'Tài chính', href: '/finance', icon: Wallet },
             { title: 'Nhân sự', href: '/team', icon: UserCheck },
+            { title: 'Sản phẩm', href: '/products', icon: Box },
             { title: 'Mẫu giấy tờ', href: '/templates', icon: Files },
             { title: 'Báo cáo', href: '/reports', icon: PieChart },
             { title: 'Cài đặt', href: '/settings', icon: Settings },

@@ -289,3 +289,23 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
         return { success: false, error: err.message }
     }
 }
+export async function getAcceptanceReportsByProjectId(projectId: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('acceptance_reports')
+            .select(`
+                *,
+                created_by_user:users!created_by(full_name),
+                contract:contracts(contract_number)
+            `)
+            .eq('project_id', projectId)
+            .order('created_at', { ascending: false })
+
+        if (error) throw error
+        return data || []
+    } catch (err) {
+        console.error('Error fetching acceptance reports:', err)
+        return []
+    }
+}

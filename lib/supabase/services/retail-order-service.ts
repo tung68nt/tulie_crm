@@ -61,7 +61,7 @@ export async function getRetailOrderById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('retail_orders')
-            .select('*, creator:users(*)')
+            .select('*, creator:users(*), items:retail_order_items(*)')
             .eq('id', id)
             .single()
 
@@ -78,29 +78,51 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
+        // items are passed in order.items
+        const { items, ...orderData } = order as any
+
         // Auto-generate ID if not provided
-        if (!order.order_number) {
-            const { orderNumber, stt } = await generateRetailOrderId(order.total_amount || 0)
-            order.order_number = orderNumber
-            order.stt = stt
+        if (!orderData.order_number) {
+            const { orderNumber, stt } = await generateRetailOrderId(orderData.total_amount || 0)
+            orderData.order_number = orderNumber
+            orderData.stt = stt
         }
 
-        const { data, error } = await supabase
+        const { data: insertedOrder, error: orderError } = await supabase
             .from('retail_orders')
             .insert([{
-                ...order,
+                ...orderData,
                 created_by: user?.id
             }])
             .select()
             .single()
 
-        if (error) throw error
+        if (orderError) throw orderError
+
+        // Insert items if any
+        if (items && items.length > 0) {
+            const orderItems = items.map((item: any, index: number) => ({
+                order_id: insertedOrder.id,
+                product_id: item.product_id,
+                product_name: item.product_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                total_price: item.total_price || (item.quantity * item.unit_price),
+                sort_order: index
+            }))
+
+            const { error: itemsError } = await supabase
+                .from('retail_order_items')
+                .insert(orderItems)
+
+            if (itemsError) throw itemsError
+        }
 
         // Notification
-        await sendTelegramNotification(await formatNewRetailOrder(data))
+        await sendTelegramNotification(await formatNewRetailOrder(insertedOrder))
 
         revalidatePath('/studio')
-        return data as RetailOrder
+        return insertedOrder as RetailOrder
     } catch (err) {
         console.error('Error creating retail order:', err)
         throw err
@@ -154,5 +176,22 @@ export async function recordRetailPayment(id: string, amount: number) {
     } catch (err) {
         console.error('Error recording retail payment:', err)
         throw err
+    }
+}
+
+export async function getRetailOrderByToken(token: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('retail_orders')
+            .select('*, items:retail_order_items(*)')
+            .eq('public_token', token)
+            .single()
+
+        if (error) throw error
+        return data as RetailOrder
+    } catch (err) {
+        console.error('Error fetching retail order by token:', err)
+        return null
     }
 }

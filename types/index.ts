@@ -583,10 +583,13 @@ export interface RetailOrder {
   total_amount: number
   deposit_amount: number
   paid_amount: number
+  shipping_fee: number // Phí vận chuyển
   payment_status: RetailPaymentStatus
   order_status: RetailOrderStatus
   resource_link?: string
   demo_link?: string
+  delivery_date?: string // Ngày hẹn bàn giao
+  public_token?: string // Để khách xem Portal
   needs_vat: boolean
   vat_info?: {
     tax_code?: string
@@ -598,8 +601,20 @@ export interface RetailOrder {
   metadata?: Record<string, any>
   created_by?: string
   creator?: User
+  items?: RetailOrderItem[]
   created_at: string
   updated_at: string
+}
+
+export interface RetailOrderItem {
+  id: string
+  order_id: string
+  product_id?: string
+  product_name: string
+  quantity: number
+  unit_price: number
+  total_price: number
+  sort_order: number
 }
 
 export interface TelegramConfig {

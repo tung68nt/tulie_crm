@@ -10,7 +10,7 @@ export async function getPortalDataByToken(token: string) {
         // 1. Get primary quotation
         const { data: qData } = await supabase
             .from('quotations')
-            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*)')
+            .select('*, customer:customers!customer_id(*), items:quotation_items(*), deal:deals(*), project:projects(*)')
             .eq('public_token', token)
             .single()
 
@@ -32,11 +32,26 @@ export async function getPortalDataByToken(token: string) {
         let allContracts: any[] = []
         let allInvoices: any[] = []
         let allTasks: any[] = []
+        let projectMetadata: any = null
 
         let extraMilestones: any[] = []
 
         // Fetch Grouped Data
         if (projectId) {
+            // Get Project Metadata (PM name, links)
+            const { data: pMeta } = await supabase
+                .from('project_metadata')
+                .select('*, manager:users!manager_id(full_name)')
+                .eq('project_id', projectId)
+                .single()
+
+            if (pMeta) {
+                projectMetadata = {
+                    ...pMeta,
+                    manager_name: pMeta.manager?.full_name || pMeta.manager_name
+                }
+            }
+
             // 1. Get all quotations in this project
             const { data: siblingQuotes } = await supabase
                 .from('quotations')
@@ -192,7 +207,9 @@ export async function getPortalDataByToken(token: string) {
             invoices: allInvoices,
             tasks: allTasks,
             timeline,
-            customer: primaryQuotation.customer
+            customer: primaryQuotation.customer,
+            project: primaryQuotation.project,
+            projectMetadata
         }
     } catch (err) {
         console.error('Error fetching portal data:', err)

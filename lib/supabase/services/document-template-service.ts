@@ -195,15 +195,21 @@ export async function generateDocument(
 
         if (custError || !customer) throw new Error('Customer not found')
 
-        // Get contract data if provided
+        // Get contract and its source quotation data
         let contract = null
         if (contractId) {
             const { data } = await supabase
                 .from('contracts')
-                .select('*, milestones:contract_milestones(*), items:quotation_items(*)')
+                .select('*, milestones:contract_milestones(*), quotation:quotations(*, items:quotation_items(*))')
                 .eq('id', contractId)
                 .single()
-            contract = data
+
+            if (data) {
+                contract = {
+                    ...data,
+                    items: data.quotation?.items || []
+                }
+            }
         }
 
         const now = new Date()
@@ -327,11 +333,11 @@ export async function getDocumentData(
         if (type === 'contract' || type === 'delivery_minutes' || type === 'payment_request') {
             const { data } = await supabase
                 .from('contracts')
-                .select('*, items:quotation_items(*)')
+                .select('*, quotation:quotations(*, items:quotation_items(*))')
                 .eq('id', relationId)
                 .single()
             relationData = data
-            items = data?.items || []
+            items = data?.quotation?.items || []
         } else if (type === 'quotation') {
             const { data } = await supabase
                 .from('quotations')

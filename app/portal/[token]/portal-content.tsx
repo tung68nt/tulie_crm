@@ -80,14 +80,19 @@ const getTimelineIcon = (type: string, status: string) => {
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
-    const { quotation, quotations, contracts, invoices, timeline, customer } = data
+    const { quotation, quotations, contracts, invoices, timeline, customer, project, projectMetadata, tasks } = data
     const [isSigning, setIsSigning] = useState(false)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const router = useRouter()
 
+    // Tasks summary for portal
+    const totalTasks = tasks?.length || 0
+    const completedTasks = tasks?.filter((t: any) => t.status === 'completed' || t.status === 'done').length || 0
+
+
     // Primary project identity
     const dealTitle = quotation.deal?.title
-    const projectTitle = dealTitle || (contracts?.length > 0 ? contracts[0].title : (quotations?.length > 0 ? quotations[0].title : quotation.title))
+    const projectTitle = dealTitle || project?.title || (contracts?.length > 0 ? contracts[0].title : (quotations?.length > 0 ? quotations[0].title : quotation.title))
 
     // Sales person from quotation creator
     const salesPerson = quotation.creator || null
@@ -145,7 +150,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     const paymentProgress = totalValue > 0 ? Math.min((totalPaid / totalValue) * 100, 100) : 0
     const remainingAmount = totalValue - totalPaid
     const totalDocuments = documents.length
-    const tasks = data.tasks || []
+
 
     // Timeline stats
     const completedSteps = timeline.filter((i: any) => i.status === 'completed').length
@@ -223,76 +228,74 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Stats Row */}
                 <div className="grid gap-4 md:grid-cols-3 mb-8">
                     {/* Total Project Value */}
-                    <Card>
+                    <Card className="shadow-sm border-slate-100">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Tổng giá trị dự án</span>
-                                <Receipt className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium text-slate-500">Tổng giá trị dự án</span>
+                                <Receipt className="h-4 w-4 text-slate-400" />
                             </div>
-                            <p className="text-2xl font-bold mb-1">{formatCurrency(totalValue)}</p>
-                            <div className="flex justify-between text-[11px] text-muted-foreground mb-2">
+                            <p className="text-2xl font-bold mb-1 tracking-tight">{formatCurrency(totalValue)}</p>
+                            <div className="flex justify-between text-[11px] text-slate-500 mb-2">
                                 <span>Đã thanh toán {paymentProgress.toFixed(0)}%</span>
                                 <span>Còn lại {formatCurrency(remainingAmount)}</span>
                             </div>
-                            <Progress value={paymentProgress} className="h-1.5" />
-                            <p className="text-[11px] text-muted-foreground mt-3 flex justify-between">
-                                <span>{totalDocuments} tài liệu</span>
-                                <span className="font-semibold">Đã thanh toán: {formatCurrency(totalPaid)}</span>
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    {/* Documents Summary */}
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Hồ sơ dự án</span>
-                                <FileText className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                            <p className="text-2xl font-bold mb-1">{totalDocuments} tài liệu</p>
-                            <div className="space-y-1.5 mt-3">
-                                {(quotations?.length || 1) > 0 && (
-                                    <div className="flex justify-between text-[11px] text-muted-foreground">
-                                        <span>Báo giá</span>
-                                        <span className="font-medium">{quotations?.length || 1} bản</span>
-                                    </div>
-                                )}
-                                {contracts?.length > 0 && (
-                                    <div className="flex justify-between text-[11px] text-muted-foreground">
-                                        <span>Hợp đồng</span>
-                                        <span className="font-medium">{contracts.length} bản</span>
-                                    </div>
-                                )}
-                                {invoices?.length > 0 && (
-                                    <div className="flex justify-between text-[11px] text-muted-foreground">
-                                        <span>Yêu cầu thanh toán</span>
-                                        <span className="font-medium">{invoices.length} bản</span>
-                                    </div>
-                                )}
+                            <Progress value={paymentProgress} className="h-1.5 bg-slate-100" />
+                            <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-50">
+                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{totalDocuments} tài liệu</span>
+                                <span className="text-[11px] font-semibold text-slate-900">Paid: {formatCurrency(totalPaid)}</span>
                             </div>
                         </CardContent>
                     </Card>
 
                     {/* Project Progress */}
-                    <Card>
+                    <Card className="shadow-sm border-slate-100">
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Tiến độ dự án</span>
-                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm font-medium text-slate-500">Tiến độ dự án</span>
+                                <TrendingUp className="h-4 w-4 text-emerald-500" />
                             </div>
                             <p className="text-2xl font-bold mb-1">{projectProgress}%</p>
-                            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-2">
+                            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
                                 <Calendar className="h-3 w-3" />
-                                <span>Hoàn thành dự kiến: {timeline.length > 0 ? formatDate(timeline[timeline.length - 1].date) : '...'}</span>
+                                <span>Hoàn thành dự kiến: {project?.end_date ? formatDate(project.end_date) : 'Đang cập nhật'}</span>
                             </div>
-                            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md text-[11px] font-medium">
-                                <CheckCircle className="h-3.5 w-3.5 text-primary" />
-                                <span>{completedSteps}/{totalSteps} công việc đã hoàn tất</span>
+                            <Progress value={projectProgress} className="h-1.5 bg-slate-100" />
+                            <div className="mt-3 bg-slate-50 rounded-lg p-2 flex items-center gap-2">
+                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                                <span className="text-[11px] text-slate-600 font-medium">{completedTasks}/{totalTasks} công việc đã hoàn tất</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Timeline & PM */}
+                    <Card className="shadow-sm border-slate-100">
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm font-medium text-slate-500">Thời gian thực hiện</span>
+                                <Clock className="h-4 w-4 text-amber-500" />
+                            </div>
+                            <p className="text-2xl font-bold mb-1">
+                                {project?.start_date && project?.end_date ? (
+                                    `${Math.ceil((new Date(project.end_date).getTime() - new Date(project.start_date).getTime()) / (1000 * 3600 * 24))} ngày`
+                                ) : 'TBA'}
+                            </p>
+                            <div className="space-y-2 mt-3">
+                                <div className="flex justify-between text-[11px]">
+                                    <span className="text-slate-500">Ngày bắt đầu</span>
+                                    <span className="font-semibold text-slate-900">{project?.start_date ? formatDate(project.start_date) : 'TBA'}</span>
+                                </div>
+                                <div className="flex justify-between text-[11px]">
+                                    <span className="text-slate-500">Người phụ trách</span>
+                                    <span className="font-semibold text-slate-900">{projectMetadata?.manager_name || 'Hệ thống Quản trị'}</span>
+                                </div>
+                                <div className="flex justify-between text-[11px]">
+                                    <span className="text-slate-500">Trạng thái dự án</span>
+                                    <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-700 uppercase">{project?.status || 'Active'}</span>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
                 </div>
-
                 <div className="grid gap-6 lg:grid-cols-3">
                     {/* Timeline */}
                     <div className="lg:col-span-2">
@@ -454,14 +457,14 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </Card>
                     </div>
                 </div>
-            </main>
+            </main >
 
             {/* Footer */}
-            <footer className="border-t bg-muted/30 mt-12">
+            < footer className="border-t bg-muted/30 mt-12" >
                 <div className="container mx-auto px-4 py-6 text-center text-xs text-muted-foreground">
                     <p>&copy; {new Date().getFullYear()} Tulie Agency. All rights reserved.</p>
                 </div>
-            </footer>
-        </div>
+            </footer >
+        </div >
     )
 }

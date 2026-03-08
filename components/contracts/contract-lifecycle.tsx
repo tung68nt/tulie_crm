@@ -154,7 +154,7 @@ export function ContractLifecycle({ contract, project }: ContractLifecycleProps)
                             {/* Connector line */}
                             {!isLast && (
                                 <div className={cn(
-                                    "absolute left-[15px] top-[32px] w-[2px] h-[calc(100%-16px)]",
+                                    "absolute left-[15px] top-[38px] w-[2px] h-[calc(100%-12px)]",
                                     isCompleted ? "bg-primary" : "bg-muted"
                                 )} />
                             )}

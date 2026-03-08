@@ -63,7 +63,7 @@ export default function DocumentDownloadButton({
                     className={className}
                 >
                     {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-                    <span className="text-xs">{label}</span>
+                    <span>{label}</span>
                 </Button>
             ) : (
                 <PDFDownloadLink
@@ -82,7 +82,7 @@ export default function DocumentDownloadButton({
                             ) : (
                                 <Download className="h-4 w-4 mr-2" />
                             )}
-                            <span className="text-xs">{label}</span>
+                            <span>{label}</span>
                         </Button>
                     )}
                 </PDFDownloadLink>
