@@ -170,8 +170,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <span className="text-[11px] text-muted-foreground">Khách hàng</span>
                             <span className="text-sm font-semibold">{customer?.company_name || customer?.name}</span>
                         </div>
-                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Building2 className="h-4 w-4 text-primary" />
+                        <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center">
+                            <Building2 className="h-4 w-4 text-slate-900" />
                         </div>
                     </div>
                 </div>
@@ -232,7 +232,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm font-medium text-slate-500">Tổng giá trị dự án</span>
-                                <Receipt className="h-4 w-4 text-slate-400" />
+                                <Receipt className="h-4 w-4 text-slate-900" />
                             </div>
                             <p className="text-2xl font-bold mb-1 tracking-tight">{formatCurrency(totalValue)}</p>
                             <div className="flex justify-between text-[11px] text-slate-500 mb-2">
@@ -252,7 +252,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm font-medium text-slate-500">Tiến độ dự án</span>
-                                <TrendingUp className="h-4 w-4 text-emerald-500" />
+                                <TrendingUp className="h-4 w-4 text-slate-900" />
                             </div>
                             <p className="text-2xl font-bold mb-1">{projectProgress}%</p>
                             <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
@@ -261,7 +261,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </div>
                             <Progress value={projectProgress} className="h-1.5 bg-slate-100" />
                             <div className="mt-3 bg-slate-50 rounded-lg p-2 flex items-center gap-2">
-                                <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                                <CheckCircle className="h-3.5 w-3.5 text-slate-900" />
                                 <span className="text-[11px] text-slate-600 font-medium">{completedTasks}/{totalTasks} công việc đã hoàn tất</span>
                             </div>
                         </CardContent>
@@ -272,7 +272,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm font-medium text-slate-500">Thời gian thực hiện</span>
-                                <Clock className="h-4 w-4 text-amber-500" />
+                                <Clock className="h-4 w-4 text-slate-900" />
                             </div>
                             <p className="text-2xl font-bold mb-1">
                                 {project?.start_date && project?.end_date ? (
@@ -296,7 +296,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 lg:grid-cols-3">
                     {/* Timeline */}
                     <div className="lg:col-span-2">
                         <Card>
@@ -440,8 +440,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <Card className="bg-muted/50">
                             <CardContent className="pt-6">
                                 <div className="flex items-start gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                                        <AlertCircle className="h-4 w-4 text-primary" />
+                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                                        <AlertCircle className="h-4 w-4 text-slate-900" />
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-semibold mb-1">Cần hỗ trợ?</h4>
