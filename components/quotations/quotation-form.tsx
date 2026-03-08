@@ -589,10 +589,13 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => setIsImportProposalOpen(true)}
+                                    onClick={() => {
+                                        setImportText(JSON.stringify(proposalContent, null, 2))
+                                        setIsImportProposalOpen(true)
+                                    }}
                                     className="gap-2"
                                 >
-                                    <Plus className="h-4 w-4" /> Nhập nhanh từ JSON/Mã
+                                    <FileJson className="h-4 w-4" /> JSON Nội dung
                                 </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -804,15 +807,36 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <CardDescription>Danh sách hạng mục báo giá được phân loại</CardDescription>
                             </div>
                             <div className="flex gap-2 flex-wrap">
-                                <Button type="button" variant="outline" size="sm" onClick={() => setIsImportJsonOpen(true)}>
-                                    <Upload className="mr-2 h-4 w-4" />
-                                    <span className="hidden sm:inline">Nhập JSON</span>
-                                    <span className="sm:hidden">JSON</span>
-                                </Button>
-                                <Button type="button" variant="outline" size="sm" onClick={handleExportJson}>
-                                    <Copy className="mr-2 h-4 w-4" />
-                                    <span className="hidden sm:inline">Xuất JSON</span>
-                                    <span className="sm:hidden">Copy</span>
+                                <Button type="button" variant="outline" size="sm" onClick={() => {
+                                    const exportData = {
+                                        title,
+                                        quotation_number: quotationNumber,
+                                        type,
+                                        vat_percent: vatPercent,
+                                        validity_days: validityDays,
+                                        terms,
+                                        notes,
+                                        bank_name: bankName,
+                                        bank_account_no: bankAccountNo,
+                                        bank_account_name: bankAccountName,
+                                        bank_branch: bankBranch,
+                                        ...(type === 'proposal' ? { proposal_content: proposalContent } : {}),
+                                        items: items.map((item, idx) => ({
+                                            section_name: item.section_name || '',
+                                            product_name: item.product_name || '',
+                                            description: item.description || '',
+                                            quantity: item.quantity || 1,
+                                            unit: item.unit || '',
+                                            unit_price: item.unit_price || 0,
+                                            discount: item.discount || 0,
+                                            sort_order: idx
+                                        }))
+                                    }
+                                    setImportJsonText(JSON.stringify(exportData, null, 2))
+                                    setIsImportJsonOpen(true)
+                                }}>
+                                    <FileJson className="mr-2 h-4 w-4" />
+                                    <span>Báo giá JSON</span>
                                 </Button>
                                 <Button type="button" variant="outline" size="sm" onClick={addSection}>
                                     <Plus className="mr-2 h-4 w-4" />
@@ -1194,19 +1218,35 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
                 <DialogContent className="max-w-2xl sm:max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>Nhập nhanh Proposal Content</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2">
+                            <FileJson className="h-5 w-5 text-primary" />
+                            Nội dung hồ sơ đề xuất (JSON)
+                        </DialogTitle>
                         <DialogDescription>
-                            Dán mã JSON chứa các phần nội dung (introduction, scope_of_work, methodology, deliverables, team, timeline, warranty, why_us).
+                            Dán mã JSON để nhập nhanh hoặc copy nội dung phía dưới để lưu trữ/sử dụng cho báo giá khác.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">Mã JSON hoặc Script:</label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium">Mã JSON nội dung:</label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 text-xs"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(importText)
+                                        toast.success('Đã copy nội dung')
+                                    }}
+                                >
+                                    <Copy className="h-3 w-3 mr-1" /> Copy
+                                </Button>
+                            </div>
                             <Textarea
                                 placeholder='{ "introduction": "...", "scope_of_work": "...", ... }'
                                 value={importText}
                                 onChange={(e) => setImportText(e.target.value)}
-                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50"
+                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
                             />
                         </div>
                         <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">
@@ -1228,20 +1268,33 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <FileJson className="h-5 w-5 text-primary" />
-                            Nhập báo giá từ JSON
+                            Toàn bộ báo giá (JSON)
                         </DialogTitle>
                         <DialogDescription>
-                            Dán JSON chứa thông tin báo giá. Tất cả các trường sẽ được đồng bộ vào form. Dùng nút "Xuất JSON" để lấy cấu trúc mẫu.
+                            Chỉnh sửa JSON phía dưới và bấm "Đồng bộ" để cập nhật form, hoặc copy để lưu trữ.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">JSON báo giá:</label>
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium">Dữ liệu JSON:</label>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7 text-xs"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(importJsonText)
+                                        toast.success('Đã copy JSON')
+                                    }}
+                                >
+                                    <Copy className="h-3 w-3 mr-1" /> Copy JSON
+                                </Button>
+                            </div>
                             <Textarea
                                 placeholder='{ "title": "...", "items": [...], ... }'
                                 value={importJsonText}
                                 onChange={(e) => setImportJsonText(e.target.value)}
-                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50"
+                                className="min-h-[350px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
                             />
                         </div>
                         <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">

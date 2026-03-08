@@ -16,6 +16,7 @@ interface DocumentDownloadButtonProps {
     customerId: string;
     fileName?: string;
     className?: string;
+    initialData?: any;
 }
 
 export default function DocumentDownloadButton({
@@ -26,9 +27,10 @@ export default function DocumentDownloadButton({
     documentId,
     customerId,
     fileName,
-    className
+    className,
+    initialData
 }: DocumentDownloadButtonProps) {
-    const [docData, setDocData] = useState<any>(null);
+    const [docData, setDocData] = useState<any>(initialData || null);
     const [loading, setLoading] = useState(false);
 
     const handlePrepare = async () => {
@@ -40,8 +42,16 @@ export default function DocumentDownloadButton({
             if (type === 'invoice') pdfType = 'payment_request';
             if (type === 'minutes') pdfType = 'delivery_minutes';
 
-            const data = await getDocumentData(pdfType, customerId, documentId);
-            setDocData(data);
+            const rawData = await getDocumentData(pdfType, customerId, documentId);
+            const now = new Date();
+            const preparedData = {
+                ...rawData,
+                day: rawData.day || now.getDate(),
+                month: rawData.month || (now.getMonth() + 1),
+                year: rawData.year || now.getFullYear(),
+                quotation_number: rawData.quotation_number || rawData.contract_number,
+            };
+            setDocData(preparedData);
         } catch (error) {
             console.error('Error fetching document data:', error);
         } finally {

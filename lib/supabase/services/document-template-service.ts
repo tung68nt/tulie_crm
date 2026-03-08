@@ -359,10 +359,12 @@ export async function getDocumentData(
         customer,
         items,
         contract_number: relationData?.contract_number || relationData?.quotation_number,
+        quotation_number: relationData?.quotation_number,
         total_amount: relationData?.total_amount || 0,
         amount_in_words: relationData?.total_amount ? readNumberToWords(relationData.total_amount) : '',
         start_date: relationData?.start_date ? new Date(relationData.start_date).toLocaleDateString('vi-VN') : '',
         contract_date: relationData?.created_at ? new Date(relationData.created_at).toLocaleDateString('vi-VN') : now.toLocaleDateString('vi-VN'),
+        valid_until: relationData?.valid_until ? new Date(relationData.valid_until).toLocaleDateString('vi-VN') : '30 ngày kể từ ngày báo giá',
         ...additionalMetadata
     }
 }

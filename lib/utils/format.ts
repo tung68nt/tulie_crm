@@ -3,17 +3,19 @@ import { vi } from 'date-fns/locale'
 import { CURRENCY_LOCALE, DATE_FORMAT, DATETIME_FORMAT } from '@/lib/constants'
 
 // Currency formatting
-export function formatCurrency(amount: number, currency: string = 'VND'): string {
+export function formatCurrency(amount: number | null | undefined, currency: string = 'VND'): string {
+    let value = (amount === null || amount === undefined || isNaN(amount)) ? 0 : amount;
     return new Intl.NumberFormat(CURRENCY_LOCALE, {
         style: 'currency',
         currency,
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(amount)
+    }).format(value)
 }
 
-export function formatNumber(value: number): string {
-    return new Intl.NumberFormat(CURRENCY_LOCALE).format(value)
+export function formatNumber(value: number | null | undefined): string {
+    const val = (value === null || value === undefined || isNaN(value)) ? 0 : value;
+    return new Intl.NumberFormat(CURRENCY_LOCALE).format(val)
 }
 
 // Date formatting

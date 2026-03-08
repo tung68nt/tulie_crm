@@ -17,6 +17,8 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
 
+import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
+
 // Add missing types for PDF libs
 declare global {
     interface Window {
@@ -31,6 +33,9 @@ interface QuotationContentProps {
 
 export function QuotationContent({ quotation }: QuotationContentProps) {
     const [showConfirm, setShowConfirm] = useState(false)
+    const [showReject, setShowReject] = useState(false)
+    const [rejectReason, setRejectReason] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const printRef = useRef<HTMLDivElement>(null)
     const [isDownloading, setIsDownloading] = useState(false)
     const [confirmer, setConfirmer] = useState({
@@ -40,15 +45,46 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
         position: ''
     })
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
-            alert("Vui lòng nhập tên và số điện thoại")
+            toast.error("vui lòng nhập tên và số điện thoại")
             return
         }
-        console.log("Confirmed by:", confirmer)
-        setShowConfirm(false)
-        if (typeof window !== 'undefined') {
-            alert("Đã xác nhận thành công (Demo)")
+
+        setIsSubmitting(true)
+        try {
+            const res = await updateQuotationStatus(quotation.id, 'accepted', confirmer)
+            if (res.success) {
+                toast.success("đã xác nhận chấp nhận báo giá thành công")
+                setShowConfirm(false)
+                // Optionally reload or let handle the parent update
+                window.location.reload()
+            } else {
+                toast.error(res.error || "lỗi khi xác nhận")
+            }
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleRejectSubmit = async () => {
+        if (!rejectReason.trim()) {
+            toast.error("vui lòng nhập lý do từ chối")
+            return
+        }
+
+        setIsSubmitting(true)
+        try {
+            const res = await updateQuotationStatus(quotation.id, 'rejected', { reason: rejectReason })
+            if (res.success) {
+                toast.success("đã gửi từ chối báo giá")
+                setShowReject(false)
+                window.location.reload()
+            } else {
+                toast.error(res.error || "lỗi khi xử lý")
+            }
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -123,6 +159,19 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
         }
     }
 
+    const initialPdfData = {
+        type: 'quotation',
+        quotation_number: quotation.quotation_number,
+        customer: quotation.customer,
+        items: quotation.items,
+        total_amount: finalAmount,
+        amount_in_words: readNumberToWords(finalAmount),
+        valid_until: quotation.valid_until ? formatDate(quotation.valid_until) : '30 ngày kể từ ngày báo giá',
+        day: new Date(quotation.created_at || new Date()).getDate(),
+        month: new Date(quotation.created_at || new Date()).getMonth() + 1,
+        year: new Date(quotation.created_at || new Date()).getFullYear(),
+    }
+
     return (
         <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
             {/* Global print style enforcement */}
@@ -145,6 +194,17 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                 ref={printRef}
                 className="quotation-paper mx-auto bg-white  relative w-full max-w-[210mm] overflow-hidden"
             >
+                {/* Status Watermark/Banner for finalized quotations */}
+                {quotation.status === 'accepted' && (
+                    <div className="absolute top-10 right-[-40px] rotate-[35deg] bg-green-500 text-white px-16 py-2 z-50 shadow-lg font-bold text-lg print:bg-green-100 print:text-green-800 border-2 border-white">
+                        ĐÃ CHẤP NHẬN
+                    </div>
+                )}
+                {quotation.status === 'rejected' && (
+                    <div className="absolute top-10 right-[-40px] rotate-[35deg] bg-red-500 text-white px-16 py-2 z-50 shadow-lg font-bold text-lg print:bg-red-100 print:text-red-800 border-2 border-white">
+                        ĐÃ TỪ CHỐI
+                    </div>
+                )}
 
                 <div className="quotation-inner p-6 sm:p-10">
                     <div>
@@ -499,26 +559,64 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
-                                <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                In báo giá
-                            </Button>
-                            <DocumentDownloadButton
-                                type="quotation"
-                                label="Tải báo giá"
-                                variant="outline"
-                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
-                                documentId={quotation.id}
-                                customerId={quotation.customer_id}
-                                fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
-                            />
-                            <Button variant="ghost" className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600">
-                                Từ chối
-                            </Button>
-                            <Button className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 font-semibold text-[13px] sm:text-sm px-6" onClick={() => setShowConfirm(true)}>
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Chấp nhận ngay
-                            </Button>
+                            {quotation.status !== 'accepted' && quotation.status !== 'rejected' ? (
+                                <>
+                                    <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
+                                        <Printer className="mr-1.5 h-3.5 w-3.5" />
+                                        In báo giá
+                                    </Button>
+                                    <DocumentDownloadButton
+                                        type="quotation"
+                                        label="Tải báo giá"
+                                        variant="outline"
+                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
+                                        documentId={quotation.id}
+                                        customerId={quotation.customer_id}
+                                        fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
+                                        initialData={initialPdfData}
+                                    />
+                                    <Button
+                                        variant="ghost"
+                                        className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600"
+                                        onClick={() => setShowReject(true)}
+                                        disabled={isSubmitting}
+                                    >
+                                        Từ chối
+                                    </Button>
+                                    <Button
+                                        className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 font-semibold text-[13px] sm:text-sm px-6"
+                                        onClick={() => setShowConfirm(true)}
+                                        disabled={isSubmitting}
+                                    >
+                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                        Chấp nhận ngay
+                                    </Button>
+                                </>
+                            ) : (
+                                <div className="col-span-2 flex items-center gap-3">
+                                    <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
+                                        <Printer className="mr-1.5 h-3.5 w-3.5" />
+                                        In báo giá
+                                    </Button>
+                                    <DocumentDownloadButton
+                                        type="quotation"
+                                        label="Tải báo giá"
+                                        variant="outline"
+                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
+                                        documentId={quotation.id}
+                                        customerId={quotation.customer_id}
+                                        fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
+                                        initialData={initialPdfData}
+                                    />
+                                    <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} font-semibold text-sm`}>
+                                        {quotation.status === 'accepted' ? (
+                                            <><CheckCircle className="h-4 w-4" /> Bạn đã chấp nhận báo giá này</>
+                                        ) : (
+                                            <><XCircle className="h-4 w-4" /> Bạn đã từ chối báo giá này</>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -744,9 +842,39 @@ export function QuotationContent({ quotation }: QuotationContentProps) {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowConfirm(false)}>Hủy</Button>
-                        <Button onClick={handleConfirm} className="bg-black text-white hover:bg-slate-800">
-                            Xác nhận
+                        <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>Hủy</Button>
+                        <Button onClick={handleConfirm} className="bg-black text-white hover:bg-slate-800" disabled={isSubmitting}>
+                            {isSubmitting ? 'Đang xử lý...' : 'Xác nhận'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Rejection Dialog */}
+            <Dialog open={showReject} onOpenChange={setShowReject}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Lý do từ chối báo giá</DialogTitle>
+                        <DialogDescription>
+                            Chúng tôi rất tiếc vì báo giá này chưa đáp ứng được yêu cầu. Vui lòng cho biết lý do để chúng tôi cải thiện.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
+                        <div className="grid gap-2">
+                            <Label htmlFor="reason">Lý do từ chối <span className="text-red-500">*</span></Label>
+                            <textarea
+                                id="reason"
+                                className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                value={rejectReason}
+                                onChange={(e) => setRejectReason(e.target.value)}
+                                placeholder="VD: Giá chưa phù hợp, Cần bổ sung thêm hạng mục, Đã chọn đơn vị khác..."
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowReject(false)} disabled={isSubmitting}>Hủy</Button>
+                        <Button onClick={handleRejectSubmit} variant="destructive" disabled={isSubmitting}>
+                            {isSubmitting ? 'Đang gửi...' : 'Gửi từ chối'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

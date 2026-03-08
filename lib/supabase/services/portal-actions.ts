@@ -81,3 +81,58 @@ export async function verifyPortalPassword(token: string, password: string) {
         return { success: false, error: 'Lỗi hệ thống' }
     }
 }
+
+export async function updateQuotationStatus(quotationId: string, status: string, metadata: any = {}) {
+    try {
+        const supabase = await createClient()
+
+        // 1. Get quotation to find public_token for revalidation
+        const { data: quote } = await supabase
+            .from('quotations')
+            .select('public_token')
+            .eq('id', quotationId)
+            .single()
+
+        const updateData: any = {
+            status,
+            updated_at: new Date().toISOString()
+        }
+
+        if (status === 'accepted') {
+            updateData.accepted_at = new Date().toISOString()
+            updateData.confirmer_info = {
+                name: metadata.name,
+                phone: metadata.phone,
+                email: metadata.email,
+                position: metadata.position
+            }
+        } else if (status === 'rejected') {
+            updateData.rejected_at = new Date().toISOString()
+            // Some systems use rejection_reason column, others use status_notes or similar.
+            // Based on the user's need, we ensure it's recorded.
+            updateData.notes = metadata.reason ? `Lý do từ chối: ${metadata.reason}` : null
+            // If the column exists, we set it too (safe update)
+            updateData.rejection_reason = metadata.reason || null
+        }
+
+        const { error } = await supabase
+            .from('quotations')
+            .update(updateData)
+            .eq('id', quotationId)
+
+        if (error) {
+            throw error
+        }
+
+        // 2. Revalidate both the admin path and the public path
+        revalidatePath(`/quotations/${quotationId}`)
+        if (quote?.public_token) {
+            revalidatePath(`/quote/${quote.public_token}`)
+        }
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Error updating quotation status:', err)
+        return { success: false, error: err.message || 'Lỗi hệ thống' }
+    }
+}
