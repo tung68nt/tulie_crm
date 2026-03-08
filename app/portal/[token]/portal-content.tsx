@@ -99,59 +99,31 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     // Sales person from quotation creator
     const salesPerson = quotation.creator || null
 
-    // Build documents list
-    const documents: any[] = []
+    // Group documents by Quotation (Package)
+    const allQuotations = quotations && quotations.length > 0 ? quotations : [quotation]
+    const documentGroups = allQuotations.map(q => {
+        const linkedContracts = contracts?.filter((c: any) => c.quotation_id === q.id) || []
+        const linkedInvoices = invoices?.filter((inv: any) =>
+            inv.quotation_id === q.id || linkedContracts.some(c => c.id === inv.contract_id)
+        ) || []
 
-    if (quotations && quotations.length > 0) {
-        quotations.forEach((q: any) => {
-            documents.push({
-                id: q.id,
-                name: `Báo giá #${q.quotation_number}`,
-                type: 'quotation',
-                status: q.status === 'accepted' ? 'signed' : 'pending_signature',
-                public_token: q.public_token
-            })
-        })
-    } else {
-        documents.push({
-            id: quotation.id,
-            name: `Báo giá #${quotation.quotation_number}`,
-            type: 'quotation',
-            status: quotation.status === 'accepted' ? 'signed' : 'pending_signature',
-        })
-    }
+        return {
+            quotation: q,
+            contracts: linkedContracts,
+            invoices: linkedInvoices,
+            title: q.title || `Hạng mục: ${q.quotation_number}`
+        }
+    })
 
-    if (contracts) {
-        contracts.forEach((c: any) => {
-            documents.push({
-                id: c.id,
-                name: c.type === 'order' ? `Đơn hàng #${c.contract_number}` : `Hợp đồng #${c.contract_number}`,
-                type: 'contract',
-                status: c.status === 'active' || c.status === 'completed' ? 'signed' : 'pending_signature'
-            })
-        })
-    }
-
-    if (invoices) {
-        invoices.forEach((inv: any) => {
-            documents.push({
-                id: inv.id,
-                name: `Yêu cầu thanh toán ${inv.invoice_number}`,
-                type: 'payment_request',
-                status: inv.status
-            })
-        })
-    }
+    const totalDocuments = (quotations?.length || 1) + (contracts?.length || 0) + (invoices?.length || 0)
 
     // Total value: contracts > sum of all quotations > single quotation
     const totalPaid = invoices?.filter((inv: any) => inv.status === 'paid').reduce((sum: number, inv: any) => sum + inv.total_amount, 0) || 0
     const totalValueFromContracts = contracts?.reduce((sum: number, c: any) => sum + (c.total_amount || 0), 0) || 0
-    const allQuotations = quotations && quotations.length > 0 ? quotations : [quotation]
     const totalValueFromQuotations = allQuotations.reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
     const totalValue = totalValueFromContracts > 0 ? totalValueFromContracts : totalValueFromQuotations
     const paymentProgress = totalValue > 0 ? Math.min((totalPaid / totalValue) * 100, 100) : 0
     const remainingAmount = totalValue - totalPaid
-    const totalDocuments = documents.length
 
 
     // Timeline stats
@@ -392,102 +364,115 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     {/* Vertical Dotted Line */}
                                     <div className="absolute left-[39px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
 
-                                    <div className="space-y-6">
-                                        {/* 1. Báo giá */}
-                                        <div className="relative flex items-start gap-4 px-6 group">
-                                            <div className={cn(
-                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                quotations?.length > 0 ? "bg-slate-900 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-300"
-                                            )}>
-                                                <FileText className="h-4 w-4" />
-                                            </div>
-                                            <div className="flex-1 space-y-3 pt-0.5">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
-                                                    <h4 className="text-sm font-bold text-slate-900">Báo giá & Đề xuất</h4>
+                                    <div className="space-y-12">
+                                        {documentGroups.map((group, groupIdx) => (
+                                            <div key={group.quotation.id} className="relative group/bundle">
+                                                {/* Group Header */}
+                                                <div className="px-6 mb-4 flex items-center gap-2">
+                                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
+                                                    <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded">
+                                                        {group.title}
+                                                    </h3>
                                                 </div>
-                                                <div className="space-y-2">
-                                                    {documents.filter(d => d.type === 'quotation').map((doc) => (
-                                                        <a
-                                                            key={doc.id}
-                                                            href={`/quote/${doc.public_token || token}`}
-                                                            target="_blank"
-                                                            className="flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer group/item border-slate-100"
-                                                        >
-                                                            <div className="flex items-center gap-3 min-w-0">
-                                                                <div className="h-2 w-2 rounded-full bg-slate-400 shrink-0" />
-                                                                <p className="text-xs font-bold truncate text-slate-700">{doc.name}</p>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                {getStatusBadge(doc.status)}
-                                                                <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover/item:text-slate-900 transition-colors" />
-                                                            </div>
-                                                        </a>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        {/* 2. Hợp đồng */}
-                                        <div className="relative flex items-start gap-4 px-6 group">
-                                            <div className={cn(
-                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                contracts?.length > 0 ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
-                                            )}>
-                                                <FileSignature className="h-4 w-4" />
-                                            </div>
-                                            <div className="flex-1 space-y-3 pt-0.5">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 2</span>
-                                                    <h4 className="text-sm font-bold text-slate-900">Hợp đồng kinh tế</h4>
-                                                </div>
-                                                {contracts?.length > 0 ? (
-                                                    <div className="space-y-2">
-                                                        {documents.filter(d => d.type === 'contract').map((doc) => (
-                                                            <div
-                                                                key={doc.id}
-                                                                className="flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 border-slate-100"
+                                                <div className="space-y-6">
+                                                    {/* 1. Báo giá */}
+                                                    <div className="relative flex items-start gap-4 px-6 group/step">
+                                                        <div className={cn(
+                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all bg-slate-900 border-slate-900 text-white"
+                                                        )}>
+                                                            <FileText className="h-4 w-4" />
+                                                        </div>
+                                                        <div className="flex-1 space-y-2 pt-0.5">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Báo giá & Đề xuất</h4>
+                                                            </div>
+                                                            <a
+                                                                href={`/quote/${group.quotation.public_token || token}`}
+                                                                target="_blank"
+                                                                className="flex items-center justify-between p-2.5 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer border-slate-100"
                                                             >
-                                                                <div className="flex items-center gap-3 min-w-0">
-                                                                    <div className="h-2 w-2 rounded-full bg-slate-400 shrink-0" />
-                                                                    <p className="text-xs font-bold truncate text-slate-700">{doc.name}</p>
+                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
+                                                                    <p className="text-[11px] font-bold truncate text-slate-700">#{group.quotation.quotation_number}</p>
                                                                 </div>
                                                                 <div className="flex items-center gap-2">
-                                                                    {getStatusBadge(doc.status)}
-                                                                    <DocumentDownloadButton
-                                                                        type="contract"
-                                                                        documentId={doc.id}
-                                                                        customerId={customer.id}
-                                                                        label=""
-                                                                        variant="ghost"
-                                                                        className="h-8 w-8 p-0"
-                                                                    />
+                                                                    {getStatusBadge(group.quotation.status === 'accepted' ? 'signed' : 'pending_signature')}
+                                                                    <ExternalLink className="h-3 w-3 text-slate-400 group-hover:text-slate-900 transition-colors" />
                                                                 </div>
-                                                            </div>
-                                                        ))}
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                ) : (
-                                                    <p className="text-[11px] text-slate-400 italic">Dự thảo sau khi báo giá được phê duyệt</p>
+
+                                                    {/* 2. Hợp đồng */}
+                                                    <div className="relative flex items-start gap-4 px-6 group/step">
+                                                        <div className={cn(
+                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                            group.contracts.length > 0 ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
+                                                        )}>
+                                                            <FileSignature className="h-4 w-4" />
+                                                        </div>
+                                                        <div className="flex-1 space-y-2 pt-0.5">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 2</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Hợp đồng kinh tế</h4>
+                                                            </div>
+                                                            {group.contracts.length > 0 ? (
+                                                                <div className="space-y-1.5">
+                                                                    {group.contracts.map((c: any) => (
+                                                                        <div
+                                                                            key={c.id}
+                                                                            className="flex items-center justify-between p-2.5 rounded-xl border bg-slate-50/50 border-slate-100"
+                                                                        >
+                                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                                <div className="h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
+                                                                                <p className="text-[11px] font-bold truncate text-slate-700">#{c.contract_number}</p>
+                                                                            </div>
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                {getStatusBadge(c.status === 'active' || c.status === 'completed' ? 'signed' : 'pending_signature')}
+                                                                                <DocumentDownloadButton
+                                                                                    type="contract"
+                                                                                    documentId={c.id}
+                                                                                    customerId={customer.id}
+                                                                                    label=""
+                                                                                    variant="ghost"
+                                                                                    className="h-7 w-7 p-0"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-[10px] text-slate-400 italic">Dự thảo sau khi báo giá được phê duyệt</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 3. Nghiệm thu */}
+                                                    <div className="relative flex items-start gap-4 px-6 group/step">
+                                                        <div className={cn(
+                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                            timeline.some(t => t.type === 'delivery' && t.status === 'completed' && (t.id.includes(group.quotation.id) || group.contracts.some(c => t.id.includes(c.id)))) ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
+                                                        )}>
+                                                            <CheckCircle className="h-4 w-4" />
+                                                        </div>
+                                                        <div className="flex-1 space-y-1 pt-0.5">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 3</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Nghiệm thu & Bàn giao</h4>
+                                                            </div>
+                                                            <p className="text-[10px] text-slate-400 italic">Biên bản xác nhận hoàn tất dịch vụ</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Divider if not last */}
+                                                {groupIdx < documentGroups.length - 1 && (
+                                                    <div className="mx-6 my-10 border-t border-slate-100 border-dashed" />
                                                 )}
                                             </div>
-                                        </div>
-
-                                        {/* 3. Nghiệm thu */}
-                                        <div className="relative flex items-start gap-4 px-6 group">
-                                            <div className={cn(
-                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                timeline.some(t => t.type === 'delivery' && t.status === 'completed') ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
-                                            )}>
-                                                <CheckCircle className="h-4 w-4" />
-                                            </div>
-                                            <div className="flex-1 space-y-3 pt-0.5">
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bước 3</span>
-                                                    <h4 className="text-sm font-bold text-slate-900">Nghiệm thu & Bàn giao</h4>
-                                                </div>
-                                                <p className="text-[11px] text-slate-400 italic">Biên bản xác nhận hoàn tất dịch vụ</p>
-                                            </div>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
                             </CardContent>
