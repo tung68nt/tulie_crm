@@ -96,6 +96,16 @@ export async function getProductUnits() {
 export async function updateProductUnits(units: string[]) {
     return updateSystemSetting('product_units', units)
 }
+
+export async function getBrands() {
+    const brands = await getSystemSetting('brand_list')
+    return Array.isArray(brands) ? brands : ['Tulie Agency', 'Tulie Studio', 'Tulie Lab']
+}
+
+export async function updateBrands(brands: string[]) {
+    return updateSystemSetting('brand_list', brands)
+}
+
 export async function getTelegramConfig() {
     const config = await getSystemSetting('telegram_config')
     return config || { bot_token: '', chat_id: '', is_enabled: false }

@@ -24,7 +24,9 @@ import {
     getAppearanceConfig,
     updateAppearanceConfig,
     updateSystemSetting,
-    getSystemSetting
+    getSystemSetting,
+    getBrands, // Added
+    updateBrands // Added
 } from '@/lib/supabase/services/settings-service'
 import { testTelegramConnection } from '@/lib/supabase/services/telegram-service'
 import { testSmtpConnection, sendEmail } from '@/lib/supabase/services/email-service'
@@ -45,6 +47,10 @@ export default function SettingsPage() {
         bank_account_no: "",
         bank_account_name: "",
         bank_branch: "",
+        studio_bank_name: "",
+        studio_bank_account_no: "",
+        studio_bank_account_name: "",
+        studio_bank_branch: "",
         default_notes: "",
         default_payment_terms: ""
     })
@@ -56,6 +62,12 @@ export default function SettingsPage() {
     const [units, setUnits] = useState<string[]>([])
     const [newUnit, setNewUnit] = useState('')
     const [isSavingUnits, setIsSavingUnits] = useState(false)
+
+    // New states for Brands
+    const [brands, setBrands] = useState<string[]>([])
+    const [newBrand, setNewBrand] = useState('')
+    const [isSavingBrands, setIsSavingBrands] = useState(false)
+
     const [telegramConfig, setTelegramConfig] = useState({
         bot_token: '',
         chat_id: '',
@@ -88,6 +100,10 @@ export default function SettingsPage() {
         bank_account_no: '',
         bank_account_name: '',
         bank_branch: '',
+        studio_bank_name: '',
+        studio_bank_account_no: '',
+        studio_bank_account_name: '',
+        studio_bank_branch: '',
         default_notes: '',
         default_payment_terms: ''
     })
@@ -97,10 +113,11 @@ export default function SettingsPage() {
         loadCompanySettings()
         loadCategories()
         loadUnits()
+        loadBrands() // Added
         loadTelegram()
         loadAppearance()
         loadSmtp()
-        loadBrand()
+        loadBrand() // This seems to load the company's brand config, not the list of brands. Keeping it for now as it was pre-existing.
     }, [])
 
     async function loadBrand() {
@@ -133,6 +150,10 @@ export default function SettingsPage() {
             bank_account_no: config.bank_account_no || "",
             bank_account_name: config.bank_account_name || "",
             bank_branch: config.bank_branch || "",
+            studio_bank_name: config.studio_bank_name || "",
+            studio_bank_account_no: config.studio_bank_account_no || "",
+            studio_bank_account_name: config.studio_bank_account_name || "",
+            studio_bank_branch: config.studio_bank_branch || "",
             default_notes: config.default_notes || "",
             default_payment_terms: config.default_payment_terms || ""
         })
@@ -158,6 +179,15 @@ export default function SettingsPage() {
             setUnits(data)
         } catch (error) {
             console.error('Failed to load units:', error)
+        }
+    }
+
+    async function loadBrands() { // Added
+        try {
+            const data = await getBrands()
+            setBrands(data)
+        } catch (error) {
+            console.error('Failed to load brands:', error)
         }
     }
 
@@ -204,6 +234,10 @@ export default function SettingsPage() {
                 bank_account_no: companySettings.bank_account_no,
                 bank_account_name: companySettings.bank_account_name,
                 bank_branch: companySettings.bank_branch,
+                studio_bank_name: companySettings.studio_bank_name,
+                studio_bank_account_no: companySettings.studio_bank_account_no,
+                studio_bank_account_name: companySettings.studio_bank_account_name,
+                studio_bank_branch: companySettings.studio_bank_branch,
                 default_notes: companySettings.default_notes,
                 default_payment_terms: companySettings.default_payment_terms
             })
@@ -303,15 +337,37 @@ export default function SettingsPage() {
         }
     }
 
-    const handleSaveBrand = async () => {
-        setIsSavingBrand(true)
+    const handleAddBrand = async () => { // Added
+        if (!newBrand.trim()) return
+        if (brands.includes(newBrand.trim())) {
+            toast.error('Thương hiệu này đã tồn tại')
+            return
+        }
+
+        const updatedBrands = [...brands, newBrand.trim()]
+        setIsSavingBrands(true)
         try {
-            await updateBrandConfig(brandConfig)
-            toast.success('Đã lưu cấu hình thương hiệu')
+            await updateBrands(updatedBrands)
+            setBrands(updatedBrands)
+            setNewBrand('')
+            toast.success('Đã thêm thương hiệu mới')
         } catch (error) {
-            toast.error('Lỗi khi lưu cấu hình thương hiệu')
+            toast.error('Lỗi khi lưu thương hiệu')
         } finally {
-            setIsSavingBrand(false)
+            setIsSavingBrands(false)
+        }
+    }
+
+    const handleDeleteBrand = async (brandToDelete: string) => { // Added
+        if (!confirm(`Bạn có chắc chắn muốn xóa thương hiệu "${brandToDelete}"?`)) return
+
+        const updatedBrands = brands.filter(b => b !== brandToDelete)
+        try {
+            await updateBrands(updatedBrands)
+            setBrands(updatedBrands)
+            toast.success('Đã xóa thương hiệu')
+        } catch (error) {
+            toast.error('Lỗi khi xóa thương hiệu')
         }
     }
 
@@ -370,6 +426,13 @@ export default function SettingsPage() {
                             Đơn vị tính
                         </TabsTrigger>
                         <TabsTrigger
+                            value="brands" // Changed value from "brand" to "brands"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                        >
+                            <Globe className="h-4 w-4" />
+                            Thương hiệu
+                        </TabsTrigger>
+                        <TabsTrigger
                             value="statuses"
                             className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
@@ -389,13 +452,6 @@ export default function SettingsPage() {
                         >
                             <Mail className="h-4 w-4" />
                             Email SMTP
-                        </TabsTrigger>
-                        <TabsTrigger
-                            value="brand"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
-                        >
-                            <Globe className="h-4 w-4" />
-                            Thương hiệu
                         </TabsTrigger>
                         <TabsTrigger
                             value="notifications"
@@ -538,43 +594,87 @@ export default function SettingsPage() {
                                 </div>
                                 <Separator />
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-medium">Thông tin bổ sung (Hợp đồng & Hóa đơn)</h4>
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="bank_name">Ngân hàng</Label>
-                                            <Input
-                                                id="bank_name"
-                                                value={companySettings.bank_name}
-                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_name: e.target.value })}
-                                                placeholder="Ví dụ: MB Bank"
-                                            />
+                                    <div className="space-y-4">
+                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Agency (Công ty)</h4>
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="bank_name">Ngân hàng</Label>
+                                                <Input
+                                                    id="bank_name"
+                                                    value={companySettings.bank_name}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_name: e.target.value })}
+                                                    placeholder="Ví dụ: MB Bank"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="bank_account_no">Số tài khoản</Label>
+                                                <Input
+                                                    id="bank_account_no"
+                                                    value={companySettings.bank_account_no}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_account_no: e.target.value })}
+                                                    placeholder="Ví dụ: 0123456789"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="bank_account_name">Chủ tài khoản</Label>
+                                                <Input
+                                                    id="bank_account_name"
+                                                    value={companySettings.bank_account_name}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_account_name: e.target.value })}
+                                                    placeholder="Ví dụ: CONG TY TNHH ABC"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="bank_branch">Chi nhánh</Label>
+                                                <Input
+                                                    id="bank_branch"
+                                                    value={companySettings.bank_branch}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_branch: e.target.value })}
+                                                    placeholder="Ví dụ: Thanh Xuân - Hà Nội"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="bank_account_no">Số tài khoản</Label>
-                                            <Input
-                                                id="bank_account_no"
-                                                value={companySettings.bank_account_no}
-                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_account_no: e.target.value })}
-                                                placeholder="Ví dụ: 0123456789"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="bank_account_name">Chủ tài khoản</Label>
-                                            <Input
-                                                id="bank_account_name"
-                                                value={companySettings.bank_account_name}
-                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_account_name: e.target.value })}
-                                                placeholder="Ví dụ: CONG TY TNHH ABC"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="bank_branch">Chi nhánh</Label>
-                                            <Input
-                                                id="bank_branch"
-                                                value={companySettings.bank_branch}
-                                                onChange={(e) => setCompanySettings({ ...companySettings, bank_branch: e.target.value })}
-                                                placeholder="Ví dụ: Thanh Xuân - Hà Nội"
-                                            />
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 border-t border-dashed">
+                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Studio (Cá nhân)</h4>
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="studio_bank_name">Ngân hàng</Label>
+                                                <Input
+                                                    id="studio_bank_name"
+                                                    value={companySettings.studio_bank_name}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_name: e.target.value })}
+                                                    placeholder="Ví dụ: TPBank"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="studio_bank_account_no">Số tài khoản</Label>
+                                                <Input
+                                                    id="studio_bank_account_no"
+                                                    value={companySettings.studio_bank_account_no}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_account_no: e.target.value })}
+                                                    placeholder="Ví dụ: 0123456789"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="studio_bank_account_name">Chủ tài khoản</Label>
+                                                <Input
+                                                    id="studio_bank_account_name"
+                                                    value={companySettings.studio_bank_account_name}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_account_name: e.target.value })}
+                                                    placeholder="Ví dụ: NGUYEN VAN A"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="studio_bank_branch">Chi nhánh</Label>
+                                                <Input
+                                                    id="studio_bank_branch"
+                                                    value={companySettings.studio_bank_branch}
+                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_branch: e.target.value })}
+                                                    placeholder="Ví dụ: Hà Nội"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -705,6 +805,54 @@ export default function SettingsPage() {
                         </Card>
                     </TabsContent>
 
+                    {/* Brands Settings (New) */}
+                    <TabsContent value="brands">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Danh mục Thương hiệu</CardTitle>
+                                <CardDescription>
+                                    Quản lý các thương hiệu con của hệ thống (Tulie Agency, Tulie Studio...)
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="flex gap-4">
+                                    <div className="flex-1 space-y-2">
+                                        <Label htmlFor="new_brand">Tên thương hiệu mới</Label>
+                                        <Input
+                                            id="new_brand"
+                                            placeholder="Ví dụ: Tulie Lab..."
+                                            value={newBrand}
+                                            onChange={(e) => setNewBrand(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleAddBrand()}
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <Button onClick={handleAddBrand} disabled={isSavingBrands}>
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Thêm
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="border rounded-lg divide-y">
+                                    {brands.map((brand) => (
+                                        <div key={brand} className="flex items-center justify-between p-4">
+                                            <span className="font-medium">{brand}</span>
+                                            <Button variant="ghost" size="sm" onClick={() => handleDeleteBrand(brand)}>
+                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {brands.length === 0 && (
+                                        <div className="p-8 text-center text-muted-foreground italic">
+                                            Chưa có thương hiệu nào được cấu hình
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
                     {/* Statuses Settings */}
                     <TabsContent value="statuses">
                         <div className="grid gap-6">
@@ -716,11 +864,11 @@ export default function SettingsPage() {
                                 <CardContent>
                                     <div className="space-y-4">
                                         {[
-                                            { label: 'Mới (Lead)', color: 'bg-blue-500' },
-                                            { label: 'Tiềm năng (Prospect)', color: 'bg-yellow-500' },
-                                            { label: 'Khách hàng (Customer)', color: 'bg-green-500' },
-                                            { label: 'VIP', color: 'bg-purple-500' },
-                                            { label: 'Đã mất (Churned)', color: 'bg-red-500' },
+                                            { label: 'Mới (Lead)', color: 'bg-zinc-400' },
+                                            { label: 'Tiềm năng (Prospect)', color: 'bg-zinc-500' },
+                                            { label: 'Khách hàng (Customer)', color: 'bg-zinc-700' },
+                                            { label: 'VIP', color: 'bg-zinc-900' },
+                                            { label: 'Đã mất (Churned)', color: 'bg-zinc-300' },
                                         ].map((status, i) => (
                                             <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
                                                 <div className="flex items-center gap-3">
@@ -940,8 +1088,8 @@ export default function SettingsPage() {
                         <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-2xl">
                             <CardHeader className="bg-muted/30 border-b border-border/50 p-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-orange-100 dark:bg-orange-950/30 flex items-center justify-center">
-                                        <Mail className="h-5 w-5 text-orange-600" />
+                                    <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                        <Mail className="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
                                     </div>
                                     <div>
                                         <CardTitle className="text-xl font-bold">Email SMTP</CardTitle>
@@ -957,7 +1105,7 @@ export default function SettingsPage() {
                                             placeholder="smtp.gmail.com"
                                             value={smtpConfig.host}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -966,7 +1114,7 @@ export default function SettingsPage() {
                                             placeholder="587"
                                             value={smtpConfig.port}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, port: Number(e.target.value) || 587 })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -975,7 +1123,7 @@ export default function SettingsPage() {
                                             placeholder="email@example.com"
                                             value={smtpConfig.user}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -985,7 +1133,7 @@ export default function SettingsPage() {
                                             placeholder="****************"
                                             value={smtpConfig.pass}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -994,7 +1142,7 @@ export default function SettingsPage() {
                                             placeholder="Tulie CRM"
                                             value={smtpConfig.from_name}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1003,12 +1151,12 @@ export default function SettingsPage() {
                                             placeholder="info@tulie.vn"
                                             value={smtpConfig.from_email}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-orange-500/20"
+                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                 </div>
 
-                                <div className="flex items-center space-x-2 p-4 border rounded-xl bg-orange-50/30 border-orange-100 dark:bg-orange-950/10 dark:border-orange-900/30">
+                                <div className="flex items-center space-x-2 p-4 border rounded-xl bg-zinc-50/30 border-zinc-200 dark:bg-zinc-900/50 dark:border-zinc-800">
                                     <Switch
                                         id="smtp_secure"
                                         checked={smtpConfig.secure}
@@ -1027,123 +1175,9 @@ export default function SettingsPage() {
                                         {isTestingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi email thử
                                     </Button>
-                                    <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="bg-orange-600 hover:bg-orange-700 text-white h-12 px-8 rounded-xl font-bold shadow-lg shadow-orange-200 dark:shadow-none transition-all active:scale-95">
+                                    <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 h-12 px-8 rounded-xl font-bold shadow-lg shadow-zinc-200 dark:shadow-none transition-all active:scale-95">
                                         {isSavingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         Lưu cấu hình SMTP
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Brand Settings */}
-                    <TabsContent value="brand">
-                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-2xl">
-                            <CardHeader className="bg-muted/30 border-b border-border/50 p-6">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center">
-                                        <Globe className="h-5 w-5 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <CardTitle className="text-xl font-bold">Cấu hình thương hiệu</CardTitle>
-                                        <CardDescription className="text-sm font-medium">Thông tin hiển thị trên báo giá, hợp đồng & hóa đơn</CardDescription>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-6 space-y-8">
-                                <div className="grid gap-6 sm:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Tên thương hiệu</Label>
-                                        <Input
-                                            value={brandConfig.brand_name}
-                                            onChange={e => setBrandConfig({ ...brandConfig, brand_name: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Email liên hệ</Label>
-                                        <Input
-                                            value={brandConfig.email}
-                                            onChange={e => setBrandConfig({ ...brandConfig, email: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                        />
-                                    </div>
-                                </div>
-
-                                <Separator className="bg-border/50" />
-
-                                <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
-                                        Thông tin thanh toán (Bank Details)
-                                    </h4>
-                                    <div className="grid gap-6 sm:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Ngân hàng</Label>
-                                            <Input
-                                                value={brandConfig.bank_name}
-                                                onChange={e => setBrandConfig({ ...brandConfig, bank_name: e.target.value })}
-                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Số tài khoản</Label>
-                                            <Input
-                                                value={brandConfig.bank_account_no}
-                                                onChange={e => setBrandConfig({ ...brandConfig, bank_account_no: e.target.value })}
-                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Chủ tài khoản</Label>
-                                            <Input
-                                                value={brandConfig.bank_account_name}
-                                                onChange={e => setBrandConfig({ ...brandConfig, bank_account_name: e.target.value })}
-                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Chi nhánh</Label>
-                                            <Input
-                                                value={brandConfig.bank_branch}
-                                                onChange={e => setBrandConfig({ ...brandConfig, bank_branch: e.target.value })}
-                                                className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Separator className="bg-border/50" />
-
-                                <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
-                                        Ghi chú mặc định (Default Notes)
-                                    </h4>
-                                    <div className="grid gap-6">
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Ghi chú chân trang</Label>
-                                            <Textarea
-                                                value={brandConfig.default_notes}
-                                                onChange={e => setBrandConfig({ ...brandConfig, default_notes: e.target.value })}
-                                                className="min-h-[100px] rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Điều khoản thanh toán</Label>
-                                            <Textarea
-                                                value={brandConfig.default_payment_terms}
-                                                onChange={e => setBrandConfig({ ...brandConfig, default_payment_terms: e.target.value })}
-                                                className="min-h-[100px] rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-blue-500/20"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 flex justify-end">
-                                    <Button onClick={handleSaveBrand} disabled={isSavingBrand} className="bg-zinc-900 dark:bg-zinc-50 dark:text-zinc-900 h-12 px-10 rounded-xl font-bold transition-all active:scale-95">
-                                        {isSavingBrand ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                        Lưu cấu hình thương hiệu
                                     </Button>
                                 </div>
                             </CardContent>

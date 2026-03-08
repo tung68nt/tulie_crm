@@ -47,7 +47,7 @@ const navGroups: NavGroup[] = [
             { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
             { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
-            { title: 'Đơn hàng (B2B)', href: '/orders', icon: ShoppingCart },
+            { title: 'Đơn hàng Agency', href: '/orders', icon: ShoppingCart },
             { title: 'Dự án', href: '/projects', icon: Rocket },
             { title: 'Hóa đơn', href: '/invoices', icon: Banknote },
         ]
@@ -139,7 +139,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-1.5 mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
+                                <h4 className="px-3 py-1.5 mt-4 text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">
                                     {group.title}
                                 </h4>
                             )}
@@ -183,6 +183,8 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             </div>
                         </div>
                     ))}
+                    {/* Thêm padding dưới cùng để khi cuộn không bị dính đáy */}
+                    <div className="h-20" />
                 </nav>
             </ScrollArea>
 

@@ -2,9 +2,11 @@ import { Suspense } from 'react'
 import { getRetailOrders } from '@/lib/supabase/services/retail-order-service'
 import { RetailOrderList } from '@/components/studio/order-list'
 import { Button } from '@/components/ui/button'
-import { Plus, Camera } from 'lucide-react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatCurrency } from '@/lib/utils/format'
+import { Camera, Plus, Clock, CheckCircle, ShoppingCart } from 'lucide-react'
 
 export default async function StudioPage() {
     return (
@@ -15,7 +17,7 @@ export default async function StudioPage() {
                         <Camera className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-semibold">Studio (B2C)</h1>
+                        <h1 className="text-3xl font-semibold">Đơn hàng Studio</h1>
                         <p className="text-muted-foreground font-normal">Quản lý đơn hàng chụp ảnh cá nhân & Studio.</p>
                     </div>
                 </div>
@@ -35,7 +37,52 @@ export default async function StudioPage() {
 
 async function OrderListWrapper() {
     const orders = await getRetailOrders()
-    return <RetailOrderList initialData={orders} />
+    const activeOrders = orders.filter((c) => c.order_status === 'pending' || c.order_status === 'shooting' || c.order_status === 'editing').length
+    const completedOrders = orders.filter((c) => c.order_status === 'completed').length
+    const totalValue = orders.reduce((sum, c) => sum + (c.total_amount || 0), 0)
+
+    return (
+        <div className="space-y-6">
+            {/* Stats */}
+            <div className="grid gap-4 md:grid-cols-3">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Đang thực hiện
+                        </CardTitle>
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-semibold">{activeOrders}</div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Đã hoàn thành
+                        </CardTitle>
+                        <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-semibold">{completedOrders}</div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                            Tổng giá trị
+                        </CardTitle>
+                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-semibold">{formatCurrency(totalValue)}</div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <RetailOrderList initialData={orders} />
+        </div>
+    )
 }
 
 function OrderListSkeleton() {
