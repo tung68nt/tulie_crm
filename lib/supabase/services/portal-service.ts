@@ -125,7 +125,8 @@ export async function getPortalDataByToken(token: string) {
                 title: `Khởi tạo báo giá #${q.quotation_number}`,
                 description: q.title || `Báo giá đã được tạo`,
                 date: q.created_at,
-                status: 'completed'
+                status: 'completed',
+                quotation_id: q.id
             })
 
             if (q.accepted_at) {
@@ -135,7 +136,8 @@ export async function getPortalDataByToken(token: string) {
                     title: `Phê duyệt báo giá #${q.quotation_number}`,
                     description: 'Khách hàng đã xác nhận đồng ý',
                     date: q.accepted_at,
-                    status: 'completed'
+                    status: 'completed',
+                    quotation_id: q.id
                 })
             }
         })
@@ -149,7 +151,9 @@ export async function getPortalDataByToken(token: string) {
                 title: isOrder ? `Đơn hàng #${c.contract_number} đã xác nhận` : `Hợp đồng #${c.contract_number} đã xác lập`,
                 description: c.title || `Dự án chính thức được triển khai`,
                 date: c.created_at,
-                status: 'completed'
+                status: 'completed',
+                contract_id: c.id,
+                quotation_id: c.quotation_id
             })
 
             if (c.milestones) {
@@ -163,7 +167,9 @@ export async function getPortalDataByToken(token: string) {
                         planned_date: m.due_date,
                         status: m.status === 'completed' ? 'completed' :
                             (new Date(m.due_date) < new Date() ? 'overdue' : 'upcoming'),
-                        is_late: m.status === 'completed' && m.completed_at && new Date(m.completed_at) > new Date(m.due_date)
+                        is_late: m.status === 'completed' && m.completed_at && new Date(m.completed_at) > new Date(m.due_date),
+                        contract_id: c.id,
+                        quotation_id: c.quotation_id
                     })
                 })
             }
@@ -193,7 +199,9 @@ export async function getPortalDataByToken(token: string) {
                 description: `Số tiền: ${inv.total_amount.toLocaleString('vi-VN')} VNĐ`,
                 date: inv.issue_date,
                 status: inv.status === 'paid' ? 'completed' : 'pending',
-                amount: inv.total_amount
+                amount: inv.total_amount,
+                contract_id: inv.contract_id,
+                quotation_id: inv.quotation_id
             })
         })
 

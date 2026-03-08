@@ -101,19 +101,22 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
     // Group documents by Quotation (Package)
     const allQuotations = quotations && quotations.length > 0 ? quotations : [quotation]
-    const documentGroups = allQuotations.map(q => {
+    const documentGroups = allQuotations.map((q: any) => {
         const linkedContracts = contracts?.filter((c: any) => c.quotation_id === q.id) || []
         const linkedInvoices = invoices?.filter((inv: any) =>
-            inv.quotation_id === q.id || linkedContracts.some(c => c.id === inv.contract_id)
+            inv.quotation_id === q.id || linkedContracts.some((c: any) => c.id === inv.contract_id)
         ) || []
 
         return {
             quotation: q,
             contracts: linkedContracts,
             invoices: linkedInvoices,
-            title: q.title || `Hạng mục: ${q.quotation_number}`
+            timeline: (timeline as any[]).filter((t: any) => t.quotation_id === q.id),
+            title: q.title || `hạng mục: ${q.quotation_number}`
         }
     })
+
+    const extraProjectTimeline = (timeline as any[]).filter((t: any) => !t.quotation_id)
 
     const totalDocuments = (quotations?.length || 1) + (contracts?.length || 0) + (invoices?.length || 0)
 
@@ -255,16 +258,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </p>
                             <div className="space-y-2 mt-3">
                                 <div className="flex justify-between text-[11px]">
-                                    <span className="text-slate-500">Ngày bắt đầu</span>
-                                    <span className="font-semibold text-slate-900">{project?.start_date ? formatDate(project.start_date) : 'TBA'}</span>
+                                    <span className="text-slate-500">ngày bắt đầu</span>
+                                    <span className="font-semibold text-slate-900">{project?.start_date ? formatDate(project.start_date) : 'tba'}</span>
                                 </div>
                                 <div className="flex justify-between text-[11px]">
-                                    <span className="text-slate-500">Người phụ trách</span>
-                                    <span className="font-semibold text-slate-900">{projectMetadata?.manager_name || 'Hệ thống Quản trị'}</span>
+                                    <span className="text-slate-500">người phụ trách</span>
+                                    <span className="font-semibold text-slate-900">{projectMetadata?.manager_name || 'hệ thống quản trị'}</span>
                                 </div>
                                 <div className="flex justify-between text-[11px]">
-                                    <span className="text-slate-500">Trạng thái dự án</span>
-                                    <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-700 uppercase">{project?.status || 'Active'}</span>
+                                    <span className="text-slate-500">trạng thái dự án</span>
+                                    <span className="px-1.5 py-0.5 bg-slate-100 rounded text-[9px] font-bold text-slate-700 uppercase">{project?.status || 'active'}</span>
                                 </div>
                             </div>
                         </CardContent>
@@ -275,73 +278,160 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <div className="lg:col-span-2">
                         <Card>
                             <CardHeader className="pb-4">
-                                <CardTitle className="text-base font-semibold">Các mốc quan trọng</CardTitle>
+                                <CardTitle className="text-base font-semibold">các mốc quan trọng</CardTitle>
                                 <CardDescription>
-                                    Lộ trình thực hiện và bàn giao dịch vụ tổng quát
+                                    lộ trình thực hiện và bàn giao dịch vụ chi tiết theo từng hạng mục
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent>
-                                <div className="relative space-y-0">
-                                    {/* Central Line */}
-                                    <div className="absolute left-[17px] top-4 bottom-4 w-px bg-border" />
+                            <CardContent className="px-0">
+                                <div className="space-y-12">
+                                    {documentGroups.map((group: any, groupIdx: number) => (
+                                        <div key={group.quotation.id} className="relative">
+                                            {/* Group Header */}
+                                            <div className="px-6 mb-6 flex items-center gap-3">
+                                                <div className="h-2 w-2 rounded-full bg-slate-900" />
+                                                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest bg-slate-100/80 px-3 py-1 rounded-md">
+                                                    {group.title.toLowerCase()}
+                                                </h3>
+                                            </div>
 
-                                    {timeline.map((item: any, index: number) => {
-                                        const isCompleted = item.status === 'completed'
-                                        const isUpcoming = item.status === 'upcoming'
-                                        const isCurrent = !isCompleted && !isUpcoming
+                                            <div className="space-y-0 px-6">
+                                                {/* Vertical line for this group */}
+                                                <div className="absolute left-[39px] top-12 bottom-0 w-px bg-slate-100" />
 
-                                        return (
-                                            <div key={item.id} className="flex gap-4 pb-6 relative group">
-                                                <div className="flex flex-col items-center">
-                                                    <div className={`z-10 h-9 w-9 flex items-center justify-center rounded-full border-2 transition-all ${isCompleted ? 'bg-primary border-primary text-primary-foreground' :
-                                                        isCurrent ? 'bg-blue-600 border-blue-600 text-white' :
-                                                            'bg-muted border-border text-muted-foreground'
-                                                        }`}>
-                                                        {getTimelineIcon(item.type, item.status)}
-                                                    </div>
-                                                </div>
+                                                {group.timeline.length > 0 ? (
+                                                    group.timeline.map((item: any) => {
+                                                        const isCompleted = item.status === 'completed'
+                                                        const isUpcoming = item.status === 'upcoming'
+                                                        const isCurrent = !isCompleted && !isUpcoming
 
-                                                <div className="flex-1 -mt-0.5">
-                                                    <div className={`p-4 rounded-lg border transition-all ${isCurrent ? 'bg-blue-50/50 border-blue-200' :
-                                                        'bg-card border-border hover:bg-muted/30'
-                                                        }`}>
-                                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                                                            <div className="space-y-1">
-                                                                <div className="flex flex-wrap items-center gap-2">
-                                                                    <h4 className={`font-semibold text-sm ${isUpcoming ? 'text-muted-foreground' : ''}`}>
-                                                                        {item.title}
-                                                                    </h4>
-                                                                    {getStatusBadge(item.status, item.is_late)}
-                                                                </div>
-                                                                <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
-                                                                    {item.description}
-                                                                </p>
-                                                                {item.amount && (
-                                                                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
-                                                                        <Wallet className="h-3 w-3 text-muted-foreground" />
-                                                                        <span className="text-xs font-semibold">
-                                                                            Giá trị: {formatCurrency(item.amount)}
-                                                                        </span>
+                                                        return (
+                                                            <div key={item.id} className="flex gap-4 pb-8 relative group/item">
+                                                                <div className="flex flex-col items-center">
+                                                                    <div className={`z-10 h-8 w-8 flex items-center justify-center rounded-full border-2 transition-all ${isCompleted ? 'bg-slate-900 border-slate-900 text-white' :
+                                                                        isCurrent ? 'bg-slate-900 border-slate-900 text-white' :
+                                                                            'bg-white border-slate-200 text-slate-300'
+                                                                        }`}>
+                                                                        {getTimelineIcon(item.type, item.status)}
                                                                     </div>
-                                                                )}
-                                                            </div>
-                                                            <div className="shrink-0">
-                                                                <div className="flex items-center gap-1.5 px-2 py-1 bg-muted rounded-md">
-                                                                    <Calendar className="h-3 w-3 text-muted-foreground" />
-                                                                    <span className="text-[11px] font-medium">
-                                                                        {formatDate(item.date)}
-                                                                    </span>
+                                                                </div>
+
+                                                                <div className="flex-1 -mt-0.5">
+                                                                    <div className={cn(
+                                                                        "p-4 rounded-xl border transition-all",
+                                                                        isCurrent ? "bg-slate-50 border-slate-200 shadow-sm" : "bg-white border-slate-100 hover:border-slate-200"
+                                                                    )}>
+                                                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                                                                            <div className="space-y-1.5 flex-1">
+                                                                                <div className="flex flex-wrap items-center gap-2">
+                                                                                    <h4 className={cn(
+                                                                                        "font-bold text-[13px]",
+                                                                                        isUpcoming ? "text-slate-400" : "text-slate-900"
+                                                                                    )}>
+                                                                                        {item.title.toLowerCase()}
+                                                                                    </h4>
+                                                                                    {getStatusBadge(item.status, item.is_late)}
+                                                                                </div>
+                                                                                <p className="text-[11px] text-slate-500 leading-relaxed">
+                                                                                    {item.description?.toLowerCase()}
+                                                                                </p>
+
+                                                                                {/* Product statistics / Demo Assets */}
+                                                                                {(item.type === 'delivery' || item.type === 'work') && (
+                                                                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                                                        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between group/asset hover:bg-white transition-colors">
+                                                                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                                                                <div className="h-7 w-7 rounded bg-white border flex items-center justify-center shrink-0">
+                                                                                                    <TrendingUp className="h-3.5 w-3.5 text-slate-400" />
+                                                                                                </div>
+                                                                                                <div className="flex flex-col overflow-hidden">
+                                                                                                    <span className="text-[10px] font-bold text-slate-700 truncate">demo sản phẩm</span>
+                                                                                                    <span className="text-[9px] text-slate-400 truncate">xem trực tiếp bản thảo</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover/asset:opacity-100 transition-opacity" asChild>
+                                                                                                <a href={projectMetadata?.ai_folder_link || '#'} target="_blank"><ExternalLink className="h-3 w-3" /></a>
+                                                                                            </Button>
+                                                                                        </div>
+                                                                                        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between group/asset hover:bg-white transition-colors">
+                                                                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                                                                <div className="h-7 w-7 rounded bg-white border flex items-center justify-center shrink-0">
+                                                                                                    <Download className="h-3.5 w-3.5 text-slate-400" />
+                                                                                                </div>
+                                                                                                <div className="flex flex-col overflow-hidden">
+                                                                                                    <span className="text-[10px] font-bold text-slate-700 truncate">tài nguyên bàn giao</span>
+                                                                                                    <span className="text-[9px] text-slate-400 truncate">file thiết kế & nội dung</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover/asset:opacity-100 transition-opacity" asChild>
+                                                                                                <a href={projectMetadata?.source_link || '#'} target="_blank"><Download className="h-3 w-3" /></a>
+                                                                                            </Button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )}
+
+                                                                                {item.amount && (
+                                                                                    <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-50">
+                                                                                        <Wallet className="h-3 w-3 text-slate-400" />
+                                                                                        <span className="text-[11px] font-bold text-slate-700">
+                                                                                            giá trị: {formatCurrency(item.amount)}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="shrink-0 flex sm:flex-col items-end gap-1">
+                                                                                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 rounded text-slate-600">
+                                                                                    <Calendar className="h-3 w-3" />
+                                                                                    <span className="text-[10px] font-bold">
+                                                                                        {formatDate(item.date)}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        )
+                                                    })
+                                                ) : (
+                                                    <div className="text-center py-8 text-slate-400 text-[11px]">
+                                                        đang cập nhật lộ trình hạng mục...
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Divider if not last */}
+                                            {groupIdx < documentGroups.length - 1 && (
+                                                <div className="mx-6 my-4 border-t border-slate-50 border-dashed" />
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Project-wide/Misc Timeline items if any */}
+                                    {extraProjectTimeline.length > 0 && (
+                                        <div className="px-6 border-t border-slate-100 pt-8">
+                                            <div className="mb-6 flex items-center gap-3">
+                                                <div className="h-2 w-2 rounded-full bg-slate-400" />
+                                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-md">
+                                                    thanh toán & mốc dự án chung
+                                                </h3>
+                                            </div>
+                                            <div className="space-y-4">
+                                                {extraProjectTimeline.map((item: any) => (
+                                                    <div key={item.id} className="flex gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/30">
+                                                        <div className="h-7 w-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+                                                            {getTimelineIcon(item.type, item.status)}
+                                                        </div>
+                                                        <div className="flex-1 flex justify-between items-center">
+                                                            <div>
+                                                                <h4 className="text-[12px] font-bold text-slate-700">{item.title.toLowerCase()}</h4>
+                                                                <p className="text-[10px] text-slate-400">{formatDate(item.date)}</p>
+                                                            </div>
+                                                            {getStatusBadge(item.status)}
                                                         </div>
                                                     </div>
-                                                </div>
+                                                ))}
                                             </div>
-                                        )
-                                    })}
-                                    {timeline.length === 0 && (
-                                        <div className="text-center py-16 text-muted-foreground text-sm">
-                                            Đang cập nhật lộ trình...
                                         </div>
                                     )}
                                 </div>
@@ -362,7 +452,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <div className="absolute left-[39px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
 
                                     <div className="space-y-12">
-                                        {documentGroups.map((group, groupIdx) => (
+                                        {documentGroups.map((group: any, groupIdx: number) => (
                                             <div key={group.quotation.id} className="relative group/bundle">
                                                 {/* Group Header */}
                                                 <div className="px-6 mb-6 flex items-center gap-3">
@@ -382,8 +472,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <FileText className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">Báo giá & Đề xuất</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 1</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">báo giá & đề xuất</h4>
                                                             </div>
                                                         </div>
                                                         <a
@@ -412,8 +502,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <FileSignature className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 2</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">Hợp đồng kinh tế</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 2</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">hợp đồng kinh tế</h4>
                                                             </div>
                                                         </div>
                                                         {group.contracts.length > 0 ? (
@@ -458,12 +548,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <CheckCircle className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 3</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">Bàn giao</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 3</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">bàn giao</h4>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30">
-                                                            <p className="text-[10px] text-slate-400 italic text-center leading-tight">Biên bản xác nhận hoàn tất dịch vụ</p>
+                                                            <p className="text-[10px] text-slate-400 text-center leading-tight">biên bản xác nhận hoàn tất dịch vụ</p>
                                                         </div>
                                                     </div>
                                                 </div>
