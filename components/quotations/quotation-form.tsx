@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload } from 'lucide-react'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
@@ -78,6 +78,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [proposalContent, setProposalContent] = useState<any>(quotation?.proposal_content || {})
     const [isImportProposalOpen, setIsImportProposalOpen] = useState(false)
     const [importText, setImportText] = useState('')
+    const [isImportJsonOpen, setIsImportJsonOpen] = useState(false)
+    const [importJsonText, setImportJsonText] = useState('')
 
     // Bank info state
     const [bankName, setBankName] = useState(quotation?.bank_name || '')
@@ -260,6 +262,91 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const subtotal = items.reduce((sum, item) => sum + (Number(item.total_price) || 0), 0)
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
+
+    // JSON Export: build quotation object
+    const handleExportJson = () => {
+        const exportData = {
+            title,
+            quotation_number: quotationNumber,
+            type,
+            vat_percent: vatPercent,
+            validity_days: validityDays,
+            terms,
+            notes,
+            bank_name: bankName,
+            bank_account_no: bankAccountNo,
+            bank_account_name: bankAccountName,
+            bank_branch: bankBranch,
+            ...(type === 'proposal' ? { proposal_content: proposalContent } : {}),
+            items: items.map((item, idx) => ({
+                section_name: item.section_name || '',
+                product_name: item.product_name || '',
+                description: item.description || '',
+                quantity: item.quantity || 1,
+                unit: item.unit || '',
+                unit_price: item.unit_price || 0,
+                discount: item.discount || 0,
+                sort_order: idx
+            }))
+        }
+        navigator.clipboard.writeText(JSON.stringify(exportData, null, 2))
+        toast.success('Đã copy JSON vào clipboard')
+    }
+
+    // JSON Import: populate all fields from JSON
+    const handleImportJson = () => {
+        if (!importJsonText.trim()) return
+        try {
+            const data = JSON.parse(importJsonText)
+            let count = 0
+
+            if (data.title) { setTitle(data.title); count++ }
+            if (data.quotation_number) { setQuotationNumber(data.quotation_number); count++ }
+            if (data.type) { setType(data.type); count++ }
+            if (data.vat_percent !== undefined) { setVatPercent(data.vat_percent); count++ }
+            if (data.validity_days) { setValidityDays(data.validity_days); count++ }
+            if (data.terms) { setTerms(data.terms); count++ }
+            if (data.notes) { setNotes(data.notes); count++ }
+            if (data.bank_name) { setBankName(data.bank_name); count++ }
+            if (data.bank_account_no) { setBankAccountNo(data.bank_account_no); count++ }
+            if (data.bank_account_name) { setBankAccountName(data.bank_account_name); count++ }
+            if (data.bank_branch) { setBankBranch(data.bank_branch); count++ }
+            if (data.proposal_content) { setProposalContent(data.proposal_content); count++ }
+
+            if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+                const newItems = data.items.map((item: any, idx: number) => {
+                    // Try to match product by name
+                    const matchedProduct = products.find(p =>
+                        p.name.toLowerCase().trim() === (item.product_name || '').toLowerCase().trim()
+                    )
+                    return {
+                        id: `temp-${Date.now()}-${idx}`,
+                        product_id: matchedProduct?.id || item.product_id || '',
+                        product_name: item.product_name || matchedProduct?.name || '',
+                        description: item.description || '',
+                        section_name: item.section_name || '',
+                        quantity: Number(item.quantity) || 1,
+                        unit: item.unit || matchedProduct?.unit || 'cái',
+                        unit_price: Number(item.unit_price) || matchedProduct?.price || 0,
+                        discount: Number(item.discount) || 0,
+                        total_price: 0,
+                        sort_order: Number(item.sort_order) || idx
+                    }
+                }).map((item: any) => ({
+                    ...item,
+                    total_price: item.quantity * item.unit_price * (1 - item.discount / 100)
+                }))
+                setItems(newItems)
+                count += newItems.length
+            }
+
+            setIsImportJsonOpen(false)
+            setImportJsonText('')
+            toast.success(`Đã nhập ${count} trường từ JSON`)
+        } catch (err) {
+            toast.error('JSON không hợp lệ. Vui lòng kiểm tra lại định dạng.')
+        }
+    }
 
     const handleImportProposal = () => {
         if (!importText.trim()) return
@@ -716,7 +803,17 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <CardTitle>Sản phẩm / Dịch vụ</CardTitle>
                                 <CardDescription>Danh sách hạng mục báo giá được phân loại</CardDescription>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
+                                <Button type="button" variant="outline" size="sm" onClick={() => setIsImportJsonOpen(true)}>
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    <span className="hidden sm:inline">Nhập JSON</span>
+                                    <span className="sm:hidden">JSON</span>
+                                </Button>
+                                <Button type="button" variant="outline" size="sm" onClick={handleExportJson}>
+                                    <Copy className="mr-2 h-4 w-4" />
+                                    <span className="hidden sm:inline">Xuất JSON</span>
+                                    <span className="sm:hidden">Copy</span>
+                                </Button>
                                 <Button type="button" variant="outline" size="sm" onClick={addSection}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     <span className="hidden sm:inline">Thêm phần mới</span>
@@ -1122,6 +1219,44 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
                         <Button onClick={handleImportProposal} disabled={!importText.trim()}>Xác nhận nhập</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isImportJsonOpen} onOpenChange={setIsImportJsonOpen}>
+                <DialogContent className="max-w-2xl sm:max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <FileJson className="h-5 w-5 text-primary" />
+                            Nhập báo giá từ JSON
+                        </DialogTitle>
+                        <DialogDescription>
+                            Dán JSON chứa thông tin báo giá. Tất cả các trường sẽ được đồng bộ vào form. Dùng nút "Xuất JSON" để lấy cấu trúc mẫu.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">JSON báo giá:</label>
+                            <Textarea
+                                placeholder='{ "title": "...", "items": [...], ... }'
+                                value={importJsonText}
+                                onChange={(e) => setImportJsonText(e.target.value)}
+                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50"
+                            />
+                        </div>
+                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">
+                            <p className="font-bold mb-1">Các trường hỗ trợ:</p>
+                            <code className="block whitespace-pre opacity-80">
+                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ],\n  "proposal_content": { ... }\n}'}
+                            </code>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsImportJsonOpen(false)}>Hủy</Button>
+                        <Button onClick={handleImportJson} disabled={!importJsonText.trim()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Nhập và đồng bộ
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
