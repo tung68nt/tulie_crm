@@ -17,9 +17,10 @@ interface NewQuotationClientProps {
     units: string[]
     projects: any[]
     preselectedCustomerId?: string
+    brandConfig?: any
 }
 
-export default function NewQuotationClient({ initialCustomers, initialProducts, units, projects, preselectedCustomerId }: NewQuotationClientProps) {
+export default function NewQuotationClient({ initialCustomers, initialProducts, units, projects, preselectedCustomerId, brandConfig }: NewQuotationClientProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
@@ -150,6 +151,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
                 onSave={(send) => handleSave(send)}
                 isLoading={isLoading}
                 hideHeader={true}
+                brandConfig={brandConfig}
             />
 
             {/* Preview Modal */}

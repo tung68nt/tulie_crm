@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -32,7 +33,10 @@ export default function SettingsPage() {
         phone: "",
         website: "tulie.vn",
         logo_url: "/file/tulie-agency-logo.png",
-        favicon_url: "/logo-icon.png"
+        favicon_url: "/logo-icon.png",
+        bank_info: "",
+        default_notes: "",
+        default_payment_terms: ""
     })
 
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
@@ -69,7 +73,10 @@ export default function SettingsPage() {
             phone: config.phone || "",
             website: config.website || "tulie.vn",
             logo_url: config.logo_url || "/file/tulie-agency-logo.png",
-            favicon_url: config.favicon_url || "/logo-icon.png"
+            favicon_url: config.favicon_url || "/logo-icon.png",
+            bank_info: config.bank_info || "",
+            default_notes: config.default_notes || "",
+            default_payment_terms: config.default_payment_terms || ""
         })
     }
 
@@ -134,7 +141,10 @@ export default function SettingsPage() {
                 phone: companySettings.phone,
                 website: companySettings.website,
                 logo_url: companySettings.logo_url,
-                favicon_url: companySettings.favicon_url
+                favicon_url: companySettings.favicon_url,
+                bank_info: companySettings.bank_info,
+                default_notes: companySettings.default_notes,
+                default_payment_terms: companySettings.default_payment_terms
             })
             toast.success("Đã lưu thông tin thương hiệu thành công!")
         } catch (error: any) {
@@ -375,6 +385,40 @@ export default function SettingsPage() {
                                                 <img src={companySettings.favicon_url} alt="Favicon Preview" className="h-8 w-8 object-contain" />
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <Separator />
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-medium">Thông tin bổ sung (Hợp đồng & Hóa đơn)</h4>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="bank_info">Tài khoản ngân hàng</Label>
+                                        <Textarea
+                                            id="bank_info"
+                                            value={companySettings.bank_info}
+                                            onChange={(e) => setCompanySettings({ ...companySettings, bank_info: e.target.value })}
+                                            placeholder="Ví dụ: MB Bank - 123456789 - Tên chủ TK"
+                                            rows={2}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="default_payment_terms">Điều khoản thanh toán mặc định</Label>
+                                        <Textarea
+                                            id="default_payment_terms"
+                                            value={companySettings.default_payment_terms}
+                                            onChange={(e) => setCompanySettings({ ...companySettings, default_payment_terms: e.target.value })}
+                                            placeholder="Ví dụ: Thanh toán trong vòng 7 ngày kể từ ngày nhận được hóa đơn..."
+                                            rows={2}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="default_notes">Ghi chú mặc định</Label>
+                                        <Textarea
+                                            id="default_notes"
+                                            value={companySettings.default_notes}
+                                            onChange={(e) => setCompanySettings({ ...companySettings, default_notes: e.target.value })}
+                                            placeholder="Ghi chú xuất hiện ở cuối báo giá/hóa đơn"
+                                            rows={2}
+                                        />
                                     </div>
                                 </div>
                                 <Separator />

@@ -58,9 +58,10 @@ interface QuotationFormProps {
     onSave?: (send: boolean) => void
     isLoading?: boolean
     hideHeader?: boolean
+    brandConfig?: any
 }
 
-export function QuotationForm({ quotation, customers, products, units, projects, initialCustomerId, onChange, onSave, isLoading: externalIsLoading, hideHeader = false }: QuotationFormProps) {
+export function QuotationForm({ quotation, customers, products, units, projects, initialCustomerId, onChange, onSave, isLoading: externalIsLoading, hideHeader = false, brandConfig }: QuotationFormProps) {
     const router = useRouter()
     const [internalIsLoading, setInternalIsLoading] = useState(false)
     const isLoading = externalIsLoading || internalIsLoading
@@ -86,6 +87,22 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [bankAccountNo, setBankAccountNo] = useState(quotation?.bank_account_no || '')
     const [bankAccountName, setBankAccountName] = useState(quotation?.bank_account_name || '')
     const [bankBranch, setBankBranch] = useState(quotation?.bank_branch || '')
+
+    // Use default values from brandConfig if it's a new quotation
+    useEffect(() => {
+        if (!quotation && brandConfig) {
+            if (bankName === '' && brandConfig.bank_info) {
+                // Parse bank_info if it contains multiple lines or just set it to bankName for now
+                // Actually, the user wants to "chèn mặc định", so I'll just put it in their respective fields if they are empty
+                setNotes(prev => prev === '' ? brandConfig.default_notes || '' : prev)
+                setTerms(prev => prev === '' ? brandConfig.default_payment_terms || '' : prev)
+                // For bank info, it's often a block of text, but the form has separate fields.
+                // I'll put it in bankName or a combined field if available, or just set it to some fields.
+                // Given the current structure, I'll put bank_info in bankName if it's empty.
+                setBankName(prev => prev === '' ? brandConfig.bank_info || '' : prev)
+            }
+        }
+    }, [brandConfig, quotation])
 
     // Calculate valid_until to days for the input
     const [validityDays, setValidityDays] = useState(() => {

@@ -56,9 +56,10 @@ interface NewInvoiceClientProps {
     initialCustomers: any[]
     initialContracts: any[]
     initialQuotations: any[]
+    brandConfig?: any
 }
 
-function NewInvoiceForm({ initialCustomers, initialContracts }: NewInvoiceClientProps) {
+function NewInvoiceForm({ initialCustomers, initialContracts, brandConfig }: NewInvoiceClientProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
     const fromContractId = searchParams.get('contract')
@@ -70,7 +71,7 @@ function NewInvoiceForm({ initialCustomers, initialContracts }: NewInvoiceClient
     const [issueDate, setIssueDate] = useState<Date>(new Date())
     const [dueDate, setDueDate] = useState<Date>()
     const [vatPercent, setVatPercent] = useState(10)
-    const [notes, setNotes] = useState('')
+    const [notes, setNotes] = useState(brandConfig?.default_notes || '')
 
     const [items, setItems] = useState<InvoiceItem[]>([
         { id: '1', description: '', quantity: 1, unit: 'lần', unit_price: 0, total: 0 },
