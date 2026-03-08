@@ -25,16 +25,14 @@ import {
     Eye,
     AlertCircle,
     PenTool,
-    User,
-    Mail,
-    Phone,
     CreditCard,
     TrendingUp,
-    ChevronRight
+    ExternalLink,
+    Receipt
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
+
 import { Progress } from '@/components/ui/progress'
 import { CustomerInfoForm } from '@/components/portal/customer-info-form'
 import { useRouter } from 'next/navigation'
@@ -138,12 +136,15 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         })
     }
 
-    // Fix total value: use contracts if available, else only the CURRENT quotation total (not sum of all)
+    // Total value: contracts > sum of all quotations > single quotation
     const totalPaid = invoices?.filter((inv: any) => inv.status === 'paid').reduce((sum: number, inv: any) => sum + inv.total_amount, 0) || 0
     const totalValueFromContracts = contracts?.reduce((sum: number, c: any) => sum + (c.total_amount || 0), 0) || 0
-    const totalValue = totalValueFromContracts > 0 ? totalValueFromContracts : quotation.total_amount
+    const allQuotations = quotations && quotations.length > 0 ? quotations : [quotation]
+    const totalValueFromQuotations = allQuotations.reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+    const totalValue = totalValueFromContracts > 0 ? totalValueFromContracts : totalValueFromQuotations
     const paymentProgress = totalValue > 0 ? Math.min((totalPaid / totalValue) * 100, 100) : 0
     const remainingAmount = totalValue - totalPaid
+    const totalDocuments = documents.length
     const tasks = data.tasks || []
 
     // Timeline stats
@@ -221,6 +222,26 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                 {/* Stats Row */}
                 <div className="grid gap-4 md:grid-cols-3 mb-8">
+                    {/* Total Project Value */}
+                    <Card>
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm text-muted-foreground">Tổng giá trị dự án</span>
+                                <Receipt className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                            <p className="text-2xl font-bold mb-1">{formatCurrency(totalValue)}</p>
+                            <div className="flex justify-between text-[11px] text-muted-foreground mb-2">
+                                <span>Đã thanh toán {paymentProgress.toFixed(0)}%</span>
+                                <span>Còn lại {formatCurrency(remainingAmount)}</span>
+                            </div>
+                            <Progress value={paymentProgress} className="h-1.5" />
+                            <p className="text-[11px] text-muted-foreground mt-3 flex justify-between">
+                                <span>{totalDocuments} tài liệu</span>
+                                <span className="font-semibold">Đã thanh toán: {formatCurrency(totalPaid)}</span>
+                            </p>
+                        </CardContent>
+                    </Card>
+
                     {/* Payment Progress */}
                     <Card>
                         <CardContent className="pt-6">
@@ -230,14 +251,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </div>
                             <p className="text-2xl font-bold mb-1">{formatCurrency(totalPaid)}</p>
                             <div className="flex justify-between text-[11px] text-muted-foreground mb-2">
-                                <span>Đã thanh toán {paymentProgress.toFixed(0)}%</span>
+                                <span>{paymentProgress.toFixed(0)}% hoàn thành</span>
                                 <span>Còn lại {formatCurrency(remainingAmount)}</span>
                             </div>
                             <Progress value={paymentProgress} className="h-1.5" />
-                            <p className="text-[11px] text-muted-foreground mt-3 flex justify-between">
-                                <span>Tổng hợp đồng:</span>
-                                <span className="font-semibold">{formatCurrency(totalValue)}</span>
-                            </p>
                         </CardContent>
                     </Card>
 
@@ -256,34 +273,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-md text-[11px] font-medium">
                                 <CheckCircle className="h-3.5 w-3.5 text-primary" />
                                 <span>{completedSteps}/{totalSteps} công việc đã hoàn tất</span>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Sales Contact */}
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Người phụ trách</span>
-                                <User className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                            <p className="text-lg font-semibold mb-3">{salesPerson?.full_name || 'Chưa phân công'}</p>
-                            <div className="space-y-1.5">
-                                {salesPerson?.email && (
-                                    <a href={`mailto:${salesPerson.email}`} className="flex items-center gap-2 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                                        <Mail className="h-3 w-3" />
-                                        <span>{salesPerson.email}</span>
-                                    </a>
-                                )}
-                                {salesPerson?.phone && (
-                                    <a href={`tel:${salesPerson.phone}`} className="flex items-center gap-2 text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                                        <Phone className="h-3 w-3" />
-                                        <span>{salesPerson.phone}</span>
-                                    </a>
-                                )}
-                                {!salesPerson?.phone && !salesPerson?.email && (
-                                    <p className="text-[11px] text-muted-foreground">Liên hệ: info@tulie.vn</p>
-                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -380,7 +369,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </CardHeader>
                             <CardContent className="space-y-2">
                                 {documents.map((doc) => (
-                                    <div key={doc.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border hover:bg-muted/30 transition-colors">
+                                    <a
+                                        key={doc.id}
+                                        href={doc.type === 'quotation' ? `/quote/${doc.public_token || token}` : '#'}
+                                        target="_blank"
+                                        className="flex items-center justify-between gap-3 p-3 rounded-lg border hover:bg-muted/50 hover:border-foreground/20 transition-all cursor-pointer group"
+                                    >
                                         <div className="flex items-center gap-3 min-w-0 flex-1">
                                             <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
                                                 <FileText className="h-4 w-4 text-muted-foreground" />
@@ -390,23 +384,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 <div className="mt-0.5">{getStatusBadge(doc.status)}</div>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-1 shrink-0">
-                                            <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                                                <a href={doc.type === 'quotation' ? `/quote/${doc.public_token || token}` : '#'} target="_blank">
-                                                    <Eye className="h-3.5 w-3.5" />
-                                                </a>
-                                            </Button>
-                                            <DocumentDownloadButton
-                                                type={doc.type}
-                                                documentId={doc.id}
-                                                customerId={customer?.id}
-                                                label=""
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-7 w-7 p-0"
-                                            />
-                                        </div>
-                                    </div>
+                                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
+                                    </a>
                                 ))}
                             </CardContent>
                         </Card>
