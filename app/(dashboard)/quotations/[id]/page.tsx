@@ -485,14 +485,34 @@ export default function QuotationDetailPage() {
                             <CardContent className="space-y-4">
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-muted-foreground">Ghi chú</p>
-                                    <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed">
-                                        {quotation.notes || brandConfig?.default_notes || 'Không có ghi chú'}
+                                    <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
+                                        <ul className="list-none space-y-1 text-muted-foreground">
+                                            {String(quotation.notes ?? brandConfig?.default_notes ?? 'Không có ghi chú')
+                                                .split('\n')
+                                                .filter(Boolean)
+                                                .map((line, i) => (
+                                                    <li key={i} className="flex gap-2">
+                                                        <span>•</span>
+                                                        <span className="whitespace-pre-line text-foreground">{line.replace(/^[-•]\s*/, '')}</span>
+                                                    </li>
+                                                ))}
+                                        </ul>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs font-semibold text-muted-foreground">Điều khoản thanh toán</p>
-                                    <div className="text-sm whitespace-pre-line bg-muted/30 p-3 rounded-lg border border-dashed">
-                                        {quotation.terms || brandConfig?.default_payment_terms || 'Theo quy định công ty'}
+                                    <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
+                                        <ul className="list-none space-y-1 text-muted-foreground">
+                                            {String(quotation.terms ?? brandConfig?.default_payment_terms ?? 'Theo quy định công ty')
+                                                .split('\n')
+                                                .filter(Boolean)
+                                                .map((line, i) => (
+                                                    <li key={i} className="flex gap-2">
+                                                        <span>•</span>
+                                                        <span className="whitespace-pre-line text-foreground">{line.replace(/^[-•]\s*/, '')}</span>
+                                                    </li>
+                                                ))}
+                                        </ul>
                                     </div>
                                 </div>
                             </CardContent>
@@ -518,6 +538,10 @@ export default function QuotationDetailPage() {
                                     <div className="flex flex-col gap-0.5">
                                         <span className="text-xs text-muted-foreground">Chủ tài khoản</span>
                                         <span className="font-medium">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="text-xs text-muted-foreground">Chi nhánh</span>
+                                        <span className="font-medium">{quotation.bank_branch || brandConfig?.bank_branch || "Chưa cấu hình"}</span>
                                     </div>
                                 </div>
                             </CardContent>

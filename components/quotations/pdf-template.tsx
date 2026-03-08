@@ -340,7 +340,17 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
                     <View style={{ width: '55%' }}>
                         <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>ĐIỀU KHOẢN THANH TOÁN:</Text>
-                        <Text style={{ fontSize: 8, color: '#666', lineHeight: 1.4 }}>{quotation.terms || '• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành bàn giao'}</Text>
+                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4 }}>
+                            {String(quotation.terms ?? quotation.brandConfig?.default_payment_terms ?? '50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành bàn giao')
+                                .split('\n')
+                                .filter(Boolean)
+                                .map((line, i) => (
+                                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
+                                        <Text style={{ width: 10 }}>•</Text>
+                                        <Text style={{ flex: 1 }}>{line.replace(/^[-•]\s*/, '')}</Text>
+                                    </View>
+                                ))}
+                        </View>
 
                         <Text style={{ fontSize: 9, fontWeight: 'bold', marginTop: 15, marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
                         <View style={{ fontSize: 8, color: '#444' }}>

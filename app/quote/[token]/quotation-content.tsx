@@ -488,27 +488,31 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-4 h-full">
                                     <div>
                                         <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Ghi chú <span className="text-[0.8em] not-italic font-normal opacity-70">/ Notes</span>:</h4>
-                                        <ul className="list-disc pl-4 space-y-1 text-xs text-black leading-relaxed">
-                                            {quotation.notes ? (
-                                                <li className="list-none -ml-4 whitespace-pre-line">{quotation.notes}</li>
-                                            ) : (
-                                                brandConfig?.default_notes ? (
-                                                    <li className="list-none -ml-4 whitespace-pre-line">{brandConfig.default_notes}</li>
-                                                ) : (
-                                                    <>
-                                                        <li>Báo giá có hiệu lực trong vòng 07 ngày.</li>
-                                                        <li>Giá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).</li>
-                                                        <li>Nội dung công việc sẽ được mô tả chi tiết trong hợp đồng.</li>
-                                                    </>
-                                                )
-                                            )}
+                                        <ul className="list-none space-y-1 text-xs text-black leading-relaxed">
+                                            {String(quotation.notes ?? brandConfig?.default_notes ?? "Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.")
+                                                .split('\n')
+                                                .filter(Boolean)
+                                                .map((line, i) => (
+                                                    <li key={i} className="flex gap-2">
+                                                        <span>•</span>
+                                                        <span className="whitespace-pre-line">{line.replace(/^[-•]\s*/, '')}</span>
+                                                    </li>
+                                                ))}
                                         </ul>
                                     </div>
                                     <div className="border-t border-slate-200 pt-3 mt-auto">
                                         <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Điều khoản thanh toán <span className="text-[0.8em] not-italic font-normal opacity-70">/ Payment Terms</span>:</h4>
-                                        <div className="text-xs text-black leading-relaxed whitespace-pre-line">
-                                            {quotation.terms || brandConfig?.default_payment_terms || "• 50% đặt cọc khi xác nhận báo giá\n• 50% còn lại thanh toán khi hoàn thành"}
-                                        </div>
+                                        <ul className="list-none space-y-1 text-xs text-black leading-relaxed">
+                                            {String(quotation.terms ?? brandConfig?.default_payment_terms ?? "50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành")
+                                                .split('\n')
+                                                .filter(Boolean)
+                                                .map((line, i) => (
+                                                    <li key={i} className="flex gap-2">
+                                                        <span>•</span>
+                                                        <span className="whitespace-pre-line">{line.replace(/^[-•]\s*/, '')}</span>
+                                                    </li>
+                                                ))}
+                                        </ul>
                                     </div>
                                 </div>
 
