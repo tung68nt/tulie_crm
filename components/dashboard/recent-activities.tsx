@@ -22,15 +22,15 @@ interface RecentActivitiesProps {
 const getActivityIcon = (type: ActivityLog['action']) => {
     switch (type) {
         case 'create':
-            return <UserPlus className="h-4 w-4 text-blue-500" />
+            return <UserPlus className="h-4 w-4 text-zinc-500" />
         case 'update':
-            return <FileCheck className="h-4 w-4 text-purple-500" />
+            return <FileCheck className="h-4 w-4 text-zinc-400" />
         case 'delete':
-            return <XCircle className="h-4 w-4 text-red-500" />
+            return <XCircle className="h-4 w-4 text-zinc-600" />
         case 'status_change':
-            return <CheckCircle className="h-4 w-4 text-green-500" />
+            return <CheckCircle className="h-4 w-4 text-zinc-800 dark:text-zinc-200" />
         default:
-            return <FileText className="h-4 w-4 text-indigo-500" />
+            return <FileText className="h-4 w-4 text-zinc-500" />
     }
 }
 

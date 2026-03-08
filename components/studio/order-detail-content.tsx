@@ -157,7 +157,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                         <CardContent className="space-y-4">
                             {order.needs_vat ? (
                                 <div className="space-y-3">
-                                    <Badge className="bg-blue-100 text-blue-700">Yêu cầu xuất VAT</Badge>
+                                    <Badge className="bg-zinc-100 text-zinc-900 border-zinc-200 hover:bg-zinc-200">Yêu cầu xuất VAT</Badge>
                                     <div className="space-y-1 text-sm">
                                         <p className="text-xs text-muted-foreground font-bold ">Mã số thuế</p>
                                         <p className="font-medium">{order.vat_info?.tax_code || '---'}</p>
@@ -216,7 +216,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 </div>
                             </div>
                         ) : (
-                            <div className="pt-4 flex items-center justify-center gap-2 text-green-300 font-bold  text-xs">
+                            <div className="pt-4 flex items-center justify-center gap-2 text-primary-foreground font-bold  text-xs">
                                 <CheckCircle2 className="h-5 w-5" /> Đã thu hồi đủ vốn
                             </div>
                         )}

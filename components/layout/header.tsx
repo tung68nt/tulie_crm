@@ -89,12 +89,12 @@ export function Header() {
 
     const getNotificationColor = (type: string) => {
         switch (type) {
-            case 'new_customer': return 'bg-blue-500'
-            case 'quotation_accepted': return 'bg-green-500'
-            case 'invoice_overdue': return 'bg-red-500'
-            case 'contract_signed': return 'bg-purple-500'
-            case 'payment_received': return 'bg-emerald-500'
-            default: return 'bg-gray-500'
+            case 'new_customer': return 'bg-zinc-800 dark:bg-zinc-200'
+            case 'quotation_accepted': return 'bg-zinc-950 dark:bg-zinc-50'
+            case 'invoice_overdue': return 'bg-zinc-600'
+            case 'contract_signed': return 'bg-zinc-900 mx-1'
+            case 'payment_received': return 'bg-zinc-700'
+            default: return 'bg-zinc-400'
         }
     }
 

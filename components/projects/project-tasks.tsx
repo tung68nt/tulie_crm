@@ -88,10 +88,10 @@ export function ProjectTasks({ project }: ProjectTasksProps) {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-green-100 text-green-700 border-green-200'
-            case 'in_progress': return 'bg-blue-100 text-blue-700 border-blue-200'
+            case 'completed': return 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-50 dark:text-zinc-900 font-bold'
+            case 'in_progress': return 'bg-zinc-100 text-zinc-900 border-zinc-200'
             case 'blocked': return 'bg-red-100 text-red-700 border-red-200'
-            default: return 'bg-gray-100 text-gray-700 border-gray-200'
+            default: return 'bg-zinc-50 text-zinc-500 border-zinc-200'
         }
     }
 

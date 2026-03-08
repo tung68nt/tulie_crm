@@ -61,10 +61,10 @@ export const projectColumns: ColumnDef<Project>[] = [
             return (
                 <div className="flex items-center gap-2">
                     {metadata.source_link && (
-                        <Globe className="h-4 w-4 text-blue-500" />
+                        <Globe className="h-4 w-4 text-zinc-500" />
                     )}
                     {metadata.ai_folder_link && (
-                        <FolderArchive className="h-4 w-4 text-purple-500" />
+                        <FolderArchive className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
                     )}
                 </div>
             )

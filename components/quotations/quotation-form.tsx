@@ -1262,7 +1262,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 className="min-h-[300px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
                             />
                         </div>
-                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">
+                        <div className="bg-zinc-50 border border-zinc-200 p-3 rounded-lg text-[12px] text-zinc-700">
                             <p className="font-bold mb-1">Ví dụ định dạng:</p>
                             <code className="block whitespace-pre opacity-80">
                                 {'{\n  "introduction": "Nội dung giới thiệu...",\n  "scope_of_work": "Chi tiết phạm vi...",\n  ...\n}'}
@@ -1310,7 +1310,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 className="min-h-[350px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
                             />
                         </div>
-                        <div className="bg-blue-50 border border-blue-100 p-3 rounded-lg text-[12px] text-blue-700">
+                        <div className="bg-zinc-50 border border-zinc-200 p-3 rounded-lg text-[12px] text-zinc-700">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
                                 {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ],\n  "proposal_content": { ... }\n}'}

@@ -83,7 +83,7 @@ export const dealColumns: ColumnDef<Deal>[] = [
         ),
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue('budget'))
-            return <div className="font-semibold text-green-600">{formatCurrency(amount)}</div>
+            return <div className="font-semibold text-zinc-900 dark:text-zinc-100">{formatCurrency(amount)}</div>
         },
     },
     {
@@ -94,9 +94,9 @@ export const dealColumns: ColumnDef<Deal>[] = [
         cell: ({ row }) => {
             const priority = row.getValue('priority') as string
             const colors: any = {
-                high: 'text-red-600 bg-red-50',
-                medium: 'text-yellow-600 bg-yellow-50',
-                low: 'text-blue-600 bg-blue-50',
+                high: 'text-zinc-100 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 font-bold border-zinc-900',
+                medium: 'text-zinc-700 bg-zinc-100 border-zinc-200',
+                low: 'text-zinc-500 bg-zinc-50 border-zinc-200',
             }
             return (
                 <Badge variant="outline" className={colors[priority] || ''}>
