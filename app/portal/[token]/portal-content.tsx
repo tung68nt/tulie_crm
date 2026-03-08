@@ -242,19 +242,34 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </CardContent>
                     </Card>
 
-                    {/* Payment Progress */}
+                    {/* Documents Summary */}
                     <Card>
                         <CardContent className="pt-6">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm text-muted-foreground">Tiến độ thanh toán</span>
-                                <CreditCard className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">Hồ sơ dự án</span>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
                             </div>
-                            <p className="text-2xl font-bold mb-1">{formatCurrency(totalPaid)}</p>
-                            <div className="flex justify-between text-[11px] text-muted-foreground mb-2">
-                                <span>{paymentProgress.toFixed(0)}% hoàn thành</span>
-                                <span>Còn lại {formatCurrency(remainingAmount)}</span>
+                            <p className="text-2xl font-bold mb-1">{totalDocuments} tài liệu</p>
+                            <div className="space-y-1.5 mt-3">
+                                {(quotations?.length || 1) > 0 && (
+                                    <div className="flex justify-between text-[11px] text-muted-foreground">
+                                        <span>Báo giá</span>
+                                        <span className="font-medium">{quotations?.length || 1} bản</span>
+                                    </div>
+                                )}
+                                {contracts?.length > 0 && (
+                                    <div className="flex justify-between text-[11px] text-muted-foreground">
+                                        <span>Hợp đồng</span>
+                                        <span className="font-medium">{contracts.length} bản</span>
+                                    </div>
+                                )}
+                                {invoices?.length > 0 && (
+                                    <div className="flex justify-between text-[11px] text-muted-foreground">
+                                        <span>Yêu cầu thanh toán</span>
+                                        <span className="font-medium">{invoices.length} bản</span>
+                                    </div>
+                                )}
                             </div>
-                            <Progress value={paymentProgress} className="h-1.5" />
                         </CardContent>
                     </Card>
 
