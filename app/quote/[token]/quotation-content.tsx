@@ -171,6 +171,14 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         day: new Date(quotation.created_at || new Date()).getDate(),
         month: new Date(quotation.created_at || new Date()).getMonth() + 1,
         year: new Date(quotation.created_at || new Date()).getFullYear(),
+        brandConfig: brandConfig,
+        bank_account_number: quotation.bank_account_number,
+        bank_account_name: quotation.bank_account_name,
+        bank_name: quotation.bank_name,
+        bank_branch: quotation.bank_branch,
+        terms: quotation.terms,
+        notes: quotation.notes,
+        proposal_content: quotation.proposal_content,
     }
 
     return (
@@ -868,7 +876,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Chúng tôi rất tiếc vì báo giá này chưa đáp ứng được yêu cầu. Vui lòng cho biết lý do để chúng tôi cải thiện.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
+                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto px-1">
                         <div className="grid gap-2">
                             <Label htmlFor="reason">Lý do từ chối <span className="text-red-500">*</span></Label>
                             <textarea

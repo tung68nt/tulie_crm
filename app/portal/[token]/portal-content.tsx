@@ -28,7 +28,8 @@ import {
     CreditCard,
     TrendingUp,
     ExternalLink,
-    Receipt
+    Receipt,
+    Phone
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
@@ -45,21 +46,21 @@ interface PortalContentProps {
 }
 
 const getStatusBadge = (status: string, isLate?: boolean) => {
-    if (isLate) return <Badge variant="destructive" className="text-[10px] font-medium">trễ hạn</Badge>
+    if (isLate) return <Badge variant="destructive" className="text-[10px] font-medium">Trễ hạn</Badge>
 
     switch (status) {
         case 'completed':
         case 'paid':
         case 'signed':
-            return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-medium">hoàn thành</Badge>
+            return <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-medium">Hoàn thành</Badge>
         case 'in_progress':
         case 'partial_paid':
-            return <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-medium">đang thực hiện</Badge>
+            return <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-medium">Đang thực hiện</Badge>
         case 'pending':
         case 'pending_signature':
-            return <Badge variant="outline" className="text-[10px] font-medium">chờ xử lý</Badge>
+            return <Badge variant="outline" className="text-[10px] font-medium">Chờ xử lý</Badge>
         case 'upcoming':
-            return <Badge variant="secondary" className="text-[10px] font-medium">sắp tới</Badge>
+            return <Badge variant="secondary" className="text-[10px] font-medium">Sắp tới</Badge>
         default:
             return <Badge variant="outline" className="text-[10px] font-medium">{status}</Badge>
     }
@@ -278,9 +279,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     <div className="lg:col-span-2">
                         <Card>
                             <CardHeader className="pb-4">
-                                <CardTitle className="text-base font-semibold">các mốc quan trọng</CardTitle>
+                                <CardTitle className="text-base font-semibold">Các mốc quan trọng</CardTitle>
                                 <CardDescription>
-                                    lộ trình thực hiện và bàn giao dịch vụ chi tiết theo từng hạng mục
+                                    Lộ trình thực hiện và bàn giao dịch vụ chi tiết theo từng hạng mục
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="px-0">
@@ -291,7 +292,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                             <div className="px-6 mb-6 flex items-center gap-3">
                                                 <div className="h-2 w-2 rounded-full bg-slate-900" />
                                                 <h3 className="text-xs font-bold text-slate-900 bg-slate-100/80 px-3 py-1 rounded-md">
-                                                    {group.title.toLowerCase()}
+                                                    {group.title}
                                                 </h3>
                                             </div>
 
@@ -424,7 +425,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                         </div>
                                                         <div className="flex-1 flex justify-between items-center">
                                                             <div>
-                                                                <h4 className="text-[12px] font-bold text-slate-700">{item.title.toLowerCase()}</h4>
+                                                                <h4 className="text-[12px] font-bold text-slate-700">{item.title}</h4>
                                                                 <p className="text-[10px] text-slate-400">{formatDate(item.date)}</p>
                                                             </div>
                                                             {getStatusBadge(item.status)}
@@ -449,7 +450,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <CardContent className="px-0 pb-8 pt-6">
                                 <div className="relative">
                                     {/* Vertical Dotted Line */}
-                                    <div className="absolute left-[39px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
+                                    <div className="absolute left-[40px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
 
                                     <div className="space-y-12">
                                         {documentGroups.map((group: any, groupIdx: number) => (
@@ -472,14 +473,14 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <FileText className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">bước 1</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">báo giá & đề xuất</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Báo giá & Đề xuất</h4>
                                                             </div>
                                                         </div>
                                                         <a
                                                             href={`/quote/${group.quotation.public_token || token}`}
                                                             target="_blank"
-                                                            className="flex flex-col gap-2 p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer border-slate-100 group/item"
+                                                            className="flex flex-col gap-2 p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer border-slate-100 group/item relative z-10"
                                                         >
                                                             <div className="flex items-center justify-between">
                                                                 <p className="text-[11px] font-bold text-slate-700">#{group.quotation.quotation_number}</p>
@@ -502,12 +503,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <FileSignature className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400">bước 2</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">hợp đồng kinh tế</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400">Bước 2</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Hợp đồng kinh tế</h4>
                                                             </div>
                                                         </div>
                                                         {group.contracts.length > 0 ? (
-                                                            <div className="space-y-2">
+                                                            <div className="space-y-2 relative z-10">
                                                                 {group.contracts.map((c: any) => (
                                                                     <div
                                                                         key={c.id}
@@ -532,7 +533,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 ))}
                                                             </div>
                                                         ) : (
-                                                            <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30">
+                                                            <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30 relative z-10">
                                                                 <p className="text-[10px] text-slate-400 italic text-center leading-tight">Dự thảo sau khi báo giá được phê duyệt</p>
                                                             </div>
                                                         )}
@@ -548,12 +549,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                                 <CheckCircle className="h-4 w-4" />
                                                             </div>
                                                             <div className="flex flex-col">
-                                                                <span className="text-[10px] font-bold text-slate-400">bước 3</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">bàn giao</h4>
+                                                                <span className="text-[10px] font-bold text-slate-400">Bước 3</span>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Bàn giao</h4>
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30">
-                                                            <p className="text-[10px] text-slate-400 text-center leading-tight">biên bản xác nhận hoàn tất dịch vụ</p>
+                                                        <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30 relative z-10">
+                                                            <p className="text-[10px] text-slate-400 text-center leading-tight">Biên bản xác nhận hoàn tất dịch vụ</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -572,14 +573,52 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
+                        {/* Help Section - Moved Up and Redesigned */}
+                        <Card className="bg-zinc-950 text-white border-none shadow-xl relative overflow-hidden group">
+                            <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#fff_0.5px,transparent_0.5px)] [background-size:12px_12px]" />
+                            <CardContent className="pt-6 relative z-10">
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10 group-hover:bg-white group-hover:text-black transition-all">
+                                            <Phone className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-sm font-bold tracking-tight">Cần hỗ trợ?</h4>
+                                            <p className="text-[10px] text-zinc-400">Chúng tôi luôn sẵn sàng giúp đỡ bạn</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                                            <p className="text-[10px] text-zinc-500 mb-1">Email Phụ trách</p>
+                                            <a href={`mailto:${salesPerson?.email || 'hello@thiepnhanh.vn'}`} className="text-xs font-medium hover:text-white transition-colors block truncate">
+                                                {salesPerson?.email || 'hello@thiepnhanh.vn'}
+                                            </a>
+                                        </div>
+
+                                        <div className="p-3 rounded-lg bg-white/5 border border-white/10">
+                                            <p className="text-[10px] text-zinc-500 mb-1">Hotline 24/7</p>
+                                            <a href="tel:0988984554" className="text-sm font-bold hover:text-white transition-colors block">
+                                                098.898.4554
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <Button variant="outline" className="w-full bg-white text-black hover:bg-zinc-200 border-none text-[11px] font-bold h-9">
+                                        Liên hệ ngay
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* Tasks */}
                         {tasks.length > 0 && (
                             <Card>
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-base font-semibold">Công việc chi tiết</CardTitle>
-                                    <CardDescription>Các nhiệm vụ đang được triển khai</CardDescription>
+                                <CardHeader className="pb-3 px-4">
+                                    <CardTitle className="text-[13px] font-bold">Công việc chi tiết</CardTitle>
+                                    <CardDescription className="text-[11px]">Các nhiệm vụ đang triển khai</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-2">
+                                <CardContent className="space-y-2 px-4 pb-4">
                                     {tasks.map((task: any) => (
                                         <div key={task.id} className="flex items-center gap-3 p-2.5 rounded-md border">
                                             <div className={`h-2 w-2 rounded-full shrink-0 ${task.status === 'completed' ? 'bg-primary' :
@@ -600,30 +639,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </Card>
                         )}
 
-                        {/* Help */}
-                        <Card className="bg-muted/50">
-                            <CardContent className="pt-6">
-                                <div className="flex items-start gap-3">
-                                    <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                                        <AlertCircle className="h-4 w-4 text-slate-900" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-semibold mb-1">Cần hỗ trợ?</h4>
-                                        <div className="text-xs text-muted-foreground leading-relaxed space-y-1">
-                                            <p>
-                                                Liên hệ {salesPerson?.full_name || 'Tulie Agency'} qua email{' '}
-                                                <a href={`mailto:${salesPerson?.email || 'info@tulie.vn'}`} className="underline font-medium hover:text-foreground transition-colors">
-                                                    {salesPerson?.email || 'info@tulie.vn'}
-                                                </a>
-                                            </p>
-                                            <p>
-                                                Hotline: <a href="tel:0988984554" className="font-bold text-slate-900 hover:underline">098.898.4554</a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+
                     </div>
                 </div>
             </main >

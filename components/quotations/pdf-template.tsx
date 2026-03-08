@@ -89,25 +89,31 @@ const styles = StyleSheet.create({
     },
     tableHeaderChild: {
         color: '#ffffff',
-        fontSize: 8,
+        fontSize: 9,
         fontWeight: 'bold',
         textTransform: 'none',
+    },
+    tableHeaderSub: {
+        fontSize: 7,
+        color: '#aaa',
+        fontStyle: 'italic',
+        fontWeight: 'normal',
+        marginTop: 2,
     },
     tableRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        paddingVertical: 8,
+        paddingVertical: 10,
         alignItems: 'flex-start', // Align top for multiline description
     },
     col1: { width: '4%', textAlign: 'center' }, // #
-    col2: { width: '38%', paddingRight: 5 }, // Product
+    col2: { paddingRight: 5, paddingLeft: 4 }, // Product
     col3: { width: '10%', textAlign: 'center' }, // Unit
-    col4: { width: '6%', textAlign: 'center' }, // Qty
-    col5: { width: '12%', textAlign: 'right' }, // Price
-    col6: { width: '8%', textAlign: 'center' }, // CK%
-    col7: { width: '7%', textAlign: 'center' }, // VAT%
-    col8: { width: '15%', textAlign: 'right' }, // Total
+    col4: { width: '8%', textAlign: 'center' }, // Qty
+    col5: { width: '16%', textAlign: 'right' }, // Price
+    col6: { width: '7%', textAlign: 'center' }, // CK%
+    col8: { width: '18%', textAlign: 'right', paddingRight: 8 }, // Total
 
     productName: {
         fontSize: 10,
@@ -287,13 +293,31 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                     {/* Table Header */}
                     <View style={styles.tableHeader}>
                         <Text style={[styles.col1, styles.tableHeaderChild]}>#</Text>
-                        <Text style={[styles.col2, styles.tableHeaderChild, { width: hasDiscount ? '38%' : '46%' }]}>DỊCH VỤ / SẢN PHẨM</Text>
-                        <Text style={[styles.col3, styles.tableHeaderChild]}>ĐVT</Text>
-                        <Text style={[styles.col4, styles.tableHeaderChild]}>SL</Text>
-                        <Text style={[styles.col5, styles.tableHeaderChild]}>ĐƠN GIÁ</Text>
-                        {hasDiscount && <Text style={[styles.col6, styles.tableHeaderChild]}>CK%</Text>}
-                        <Text style={[styles.col7, styles.tableHeaderChild]}>VAT</Text>
-                        <Text style={[styles.col8, styles.tableHeaderChild]}>THÀNH TIỀN</Text>
+                        <View style={[styles.col2, { width: hasDiscount ? '37%' : '44%' }]}>
+                            <Text style={styles.tableHeaderChild}>Hạng mục & Mô tả</Text>
+                            <Text style={styles.tableHeaderSub}>/ Items</Text>
+                        </View>
+                        <View style={styles.col3}>
+                            <Text style={styles.tableHeaderChild}>ĐVT</Text>
+                            <Text style={styles.tableHeaderSub}>/ Unit</Text>
+                        </View>
+                        <View style={styles.col4}>
+                            <Text style={styles.tableHeaderChild}>SL</Text>
+                            <Text style={styles.tableHeaderSub}>/ Qty</Text>
+                        </View>
+                        <View style={styles.col5}>
+                            <Text style={styles.tableHeaderChild}>Đơn giá</Text>
+                            <Text style={styles.tableHeaderSub}>/ Price</Text>
+                        </View>
+                        {hasDiscount && (
+                            <View style={styles.col6}>
+                                <Text style={[styles.tableHeaderChild, { fontSize: 8 }]}>CK(%)</Text>
+                            </View>
+                        )}
+                        <View style={styles.col8}>
+                            <Text style={styles.tableHeaderChild}>Thành tiền</Text>
+                            <Text style={styles.tableHeaderSub}>/ Amount</Text>
+                        </View>
                     </View>
 
                     {/* Render items by section */}
@@ -317,7 +341,7 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                                 return (
                                     <View style={styles.tableRow} key={item.id}>
                                         <Text style={styles.col1}>{globalItemIndex}</Text>
-                                        <View style={[styles.col2, { width: hasDiscount ? '38%' : '46%' }]}>
+                                        <View style={[styles.col2, { width: hasDiscount ? '37%' : '44%' }]}>
                                             <Text style={[styles.productName, { fontWeight: 'bold' }]}>{item.product_name}</Text>
                                             {item.description && (
                                                 <Text style={[styles.productDesc, { marginTop: 2, fontSize: 8 }]}>{item.description}</Text>
@@ -325,10 +349,9 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                                         </View>
                                         <Text style={styles.col3}>{item.unit}</Text>
                                         <Text style={styles.col4}>{item.quantity}</Text>
-                                        <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)}</Text>
+                                        <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)} ₫</Text>
                                         {hasDiscount && <Text style={styles.col6}>{item.discount || 0}%</Text>}
-                                        <Text style={styles.col7}>{quotation.vat_percent}%</Text>
-                                        <Text style={[styles.col8, { fontWeight: 'bold' }]}>{new Intl.NumberFormat('vi-VN').format(item.total_price)}</Text>
+                                        <Text style={[styles.col8, { fontWeight: 'bold' }]}>{new Intl.NumberFormat('vi-VN').format(item.total_price)} ₫</Text>
                                     </View>
                                 );
                             })}
