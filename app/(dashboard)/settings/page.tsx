@@ -1,5 +1,6 @@
 "use client"
-
+import * as React from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -10,7 +11,8 @@ import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
+import { useTheme } from 'next-themes'
 import {
     getProductCategories,
     createProductCategory,
@@ -30,8 +32,6 @@ import {
 } from '@/lib/supabase/services/settings-service'
 import { testTelegramConnection } from '@/lib/supabase/services/telegram-service'
 import { testSmtpConnection, sendEmail } from '@/lib/supabase/services/email-service'
-import { toast } from 'sonner'
-import { useTheme } from 'next-themes'
 
 export default function SettingsPage() {
     const [companySettings, setCompanySettings] = useState({
@@ -890,11 +890,11 @@ export default function SettingsPage() {
                                 <CardContent>
                                     <div className="space-y-4">
                                         {[
-                                            { label: 'Nháp (Draft)', color: 'bg-gray-500' },
-                                            { label: 'Đã gửi (Sent)', color: 'bg-blue-500' },
-                                            { label: 'Đã xem (Viewed)', color: 'bg-indigo-500' },
-                                            { label: 'Chấp nhận (Accepted)', color: 'bg-green-500' },
-                                            { label: 'Từ chối (Rejected)', color: 'bg-red-500' },
+                                            { label: 'Nháp (Draft)', color: 'bg-zinc-400' },
+                                            { label: 'Đã gửi (Sent)', color: 'bg-zinc-500' },
+                                            { label: 'Đã xem (Viewed)', color: 'bg-zinc-600' },
+                                            { label: 'Chấp nhận (Accepted)', color: 'bg-zinc-900' },
+                                            { label: 'Từ chối (Rejected)', color: 'bg-zinc-300' },
                                         ].map((status, i) => (
                                             <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
                                                 <div className="flex items-center gap-3">
@@ -1034,22 +1034,34 @@ export default function SettingsPage() {
                                     <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 mb-4">Cấu hình loại thông báo:</h4>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         {[
-                                            { key: 'notify_new_retail_order', label: 'Đơn hàng B2C mới' },
-                                            { key: 'notify_retail_payment', label: 'Thanh toán B2C' },
-                                            { key: 'notify_b2b_payment', label: 'Thanh toán B2B' },
-                                            { key: 'notify_new_quotation', label: 'Báo giá mới đã tạo' },
-                                            { key: 'notify_quotation_viewed', label: 'Khách xem báo giá' },
-                                            { key: 'notify_quotation_accepted', label: 'Khách duyệt báo giá' },
-                                            { key: 'notify_new_invoice', label: 'Hóa đơn mới đã xuất' },
-                                            { key: 'notify_unmatched_payment', label: 'Thanh toán không khớp' },
+                                            { key: 'notify_new_retail_order', templateKey: 'template_new_retail_order', label: 'Đơn hàng B2C mới', placeholder: 'Dùng biến: {order_number}, {customer_name}, {customer_phone}, {total_amount}, {payment_status}, {order_status}' },
+                                            { key: 'notify_retail_payment', templateKey: 'template_retail_payment', label: 'Thanh toán B2C', placeholder: 'Dùng biến: {amount}, {order_number}, {customer_name}' },
+                                            { key: 'notify_b2b_payment', templateKey: 'template_b2b_payment', label: 'Thanh toán B2B', placeholder: 'Dùng biến: {amount}, {contract_number}, {company_name}' },
+                                            { key: 'notify_new_quotation', templateKey: 'template_new_quotation', label: 'Báo giá mới đã tạo', placeholder: 'Dùng biến: {quotation_number}, {company_name}, {creator_name}, {total_amount}' },
+                                            { key: 'notify_quotation_viewed', templateKey: 'template_quotation_viewed', label: 'Khách xem báo giá', placeholder: 'Dùng biến: {quotation_number}, {company_name}, {deal_title}, {view_count}' },
+                                            { key: 'notify_quotation_accepted', templateKey: 'template_quotation_accepted', label: 'Khách duyệt báo giá', placeholder: 'Dùng biến: {quotation_number}, {company_name}, {total_amount}' },
+                                            { key: 'notify_new_invoice', templateKey: 'template_new_invoice', label: 'Hóa đơn mới đã xuất', placeholder: 'Dùng biến: {invoice_number}, {company_name}, {total_amount}' },
+                                            { key: 'notify_unmatched_payment', templateKey: 'template_unmatched_payment', label: 'Thanh toán không khớp', placeholder: 'Nội dung...' },
                                         ].map((item) => (
-                                            <div key={item.key} className="flex items-center justify-between p-3 border rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border-zinc-100 dark:border-zinc-800">
-                                                <Label htmlFor={item.key} className="text-xs font-bold">{item.label}</Label>
-                                                <Switch
-                                                    id={item.key}
-                                                    checked={(telegramConfig as any)[item.key] !== false}
-                                                    onCheckedChange={(val) => setTelegramConfig({ ...telegramConfig, [item.key]: val })}
-                                                />
+                                            <div key={item.key} className="flex flex-col gap-3 p-4 border rounded-xl bg-zinc-50 dark:bg-zinc-950/50 border-zinc-100 dark:border-zinc-800">
+                                                <div className="flex items-center justify-between">
+                                                    <Label htmlFor={item.key} className="text-xs font-bold">{item.label}</Label>
+                                                    <Switch
+                                                        id={item.key}
+                                                        checked={(telegramConfig as any)[item.key] !== false}
+                                                        onCheckedChange={(val) => setTelegramConfig({ ...telegramConfig, [item.key]: val })}
+                                                    />
+                                                </div>
+                                                <div className="pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800">
+                                                    <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2 block">Nội dung mẫu (Telegram HTML)</Label>
+                                                    <Textarea
+                                                        value={(telegramConfig as any)[item.templateKey] || ''}
+                                                        onChange={(e) => setTelegramConfig({ ...telegramConfig, [item.templateKey]: e.target.value })}
+                                                        placeholder={item.placeholder}
+                                                        className="min-h-[100px] text-xs font-mono whitespace-pre-wrap"
+                                                    />
+                                                    <p className="text-[10px] text-muted-foreground mt-1">{item.placeholder}</p>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

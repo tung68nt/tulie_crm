@@ -158,7 +158,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                         variant="secondary"
                         className={cn(
                             "text-[10px] px-2 py-0 h-5 font-black  ",
-                            status === 'paid' ? "bg-green-100 text-green-700" : status === 'partial' ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"
+                            status === 'paid' ? "bg-zinc-900 text-zinc-100" : status === 'partial' ? "bg-zinc-500 text-zinc-100" : "bg-zinc-100 text-zinc-500"
                         )}
                     >
                         {status === 'paid' ? 'Đã xong' : status === 'partial' ? 'Một phần' : 'Chưa cọc'}

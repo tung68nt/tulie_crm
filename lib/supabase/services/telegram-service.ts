@@ -60,76 +60,146 @@ Cấu hình Telegram của bạn hiện đang hoạt động tốt.
 <i>Time: ${new Date().toLocaleString('vi-VN')}</i>`)
 }
 
+function fillTemplate(template: string, vars: Record<string, any>) {
+    if (!template) return ''
+    return template.replace(/\{(\w+)\}/g, (match, p1) => {
+        return vars[p1] !== undefined ? vars[p1] : match
+    })
+}
+
 // Helper formats for common events - individual async functions satisfy "use server"
 export async function formatNewRetailOrder(order: any) {
-    return `
+    const config = await getTelegramConfig()
+    const vars = {
+        order_number: order.order_number,
+        customer_name: order.customer_name,
+        customer_phone: order.customer_phone || 'N/A',
+        total_amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount),
+        payment_status: order.payment_status === 'paid' ? '✅ Đã thanh toán' : '⏳ Chờ thanh toán',
+        order_status: order.order_status
+    }
+    const tpl = (config as any)?.template_new_retail_order || `
 <b>🛍️ ĐƠN HÀNG MỚI (STUDIO)</b>
 ━━━━━━━━━━━━━━━━━━
-🆔 Mã đơn: <code>${order.order_number}</code>
-👤 Khách hàng: <b>${order.customer_name}</b>
-📞 SĐT: ${order.customer_phone || 'N/A'}
-💰 Tổng đơn: <b>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_amount)}</b>
-💳 Trạng thái: ${order.payment_status === 'paid' ? '✅ Đã thanh toán' : '⏳ Chờ thanh toán'}
-📍 Tình trạng: <b>${order.order_status}</b>
+🆔 Mã đơn: <code>{order_number}</code>
+👤 Khách hàng: <b>{customer_name}</b>
+📞 SĐT: {customer_phone}
+💰 Tổng đơn: <b>{total_amount}</b>
+💳 Trạng thái: {payment_status}
+📍 Tình trạng: <b>{order_status}</b>
 ━━━━━━━━━━━━━━━━━━
 <i>Check ngay tại Tulie CRM!</i>`
+    return fillTemplate(tpl, vars).trim()
 }
 
 export async function formatPaymentReceived(order: any, amount: number, isB2B: boolean = false) {
-    return `
-<b>💰 TIỀN VỀ! (${isB2B ? 'B2B' : 'B2C'})</b>
+    const config = await getTelegramConfig()
+
+    const vars = {
+        amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount),
+        order_number: order.order_number || '',
+        contract_number: order.contract_number || '',
+        customer_name: order.customer_name || '',
+        company_name: order.customer?.company_name || ''
+    }
+
+    if (isB2B) {
+        const tplB2B = (config as any)?.template_b2b_payment || `
+<b>💰 TIỀN VỀ! (B2B)</b>
 ━━━━━━━━━━━━━━━━━━
-🏦 Số tiền: <b>+${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)}</b>
-📄 Mã đơn/HĐ: <code>${order.order_number || order.contract_number}</code>
-👤 Từ: <b>${order.customer_name || order.customer?.company_name}</b>
+🏦 Số tiền: <b>+{amount}</b>
+📄 Hợp đồng: <code>{contract_number}</code>
+👤 Khách hàng: <b>{company_name}</b>
 ━━━━━━━━━━━━━━━━━━
 <i>Ting ting! Chúc mừng team! 🥂</i>`
+        return fillTemplate(tplB2B, vars).trim()
+    } else {
+        const tplB2C = (config as any)?.template_retail_payment || `
+<b>💰 TIỀN VỀ! (B2C)</b>
+━━━━━━━━━━━━━━━━━━
+🏦 Số tiền: <b>+{amount}</b>
+📄 Mã đơn: <code>{order_number}</code>
+👤 Khách hàng: <b>{customer_name}</b>
+━━━━━━━━━━━━━━━━━━
+<i>Ting ting! Chúc mừng team! 🥂</i>`
+        return fillTemplate(tplB2C, vars).trim()
+    }
 }
 
 export async function formatQuotationViewed(quote: any) {
-    return `
+    const config = await getTelegramConfig()
+    const vars = {
+        quotation_number: quote.quotation_number,
+        company_name: quote.customer?.company_name || 'N/A',
+        deal_title: quote.deal?.title || 'N/A',
+        view_count: quote.view_count + 1
+    }
+    const tpl = (config as any)?.template_quotation_viewed || `
 <b>👀 KHÁCH ĐÃ XEM BÁO GIÁ</b>
 ━━━━━━━━━━━━━━━━━━
-🆔 Số: <code>${quote.quotation_number}</code>
-🏢 Khách hàng: <b>${quote.customer?.company_name}</b>
-📂 Deal: ${quote.deal?.title || 'N/A'}
-📈 Lượt xem: ${quote.view_count + 1}
+🆔 Số: <code>{quotation_number}</code>
+🏢 Khách hàng: <b>{company_name}</b>
+📂 Deal: {deal_title}
+📈 Lượt xem: {view_count}
 ━━━━━━━━━━━━━━━━━━
 <i>Time to follow up! ⚡</i>`
+    return fillTemplate(tpl, vars).trim()
 }
 
 export async function formatQuotationAccepted(quote: any) {
-    return `
+    const config = await getTelegramConfig()
+    const vars = {
+        quotation_number: quote.quotation_number,
+        company_name: quote.customer?.company_name || 'N/A',
+        total_amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quote.total_amount)
+    }
+    const tpl = (config as any)?.template_quotation_accepted || `
 <b>🎉 KHÁCH ĐÃ DUYỆT BÁO GIÁ</b>
 ━━━━━━━━━━━━━━━━━━
-🆔 Số: <code>${quote.quotation_number}</code>
-🏢 Khách hàng: <b>${quote.customer?.company_name}</b>
-💰 Tổng giá trị: <b>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quote.total_amount)}</b>
+🆔 Số: <code>{quotation_number}</code>
+🏢 Khách hàng: <b>{company_name}</b>
+💰 Tổng giá trị: <b>{total_amount}</b>
 ━━━━━━━━━━━━━━━━━━
 <i>Chuẩn bị lên hợp đồng thôi! 🔥</i>`
+    return fillTemplate(tpl, vars).trim()
 }
 
 export async function formatNewQuotation(quote: any) {
-    return `
+    const config = await getTelegramConfig()
+    const vars = {
+        quotation_number: quote.quotation_number,
+        company_name: quote.customer?.company_name || 'N/A',
+        creator_name: quote.creator?.full_name || 'N/A',
+        total_amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quote.total_amount)
+    }
+    const tpl = (config as any)?.template_new_quotation || `
 <b>📄 BÁO GIÁ MỚI ĐÃ TẠO (B2B)</b>
 ━━━━━━━━━━━━━━━━━━
-🆔 Số: <code>${quote.quotation_number}</code>
-🏢 Khách hàng: <b>${quote.customer?.company_name}</b>
-👤 Tạo bởi: <b>${quote.creator?.full_name || 'N/A'}</b>
-💰 Tổng: <b>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quote.total_amount)}</b>
+🆔 Số: <code>{quotation_number}</code>
+🏢 Khách hàng: <b>{company_name}</b>
+👤 Tạo bởi: <b>{creator_name}</b>
+💰 Tổng: <b>{total_amount}</b>
 ━━━━━━━━━━━━━━━━━━
 <i>Check ngay link portal để gửi khách! ⚡</i>`
+    return fillTemplate(tpl, vars).trim()
 }
 
 export async function formatNewInvoice(invoice: any) {
-    return `
+    const config = await getTelegramConfig()
+    const vars = {
+        invoice_number: invoice.invoice_number,
+        company_name: invoice.customer?.company_name || invoice.vendor?.name || 'N/A',
+        total_amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(invoice.total_amount)
+    }
+    const tpl = (config as any)?.template_new_invoice || `
 <b>🧾 HÓA ĐƠN MỚI ĐÃ XUẤT (B2B)</b>
 ━━━━━━━━━━━━━━━━━━
-🆔 Số: <code>${invoice.invoice_number}</code>
-🏢 Khách hàng: <b>${invoice.customer?.company_name || invoice.vendor?.name}</b>
-💰 Tổng: <b>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(invoice.total_amount)}</b>
+🆔 Số: <code>{invoice_number}</code>
+🏢 Khách hàng: <b>{company_name}</b>
+💰 Tổng: <b>{total_amount}</b>
 ━━━━━━━━━━━━━━━━━━
 <i>Đã lên hệ thống, chờ tiền về! 💸</i>`
+    return fillTemplate(tpl, vars).trim()
 }
 
 

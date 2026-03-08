@@ -102,7 +102,7 @@ export default function NewProductPage() {
 
 
     return (
-        <div className="space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
@@ -147,11 +147,11 @@ export default function NewProductPage() {
                                             <SelectValue placeholder="Chọn danh mục" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Web Development">Web Development</SelectItem>
-                                            <SelectItem value="SEO">SEO</SelectItem>
-                                            <SelectItem value="Marketing">Marketing</SelectItem>
-                                            <SelectItem value="Design">Design</SelectItem>
-                                            <SelectItem value="Consulting">Consulting</SelectItem>
+                                            {categories.map((cat) => (
+                                                <SelectItem key={cat.id} value={cat.name}>
+                                                    {cat.name}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>

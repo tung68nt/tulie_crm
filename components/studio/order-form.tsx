@@ -41,6 +41,7 @@ export function RetailOrderForm() {
         notes: '',
         delivery_date: '',
         needs_vat: false,
+        brand: 'studio' as any,
     })
 
     const [brandConfig, setBrandConfig] = useState<any>(null)
@@ -48,7 +49,8 @@ export function RetailOrderForm() {
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getProducts()
-            setProducts(data)
+            const studioProducts = data.filter(p => p.category === 'Studio')
+            setProducts(studioProducts.length > 0 ? studioProducts : data)
         }
         const fetchConfig = async () => {
             const config = await import('@/lib/supabase/services/settings-service').then(m => m.getBrandConfig())
@@ -114,6 +116,7 @@ export function RetailOrderForm() {
         try {
             await createRetailOrder({
                 ...formData,
+                order_date: new Date().toISOString().split('T')[0],
                 items: selectedItems
             })
             toast.success('Đã tạo đơn hàng mới thành công')
@@ -318,7 +321,7 @@ export function RetailOrderForm() {
                             <div className="space-y-4">
                                 <div className="space-y-1">
                                     <span className="text-[10px] uppercase font-bold text-zinc-500">Cần thanh toán</span>
-                                    <div className="text-3xl font-bold text-primary">{formatCurrency(formData.total_amount)}</div>
+                                    <div className="text-3xl font-bold text-white">{formatCurrency(formData.total_amount)}</div>
                                 </div>
 
                                 <div className="space-y-2 pt-2">
@@ -352,7 +355,7 @@ export function RetailOrderForm() {
                             </CardHeader>
                             <CardContent className="flex flex-col items-center pb-6">
                                 <div className="bg-white p-2 rounded-lg shadow-sm mb-3">
-                                    <img src={qrUrl} alt="QR Preview" className="w-32 h-32 object-contain" />
+                                    <img src={qrUrl} alt="QR Preview" className="w-56 h-56 object-contain" />
                                 </div>
                                 <p className="text-[10px] text-center text-muted-foreground px-4 italic leading-tight">
                                     Mã QR này sẽ hiển thị trên Portal gửi cho khách.

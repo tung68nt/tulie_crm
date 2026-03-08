@@ -1,10 +1,10 @@
 'use client'
 
+import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
     LayoutGrid,
     Users,
@@ -114,7 +114,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
             </div>
 
             {/* Navigation */}
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-y-auto pb-6">
                 <nav className="flex flex-col gap-0.5 pt-2 px-2">
                     {/* Dashboard always at top */}
                     <div className="space-y-1">
@@ -139,7 +139,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-1.5 mt-4 text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">
+                                <h4 className="px-3 py-1.5 mt-4 text-sm font-black uppercase tracking-widest text-black dark:text-white">
                                     {group.title}
                                 </h4>
                             )}
@@ -186,7 +186,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {/* Thêm padding dưới cùng để khi cuộn không bị dính đáy */}
                     <div className="h-20" />
                 </nav>
-            </ScrollArea>
+            </div>
 
             {/* Collapse Toggle - Hidden on mobile */}
             {!isMobile && (

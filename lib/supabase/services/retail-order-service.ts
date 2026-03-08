@@ -30,7 +30,7 @@ export async function generateRetailOrderId(amount: number, date: Date = new Dat
         .select('stt')
         .order('stt', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
 
     const nextStt = (maxSttData?.stt || 0) + 1
 
