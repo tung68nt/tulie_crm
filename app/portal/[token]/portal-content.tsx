@@ -347,19 +347,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 </div>
                             </CardContent>
                         </Card>
-                    </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-6">
-                        {/* Documents Timeline */}
-                        <Card>
-                            <CardHeader className="pb-3">
+                        {/* Documents Timeline - Moved from sidebar to be wider */}
+                        <Card className="mt-6">
+                            <CardHeader className="pb-4 border-b border-slate-50">
                                 <CardTitle className="text-base font-semibold">Lộ trình hồ sơ & Tài liệu</CardTitle>
                                 <CardDescription>
-                                    Quy trình pháp lý và bàn giao dự án
+                                    Quy trình pháp lý và bàn giao dự án chi tiết cho từng hạng mục
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="px-0 pb-6">
+                            <CardContent className="px-0 pb-8 pt-6">
                                 <div className="relative">
                                     {/* Vertical Dotted Line */}
                                     <div className="absolute left-[39px] top-6 bottom-6 w-px border-l-2 border-dotted border-slate-200" />
@@ -368,101 +365,105 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         {documentGroups.map((group, groupIdx) => (
                                             <div key={group.quotation.id} className="relative group/bundle">
                                                 {/* Group Header */}
-                                                <div className="px-6 mb-4 flex items-center gap-2">
-                                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-900" />
-                                                    <h3 className="text-[11px] font-bold text-slate-900 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded">
+                                                <div className="px-6 mb-6 flex items-center gap-3">
+                                                    <div className="h-2 w-2 rounded-full bg-slate-900 shadow-sm" />
+                                                    <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest bg-slate-100/80 px-3 py-1 rounded-md backdrop-blur-sm">
                                                         {group.title}
                                                     </h3>
                                                 </div>
 
-                                                <div className="space-y-6">
+                                                <div className="grid gap-6 md:grid-cols-3 px-6">
                                                     {/* 1. Báo giá */}
-                                                    <div className="relative flex items-start gap-4 px-6 group/step">
-                                                        <div className={cn(
-                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all bg-slate-900 border-slate-900 text-white"
-                                                        )}>
-                                                            <FileText className="h-4 w-4" />
-                                                        </div>
-                                                        <div className="flex-1 space-y-2 pt-0.5">
+                                                    <div className="relative flex flex-col gap-3 group/step">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn(
+                                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all bg-slate-900 border-slate-900 text-white shadow-sm"
+                                                            )}>
+                                                                <FileText className="h-4 w-4" />
+                                                            </div>
                                                             <div className="flex flex-col">
                                                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 1</span>
                                                                 <h4 className="text-[13px] font-bold text-slate-900">Báo giá & Đề xuất</h4>
                                                             </div>
-                                                            <a
-                                                                href={`/quote/${group.quotation.public_token || token}`}
-                                                                target="_blank"
-                                                                className="flex items-center justify-between p-2.5 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer border-slate-100"
-                                                            >
-                                                                <div className="flex items-center gap-2 min-w-0">
-                                                                    <div className="h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
-                                                                    <p className="text-[11px] font-bold truncate text-slate-700">#{group.quotation.quotation_number}</p>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    {getStatusBadge(group.quotation.status === 'accepted' ? 'signed' : 'pending_signature')}
-                                                                    <ExternalLink className="h-3 w-3 text-slate-400 group-hover:text-slate-900 transition-colors" />
-                                                                </div>
-                                                            </a>
                                                         </div>
+                                                        <a
+                                                            href={`/quote/${group.quotation.public_token || token}`}
+                                                            target="_blank"
+                                                            className="flex flex-col gap-2 p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:shadow-md transition-all cursor-pointer border-slate-100 group/item"
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <p className="text-[11px] font-bold text-slate-700">#{group.quotation.quotation_number}</p>
+                                                                <ExternalLink className="h-3 w-3 text-slate-400 group-hover/item:text-slate-900 transition-colors" />
+                                                            </div>
+                                                            <div className="flex items-center justify-between">
+                                                                {getStatusBadge(group.quotation.status === 'accepted' ? 'signed' : 'pending_signature')}
+                                                                <span className="text-[10px] text-slate-400">{formatDate(group.quotation.created_at)}</span>
+                                                            </div>
+                                                        </a>
                                                     </div>
 
                                                     {/* 2. Hợp đồng */}
-                                                    <div className="relative flex items-start gap-4 px-6 group/step">
-                                                        <div className={cn(
-                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                            group.contracts.length > 0 ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
-                                                        )}>
-                                                            <FileSignature className="h-4 w-4" />
-                                                        </div>
-                                                        <div className="flex-1 space-y-2 pt-0.5">
+                                                    <div className="relative flex flex-col gap-3 group/step">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn(
+                                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                                group.contracts.length > 0 ? "bg-slate-900 border-slate-900 text-white shadow-md" : "bg-white border-slate-200 text-slate-300"
+                                                            )}>
+                                                                <FileSignature className="h-4 w-4" />
+                                                            </div>
                                                             <div className="flex flex-col">
                                                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 2</span>
                                                                 <h4 className="text-[13px] font-bold text-slate-900">Hợp đồng kinh tế</h4>
                                                             </div>
-                                                            {group.contracts.length > 0 ? (
-                                                                <div className="space-y-1.5">
-                                                                    {group.contracts.map((c: any) => (
-                                                                        <div
-                                                                            key={c.id}
-                                                                            className="flex items-center justify-between p-2.5 rounded-xl border bg-slate-50/50 border-slate-100"
-                                                                        >
-                                                                            <div className="flex items-center gap-2 min-w-0">
-                                                                                <div className="h-1.5 w-1.5 rounded-full bg-slate-400 shrink-0" />
-                                                                                <p className="text-[11px] font-bold truncate text-slate-700">#{c.contract_number}</p>
-                                                                            </div>
-                                                                            <div className="flex items-center gap-1.5">
-                                                                                {getStatusBadge(c.status === 'active' || c.status === 'completed' ? 'signed' : 'pending_signature')}
-                                                                                <DocumentDownloadButton
-                                                                                    type="contract"
-                                                                                    documentId={c.id}
-                                                                                    customerId={customer.id}
-                                                                                    label=""
-                                                                                    variant="ghost"
-                                                                                    className="h-7 w-7 p-0"
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-[10px] text-slate-400 italic">Dự thảo sau khi báo giá được phê duyệt</p>
-                                                            )}
                                                         </div>
+                                                        {group.contracts.length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                {group.contracts.map((c: any) => (
+                                                                    <div
+                                                                        key={c.id}
+                                                                        className="flex flex-col gap-2 p-3 rounded-xl border bg-slate-50/50 border-slate-100"
+                                                                    >
+                                                                        <div className="flex items-center justify-between">
+                                                                            <p className="text-[11px] font-bold text-slate-700">#{c.contract_number}</p>
+                                                                            <DocumentDownloadButton
+                                                                                type="contract"
+                                                                                documentId={c.id}
+                                                                                customerId={customer.id}
+                                                                                label=""
+                                                                                variant="ghost"
+                                                                                className="h-7 w-7 p-0 hover:bg-white shadow-sm"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="flex items-center justify-between">
+                                                                            {getStatusBadge(c.status === 'active' || c.status === 'completed' ? 'signed' : 'pending_signature')}
+                                                                            <span className="text-[10px] text-slate-400">{formatDate(c.created_at)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30">
+                                                                <p className="text-[10px] text-slate-400 italic text-center leading-tight">Dự thảo sau khi báo giá được phê duyệt</p>
+                                                            </div>
+                                                        )}
                                                     </div>
 
                                                     {/* 3. Nghiệm thu */}
-                                                    <div className="relative flex items-start gap-4 px-6 group/step">
-                                                        <div className={cn(
-                                                            "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                                                            timeline.some(t => t.type === 'delivery' && t.status === 'completed' && (t.id.includes(group.quotation.id) || group.contracts.some(c => t.id.includes(c.id)))) ? "bg-slate-900 border-slate-900 text-white shadow-lg" : "bg-white border-slate-200 text-slate-300"
-                                                        )}>
-                                                            <CheckCircle className="h-4 w-4" />
-                                                        </div>
-                                                        <div className="flex-1 space-y-1 pt-0.5">
+                                                    <div className="relative flex flex-col gap-3 group/step">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={cn(
+                                                                "z-10 h-8 w-8 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
+                                                                timeline.some((t: any) => t.type === 'delivery' && t.status === 'completed' && (t.id.includes(group.quotation.id) || group.contracts.some((c: any) => t.id.includes(c.id)))) ? "bg-slate-900 border-slate-900 text-white shadow-md" : "bg-white border-slate-200 text-slate-300"
+                                                            )}>
+                                                                <CheckCircle className="h-4 w-4" />
+                                                            </div>
                                                             <div className="flex flex-col">
                                                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Bước 3</span>
-                                                                <h4 className="text-[13px] font-bold text-slate-900">Nghiệm thu & Bàn giao</h4>
+                                                                <h4 className="text-[13px] font-bold text-slate-900">Bàn giao</h4>
                                                             </div>
-                                                            <p className="text-[10px] text-slate-400 italic">Biên bản xác nhận hoàn tất dịch vụ</p>
+                                                        </div>
+                                                        <div className="flex items-center justify-center p-4 border border-dashed rounded-xl bg-slate-50/30">
+                                                            <p className="text-[10px] text-slate-400 italic text-center leading-tight">Biên bản xác nhận hoàn tất dịch vụ</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -477,7 +478,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 </div>
                             </CardContent>
                         </Card>
+                    </div>
 
+                    {/* Sidebar */}
+                    <div className="space-y-6">
                         {/* Tasks */}
                         {tasks.length > 0 && (
                             <Card>
