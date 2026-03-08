@@ -173,7 +173,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         month: new Date(quotation.created_at || new Date()).getMonth() + 1,
         year: new Date(quotation.created_at || new Date()).getFullYear(),
         brandConfig: brandConfig,
-        bank_account_number: quotation.bank_account_number,
+        bank_account_no: quotation.bank_account_no,
         bank_account_name: quotation.bank_account_name,
         bank_name: quotation.bank_name,
         bank_branch: quotation.bank_branch,
