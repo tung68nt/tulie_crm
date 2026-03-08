@@ -85,14 +85,14 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
     return (
         <aside
             className={cn(
-                'relative flex flex-col transition-all duration-300 ease-in-out',
-                isMobile ? 'w-full h-full border-none' : (isCollapsed ? 'w-20 border-r' : 'w-72 border-r'),
+                'relative flex flex-col h-full transition-all duration-300 ease-in-out',
+                isMobile ? 'w-full border-none' : (isCollapsed ? 'w-20 border-r' : 'w-72 border-r'),
                 'bg-background',
                 className
             )}
         >
             {/* Logo */}
-            <div className="flex h-16 items-center border-b px-4">
+            <div className="flex h-16 items-center border-b px-4 transition-all duration-300">
                 <Link href="/" className={cn(
                     "flex items-center gap-3 transition-all duration-300 ease-in-out overflow-hidden w-full",
                     isCollapsed ? "justify-center" : "justify-start"
@@ -114,8 +114,8 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
             </div>
 
             {/* Navigation */}
-            <ScrollArea className="flex-1 py-4">
-                <nav className="flex flex-col gap-1 px-2">
+            <ScrollArea className="flex-1">
+                <nav className="flex flex-col gap-0.5 pt-2 px-2">
                     {/* Dashboard always at top */}
                     <div className="space-y-1">
                         <Link href="/dashboard">
@@ -131,7 +131,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                     "h-5 w-5 shrink-0 transition-colors",
                                     pathname === '/dashboard' ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                                 )} />
-                                {!isCollapsed && <span className="truncate">Dashboard</span>}
+                                {!isCollapsed && <span className="truncate font-bold">Dashboard</span>}
                             </Button>
                         </Link>
                     </div>
@@ -139,7 +139,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-2 mt-4 text-sm font-semibold text-foreground/70 mb-0.5">
+                                <h4 className="px-3 py-1.5 mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">
                                     {group.title}
                                 </h4>
                             )}
