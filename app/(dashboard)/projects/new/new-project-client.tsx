@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createProject } from '@/lib/supabase/services/project-service'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Rocket } from 'lucide-react'
 import Link from 'next/link'
 
 export default function NewProjectClient({ customers }: { customers: any[] }) {
@@ -48,14 +48,22 @@ export default function NewProjectClient({ customers }: { customers: any[] }) {
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="space-y-6">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
                     <Link href="/projects">
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
                 </Button>
-                <h1 className="text-3xl font-bold">Tạo dự án mới</h1>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Rocket className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold">Tạo dự án mới</h1>
+                        <p className="text-sm text-muted-foreground">Khởi tạo dự án & theo dõi tiến độ triển khai.</p>
+                    </div>
+                </div>
             </div>
 
             <Card>

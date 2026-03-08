@@ -8,7 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Plus } from 'lucide-react'
+import { Plus, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { getQuotations, deleteQuotations } from '@/lib/supabase/services/quotation-service'
 
@@ -19,11 +19,16 @@ export default async function QuotationsPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Báo giá</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý và theo dõi các báo giá gửi cho khách hàng
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-semibold">Báo giá</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý và theo dõi các báo giá gửi cho khách hàng
+                        </p>
+                    </div>
                 </div>
                 <Button asChild>
                     <Link href="/quotations/new">

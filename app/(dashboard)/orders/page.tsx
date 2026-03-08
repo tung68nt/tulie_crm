@@ -27,11 +27,16 @@ export default async function OrdersPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Đơn hàng</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý và theo dõi các đơn hàng dịch vụ
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <ShoppingCart className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-semibold">Đơn hàng</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý và theo dõi các đơn hàng dịch vụ
+                        </p>
+                    </div>
                 </div>
                 <Button asChild>
                     <Link href="/contracts/new?type=order">

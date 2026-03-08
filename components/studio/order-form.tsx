@@ -45,6 +45,7 @@ export function RetailOrderForm() {
         delivery_date: '',
         needs_vat: false,
         brand: 'studio' as any,
+        use_deposit: true, // Local UI state
     })
 
     const [brandConfig, setBrandConfig] = useState<any>(null)
@@ -57,7 +58,8 @@ export function RetailOrderForm() {
             setProducts(studioProducts)
         }
         const fetchConfig = async () => {
-            const config = await import('@/lib/supabase/services/settings-service').then(m => m.getBrandConfig())
+            const { getBrandConfig } = await import('@/lib/supabase/services/settings-service')
+            const config = await getBrandConfig()
             setBrandConfig(config)
         }
         fetchProducts()
@@ -142,22 +144,24 @@ export function RetailOrderForm() {
     const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
     const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
     const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
-    const balance = formData.total_amount - formData.deposit_amount
-    const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${orderIdPreview}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
+    const balance = formData.total_amount - (formData.use_deposit ? formData.deposit_amount : 0)
+
+    const depositQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${formData.deposit_amount}&addInfo=${encodeURIComponent('COC ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
+    const balanceQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${encodeURIComponent('CK ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-5">
                 <div className="lg:col-span-3 space-y-6">
                     {/* Customer Info */}
                     <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
-                        <CardHeader className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-5">
+                        <CardHeader className="bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 py-3 px-5">
                             <CardTitle className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                                 <User className="h-4 w-4" />
                                 Khách hàng
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-5 space-y-4">
+                        <CardContent className="p-5 space-y-3">
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="customer_name" className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Họ tên *</Label>
@@ -198,14 +202,14 @@ export function RetailOrderForm() {
 
                     {/* Product Selection */}
                     <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
-                        <CardHeader className="bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-5 flex flex-row items-center justify-between">
+                        <CardHeader className="bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800 py-3 px-5 flex flex-row items-center justify-between">
                             <CardTitle className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                                 <Package className="h-4 w-4" />
                                 Sản phẩm & Dịch vụ
                             </CardTitle>
                             <Badge variant="outline" className="text-[10px] font-semibold">{selectedItems.length} mục</Badge>
                         </CardHeader>
-                        <CardContent className="p-5 space-y-4">
+                        <CardContent className="p-5 space-y-3">
                             <ProductCombobox
                                 products={products}
                                 value=""
@@ -323,35 +327,43 @@ export function RetailOrderForm() {
                     </Card>
                 </div>
 
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-4">
                     {/* Payment Summary */}
                     <Card className="bg-zinc-950 text-zinc-50 border-none overflow-hidden shadow-lg rounded-xl">
-                        <CardHeader className="pb-3 pt-5 px-5">
+                        <CardHeader className="pb-2 pt-4 px-4">
                             <CardTitle className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
                                 <CircleDollarSign className="h-4 w-4" /> Tổng thanh toán
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="px-5 pb-5 space-y-5">
+                        <CardContent className="px-5 pb-5 space-y-4">
                             <div className="space-y-1">
                                 <span className="text-[10px] uppercase font-bold text-zinc-400">Tổng giá trị đơn</span>
                                 <div className="text-4xl font-black text-white tracking-tight">{formatCurrency(formData.total_amount)}</div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-[10px] uppercase font-bold text-zinc-400">Tiền cọc trước</Label>
-                                <PriceInput
-                                    value={formData.deposit_amount}
-                                    onChange={(val) => setFormData({ ...formData, deposit_amount: val })}
-                                    className="bg-zinc-800/80 border-zinc-700 text-white text-lg font-bold h-11"
-                                />
+                                <div className="flex items-center justify-between mb-1">
+                                    <Label className="text-[10px] uppercase font-bold text-zinc-400">Yêu cầu đặt cọc</Label>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.use_deposit}
+                                        onChange={(e) => setFormData({ ...formData, use_deposit: e.target.checked })}
+                                        className="h-4 w-4 rounded border-zinc-700 bg-zinc-800 text-zinc-100"
+                                    />
+                                </div>
+                                {formData.use_deposit && (
+                                    <PriceInput
+                                        value={formData.deposit_amount}
+                                        onChange={(val) => setFormData({ ...formData, deposit_amount: val })}
+                                        className="bg-zinc-800/80 border-zinc-700 text-white text-lg font-bold h-11"
+                                    />
+                                )}
                             </div>
 
-                            {balance > 0 && (
-                                <div className="flex justify-between items-center text-xs border-t border-zinc-800 pt-3">
-                                    <span className="text-zinc-500 font-bold">Còn phải thu:</span>
-                                    <span className="font-black text-white text-base">{formatCurrency(balance)}</span>
-                                </div>
-                            )}
+                            <div className="flex justify-between items-center text-xs border-t border-zinc-800 pt-3">
+                                <span className="text-zinc-500 font-bold">{formData.use_deposit ? 'Còn phải thu:' : 'Thanh toán 100%:'}</span>
+                                <span className="font-black text-white text-base">{formatCurrency(formData.use_deposit ? balance : formData.total_amount)}</span>
+                            </div>
 
                             <div className="flex items-center justify-between text-[10px] bg-zinc-800/50 p-2.5 rounded-lg">
                                 <span className="text-zinc-500 uppercase font-bold flex items-center gap-1"><Hash className="h-3 w-3" />Mã đơn dự kiến</span>
@@ -360,28 +372,42 @@ export function RetailOrderForm() {
                         </CardContent>
                     </Card>
 
-                    {/* QR Code */}
-                    {balance > 0 && (
+                    {/* QR Code Section */}
+                    <div className="space-y-4">
+                        {formData.use_deposit && formData.deposit_amount > 0 && (
+                            <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
+                                <CardHeader className="py-2.5 px-5 flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+                                    <CardTitle className="text-[10px] uppercase font-bold text-blue-600 flex items-center gap-1.5">
+                                        <QrCode className="h-3.5 w-3.5" /> 1. Quét cọc ({formatCurrency(formData.deposit_amount)})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="flex flex-col items-center py-4">
+                                    <div className="bg-white p-3 rounded-xl shadow-sm border border-zinc-100 mb-2">
+                                        <img src={depositQrUrl} alt="Deposit QR" className="w-56 h-56 object-contain" />
+                                    </div>
+                                    <p className="text-[10px] text-zinc-500 px-4 text-center font-medium">
+                                        {ACCOUNT_NAME} — {BANK_ID}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        )}
+
                         <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
-                            <CardHeader className="py-3 px-5 flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
-                                <CardTitle className="text-[11px] uppercase font-bold text-zinc-500 flex items-center gap-1.5">
-                                    <QrCode className="h-3.5 w-3.5" /> VietQR Preview
+                            <CardHeader className="py-2.5 px-5 flex flex-row items-center justify-between border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+                                <CardTitle className="text-[10px] uppercase font-bold text-green-600 flex items-center gap-1.5">
+                                    <QrCode className="h-3.5 w-3.5" /> {formData.use_deposit ? '2. Thanh toán nốt' : 'Quét Thanh toán'} ({formatCurrency(formData.use_deposit ? balance : formData.total_amount)})
                                 </CardTitle>
-                                <Badge variant="outline" className="text-[9px] font-semibold">STK cá nhân</Badge>
                             </CardHeader>
-                            <CardContent className="flex flex-col items-center py-5">
-                                <div className="bg-white p-4 rounded-xl shadow-sm border border-zinc-100 mb-3">
-                                    <img src={qrUrl} alt="QR Preview" className="w-64 h-64 object-contain" />
+                            <CardContent className="flex flex-col items-center py-4">
+                                <div className="bg-white p-3 rounded-xl shadow-sm border border-zinc-100 mb-2">
+                                    <img src={balanceQrUrl} alt="Balance QR" className="w-56 h-56 object-contain" />
                                 </div>
                                 <p className="text-[10px] text-zinc-500 px-4 text-center font-medium">
                                     {ACCOUNT_NAME} — {BANK_ID}
                                 </p>
-                                <p className="text-[10px] text-zinc-400 text-center mt-1">
-                                    STK: {ACCOUNT_NO}
-                                </p>
                             </CardContent>
                         </Card>
-                    )}
+                    </div>
 
                     {/* Payment Status */}
                     <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-xl overflow-hidden">
@@ -390,7 +416,7 @@ export function RetailOrderForm() {
                                 <CreditCard className="h-3.5 w-3.5" /> Trạng thái thanh toán
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-5">
+                        <CardContent className="p-4">
                             <Select
                                 value={formData.payment_status}
                                 onValueChange={(val: any) => setFormData({ ...formData, payment_status: val })}

@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getDeals } from '@/lib/supabase/services/deal-service'
 import { DealList } from '@/components/deals/deal-list'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -10,11 +10,16 @@ export default async function DealsPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold ">Cơ hội (Deals)</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý phễu bán hàng (Pipeline) và các cơ hội tiềm năng.
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <TrendingUp className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold ">Cơ hội (Deals)</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý phễu bán hàng (Pipeline) và các cơ hội tiềm năng.
+                        </p>
+                    </div>
                 </div>
                 <Button asChild>
                     <Link href="/deals/new">

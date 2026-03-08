@@ -88,11 +88,17 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [bankAccountName, setBankAccountName] = useState(quotation?.bank_account_name || '')
     const [bankBranch, setBankBranch] = useState(quotation?.bank_branch || '')
 
-    // Use default values from brandConfig if it's a new quotation
+    // Use default values from brandConfig if it's a new quotation and form is still clean
     useEffect(() => {
         if (!quotation && brandConfig) {
-            setNotes(prev => prev === '' ? brandConfig.default_notes || '' : prev)
-            setTerms(prev => prev === '' ? brandConfig.default_payment_terms || '' : prev)
+            setNotes(prev => {
+                if (!prev || prev.trim() === '') return brandConfig.default_notes || ''
+                return prev
+            })
+            setTerms(prev => {
+                if (!prev || prev.trim() === '') return brandConfig.default_payment_terms || ''
+                return prev
+            })
             setBankName(prev => prev === '' ? brandConfig.bank_name || '' : prev)
             setBankAccountNo(prev => prev === '' ? brandConfig.bank_account_no || '' : prev)
             setBankAccountName(prev => prev === '' ? brandConfig.bank_account_name || '' : prev)

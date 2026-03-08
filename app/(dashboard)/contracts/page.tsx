@@ -26,11 +26,16 @@ export default async function ContractsPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Hợp đồng</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý và theo dõi các hợp đồng với khách hàng
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <FileSignature className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-semibold">Hợp đồng</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý và theo dõi các hợp đồng với khách hàng
+                        </p>
+                    </div>
                 </div>
                 <Button asChild>
                     <Link href="/contracts/new">

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
 import {
@@ -394,11 +394,16 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6">
             {/* Page Header */}
-            <div>
-                <h1 className="text-3xl font-semibold">Cài đặt</h1>
-                <p className="text-muted-foreground">
-                    Quản lý cài đặt hệ thống và tài khoản
-                </p>
+            <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Settings className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-semibold">Cài đặt</h1>
+                    <p className="text-muted-foreground font-normal">
+                        Quản lý cài đặt hệ thống và tài khoản
+                    </p>
+                </div>
             </div>
 
             <Tabs defaultValue="company" className="flex flex-col lg:flex-row gap-8">

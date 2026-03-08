@@ -80,7 +80,7 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
         const { data: { user } } = await supabase.auth.getUser()
 
         // items are passed in order.items
-        const { items, ...orderData } = order as any
+        const { items, use_deposit, ...orderData } = order as any
 
         // Auto-generate ID if not provided
         if (!orderData.order_number) {

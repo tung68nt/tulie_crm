@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { getProjects } from '@/lib/supabase/services/project-service'
 import { ProjectList } from '@/components/projects/project-list'
 import { Button } from '@/components/ui/button'
-import { Plus, LayoutGrid, List } from 'lucide-react'
+import { Plus, LayoutGrid, List, Rocket } from 'lucide-react'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -10,11 +10,16 @@ export default async function ProjectsPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold ">Dự án</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý triển khai và bàn giao dịch vụ cho khách hàng.
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Rocket className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold ">Dự án</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý triển khai và bàn giao dịch vụ cho khách hàng.
+                        </p>
+                    </div>
                 </div>
             </div>
 

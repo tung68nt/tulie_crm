@@ -7,7 +7,8 @@ import {
     ArrowUpRight,
     Users,
     Target,
-    Receipt
+    Receipt,
+    PieChart
 } from 'lucide-react'
 import { getDashboardStats, getRevenueChartData } from '@/lib/supabase/services/dashboard-service'
 import { ReportCards } from './report-cards'
@@ -20,11 +21,16 @@ export default async function ReportsPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Báo cáo</h1>
-                    <p className="text-muted-foreground">
-                        Tổng hợp báo cáo và phân tích kinh doanh thực tế
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <PieChart className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-semibold">Báo cáo</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Tổng hợp báo cáo và phân tích kinh doanh thực tế
+                        </p>
+                    </div>
                 </div>
                 <Button variant="outline">
                     <Download className="mr-2 h-4 w-4" />
