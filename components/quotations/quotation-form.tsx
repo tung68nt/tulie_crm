@@ -45,6 +45,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { ProductCombobox } from '@/components/quotations/product-combobox'
 
 interface QuotationFormProps {
     quotation?: Quotation
@@ -812,18 +813,11 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                 <TableCell className="align-top py-4">
                                                                     <div className="space-y-2">
                                                                         <div className="flex gap-1">
-                                                                            <Select value={item.product_id || ""} onValueChange={(v) => updateItem(item.id!, { product_id: v })}>
-                                                                                <SelectTrigger className="h-9">
-                                                                                    <SelectValue placeholder="Chọn sản phẩm" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    {products?.map((p) => (
-                                                                                        <SelectItem key={p.id} value={p.id}>
-                                                                                            {p.name}
-                                                                                        </SelectItem>
-                                                                                    ))}
-                                                                                </SelectContent>
-                                                                            </Select>
+                                                                            <ProductCombobox
+                                                                                products={products || []}
+                                                                                value={item.product_id || ''}
+                                                                                onSelect={(v) => updateItem(item.id!, { product_id: v })}
+                                                                            />
                                                                             {item.product_id && (
                                                                                 <Button
                                                                                     type="button"
