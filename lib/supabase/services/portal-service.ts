@@ -40,17 +40,17 @@ export async function getPortalDataByToken(token: string) {
 
         // Fetch Grouped Data
         if (projectId) {
-            // Get Project Metadata (PM name, links)
-            const { data: pMeta } = await supabase
-                .from('project_metadata')
-                .select('*, manager:users!manager_id(full_name)')
-                .eq('project_id', projectId)
+            // Get Project details with assigned manager
+            const { data: pDetail } = await supabase
+                .from('projects')
+                .select('*, manager:users!assigned_to(id, full_name, email, phone)')
+                .eq('id', projectId)
                 .single()
 
-            if (pMeta) {
+            if (pDetail) {
                 projectMetadata = {
-                    ...pMeta,
-                    manager_name: pMeta.manager?.full_name || pMeta.manager_name
+                    ...(pDetail.metadata || {}),
+                    manager_name: pDetail.manager?.full_name || 'Tulie Agency'
                 }
             }
 

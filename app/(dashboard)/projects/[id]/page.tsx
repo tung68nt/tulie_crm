@@ -17,6 +17,7 @@ import { ProjectSidebar } from '@/components/projects/project-sidebar'
 import { WorkItemsManager } from '@/components/projects/work-items-manager'
 import { FileText as FileTextIcon, Receipt, ArrowUpRight, Lock } from 'lucide-react'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
+import { DeleteProjectButton } from '@/components/projects/delete-project-button'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
@@ -62,6 +63,7 @@ export default async function ProjectDetailPage({ params }: any) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    <DeleteProjectButton projectId={project.id} />
                     <SetPasswordDialog
                         entityId={project.id}
                         tableName="projects"

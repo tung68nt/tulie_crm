@@ -7,7 +7,8 @@ import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/st
 import { formatDate } from '@/lib/utils/format'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
 import Link from 'next/link'
-import { ExternalLink, FolderArchive, Globe, Layout } from 'lucide-react'
+import { ExternalLink, FolderArchive, Globe, Layout, MoreHorizontal } from 'lucide-react'
+import { DeleteProjectButton } from './delete-project-button'
 
 export const projectColumns: ColumnDef<Project>[] = [
     {
@@ -25,7 +26,7 @@ export const projectColumns: ColumnDef<Project>[] = [
                     >
                         {project.title}
                     </Link>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                         {project.customer?.company_name}
                     </span>
                 </div>
@@ -81,4 +82,15 @@ export const projectColumns: ColumnDef<Project>[] = [
             return <span>{formatDate(date)}</span>
         },
     },
+    {
+        id: 'actions',
+        cell: ({ row }) => {
+            const project = row.original
+            return (
+                <div className="flex justify-end">
+                    <DeleteProjectButton projectId={project.id} />
+                </div>
+            )
+        }
+    }
 ]

@@ -111,6 +111,28 @@ export async function updateProjectStatus(id: string, status: ProjectStatus) {
     return updateProject(id, { status })
 }
 
+export async function deleteProject(id: string) {
+    try {
+        const supabase = await createClient()
+        // Dependent data should be deleted via Cascade in DB
+        const { error } = await supabase
+            .from('projects')
+            .delete()
+            .eq('id', id)
+
+        if (error) {
+            console.error('Error deleting project:', error)
+            throw error
+        }
+
+        revalidatePath('/projects')
+        return true
+    } catch (err) {
+        console.error('Service error deleting project:', err)
+        throw err
+    }
+}
+
 export async function updateProjectMetadata(id: string, metadata: any) {
     try {
         const supabase = await createClient()
