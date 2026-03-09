@@ -57,12 +57,17 @@ export const customerColumns: ColumnDef<Customer>[] = [
                 <div>
                     <Link
                         href={`/customers/${customer.id}`}
-                        className="font-medium hover:underline"
+                        className="font-bold hover:underline"
                     >
-                        {customer.company_name}
+                        {customer.customer_type === 'individual'
+                            ? (customer.representative || 'Chưa đặt tên')
+                            : customer.company_name}
                     </Link>
-                    {customer.tax_code && (
-                        <p className="text-xs text-muted-foreground">MST: {customer.tax_code}</p>
+                    {customer.customer_type === 'business' && customer.tax_code && (
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tight">MST: {customer.tax_code}</p>
+                    )}
+                    {customer.customer_type === 'individual' && customer.address && (
+                        <p className="text-[10px] text-muted-foreground truncate max-w-[200px]">{customer.address}</p>
                     )}
                 </div>
             )

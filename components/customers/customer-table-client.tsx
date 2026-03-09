@@ -10,9 +10,10 @@ import { useState } from 'react'
 interface CustomerTableClientProps {
     data: any[]
     users: any[]
+    defaultTab?: 'business' | 'individual'
 }
 
-export function CustomerTableClient({ data, users }: CustomerTableClientProps) {
+export function CustomerTableClient({ data, users, defaultTab = 'business' }: CustomerTableClientProps) {
     const handleDelete = async (rows: any[]) => {
         const ids = rows.map((r) => r.id)
         await deleteCustomers(ids)
@@ -49,13 +50,13 @@ export function CustomerTableClient({ data, users }: CustomerTableClientProps) {
         onAction: async (rows: any[]) => handleBulkReassign(rows, user.id)
     }))
 
-    const [activeTab, setActiveTab] = useState<'business' | 'individual'>('business')
+    const [activeTab, setActiveTab] = useState<'business' | 'individual'>(defaultTab)
 
     const filteredData = data.filter(c => c.customer_type === activeTab)
 
     return (
         <div className="space-y-4">
-            <Tabs defaultValue="business" className="w-full" onValueChange={(v) => setActiveTab(v as any)}>
+            <Tabs defaultValue={defaultTab} className="w-full" onValueChange={(v) => setActiveTab(v as any)}>
                 <TabsList className="bg-zinc-100/50 p-1 h-11 rounded-xl">
                     <TabsTrigger value="business" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
                         <Building2 className="w-4 h-4 mr-2" />

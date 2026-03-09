@@ -164,21 +164,21 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                     {/* Timeline Setup */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="text-xs text-muted-foreground mb-1.5 block">Ngày bắt đầu</label>
+                            <label className="text-xs text-muted-foreground mb-1.5 block uppercase tracking-tighter font-bold">Ngày Khởi tạo</label>
                             <Input
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="text-sm"
+                                className="text-sm rounded-lg border-zinc-100 bg-zinc-50/50"
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-muted-foreground mb-1.5 block">Ngày kết thúc</label>
+                            <label className="text-xs text-muted-foreground mb-1.5 block uppercase tracking-tighter font-bold text-red-500">Ngày Đóng Dự án</label>
                             <Input
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="text-sm"
+                                className="text-sm rounded-lg border-red-100 bg-red-50/20 text-red-600 font-bold"
                             />
                         </div>
                     </div>
@@ -203,12 +203,12 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                                 : 'bg-amber-50 border-amber-100'
                                 }`}>
                                 <div className="flex items-center gap-2">
-                                    <AlertCircle className={`h-4 w-4 ${isOverdue ? 'text-red-500' : 'text-amber-500'}`} />
-                                    <span className={`text-xs font-semibold ${isOverdue ? 'text-red-600' : 'text-amber-600'}`}>
-                                        {isOverdue ? 'Quá hạn' : 'Thời hạn cuối'}
+                                    <AlertCircle className={`h-4 w-4 ${isOverdue ? 'text-red-500' : 'text-zinc-500'}`} />
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isOverdue ? 'text-red-600' : 'text-zinc-600'}`}>
+                                        {isOverdue ? 'PROJECT OVERDUE' : 'FINISH LINE'}
                                     </span>
                                 </div>
-                                <span className={`text-sm font-semibold ${isOverdue ? 'text-red-700' : 'text-amber-700'}`}>
+                                <span className={`text-xs font-bold ${isOverdue ? 'text-red-700' : 'text-zinc-900'}`}>
                                     {formatDate(deadline)}
                                 </span>
                             </div>

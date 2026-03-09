@@ -427,184 +427,209 @@ function WorkItemRow({
                     <p className="text-sm font-semibold truncate">{item.title}</p>
                     {item.description && <p className="text-xs text-muted-foreground truncate">{item.description}</p>}
                 </div>
-                <div className="flex items-center gap-2">
-                    {item.quotation && (
-                        <Badge variant="outline" className="text-[10px] h-5"><FileText className="w-3 h-3 mr-1" />{item.quotation.quotation_number}</Badge>
-                    )}
-                    {item.contract && (
-                        <Badge variant="outline" className="text-[10px] h-5"><FileSignature className="w-3 h-3 mr-1" />{item.contract.contract_number}</Badge>
-                    )}
-                    <Select value={item.status} onValueChange={onStatusChange}>
-                        <SelectTrigger className={cn("h-7 text-xs w-auto min-w-[130px] px-3 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95", statusOption?.color)} onClick={e => e.stopPropagation()}>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-zinc-200">
-                            {STATUS_OPTIONS.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value} className="text-xs">{opt.label}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
+                        {item.quotation && (
+                            <Badge variant="secondary" className="text-[10px] font-bold h-6 rounded-lg bg-zinc-100/50 text-zinc-600 border-none">
+                                <FileText className="w-3 h-3 mr-1" />{item.quotation.quotation_number}
+                            </Badge>
+                        )}
+                        {item.contract && (
+                            <Badge variant="secondary" className="text-[10px] font-bold h-6 rounded-lg bg-zinc-100/50 text-zinc-600 border-none">
+                                <FileSignature className="w-3 h-3 mr-1" />{item.contract.contract_number}
+                            </Badge>
+                        )}
+                        <Select value={item.status} onValueChange={onStatusChange}>
+                            <SelectTrigger className={cn("h-7 text-[11px] w-auto min-w-[130px] px-4 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider", statusOption?.color)} onClick={e => e.stopPropagation()}>
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-zinc-100 shadow-xl">
+                                {STATUS_OPTIONS.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium focus:bg-zinc-50">{opt.label}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <div className="p-1 hover:bg-zinc-100 rounded-full transition-colors">
+                            {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Expanded content */}
             {isExpanded && (
-                <div className="border-t p-4 bg-muted/10 space-y-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="border-t border-zinc-50 p-6 bg-zinc-50/20 space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Col 1: Todo List */}
-                        <div className="space-y-3">
-                            <h5 className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                        <div className="space-y-4">
+                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <ListTodo className="w-3.5 h-3.5" />
-                                Danh sách công việc ({tasks.length})
+                                NỘI DUNG TRIỂN KHAI ({tasks.length})
                             </h5>
                             <div className="space-y-1">
                                 {tasks.map((task: any) => (
-                                    <div key={task.id} className="flex items-center gap-2 group py-1">
+                                    <div key={task.id} className="flex items-center gap-3 group py-1.5 px-2 rounded-xl hover:bg-white/50 transition-all">
                                         <button
                                             onClick={() => handleToggleTask(task.id, task.status)}
-                                            className="shrink-0"
+                                            className="shrink-0 transition-transform active:scale-90"
                                             disabled={isPending}
                                         >
                                             {task.status === 'completed' ? (
-                                                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                                                    <CheckCircle className="w-4 h-4 text-white" />
+                                                </div>
                                             ) : (
-                                                <Circle className="w-4 h-4 text-zinc-300 hover:text-zinc-500" />
+                                                <div className="w-5 h-5 rounded-full border-2 border-zinc-200 hover:border-zinc-400 bg-white" />
                                             )}
                                         </button>
                                         <span className={cn(
-                                            "text-xs flex-1 truncate",
-                                            task.status === 'completed' && "line-through text-muted-foreground"
+                                            "text-xs flex-1 font-medium transition-colors",
+                                            task.status === 'completed' ? "line-through text-zinc-400" : "text-zinc-700"
                                         )}>
                                             {task.title}
                                         </span>
                                         <button
                                             onClick={() => handleDeleteTask(task.id)}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-50 rounded-lg transition-all"
                                             disabled={isPending}
                                         >
-                                            <Trash2 className="w-3 h-3 text-red-400 hover:text-red-600" />
+                                            <Trash2 className="w-3.5 h-3.5 text-red-300 hover:text-red-500" />
                                         </button>
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 p-1 bg-white border border-zinc-100 rounded-xl shadow-sm">
                                 <Input
                                     value={newTaskTitle}
                                     onChange={e => setNewTaskTitle(e.target.value)}
                                     placeholder="Thêm công việc..."
-                                    className="h-8 text-xs"
+                                    className="h-8 text-xs border-none focus-visible:ring-0 px-2"
                                     onKeyDown={e => e.key === 'Enter' && handleAddTask()}
                                 />
                                 <Button
                                     size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0 hover:bg-zinc-100"
                                     onClick={handleAddTask}
                                     disabled={isPending || !newTaskTitle.trim()}
                                 >
-                                    <Plus className="w-3.5 h-3.5" />
+                                    <Plus className="w-4 h-4 text-zinc-400" />
                                 </Button>
                             </div>
                         </div>
 
                         {/* Col 2: Delivery Links */}
-                        <div className="space-y-3">
-                            <h5 className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                        <div className="space-y-4">
+                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2">
                                 <Link2 className="w-3.5 h-3.5" />
-                                Link bàn giao ({deliveryLinks.length})
+                                LINK BÀN GIAO ({deliveryLinks.length})
                             </h5>
-                            <div className="space-y-1.5">
+                            <div className="space-y-2">
                                 {deliveryLinks.map((link: any, lIdx: number) => (
-                                    <div key={lIdx} className="flex items-center gap-2 group text-xs">
-                                        <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0" />
-                                        <a href={link.url} target="_blank" className="text-blue-600 hover:underline truncate flex-1">
-                                            {link.label}
-                                        </a>
-                                        {link.date && <span className="text-muted-foreground text-[10px] shrink-0">{formatDate(link.date)}</span>}
+                                    <div key={lIdx} className="flex items-center gap-3 group p-2.5 bg-white border border-zinc-100 rounded-xl shadow-sm group hover:border-zinc-300 transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                            <ExternalLink className="w-4 h-4" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <a href={link.url} target="_blank" className="text-xs font-bold text-zinc-900 block truncate hover:underline underline-offset-2">
+                                                {link.label}
+                                            </a>
+                                            {link.date && <p className="text-[10px] text-zinc-400 mt-0.5">{formatDate(link.date)}</p>}
+                                        </div>
                                         <button
                                             onClick={() => handleRemoveLink(lIdx)}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-50 rounded-lg transition-all"
                                             disabled={isPending}
                                         >
-                                            <Trash2 className="w-3 h-3 text-red-400" />
+                                            <Trash2 className="w-3.5 h-3.5 text-red-300 hover:text-red-500" />
                                         </button>
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex gap-2">
-                                <Input
-                                    value={newLinkLabel}
-                                    onChange={e => setNewLinkLabel(e.target.value)}
-                                    placeholder="Tên link..."
-                                    className="h-8 text-xs flex-1"
-                                />
-                                <Input
-                                    value={newLinkUrl}
-                                    onChange={e => setNewLinkUrl(e.target.value)}
-                                    placeholder="URL..."
-                                    className="h-8 text-xs flex-1"
-                                    onKeyDown={e => e.key === 'Enter' && handleAddLink()}
-                                />
+                            <div className="space-y-2 p-2 bg-white border border-zinc-100 rounded-2xl shadow-sm">
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={newLinkLabel}
+                                        onChange={e => setNewLinkLabel(e.target.value)}
+                                        placeholder="Tên link..."
+                                        className="h-8 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50"
+                                    />
+                                    <Input
+                                        value={newLinkUrl}
+                                        onChange={e => setNewLinkUrl(e.target.value)}
+                                        placeholder="URL bàn giao..."
+                                        className="h-8 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50"
+                                        onKeyDown={e => e.key === 'Enter' && handleAddLink()}
+                                    />
+                                </div>
                                 <Button
                                     size="sm"
-                                    variant="outline"
-                                    className="h-8 px-2"
+                                    className="w-full h-8 bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
                                     onClick={handleAddLink}
                                     disabled={isPending || !newLinkLabel.trim() || !newLinkUrl.trim()}
                                 >
-                                    <Plus className="w-3.5 h-3.5" />
+                                    <Plus className="w-3.5 h-3.5 mr-1.5" />
+                                    Thêm tài nguyên
                                 </Button>
                             </div>
                         </div>
 
                         {/* Col 3: Required Documents */}
-                        <div className="space-y-3">
-                            <h5 className="text-xs font-semibold text-muted-foreground flex items-center justify-between gap-1.5">
-                                <div className="flex items-center gap-1.5">
+                        <div className="space-y-4">
+                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
                                     <ClipboardCheck className="w-3.5 h-3.5" />
-                                    Thủ tục chứng từ
+                                    THỦ TỤC CHỨNG TỪ
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 text-[10px] text-blue-600 hover:text-blue-700 p-0"
-                                        onClick={() => setShowBundleDialog(true)}
-                                    >
-                                        <Plus className="w-3 h-3 mr-1" />
-                                        {item.bundle_id ? 'Thay đổi' : 'Chọn bộ chứng từ'}
-                                    </Button>
-                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold p-1 px-2 rounded-lg"
+                                    onClick={() => setShowBundleDialog(true)}
+                                >
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    {item.bundle_id ? 'Thay đổi' : 'Chọn bộ chứng từ'}
+                                </Button>
                             </h5>
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 {requiredDocs.map((doc: any, dIdx: number) => (
-                                    <div key={dIdx} className="flex items-center gap-2 py-1 group/doc">
+                                    <div key={dIdx} className="flex items-center gap-3 p-2 px-3 rounded-xl hover:bg-white/50 transition-all group/doc">
                                         <button
                                             onClick={() => handleToggleDoc(dIdx)}
-                                            className="shrink-0"
+                                            className="shrink-0 transition-transform active:scale-90"
                                             disabled={isPending}
                                         >
                                             {doc.status === 'signed' ? (
-                                                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                                                <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                                                    <CheckCircle className="w-3.5 h-3.5 text-white" />
+                                                </div>
                                             ) : (
-                                                <Circle className="w-4 h-4 text-zinc-300 hover:text-zinc-500" />
+                                                <div className="w-5 h-5 rounded-full border-2 border-zinc-200 hover:border-zinc-400 bg-white" />
                                             )}
                                         </button>
-                                        <span className={cn(
-                                            "text-xs flex-1 truncate",
-                                            doc.status === 'signed' && "text-muted-foreground"
-                                        )}>
-                                            {doc.title}
-                                        </span>
-                                        <div className="flex items-center gap-1.5 opacity-0 group-hover/doc:opacity-100 transition-opacity">
+                                        <div className="flex-1 min-w-0">
+                                            <span className={cn(
+                                                "text-xs font-medium block truncate",
+                                                doc.status === 'signed' ? "text-zinc-400" : "text-zinc-700"
+                                            )}>
+                                                {doc.title}
+                                            </span>
+                                            {doc.date ? (
+                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">
+                                                    {doc.status === 'signed' ? 'ĐÃ KÝ:' : 'DỰ KIẾN:'} {formatDate(doc.date)}
+                                                </span>
+                                            ) : (
+                                                <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-tighter">CHƯA CÓ NGÀY</span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-1 opacity-0 group-hover/doc:opacity-100 transition-opacity">
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <button className="text-[10px] text-zinc-400 hover:text-zinc-900 underline underline-offset-2">
-                                                        {doc.date ? formatDate(doc.date) : 'Đặt ngày'}
+                                                    <button className="p-1.5 hover:bg-zinc-100 rounded-lg text-zinc-400 hover:text-zinc-900 transition-colors">
+                                                        <Clock className="w-3.5 h-3.5" />
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="end">
+                                                <PopoverContent className="w-auto p-0 border-zinc-100 rounded-2xl shadow-xl" align="end">
                                                     <Calendar
                                                         mode="single"
                                                         selected={doc.date ? new Date(doc.date) : undefined}
@@ -617,25 +642,26 @@ function WorkItemRow({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-6 w-6 text-zinc-400 hover:text-zinc-900"
+                                                    className="h-7 w-7 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg"
                                                     onClick={() => onEditDoc(doc.generated_doc_id)}
                                                 >
                                                     <FileEdit className="w-3.5 h-3.5" />
                                                 </Button>
                                             )}
                                         </div>
-                                        {!doc.date && <span className="text-[10px] text-zinc-300 group-hover/doc:hidden">--/--/--</span>}
-                                        {doc.date && <span className="text-[10px] text-zinc-500 group-hover/doc:hidden">{formatDate(doc.date)}</span>}
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* Delete button */}
-                    <div className="flex justify-end pt-2 border-t">
-                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50 text-xs" onClick={onDelete}>
-                            <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                    {/* Delete and Footer */}
+                    <div className="flex justify-between items-center pt-4 border-t border-zinc-100">
+                        <div className="flex items-center gap-4">
+                            <p className="text-[10px] text-zinc-400 italic">Cập nhật lần cuối: {formatDate(item.updated_at || item.created_at)}</p>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-600 hover:bg-red-50 text-[11px] font-bold rounded-xl px-4 h-9 uppercase tracking-wider" onClick={onDelete}>
+                            <Trash2 className="w-3.5 h-3.5 mr-2" />
                             Xóa hạng mục
                         </Button>
                     </div>

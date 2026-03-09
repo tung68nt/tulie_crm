@@ -57,6 +57,7 @@ const navGroups: NavGroup[] = [
         items: [
             { title: 'Cơ hội Studio', href: '/studio/deals', icon: TrendingUp },
             { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
+            { title: 'Khách hàng', href: '/studio/customers', icon: Users },
         ]
     },
     {
