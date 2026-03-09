@@ -18,7 +18,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
+import { cn } from '@/lib/utils'
 
+import { QuotationModernPaper } from '@/components/quotations/QuotationModernPaper'
 import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
 
 // Add missing types for PDF libs
@@ -47,7 +49,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         phone: '',
         position: ''
     })
-    const [layout, setLayout] = useState<'premium' | 'formal'>('premium')
+    const [layout, setLayout] = useState<'premium' | 'formal' | 'modern'>('modern')
 
     const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
@@ -229,7 +231,9 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             >
                 {/* Main Paper Content */}
                 <div className="bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200 quotation-inner-paper">
-                    {layout === 'premium' ? (
+                    {layout === 'modern' ? (
+                        <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
+                    ) : layout === 'premium' ? (
                         <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
                     ) : (
                         <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
@@ -245,14 +249,35 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <Button
-                                variant="outline"
-                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 font-bold"
-                                onClick={() => setLayout(layout === 'premium' ? 'formal' : 'premium')}
-                            >
-                                <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
-                                {layout === 'premium' ? 'Mẫu Hành chính' : 'Mẫu Cao cấp'}
-                            </Button>
+                            <div className="bg-muted p-1 rounded-lg inline-flex items-center gap-1">
+                                <button
+                                    onClick={() => setLayout('modern')}
+                                    className={cn(
+                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
+                                        layout === 'modern' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
+                                    )}
+                                >
+                                    Modern
+                                </button>
+                                <button
+                                    onClick={() => setLayout('premium')}
+                                    className={cn(
+                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
+                                        layout === 'premium' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
+                                    )}
+                                >
+                                    Premium
+                                </button>
+                                <button
+                                    onClick={() => setLayout('formal')}
+                                    className={cn(
+                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
+                                        layout === 'formal' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
+                                    )}
+                                >
+                                    Formal
+                                </button>
+                            </div>
                             {layout === 'formal' ? (
                                 <DocumentDownloadButton
                                     type="quotation"
