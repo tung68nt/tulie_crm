@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_COLORS } from '@/lib/constants/status'
 import {
@@ -16,10 +24,14 @@ import {
     FileSignature,
     Eye,
     Clock,
+    Building2,
+    CreditCard,
+    Layout,
     Share2,
+    Receipt,
+    Info,
     Copy,
     Loader2,
-    Printer,
     Target,
     ClipboardList,
     Lightbulb,
@@ -27,7 +39,7 @@ import {
     Users,
     Shield,
     Award,
-    Layout,
+    Printer,
 } from 'lucide-react'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
@@ -241,10 +253,307 @@ export default function QuotationDetailPage() {
                 </div>
 
                 <div className="grid gap-8 lg:grid-cols-3">
-                    <div className="lg:col-span-2">
-                        {/* Unified Liveview - Exact same component as Portal & Print */}
-                        <div className="bg-white shadow-xl rounded-[2rem] overflow-hidden border border-slate-200">
-                            <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Customer Info Card */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Building2 className="h-5 w-5" />
+                                    Thông tin khách hàng
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid gap-6 sm:grid-cols-2">
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Đơn vị</p>
+                                        <p className="font-semibold text-lg">{quotation.customer?.company_name}</p>
+                                        <p className="text-sm text-muted-foreground mt-2">Địa chỉ</p>
+                                        <p className="text-sm">{quotation.customer?.address || 'N/A'}</p>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-muted-foreground">Email:</span>
+                                            <span className="font-medium">{quotation.customer?.email || 'N/A'}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-muted-foreground">Điện thoại:</span>
+                                            <span className="font-medium">{quotation.customer?.phone || 'N/A'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Proposal Content - Premium Timeline Style */}
+                        {hasProposal && proposalSections.length > 0 && (
+                            <Card className="mb-6 overflow-hidden border-slate-200 p-0 gap-0">
+                                <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
+                                    <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                                    </div>
+                                    <div className="relative z-10 flex items-center justify-between">
+                                        <div>
+                                            <CardTitle className="text-base font-bold">Đề xuất giải pháp</CardTitle>
+                                            <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Proposal — {proposalSections.length} hạng mục</CardDescription>
+                                        </div>
+                                        <Layout className="h-5 w-5 text-zinc-500" />
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="p-6 bg-white">
+                                    <div className="relative pl-8 before:absolute before:left-[11px] before:top-[23px] before:bottom-2 before:w-[2px] before:bg-slate-200 before:rounded-full">
+                                        {proposalSections.map((section, idx) => {
+                                            const icon = sectionIcons[section.key] || <Info className="w-4 h-4" />;
+                                            return (
+                                                <div key={idx} className="proposal-section relative mb-5 last:mb-0">
+                                                    {/* Timeline dot */}
+                                                    <div className="absolute -left-8 top-[23px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[9px] font-bold z-10">
+                                                        {idx + 1}
+                                                    </div>
+
+                                                    {/* Content Card */}
+                                                    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                                                        {/* Card Header */}
+                                                        <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900">
+                                                            <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white ">
+                                                                {icon}
+                                                            </span>
+                                                            <h4 className="text-[13px] font-bold leading-tight">
+                                                                {section.label}
+                                                            </h4>
+                                                        </div>
+                                                        {/* Card Body */}
+                                                        <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">
+                                                            {pc[section.key]}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        {/* Items Card */}
+                        <Card className="mb-6 overflow-hidden border-slate-200 p-0 gap-0">
+                            <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
+                                <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                                </div>
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <CardTitle className="text-base font-bold">Chi tiết hạng mục</CardTitle>
+                                            <div className="text-[10px] bg-white/20 px-2 py-0.5 rounded text-white font-mono">Quotation Items</div>
+                                        </div>
+                                        <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Chi tiết các hạng mục và chi phí dịch vụ</CardDescription>
+                                    </div>
+                                    <Receipt className="h-5 w-5 text-zinc-500" />
+                                </div>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <Table>
+                                    <TableHeader className="relative overflow-hidden bg-zinc-950 border-b-0 rounded-t-xl group p-0">
+                                        <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                            style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}></div>
+                                        <div className="absolute inset-0 opacity-10 pointer-events-none"
+                                            style={{ backgroundImage: "radial-gradient(#fff 0.5px, transparent 0.5px)", backgroundSize: "12px 12px" }}></div>
+                                        <TableRow className="border-b-0 relative z-10 hover:bg-transparent">
+                                            <TableHead className="w-12 text-center py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                                #
+                                            </TableHead>
+                                            <TableHead className="pl-4 py-3 font-bold text-white text-[11px] min-w-[200px] h-auto align-middle">
+                                                Hạng mục & Mô tả <br />
+                                                <span className="text-[10px] font-normal opacity-60 normal-case">/ Items</span>
+                                            </TableHead>
+                                            <TableHead className="text-center w-20 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                                ĐVT <br />
+                                                <span className="text-[10px] font-normal opacity-60 normal-case">/ Unit</span>
+                                            </TableHead>
+                                            <TableHead className="text-center w-20 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                                SL <br />
+                                                <span className="text-[10px] font-normal opacity-60 normal-case">/ Qty</span>
+                                            </TableHead>
+                                            <TableHead className="text-right w-28 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                                Đơn giá <br />
+                                                <span className="text-[10px] font-normal opacity-60 normal-case">/ Price</span>
+                                            </TableHead>
+                                            <TableHead className="text-right w-32 pr-6 py-3 font-bold text-white text-[11px] h-auto align-middle">
+                                                Thành tiền <br />
+                                                <span className="text-[10px] font-normal opacity-60 normal-case">/ Amount</span>
+                                            </TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {(() => {
+                                            let globalItemIndex = 0;
+                                            const sections: Record<string, QuotationItem[]> = (quotation.items || []).reduce((acc: any, item: any) => {
+                                                const sectionName = item.section_name || '';
+                                                if (!acc[sectionName]) acc[sectionName] = [];
+                                                acc[sectionName].push(item);
+                                                return acc;
+                                            }, {});
+
+                                            const sectionEntries = Object.entries(sections).sort((a, b) => {
+                                                if (a[0] === '') return 1;
+                                                if (b[0] === '') return -1;
+                                                return (a[1][0].sort_order || 0) - (b[1][0].sort_order || 0);
+                                            });
+
+                                            return sectionEntries.map(([sectionName, sectionItems], sIdx) => (
+                                                <React.Fragment key={sIdx}>
+                                                    {(sectionName || sectionEntries.length > 1) && (
+                                                        <TableRow className="group/section hover:bg-transparent">
+                                                            <TableCell colSpan={6} className="p-0 border-b border-slate-200">
+                                                                <div className="relative bg-slate-100 px-6 py-3 min-h-[44px] flex items-center justify-between overflow-hidden">
+                                                                    {/* Content Layer */}
+                                                                    <div className="relative z-10 flex items-center gap-4">
+                                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-slate-700 border border-slate-200">
+                                                                            <span className="text-xs font-bold">{sIdx + 1}</span>
+                                                                        </div>
+                                                                        <div className="flex flex-col text-slate-800">
+                                                                            <h3 className="text-[13px] font-bold leading-none mb-0.5">{sectionName || `Hạng mục ${sIdx + 1}`}</h3>
+                                                                            <p className="text-[9px] text-slate-500 font-bold">Category Details / <span className="opacity-80">Phân loại chi tiết</span></p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                    {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => {
+                                                        const currentGlobalIdx = ++globalItemIndex;
+                                                        return (
+                                                            <TableRow key={item.id} className="hover:bg-slate-50/50 group/row">
+                                                                <TableCell className="text-center py-4 bg-slate-50/30 font-bold border-r border-slate-100 text-zinc-400 group-hover/row:text-zinc-900 transition-colors">
+                                                                    <span className="text-[10px] tabular-nums">{currentGlobalIdx}</span>
+                                                                </TableCell>
+                                                                <TableCell className="pl-4 py-4 align-top">
+                                                                    <div className="flex-1">
+                                                                        <p className="font-bold text-slate-900 text-[13px] leading-tight">{item.product_name}</p>
+                                                                        {item.description && (
+                                                                            <p className="text-[11px] text-muted-foreground leading-relaxed mt-1.5 max-w-xl whitespace-pre-line border-l-2 border-stone-200 pl-3 py-0.5 font-medium">{item.description}</p>
+                                                                        )}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className="text-center w-20 whitespace-nowrap align-top py-4 font-medium text-slate-600 text-[13px]">
+                                                                    {item.unit}
+                                                                </TableCell>
+                                                                <TableCell className="text-center w-20 whitespace-nowrap align-top py-4 font-bold text-slate-900 text-[13px]">
+                                                                    {item.quantity}
+                                                                </TableCell>
+                                                                <TableCell className="text-right w-28 align-top py-4 tabular-nums font-bold text-slate-900 text-[13px]">
+                                                                    {formatCurrency(item.unit_price || 0)}
+                                                                </TableCell>
+                                                                <TableCell className="text-right w-32 font-bold pr-6 align-top py-4 tabular-nums bg-slate-50/30 text-[13px]">
+                                                                    {formatCurrency(item.total_price || 0)}
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })}
+                                                </React.Fragment>
+                                            ))
+                                        })()}
+                                    </TableBody>
+                                </Table>
+
+                                <div className="border-t p-6">
+                                    <div className="flex justify-end">
+                                        <div className="w-full max-w-xs space-y-3">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-muted-foreground">Tạm tính:</span>
+                                                <span className="font-medium">{formatCurrency(quotation.subtotal || 0)}</span>
+                                            </div>
+                                            {(quotation.discount_amount || 0) > 0 && (
+                                                <div className="flex justify-between text-sm text-destructive">
+                                                    <span>Chiết khấu ({quotation.discount_percent || 0}%):</span>
+                                                    <span>-{formatCurrency(quotation.discount_amount || 0)}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-muted-foreground">VAT ({quotation.vat_percent || 0}%):</span>
+                                                <span className="font-medium">{formatCurrency(quotation.vat_amount || 0)}</span>
+                                            </div>
+                                            <Separator />
+                                            <div className="flex justify-between items-center pt-2">
+                                                <span className="font-bold text-lg">Tổng cộng:</span>
+                                                <span className="font-bold text-2xl text-primary">{formatCurrency(quotation.total_amount || 0)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Terms & Bank Card */}
+                        <div className="grid gap-6 sm:grid-cols-2">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-base">Ghi chú & Điều khoản</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-semibold text-muted-foreground">Ghi chú</p>
+                                        <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
+                                            <ul className="list-none space-y-1 text-muted-foreground">
+                                                {String(quotation.notes || brandConfig?.default_notes || 'Không có ghi chú')
+                                                    .split('\n')
+                                                    .filter(Boolean)
+                                                    .map((line, i) => (
+                                                        <li key={i} className="flex gap-2">
+                                                            <span>•</span>
+                                                            <span className="whitespace-pre-line text-foreground">{line.replace(/^[-•]\s*/, '')}</span>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-xs font-semibold text-muted-foreground">Điều khoản thanh toán</p>
+                                        <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed">
+                                            <ul className="list-none space-y-1 text-muted-foreground">
+                                                {String(quotation.terms || brandConfig?.default_payment_terms || 'Theo quy định công ty')
+                                                    .split('\n')
+                                                    .filter(Boolean)
+                                                    .map((line, i) => (
+                                                        <li key={i} className="flex gap-2">
+                                                            <span>•</span>
+                                                            <span className="whitespace-pre-line text-foreground">{line.replace(/^[-•]\s*/, '')}</span>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-primary/20 bg-primary/5">
+                                <CardHeader>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <CreditCard className="h-4 w-4" />
+                                        Thông tin thanh toán
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3 text-sm">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs text-muted-foreground">Ngân hàng</span>
+                                            <span className="font-semibold">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs text-muted-foreground">Số tài khoản</span>
+                                            <span className="font-mono text-base font-bold text-primary">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs text-muted-foreground">Chủ tài khoản</span>
+                                            <span className="font-medium">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</span>
+                                        </div>
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="text-xs text-muted-foreground">Chi nhánh</span>
+                                            <span className="font-medium">{quotation.bank_branch || brandConfig?.bank_branch || "Chưa cấu hình"}</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
 
