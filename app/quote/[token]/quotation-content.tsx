@@ -165,28 +165,28 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         window.print();
     };
 
-    // Build proposal sections for rendering
-    const proposalSections: { label: string; content: string }[] = []
-    if (hasProposal) {
-        if (pc.introduction) proposalSections.push({ label: 'Mục tiêu & Giới thiệu', content: pc.introduction })
-        if (pc.scope_of_work) proposalSections.push({ label: 'Phạm vi công việc (Scope of Work)', content: pc.scope_of_work })
-        if (pc.methodology) proposalSections.push({ label: 'Phương pháp & Cách tiếp cận', content: pc.methodology })
-        if (pc.deliverables) proposalSections.push({ label: 'Sản phẩm bàn giao (Deliverables)', content: pc.deliverables })
-        if (pc.team) proposalSections.push({ label: 'Đội ngũ & Nhân sự', content: pc.team })
-        if (pc.timeline) proposalSections.push({ label: 'Tiến độ & Timeline', content: pc.timeline })
-        if (pc.warranty) proposalSections.push({ label: 'Chính sách bảo hành & Hỗ trợ', content: pc.warranty })
-        if (pc.why_us) proposalSections.push({ label: 'Vì sao chọn chúng tôi?', content: pc.why_us })
-        if (pc.case_studies) proposalSections.push({ label: 'Case Studies & Portfolio', content: pc.case_studies })
-        if (pc.custom_sections) {
-            try {
-                const custom = typeof pc.custom_sections === 'string' ? JSON.parse(pc.custom_sections) : pc.custom_sections
-                if (Array.isArray(custom)) {
-                    custom.forEach((s: any) => {
-                        if (s.title && s.content) proposalSections.push({ label: s.title, content: s.content })
-                    })
-                }
-            } catch (e) { /* skip unparseable */ }
-        }
+    const standardSections = [
+        { key: 'overview', label: 'TỔNG QUAN DỰ ÁN', en: 'Project Overview', content: pc.overview || pc.introduction },
+        { key: 'methodology', label: 'PHƯƠNG ÁN TRIỂN KHAI', en: 'Methodology', content: pc.methodology || pc.scope_of_work },
+        { key: 'workflow', label: 'QUY TRÌNH LÀM VIỆC', en: 'Workflow', content: pc.workflow },
+        { key: 'timeline', label: 'TIẾN ĐỘ THỰC HIỆN', en: 'Timeline', content: pc.timeline },
+        { key: 'deliverables', label: 'SẢN PHẨM BÀN GIAO', en: 'Deliverables', content: pc.deliverables },
+        { key: 'investment', label: 'CHI PHÍ ĐẦU TƯ', en: 'Investment', content: pc.investment || 'Xem chi tiết tại bảng giá bên dưới.' },
+        { key: 'payment', label: 'ĐIỀU KHOẢN THANH TOÁN', en: 'Payment Terms', content: pc.payment || quotation.terms },
+        { key: 'commitment', label: 'CAM KẾT DỊCH VỤ', en: 'Service Commitment', content: pc.commitment || pc.warranty }
+    ];
+
+    const proposalSections: { label: string; content: string }[] = standardSections.filter(s => s.content);
+
+    if (pc.custom_sections) {
+        try {
+            const custom = typeof pc.custom_sections === 'string' ? JSON.parse(pc.custom_sections) : pc.custom_sections
+            if (Array.isArray(custom)) {
+                custom.forEach((s: any) => {
+                    if (s.title && s.content) proposalSections.push({ label: s.title, content: s.content })
+                })
+            }
+        } catch (e) { /* skip unparseable */ }
     }
 
     const handleDownloadPDF = async () => {
