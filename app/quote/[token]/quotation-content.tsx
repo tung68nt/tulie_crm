@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
+import { QuotationDocumentPaper } from '@/components/quotations/quotation-document-paper'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen, Loader2 } from 'lucide-react'
@@ -46,6 +47,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         phone: '',
         position: ''
     })
+    const [layout, setLayout] = useState<'premium' | 'formal'>('premium')
 
     const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
@@ -227,7 +229,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             >
                 {/* Main Paper Content */}
                 <div className="bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200 quotation-inner-paper">
-                    <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                    {layout === 'premium' ? (
+                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                    ) : (
+                        <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
+                    )}
                 </div>
             </div>
 
@@ -239,6 +245,14 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+                            <Button
+                                variant="outline"
+                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 font-bold"
+                                onClick={() => setLayout(layout === 'premium' ? 'formal' : 'premium')}
+                            >
+                                <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
+                                {layout === 'premium' ? 'Mẫu Hành chính' : 'Mẫu Cao cấp'}
+                            </Button>
                             <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold" onClick={handleDownloadPDF} disabled={isDownloading}>
                                 {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
                                 {isDownloading ? 'Đang tạo...' : 'Tải PDF'}
