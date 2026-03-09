@@ -31,6 +31,7 @@ import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_COLORS } from '@/lib/constants/status'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
 import { QuotationDocumentPaper } from '@/components/quotations/quotation-document-paper'
+import { QuotationModernPaper } from '@/components/quotations/QuotationModernPaper'
 import { QuotationItem, Quotation, QuotationStatus } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
@@ -56,7 +57,7 @@ export default function QuotationDetailPage() {
     const [brandConfig, setBrandConfig] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [baseUrl, setBaseUrl] = useState('')
-    const [layout, setLayout] = useState<'premium' | 'formal'>('premium')
+    const [layout, setLayout] = useState<'modern' | 'basic'>('modern')
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -266,14 +267,14 @@ export default function QuotationDetailPage() {
                         <TabsList className="bg-transparent h-auto p-0 gap-6">
                             <TabsTrigger
                                 value="data"
-                                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
                             >
                                 <Info className="h-4 w-4 mr-2" />
                                 Chi tiết dữ liệu
                             </TabsTrigger>
                             <TabsTrigger
                                 value="preview"
-                                className="bg-transparent border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
                             >
                                 <Eye className="h-4 w-4 mr-2" />
                                 Xem trước bản in
@@ -286,12 +287,12 @@ export default function QuotationDetailPage() {
                                 size="sm"
                                 className={cn(
                                     "h-8 px-3 font-semibold gap-2 transition-all",
-                                    layout === 'premium' ? "border-slate-200" : "bg-primary/5 border-primary/20 text-primary"
+                                    layout === 'modern' ? "bg-primary/5 border-primary/20 text-primary" : "border-slate-200"
                                 )}
-                                onClick={() => setLayout(layout === 'premium' ? 'formal' : 'premium')}
+                                onClick={() => setLayout(layout === 'modern' ? 'basic' : 'modern')}
                             >
                                 <Layout className="h-3.5 w-3.5" />
-                                {layout === 'premium' ? 'Mẫu Hành chính' : 'Mẫu Cao cấp'}
+                                {layout === 'modern' ? 'Mẫu Hiện đại' : 'Mẫu Cơ bản'}
                             </Button>
                         </div>
                     </div>
@@ -718,8 +719,8 @@ export default function QuotationDetailPage() {
                     <TabsContent value="preview">
                         <div className="flex justify-center bg-slate-200/50 rounded-2xl p-4 md:p-12 overflow-x-auto">
                             <div className="w-full max-w-[210mm] bg-white shadow-2xl quotation-inner-paper overflow-hidden">
-                                {layout === 'premium' ? (
-                                    <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                                {layout === 'modern' ? (
+                                    <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
                                 ) : (
                                     <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
                                 )}
@@ -740,8 +741,8 @@ export default function QuotationDetailPage() {
                     }
                 ` }} />
                 <div className="quotation-inner-paper bg-white">
-                    {layout === 'premium' ? (
-                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                    {layout === 'modern' ? (
+                        <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
                     ) : (
                         <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
                     )}

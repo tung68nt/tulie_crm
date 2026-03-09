@@ -19,6 +19,29 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
 import { cn } from '@/lib/utils'
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
 
 import { QuotationModernPaper } from '@/components/quotations/QuotationModernPaper'
 import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
@@ -213,19 +236,252 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     };
 
     return (
-        <div className="quotation-page min-h-screen bg-neutral-100 py-8 pb-32 font-sans text-neutral-900">
-            <div
-                ref={printRef}
-                className="quotation-paper-wrapper mx-auto relative w-full max-w-[210mm]"
-            >
-                {/* Main Paper Content */}
-                <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-neutral-200 quotation-inner-paper">
-                    {layout === 'modern' ? (
-                        <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
-                    ) : (
-                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
-                    )}
+        <div className="quotation-page min-h-screen bg-neutral-50/50 py-12 pb-32 font-sans text-neutral-900">
+            <div className="max-w-5xl mx-auto px-6">
+                {/* Public Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 print:hidden">
+                    <div className="flex items-center gap-6">
+                        <img
+                            src="/file/tulie-agency-logo.png"
+                            alt="Logo"
+                            className="h-10 w-auto object-contain"
+                        />
+                        <div className="w-px h-8 bg-neutral-200" />
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <Badge variant="outline" className="text-[10px] bg-white border-neutral-300 font-bold uppercase tracking-wider text-neutral-500">
+                                    {quotation.quotation_number}
+                                </Badge>
+                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">{formatDate(quotation.created_at)}</span>
+                            </div>
+                            <h1 className="text-2xl font-bold tracking-tight uppercase leading-none">{quotation.customer?.company_name || "Báo giá dịch vụ"}</h1>
+                        </div>
+                    </div>
                 </div>
+
+                <Tabs defaultValue="rich" className="w-full space-y-8 print:block">
+                    <div className="flex items-center justify-between border-b border-neutral-200 pb-1 print:hidden">
+                        <TabsList className="bg-transparent h-auto p-0 gap-8">
+                            <TabsTrigger
+                                value="rich"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-xs uppercase tracking-widest text-neutral-400 data-[state=active]:text-black transition-all"
+                            >
+                                <Info className="h-3.5 w-3.5 mr-2" />
+                                Chi tiết đề xuất
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="paper"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-xs uppercase tracking-widest text-neutral-400 data-[state=active]:text-black transition-all"
+                            >
+                                <FileText className="h-3.5 w-3.5 mr-2" />
+                                Bản xem trước (PDF)
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
+
+                    <TabsContent value="rich" className="space-y-10 outline-none print:block">
+                        {/* Proposal Content - B&W Magazine Style */}
+                        {hasProposal && proposalSections.length > 0 && (
+                            <div className="space-y-12">
+                                <div className="space-y-4">
+                                    <h2 className="text-3xl font-black uppercase tracking-tighter">Đề xuất giải pháp<span className="text-neutral-300 ml-2">/ Proposal</span></h2>
+                                    <div className="h-1 w-20 bg-black" />
+                                </div>
+
+                                <div className="grid gap-8">
+                                    {proposalSections.map((section, idx) => {
+                                        const icon = sectionIcons[section.label] || <Info className="w-4 h-4" />;
+                                        return (
+                                            <div key={idx} className="group relative flex gap-6 md:gap-10">
+                                                {/* Number / Connector */}
+                                                <div className="flex flex-col items-center shrink-0">
+                                                    <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-bold text-sm shadow-xl shadow-black/10 z-10">
+                                                        {idx + 1}
+                                                    </div>
+                                                    {idx < proposalSections.length - 1 && (
+                                                        <div className="w-px h-full bg-neutral-200 my-2" />
+                                                    )}
+                                                </div>
+
+                                                {/* Content Card */}
+                                                <div className="flex-1 pb-10">
+                                                    <Card className="border-neutral-200 shadow-sm overflow-hidden rounded-2xl group-hover:border-black transition-all">
+                                                        <CardHeader className="bg-neutral-50 px-6 py-4 flex flex-row items-center gap-4">
+                                                            <div className="w-8 h-8 rounded-lg bg-white border border-neutral-200 flex items-center justify-center text-black">
+                                                                {icon}
+                                                            </div>
+                                                            <CardTitle className="text-sm font-bold uppercase tracking-tight m-0">{section.label}</CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent className="p-6 text-sm text-neutral-600 leading-relaxed whitespace-pre-line font-medium">
+                                                            {section.content}
+                                                        </CardContent>
+                                                    </Card>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Items Table - High Contrast B&W */}
+                        <div className="space-y-8">
+                            <div className="space-y-4">
+                                <h2 className="text-3xl font-black uppercase tracking-tighter">Chi tiết đầu tư<span className="text-neutral-300 ml-2">/ Investment</span></h2>
+                                <div className="h-1 w-20 bg-black" />
+                            </div>
+
+                            <Card className="border-neutral-200 overflow-hidden shadow-sm rounded-2xl">
+                                <Table>
+                                    <TableHeader className="bg-black">
+                                        <TableRow className="hover:bg-black border-none">
+                                            <TableHead className="w-12 text-center text-white text-[10px] font-bold uppercase tracking-widest h-14">#</TableHead>
+                                            <TableHead className="text-white text-[10px] font-bold uppercase tracking-widest h-14">Hạng mục & Mô tả</TableHead>
+                                            <TableHead className="text-center w-24 text-white text-[10px] font-bold uppercase tracking-widest h-14">ĐVT</TableHead>
+                                            <TableHead className="text-center w-20 text-white text-[10px] font-bold uppercase tracking-widest h-14">SL</TableHead>
+                                            <TableHead className="text-right w-32 text-white text-[10px] font-bold uppercase tracking-widest h-14">Đơn giá</TableHead>
+                                            <TableHead className="text-right w-32 pr-8 text-white text-[10px] font-bold uppercase tracking-widest h-14">Thành tiền</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {/* Grouped Items logic replicated from admin page */}
+                                        {sectionEntries.map(([sectionName, sectionItems], sIdx) => (
+                                            <React.Fragment key={sIdx}>
+                                                {(sectionName || sectionEntries.length > 1) && (
+                                                    <TableRow className="bg-neutral-50/80 hover:bg-neutral-50/80 border-b border-neutral-100">
+                                                        <TableCell colSpan={6} className="py-3 px-8">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-6 h-6 rounded bg-black text-white flex items-center justify-center text-[10px] font-bold">{sIdx + 1}</div>
+                                                                <span className="text-xs font-black uppercase tracking-tight">{sectionName || `Hạng mục ${sIdx + 1}`}</span>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                                {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => (
+                                                    <TableRow key={item.id} className="hover:bg-neutral-50/30 transition-colors border-b border-neutral-100 last:border-0 group/row">
+                                                        <TableCell className="text-center py-5 text-[10px] font-bold text-neutral-400 group-hover/row:text-black">{iIdx + 1}</TableCell>
+                                                        <TableCell className="py-5">
+                                                            <div className="space-y-1.5">
+                                                                <div className="font-bold text-sm uppercase tracking-tight">{item.product_name}</div>
+                                                                {item.description && (
+                                                                    <div className="text-[11px] text-neutral-500 leading-relaxed max-w-xl italic pl-3 border-l-2 border-neutral-200">
+                                                                        {item.description}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-center text-[11px] font-bold text-neutral-500">{item.unit}</TableCell>
+                                                        <TableCell className="text-center text-sm font-black">{item.quantity}</TableCell>
+                                                        <TableCell className="text-right text-sm font-bold">{formatCurrency(item.unit_price)}</TableCell>
+                                                        <TableCell className="text-right pr-8 text-sm font-black">{formatCurrency(item.total_price)}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </React.Fragment>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+
+                                {/* Totals Section */}
+                                <div className="bg-neutral-50/50 p-8 border-t border-neutral-100">
+                                    <div className="flex justify-end">
+                                        <div className="w-full max-w-xs space-y-3">
+                                            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                                                <span>Tạm tính</span>
+                                                <span className="text-black">{formatCurrency(quotation.subtotal || 0)}</span>
+                                            </div>
+                                            {(quotation.discount_amount || 0) > 0 && (
+                                                <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-red-500">
+                                                    <span>Chiết khấu ({quotation.discount_percent || 0}%)</span>
+                                                    <span>-{formatCurrency(quotation.discount_amount || 0)}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                                                <span>Thuế VAT ({quotation.vat_percent || 0}%)</span>
+                                                <span className="text-black">{formatCurrency(quotation.vat_amount || 0)}</span>
+                                            </div>
+                                            <Separator className="bg-neutral-200" />
+                                            <div className="flex justify-between items-center pt-2">
+                                                <span className="text-sm font-black uppercase tracking-widest">Tổng đầu tư</span>
+                                                <span className="text-2xl font-black tracking-tighter">{formatCurrency(quotation.total_amount || 0)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Terms & Payment - Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <Card className="border-neutral-200 rounded-2xl shadow-sm overflow-hidden">
+                                <CardHeader className="bg-neutral-50 border-b border-neutral-100">
+                                    <CardTitle className="text-xs font-bold uppercase tracking-widest text-neutral-400">Ghi chú & Điều khoản</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-6">
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-neutral-300">Ghi chú chung</p>
+                                        <div className="text-sm text-neutral-600 font-medium leading-relaxed whitespace-pre-line bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+                                            {quotation.notes || brandConfig?.default_notes || 'Không có ghi chú thêm.'}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-neutral-300">Tiến độ thanh toán</p>
+                                        <div className="text-sm text-neutral-600 font-medium leading-relaxed whitespace-pre-line bg-neutral-50 p-4 rounded-xl border border-neutral-100">
+                                            {quotation.terms || brandConfig?.default_payment_terms || 'Theo thỏa thuận hai bên.'}
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="bg-black text-white border-none rounded-2xl shadow-2xl overflow-hidden relative">
+                                {/* Abstract BG decorative bit */}
+                                <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-10 translate-y-10" />
+
+                                <CardHeader className="border-b border-white/10">
+                                    <CardTitle className="text-xs font-bold uppercase tracking-widest text-neutral-500">Thông tin chuyển khoản</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-8 space-y-8">
+                                    <div className="space-y-6">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Ngân hàng</p>
+                                            <p className="text-lg font-black tracking-tight">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Số tài khoản</p>
+                                            <p className="text-3xl font-black tracking-tighter text-white">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</p>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Chủ tài khoản</p>
+                                            <p className="text-sm font-bold uppercase tracking-wider">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Chi nhánh</span>
+                                            <span className="text-xs font-medium text-neutral-300">{quotation.bank_branch || brandConfig?.bank_branch || "Hà Nội"}</span>
+                                        </div>
+                                        <Badge variant="outline" className="text-[10px] border-white/20 text-white uppercase font-bold px-3 py-1">Secure</Badge>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="paper" className="outline-none">
+                        <div
+                            ref={printRef}
+                            className="quotation-paper-wrapper relative w-full"
+                        >
+                            <div className="bg-white shadow-2xl rounded-xl overflow-hidden border border-neutral-200 quotation-inner-paper">
+                                {layout === 'modern' ? (
+                                    <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
+                                ) : (
+                                    <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
+                                )}
+                            </div>
+                        </div>
+                    </TabsContent>
+                </Tabs>
             </div>
 
             {/* Sticky Action Footer */}

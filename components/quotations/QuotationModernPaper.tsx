@@ -100,7 +100,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 Kính gửi / <span className="text-black">Attention To</span>
                             </p>
                             <h2 className="text-2xl font-black uppercase tracking-tight leading-tight">
-                                {quotation.customers?.company_name || quotation.customers?.name}
+                                {quotation.customer?.company_name || quotation.customer?.name}
                             </h2>
                         </div>
                         <div className="grid grid-cols-1 gap-4 text-[11px] font-semibold text-zinc-600">
@@ -108,21 +108,21 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 <User className="h-4 w-4 shrink-0 mt-0.5 text-black" />
                                 <div>
                                     <p className="uppercase text-[9px] text-zinc-400">Người liên hệ / Contact personnel</p>
-                                    <p className="text-black">{quotation.customers?.name || 'Vui lòng cập nhật'}</p>
+                                    <p className="text-black">{quotation.customer?.name || quotation.customer?.representative || 'Vui lòng cập nhật'}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
                                 <Mail className="h-4 w-4 shrink-0 mt-0.5 text-black" />
                                 <div>
                                     <p className="uppercase text-[9px] text-zinc-400">Email address</p>
-                                    <p className="text-black">{quotation.customers?.email || '-'}</p>
+                                    <p className="text-black">{quotation.customer?.email || '-'}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
                                 <Phone className="h-4 w-4 shrink-0 mt-0.5 text-black" />
                                 <div>
                                     <p className="uppercase text-[9px] text-zinc-400">Phone number</p>
-                                    <p className="text-black">{quotation.customers?.phone || '-'}</p>
+                                    <p className="text-black">{quotation.customer?.phone || '-'}</p>
                                 </div>
                             </div>
                         </div>
@@ -348,6 +348,35 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 6.5 SIGNATURE SECTION */}
+            <div className="px-12 mt-12 grid grid-cols-2 gap-20 text-center">
+                <div className="space-y-4">
+                    <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện khách hàng</p>
+                    <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & ghi rõ họ tên / Customer Signature)</p>
+                    <div className="h-28" />
+                    <div className="h-px w-40 bg-zinc-200 mx-auto" />
+                </div>
+                <div className="space-y-4">
+                    <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
+                    <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & đóng dấu / Authorized Signature)</p>
+                    <div className="h-28 relative flex items-center justify-center">
+                        {/* Digital Signature Placeholder or Seal if needed */}
+                        <div className="absolute opacity-10 grayscale">
+                            <img src="/file/tulie-agency-logo.png" className="w-24 h-auto" alt="Seal" />
+                        </div>
+                    </div>
+                    <div className="space-y-1">
+                        <div className="h-px w-40 bg-zinc-200 mx-auto" />
+                        <p className="text-[12px] font-black uppercase tracking-tighter text-black mt-2">
+                            {quotation.signer_name || brandConfig?.ceo_name || 'Nguyễn Đức Tùng'}
+                        </p>
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest italic leading-none">
+                            {quotation.signer_title || brandConfig?.ceo_title || 'CEO & Founder'}
+                        </p>
                     </div>
                 </div>
             </div>
