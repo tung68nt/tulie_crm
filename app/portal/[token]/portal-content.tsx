@@ -114,7 +114,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     return (
         <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
             {/* Header / Hero */}
-            <div className="bg-white border-b border-zinc-200 pt-16 pb-10 px-6">
+            <div className="bg-white border-b border-zinc-200 pt-10 pb-8 px-6">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="flex items-center gap-6">
                         <img
@@ -144,16 +144,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             <main className="max-w-6xl mx-auto px-6 mt-10">
                 <Tabs defaultValue="overview" className="space-y-10">
                     <div className="flex items-center justify-between">
-                        <TabsList className="bg-zinc-200/50 p-1 rounded-xl">
+                        <TabsList className="bg-transparent h-auto p-0 gap-8 border-b border-zinc-200 w-full justify-start rounded-none">
                             <TabsTrigger
                                 value="overview"
-                                className="px-6 py-2 text-xs font-bold uppercase tracking-wider rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-[11px] uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:text-black transition-all"
                             >
                                 Tổng quan dự án
                             </TabsTrigger>
                             <TabsTrigger
                                 value="details"
-                                className="px-6 py-2 text-xs font-bold uppercase tracking-wider rounded-lg data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm"
+                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-[11px] uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:text-black transition-all"
                             >
                                 Chi tiết dữ liệu
                             </TabsTrigger>
@@ -339,22 +339,22 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <div className="p-0 overflow-x-auto">
                                 <table className="w-full text-left border-collapse text-[11px]">
                                     <thead>
-                                        <tr className="bg-zinc-50/50 border-b border-zinc-100">
-                                            <th className="py-4 px-8 font-bold text-zinc-400 uppercase tracking-widest">Loại hồ sơ</th>
-                                            <th className="py-4 px-6 font-bold text-zinc-400 uppercase tracking-widest text-center">Trạng thái</th>
-                                            <th className="py-4 px-8 font-bold text-zinc-400 uppercase tracking-widest text-right">Review</th>
+                                        <tr className="bg-zinc-900 border-b border-zinc-800">
+                                            <th className="py-5 px-8 font-black text-white uppercase tracking-[0.2em] text-[10px]">Phân loại hồ sơ / <span className="opacity-40">Document Type</span></th>
+                                            <th className="py-5 px-6 font-black text-white uppercase tracking-[0.2em] text-[10px] text-center">Trạng thái / <span className="opacity-40">Status</span></th>
+                                            <th className="py-5 px-8 font-black text-white uppercase tracking-[0.2em] text-[10px] text-right">Xem kết quả / <span className="opacity-40">Review</span></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-zinc-100">
                                         <tr className="hover:bg-zinc-50/30 transition-colors group">
-                                            <td className="py-6 px-8">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="h-10 w-10 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-lg shadow-black/10">
-                                                        <FileText className="w-5 h-5" />
+                                            <td className="py-8 px-8">
+                                                <div className="flex items-center gap-6">
+                                                    <div className="h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-xl shadow-black/10 transition-transform group-hover:scale-110">
+                                                        <FileSignature className="w-6 h-6" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-bold uppercase tracking-tight">Báo giá dịch vụ & Đề xuất</div>
-                                                        <div className="text-[9px] text-zinc-400 font-bold mt-0.5 tracking-wider">#{quotation.quotation_number} • {formatDate(quotation.created_at)}</div>
+                                                        <div className="font-black text-zinc-950 uppercase tracking-tight text-sm">Bộ báo giá dịch vụ & Đề nghị hợp tác</div>
+                                                        <div className="text-[10px] text-zinc-400 font-bold mt-1 tracking-widest">REF #{quotation.quotation_number} • ISSUED {formatDate(quotation.created_at)}</div>
                                                     </div>
                                                 </div>
                                             </td>

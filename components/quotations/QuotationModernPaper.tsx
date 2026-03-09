@@ -4,6 +4,7 @@ import React from 'react'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { MapPin, Phone, Mail, Globe, Info, Calendar, User, Building2, CreditCard, ChevronRight, FileText, CheckCircle2, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 interface QuotationModernPaperProps {
     quotation: any
@@ -40,8 +41,15 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
     const finalAmount = subtotal + vatAmount;
 
     // Proposal sections from database or dynamic calculation
-    const proposalContent = quotation.proposal_content || {}
-    const hasProposal = Object.values(proposalContent).some(v => v && String(v).trim().length > 0)
+    let proposalContent = quotation.proposal_content || {}
+    if (typeof proposalContent === 'string') {
+        try {
+            proposalContent = JSON.parse(proposalContent)
+        } catch (e) {
+            proposalContent = {}
+        }
+    }
+    const hasProposal = proposalContent && Object.values(proposalContent).some(v => v && String(v).trim().length > 0)
 
     const bankInfo = {
         company: {
@@ -157,7 +165,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
 
                 {/* 3. PROPOSAL CONTENT (MODERN MAGAZINE STYLE) */}
                 {hasProposal && (
-                    <div className="space-y-10">
+                    <div className="space-y-12">
                         <div className="flex items-baseline gap-4 border-b-4 border-black pb-4">
                             <h3 className="text-3xl font-black uppercase tracking-tight" style={{ fontFamily: 'var(--font-kaine)' }}>
                                 Kế hoạch & Giải pháp
@@ -165,14 +173,14 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                             <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Solution Proposal</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12">
                             {proposalContent.introduction && (
                                 <div className="space-y-3">
                                     <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
                                         <div className="w-2 h-6 bg-black" />
                                         01. Mục tiêu chiến lược / <span className="text-zinc-400 text-xs">Strategic Goals</span>
                                     </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium">
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
                                         {proposalContent.introduction}
                                     </div>
                                 </div>
@@ -183,8 +191,19 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                         <div className="w-2 h-6 bg-black" />
                                         02. Phạm vi công việc / <span className="text-zinc-400 text-xs">Scope of Work</span>
                                     </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium">
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
                                         {proposalContent.scope_of_work}
+                                    </div>
+                                </div>
+                            )}
+                            {proposalContent.methodology && (
+                                <div className="space-y-3">
+                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
+                                        <div className="w-2 h-6 bg-black" />
+                                        03. Phương pháp tiếp cận / <span className="text-zinc-400 text-xs">Methodology</span>
+                                    </h4>
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
+                                        {proposalContent.methodology}
                                     </div>
                                 </div>
                             )}
@@ -192,10 +211,21 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 <div className="space-y-3">
                                     <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
                                         <div className="w-2 h-6 bg-black" />
-                                        03. Sản phẩm bàn giao / <span className="text-zinc-400 text-xs">Deliverables</span>
+                                        04. Sản phẩm bàn giao / <span className="text-zinc-400 text-xs">Deliverables</span>
                                     </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium">
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
                                         {proposalContent.deliverables}
+                                    </div>
+                                </div>
+                            )}
+                            {proposalContent.team && (
+                                <div className="space-y-3">
+                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
+                                        <div className="w-2 h-6 bg-black" />
+                                        05. Đội ngũ thực hiện / <span className="text-zinc-400 text-xs">Project Team</span>
+                                    </h4>
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
+                                        {proposalContent.team}
                                     </div>
                                 </div>
                             )}
@@ -203,10 +233,32 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 <div className="space-y-3">
                                     <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
                                         <div className="w-2 h-6 bg-black" />
-                                        04. Lộ trình triển khai / <span className="text-zinc-400 text-xs">Implementation</span>
+                                        06. Lộ trình triển khai / <span className="text-zinc-400 text-xs">Implementation</span>
                                     </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium">
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
                                         {proposalContent.timeline}
+                                    </div>
+                                </div>
+                            )}
+                            {proposalContent.warranty && (
+                                <div className="space-y-3">
+                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
+                                        <div className="w-2 h-6 bg-black" />
+                                        07. Chính sách bảo hành / <span className="text-zinc-400 text-xs">Warranty & Support</span>
+                                    </h4>
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
+                                        {proposalContent.warranty}
+                                    </div>
+                                </div>
+                            )}
+                            {proposalContent.why_us && (
+                                <div className="space-y-3">
+                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
+                                        <div className="w-2 h-6 bg-black" />
+                                        08. Vì sao chọn chúng tôi? / <span className="text-zinc-400 text-xs">Why Us?</span>
+                                    </h4>
+                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
+                                        {proposalContent.why_us}
                                     </div>
                                 </div>
                             )}
@@ -215,112 +267,121 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                 )}
 
                 {/* 4. PRICING TABLE */}
-                <div className="space-y-6">
-                    <div className="flex items-baseline gap-4 border-b-4 border-black pb-4">
-                        <h3 className="text-3xl font-black uppercase tracking-tight" style={{ fontFamily: 'var(--font-kaine)' }}>
-                            Dự toán đầu tư
-                        </h3>
-                        <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Investment Summary</span>
+                <div className="overflow-hidden border-2 border-black rounded-3xl">
+                    <div className="bg-black p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-2 border-black">
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <h4 className="text-white text-xl font-black uppercase tracking-tight">Chi tiết hạng mục</h4>
+                                <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700 text-[9px] font-bold uppercase tracking-widest px-2 h-5">Quotation items</Badge>
+                            </div>
+                            <p className="text-zinc-400 text-[11px] font-medium">Chi tiết các hạng mục và chi phí dịch vụ</p>
+                        </div>
+                        <div className="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-500">
+                            <Building2 className="h-5 w-5" />
+                        </div>
                     </div>
-
-                    <div className="overflow-hidden border-2 border-black rounded-lg">
-                        <table className="w-full text-left border-collapse text-[11px]">
-                            <thead>
-                                <tr className="bg-black text-white uppercase font-black tracking-tight print:bg-black">
-                                    <th className="py-4 px-4 w-12 text-center">No.</th>
-                                    <th className="py-4 px-4">Hạng mục chi tiết / <span className="opacity-60">Full Description</span></th>
-                                    <th className="py-4 px-4 w-16 text-center italic">ĐVT</th>
-                                    <th className="py-4 px-4 w-12 text-center">SL</th>
-                                    <th className="py-4 px-4 w-32 text-right">Đơn giá / <span className="opacity-60">Rate</span></th>
-                                    <th className="py-4 px-4 w-36 text-right">Tổng / <span className="opacity-60">Subtotal</span></th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y-2 divide-zinc-200">
-                                {sectionEntries.map(([sectionName, sectionItems], sIdx) => (
-                                    <React.Fragment key={sectionName || sIdx}>
-                                        {sectionName && (
-                                            <tr className="bg-zinc-50 border-y-2 border-black">
-                                                <td colSpan={6} className="py-2.5 px-4 font-black text-[10px] text-black uppercase tracking-[0.3em] bg-zinc-200 print:bg-zinc-200">
-                                                    Section {sIdx + 1}: {sectionName}
-                                                </td>
-                                            </tr>
-                                        )}
-                                        {sectionItems.map((item: any, iIdx: number) => (
-                                            <tr key={item.id} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="py-4 px-4 text-center font-black text-zinc-300 group-hover:text-black">{iIdx + 1}</td>
-                                                <td className="py-4 px-4">
-                                                    <p className="font-black text-black text-[12px] uppercase tracking-tight mb-1">{item.name}</p>
-                                                    {item.description && (
-                                                        <p className="text-zinc-500 text-[10px] leading-relaxed italic pr-10">{item.description}</p>
-                                                    )}
-                                                </td>
-                                                <td className="py-4 px-4 text-center text-zinc-400 font-bold">{item.unit || '-'}</td>
-                                                <td className="py-4 px-4 text-center font-black text-black">{item.quantity}</td>
-                                                <td className="py-4 px-4 text-right font-bold text-zinc-500 tabular-nums">
-                                                    {formatCurrency(item.unit_price).replace('₫', '')}
-                                                </td>
-                                                <td className="py-4 px-4 text-right font-black text-black text-[12px] tabular-nums">
-                                                    {formatCurrency(item.quantity * item.unit_price).replace('₫', '')}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </React.Fragment>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table className="w-full text-left border-collapse text-[11px]">
+                        <thead>
+                            <tr className="bg-black/5 text-black border-b border-black/10 uppercase font-black tracking-tight print:bg-transparent">
+                                <th className="py-4 px-6 w-12 text-center">#</th>
+                                <th className="py-4 px-6">Hạng mục & Mô tả / <span className="opacity-40">Items</span></th>
+                                <th className="py-4 px-6 w-20 text-center uppercase tracking-wider">ĐVT / <span className="opacity-40 text-[9px]">Unit</span></th>
+                                <th className="py-4 px-6 w-16 text-center">SL / <span className="opacity-40 text-[9px]">Qty</span></th>
+                                <th className="py-4 px-6 w-32 text-right">Đơn giá / <span className="opacity-40 text-[9px]">Price</span></th>
+                                <th className="py-4 px-6 w-36 text-right">Thành tiền / <span className="opacity-40 text-[9px]">Amount</span></th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y-2 divide-zinc-200">
+                            {sectionEntries.map(([sectionName, sectionItems], sIdx) => (
+                                <React.Fragment key={sectionName || sIdx}>
+                                    {sectionName && (
+                                        <tr className="bg-zinc-50 border-y-2 border-black">
+                                            <td colSpan={6} className="py-2.5 px-4 font-black text-[10px] text-black uppercase tracking-[0.3em] bg-zinc-200 print:bg-zinc-200">
+                                                Section {sIdx + 1}: {sectionName}
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {sectionItems.map((item: any, iIdx: number) => (
+                                        <tr key={item.id} className="hover:bg-zinc-50 transition-colors">
+                                            <td className="py-4 px-4 text-center font-black text-zinc-300 group-hover:text-black">{iIdx + 1}</td>
+                                            <td className="py-5 px-6">
+                                                <p className="font-black text-black text-[13px] uppercase tracking-tight mb-1">{item.product_name || item.name}</p>
+                                                {item.description && (
+                                                    <p className="text-zinc-500 text-[10px] leading-relaxed italic pr-10">{item.description}</p>
+                                                )}
+                                            </td>
+                                            <td className="py-4 px-4 text-center text-zinc-400 font-bold">{item.unit || '-'}</td>
+                                            <td className="py-4 px-4 text-center font-black text-black">{item.quantity}</td>
+                                            <td className="py-4 px-4 text-right font-bold text-zinc-500 tabular-nums">
+                                                {formatCurrency(item.unit_price).replace('₫', '')}
+                                            </td>
+                                            <td className="py-4 px-4 text-right font-black text-black text-[12px] tabular-nums">
+                                                {formatCurrency(item.quantity * item.unit_price).replace('₫', '')}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
 
                 {/* 5. TOTALS AREA */}
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_400px] gap-20 items-end">
-                    <div className="space-y-8">
-                        <div className="bg-zinc-50 p-8 rounded-3xl border border-dashed border-zinc-200">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">
+                <div className="flex flex-col md:flex-row justify-between items-end gap-10">
+                    <div className="flex-1 w-full space-y-6">
+                        <div className="bg-zinc-50 p-10 rounded-[32px] border border-zinc-100 flex flex-col justify-center min-h-[160px]">
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">
                                 Tổng cộng bằng chữ / <span className="text-black">Amount in words</span>
                             </p>
-                            <p className="text-sm text-black font-black leading-tight italic first-letter:uppercase">
+                            <p className="text-base text-black font-black leading-tight italic first-letter:uppercase">
                                 {readNumberToWords(finalAmount)} đồng chẵn./.
                             </p>
                         </div>
                         {/* Notes */}
                         {quotation.notes && (
-                            <div className="space-y-4">
-                                <h5 className="text-[11px] font-black uppercase tracking-widest border-l-4 border-black pl-3 flex justify-between">
-                                    Ghi chú / <span className="text-zinc-400">Notes</span>
+                            <div className="space-y-3">
+                                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] border-l-4 border-black pl-3 flex justify-between">
+                                    Ghi chú thêm / <span className="text-zinc-400">Additional Notes</span>
                                 </h5>
-                                <div className="text-[10px] leading-relaxed text-zinc-600 italic whitespace-pre-wrap pl-4">
+                                <div className="text-[10px] leading-relaxed text-zinc-600 font-medium italic whitespace-pre-wrap pl-4 max-w-lg">
                                     {quotation.notes}
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="bg-black text-white p-10 rounded-[40px] shadow-2xl space-y-4 relative overflow-hidden print:bg-black">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="w-full md:w-[420px] bg-black text-white p-12 rounded-[48px] shadow-2xl space-y-6 relative overflow-hidden print:bg-black">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-zinc-400/5 rounded-full translate-y-1/2 -translate-x-1/2" />
 
-                        <div className="flex justify-between items-center text-sm font-bold opacity-60">
-                            <span>Tạm tính / Subtotal</span>
-                            <span className="tabular-nums">{formatCurrency(subtotalRaw).replace('₫', '')}</span>
-                        </div>
-                        {totalDiscount > 0 && (
-                            <div className="flex justify-between items-center text-sm font-bold text-zinc-200">
-                                <span>Chiết khấu / Discount</span>
-                                <span className="tabular-nums">-{formatCurrency(totalDiscount).replace('₫', '')}</span>
+                        <div className="space-y-4 relative z-10">
+                            <div className="flex justify-between items-center text-sm font-bold opacity-50">
+                                <span>Tạm tính / Subtotal</span>
+                                <span className="tabular-nums">{formatCurrency(subtotalRaw).replace('₫', '')}</span>
                             </div>
-                        )}
-                        <div className="flex justify-between items-center text-sm font-bold opacity-60">
-                            <span>Thuế VAT / Tax ({quotation.vat_rate || 0}%)</span>
-                            <span className="tabular-nums">{formatCurrency(vatAmount).replace('₫', '')}</span>
-                        </div>
-                        <div className="pt-6 mt-2 border-t border-white/20">
-                            <div className="flex justify-between items-end">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Tổng thanh toán / Total Payment</p>
-                                    <p className="text-4xl font-black tabular-nums tracking-tighter" style={{ fontFamily: 'var(--font-kaine)' }}>
-                                        {formatCurrency(finalAmount).replace('₫', '')}
-                                    </p>
+                            {totalDiscount > 0 && (
+                                <div className="flex justify-between items-center text-sm font-bold text-zinc-300">
+                                    <span>Chiết khấu / Discount</span>
+                                    <span className="tabular-nums">-{formatCurrency(totalDiscount).replace('₫', '')}</span>
                                 </div>
-                                <span className="text-xs font-bold opacity-40 mb-1">VNĐ</span>
+                            )}
+                            <div className="flex justify-between items-center text-sm font-bold opacity-50">
+                                <span>Thuế VAT / Tax ({quotation.vat_rate || 0}%)</span>
+                                <span className="tabular-nums">{formatCurrency(vatAmount).replace('₫', '')}</span>
+                            </div>
+                        </div>
+
+                        <div className="pt-8 mt-4 border-t border-white/10 relative z-10">
+                            <div className="flex justify-between items-end">
+                                <div className="space-y-1.5">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-40">Tổng thanh toán / Total Payment</p>
+                                    <div className="flex items-baseline gap-3">
+                                        <p className="text-5xl font-black tabular-nums tracking-tighter" style={{ fontFamily: 'var(--font-kaine)' }}>
+                                            {formatCurrency(finalAmount).replace('₫', '')}
+                                        </p>
+                                        <span className="text-sm font-black opacity-30">VNĐ</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -350,33 +411,33 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* 6.5 SIGNATURE SECTION */}
-            <div className="px-12 mt-12 grid grid-cols-2 gap-20 text-center">
-                <div className="space-y-4">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện khách hàng</p>
-                    <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & ghi rõ họ tên / Customer Signature)</p>
-                    <div className="h-28" />
-                    <div className="h-px w-40 bg-zinc-200 mx-auto" />
-                </div>
-                <div className="space-y-4">
-                    <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
-                    <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & đóng dấu / Authorized Signature)</p>
-                    <div className="h-28 relative flex items-center justify-center">
-                        {/* Digital Signature Placeholder or Seal if needed */}
-                        <div className="absolute opacity-10 grayscale">
-                            <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} className="w-24 h-auto" alt="Seal" />
-                        </div>
-                    </div>
-                    <div className="space-y-1">
+                {/* 6.5 SIGNATURE SECTION */}
+                <div className="mt-16 grid grid-cols-2 gap-20 text-center">
+                    <div className="space-y-4">
+                        <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện khách hàng</p>
+                        <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & ghi rõ họ tên / Customer Signature)</p>
+                        <div className="h-28" />
                         <div className="h-px w-40 bg-zinc-200 mx-auto" />
-                        <p className="text-[12px] font-black uppercase tracking-tighter text-black mt-2">
-                            {quotation.signer_name || brandConfig?.ceo_name || 'Nguyễn Đức Tùng'}
-                        </p>
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest italic leading-none">
-                            {quotation.signer_title || brandConfig?.ceo_title || 'CEO & Founder'}
-                        </p>
+                    </div>
+                    <div className="space-y-4">
+                        <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
+                        <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & đóng dấu / Authorized Signature)</p>
+                        <div className="h-28 relative flex items-center justify-center">
+                            {/* Digital Signature Placeholder or Seal if needed */}
+                            <div className="absolute opacity-10 grayscale">
+                                <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} className="w-24 h-auto" alt="Seal" />
+                            </div>
+                        </div>
+                        <div className="space-y-1">
+                            <div className="h-px w-40 bg-zinc-200 mx-auto" />
+                            <p className="text-[12px] font-black uppercase tracking-tighter text-black mt-2">
+                                {quotation.signer_name || brandConfig?.ceo_name || 'Nguyễn Đức Tùng'}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest italic leading-none">
+                                {quotation.signer_title || brandConfig?.ceo_title || 'CEO & Founder'}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

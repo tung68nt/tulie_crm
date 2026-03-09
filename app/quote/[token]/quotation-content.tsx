@@ -72,7 +72,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         phone: '',
         position: ''
     })
-    const [layout, setLayout] = useState<'basic' | 'modern'>('modern')
+    const [layout] = useState<'basic' | 'modern'>('modern')
 
     const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
@@ -130,10 +130,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     }, {});
 
     const sectionEntries = Object.entries(sections).sort((a, b) => {
-        // Keep '' (no section) at the end or handle sorting by sort_order of first item
         if (a[0] === '') return 1;
         if (b[0] === '') return -1;
-        return a[1][0].sort_order - b[1][0].sort_order;
+        const aOrder = a[1][0]?.sort_order ?? 0;
+        const bOrder = b[1][0]?.sort_order ?? 0;
+        return aOrder - bOrder;
     });
 
     // Icon mapping for proposal section types
@@ -236,10 +237,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     };
 
     return (
-        <div className="quotation-page min-h-screen bg-neutral-50/50 py-12 pb-32 font-sans text-neutral-900">
+        <div className="quotation-page min-h-screen bg-neutral-50/50 py-8 pb-32 font-sans text-neutral-900">
             <div className="max-w-5xl mx-auto px-6">
                 {/* Public Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 print:hidden">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6 print:hidden">
                     <div className="flex items-center gap-6">
                         <img
                             src="/file/tulie-agency-logo.png"
@@ -267,14 +268,14 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-xs uppercase tracking-widest text-neutral-400 data-[state=active]:text-black transition-all"
                             >
                                 <Info className="h-3.5 w-3.5 mr-2" />
-                                Chi tiết đề xuất
+                                Chi tiết dữ liệu
                             </TabsTrigger>
                             <TabsTrigger
                                 value="paper"
                                 className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-xs uppercase tracking-widest text-neutral-400 data-[state=active]:text-black transition-all"
                             >
-                                <FileText className="h-3.5 w-3.5 mr-2" />
-                                Bản xem trước (PDF)
+                                <Printer className="h-3.5 w-3.5 mr-2" />
+                                Xem trước bản in
                             </TabsTrigger>
                         </TabsList>
                     </div>
@@ -357,12 +358,12 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                         </TableCell>
                                                     </TableRow>
                                                 )}
-                                                {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => (
+                                                {(sectionItems || []).sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0)).map((item: any, iIdx: number) => (
                                                     <TableRow key={item.id} className="hover:bg-neutral-50/30 transition-colors border-b border-neutral-100 last:border-0 group/row">
                                                         <TableCell className="text-center py-5 text-[10px] font-bold text-neutral-400 group-hover/row:text-black">{iIdx + 1}</TableCell>
                                                         <TableCell className="py-5">
                                                             <div className="space-y-1.5">
-                                                                <div className="font-bold text-sm uppercase tracking-tight">{item.product_name}</div>
+                                                                <div className="font-bold text-sm uppercase tracking-tight">{item.product_name || item.name}</div>
                                                                 {item.description && (
                                                                     <div className="text-[11px] text-neutral-500 leading-relaxed max-w-xl italic pl-3 border-l-2 border-neutral-200">
                                                                         {item.description}
@@ -370,10 +371,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                                 )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="text-center text-[11px] font-bold text-neutral-500">{item.unit}</TableCell>
-                                                        <TableCell className="text-center text-sm font-black">{item.quantity}</TableCell>
-                                                        <TableCell className="text-right text-sm font-bold">{formatCurrency(item.unit_price)}</TableCell>
-                                                        <TableCell className="text-right pr-8 text-sm font-black">{formatCurrency(item.total_price)}</TableCell>
+                                                        <TableCell className="text-center text-[11px] font-bold text-neutral-500">{item.unit || '-'}</TableCell>
+                                                        <TableCell className="text-center text-sm font-black">{item.quantity || 0}</TableCell>
+                                                        <TableCell className="text-right text-sm font-bold">{formatCurrency(item.unit_price || 0)}</TableCell>
+                                                        <TableCell className="text-right pr-8 text-sm font-black">{formatCurrency(item.total_price || (item.quantity * item.unit_price) || 0)}</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </React.Fragment>
@@ -488,25 +489,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl z-50 print:hidden">
                 <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-4">
                     {/* Layout Switcher - Refined Tabs */}
-                    <div className="bg-neutral-100 p-1 rounded-xl flex items-center w-full sm:w-auto">
-                        <button
-                            onClick={() => setLayout('modern')}
-                            className={cn(
-                                "flex-1 sm:flex-none px-6 py-2 text-[11px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                                layout === 'modern' ? "bg-white text-black shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-black"
-                            )}
-                        >
-                            Modern
-                        </button>
-                        <button
-                            onClick={() => setLayout('basic')}
-                            className={cn(
-                                "flex-1 sm:flex-none px-6 py-2 text-[11px] font-bold rounded-lg transition-all uppercase tracking-wider",
-                                layout === 'basic' ? "bg-white text-black shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-black"
-                            )}
-                        >
-                            Basic
-                        </button>
+                    <div className="flex items-center gap-3 pl-2">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-black">Modern Layout</span>
+                            <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-tight">Active View</span>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
