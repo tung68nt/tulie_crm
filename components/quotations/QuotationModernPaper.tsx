@@ -51,7 +51,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
             branch: brandConfig?.bank_branch || 'SỞ GIAO DỊCH'
         },
         personal: {
-            name: brandConfig?.studio_bank_account_name || 'NGUYỄN DỨC TÙNG',
+            name: brandConfig?.studio_bank_account_name || 'NGUYỄN ĐỨC TÙNG',
             no: brandConfig?.studio_bank_account_no || '0988984554',
             bank: brandConfig?.studio_bank_name || 'TECHCOMBANK'
         }
@@ -68,7 +68,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
             <div className="p-12 pb-8 border-b-2 border-black flex justify-between items-start bg-black text-white print:bg-black print:text-white">
                 <div className="flex flex-col gap-4">
                     <img
-                        src="/file/tulie-agency-logo.png"
+                        src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"}
                         alt="Logo"
                         className="h-12 w-auto object-contain invert brightness-0 grayscale brightness-200"
                     />
@@ -366,7 +366,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                     <div className="h-28 relative flex items-center justify-center">
                         {/* Digital Signature Placeholder or Seal if needed */}
                         <div className="absolute opacity-10 grayscale">
-                            <img src="/file/tulie-agency-logo.png" className="w-24 h-auto" alt="Seal" />
+                            <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} className="w-24 h-auto" alt="Seal" />
                         </div>
                     </div>
                     <div className="space-y-1">

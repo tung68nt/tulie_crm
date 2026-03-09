@@ -1,127 +1,83 @@
 export const quotationTemplate = `
-<div style="font-family: 'Times New Roman', Times, serif; font-size: 13pt; line-height: 1.5; color: #000; max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: justify;">
+<div style="font-family: 'Inter', -apple-system, sans-serif; font-size: 11pt; line-height: 1.6; color: #000; max-width: 800px; margin: 0 auto; padding: 50px 30px; text-align: justify;">
     
     <!-- HEADER -->
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-            <td style="width: 40%; text-align: center; vertical-align: top;">
-                <p style="margin: 0; font-weight: bold;">Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</p>
-                <hr style="width: 50%; border: 0.5px solid #000; margin: 5px auto;" />
-            </td>
-            <td style="width: 60%; text-align: center; vertical-align: top;">
-                <p style="margin: 0; font-weight: bold;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-                <p style="margin: 0; font-weight: bold; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</p>
-            </td>
-        </tr>
-    </table>
-
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
         <tr>
-            <td style="width: 40%; text-align: left;">Số: {{quotation_number}}</td>
-            <td style="width: 60%; text-align: right;">Hà Nội, ngày {{quotation_date}}</td>
+            <td style="width: 45%; text-align: left; vertical-align: top;">
+                <p style="margin: 0; font-weight: 800; font-size: 10pt; text-transform: uppercase; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">CÔNG TY TNHH TULIE AGENCY</p>
+                <div style="font-size: 8pt; margin-top: 8px; font-weight: 500;">
+                    <p style="margin: 2px 0;">MST: 0110163102</p>
+                    <p style="margin: 2px 0;">Hotline: 098.898.4554</p>
+                    <p style="margin: 2px 0;">Email: info@tulie.vn | Website: tulie.vn</p>
+                </div>
+            </td>
+            <td style="width: 55%; text-align: right; vertical-align: top;">
+                <p style="margin: 0; font-weight: 800; font-size: 9pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                <p style="margin: 2px 0; font-weight: 700; font-size: 9pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</p>
+                <p style="margin: 20px 0 0 0; font-size: 8.5pt; font-style: italic; color: #666;">Hà Nội, ngày {{day}} tháng {{month}} năm {{year}}</p>
+            </td>
         </tr>
     </table>
 
     <!-- TITLE -->
-    <h1 style="text-align: center; font-size: 16pt; font-weight: bold; margin-bottom: 20px;">Báo giá / Đơn đặt hàng</h1>
+    <div style="text-align: center; margin-bottom: 40px; border-top: 1px solid #eee; pt-20px;">
+        <h1 style="font-size: 18pt; font-weight: 900; text-transform: uppercase; margin: 20px 0 5px 0; letter-spacing: -0.5px;">Báo giá / Đơn đặt hàng</h1>
+        <p style="font-size: 10pt; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 2px;">QUOTATION & PURCHASE ORDER</p>
+        <p style="font-size: 9pt; font-weight: 800; margin-top: 10px;">Số: {{quotation_number}}</p>
+    </div>
 
     <!-- CÁC BÊN -->
-    <h3 style="font-size: 13pt; font-weight: bold;">Bên đặt hàng (Bên A): {{customer_company}}</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-        <tr><td style="width: 25%;">Người đại diện pháp luật:</td><td style="width: 45%;"><strong>{{customer_representative}}</strong></td><td style="width: 10%;">Chức vụ:</td><td>{{customer_position}}</td></tr>
-        <tr><td>Địa chỉ liên hệ:</td><td colspan="3">{{customer_address}}</td></tr>
-        <tr><td>Điện thoại:</td><td>{{customer_phone}}</td><td>Email:</td><td>{{customer_email}}</td></tr>
-        <tr><td>Mã số thuế:</td><td colspan="3">{{customer_tax_code}}</td></tr>
-    </table>
+    <div style="margin-bottom: 25px;">
+        <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; border-left: 4px solid #000; padding-left: 10px; margin-bottom: 15px;">Bên đặt hàng (Client): {{customer_company}}</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 10pt; margin-left: 14px;">
+            <tr><td style="width: 25%; padding: 4px 0;">Người đại diện:</td><td style="width: 45%; padding: 4px 0;"><strong>{{customer_representative}}</strong></td><td style="width: 10%; padding: 4px 0;">Chức vụ:</td><td style="padding: 4px 0;">{{customer_position}}</td></tr>
+            <tr><td style="padding: 4px 0;">Địa chỉ:</td><td colspan="3" style="padding: 4px 0;">{{customer_address}}</td></tr>
+            <tr><td style="padding: 4px 0;">Điện thoại:</td><td style="padding: 4px 0;">{{customer_phone}}</td><td style="padding: 4px 0;">Email:</td><td style="padding: 4px 0;">{{customer_email}}</td></tr>
+            <tr><td style="padding: 4px 0;">Mã số thuế:</td><td colspan="3" style="padding: 4px 0;">{{customer_tax_code}}</td></tr>
+        </table>
+    </div>
 
-    <h3 style="font-size: 13pt; font-weight: bold;">Bên nhận đặt hàng (Bên B): Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-        <tr><td style="width: 25%;">Người đại diện pháp luật:</td><td style="width: 45%;"><strong>Ông Nguyễn Thanh Tùng</strong></td><td style="width: 10%;">Chức vụ:</td><td>Giám đốc</td></tr>
-        <tr><td>Địa chỉ liên hệ:</td><td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
-        <tr><td>Điện thoại:</td><td>+84 98 898 4554</td><td>Email:</td><td>info@tulie.vn</td></tr>
-        <tr><td>Mã số thuế:</td><td colspan="3">0110163102</td></tr>
-        <tr><td>Số tài khoản:</td><td>86683979</td><td colspan="2">tại TMCP Kỹ Thương Việt Nam (Techcombank) - Chi nhánh Trung tâm giao dịch Hội Sở</td></tr>
-    </table>
+    <div style="margin-bottom: 35px;">
+        <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; border-left: 4px solid #000; padding-left: 10px; margin-bottom: 15px;">Bên nhận đặt hàng (Provider): TULIE AGENCY</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 10pt; margin-left: 14px;">
+            <tr><td style="width: 25%; padding: 4px 0;">Người đại diện:</td><td style="width: 45%; padding: 4px 0;"><strong>Ông Nguyễn Thanh Tùng</strong></td><td style="width: 10%; padding: 4px 0;">Chức vụ:</td><td style="padding: 4px 0;">Giám đốc</td></tr>
+            <tr><td style="padding: 4px 0;">Địa chỉ:</td><td colspan="3" style="padding: 4px 0;">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Q. Hà Đông, TP. Hà Nội</td></tr>
+            <tr><td style="padding: 4px 0;">MST:</td><td colspan="3" style="padding: 4px 0;">0110163102</td></tr>
+        </table>
+    </div>
 
     <!-- ĐIỀU KHOẢN -->
-    <h3 style="font-size: 13pt; font-weight: bold;">Điều 1: Nội dung và giá trị đơn đặt hàng</h3>
-    <p style="margin-top: 5px;">1.1 Bên A cam kết đặt hàng các sản phẩm, dịch vụ như sau:</p>
+    <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-bottom: 15px;">Điều 1: Nội dung và giá trị đơn đặt hàng</h3>
+    <p style="font-size: 10pt; margin-bottom: 15px;">1.1 Bên A cam kết đặt hàng các sản phẩm, dịch vụ như sau:</p>
     
     {{quotation_items_table}}
 
-    <h3 style="font-size: 13pt; font-weight: bold; margin-top: 20px;">Điều 2: Giá trị hợp đồng và phương thức thanh toán</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-        <tr>
-            <td style="width: 5%; vertical-align: top;">2.1.</td>
-            <td>
-                Tổng giá trị thanh toán:<br/>
-                Bằng số: <strong>{{total_amount_number}} VNĐ</strong><br/>
-                Bằng chữ: <strong>{{amount_in_words}}</strong>
-            </td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">2.2.</td>
-            <td>Bên A thanh toán giá trị đơn hàng cho Bên B theo tiến độ sau:<br/> {{payment_schedule}}</td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">2.3.</td>
-            <td>Phương thức thanh toán: Bằng tiền mặt hoặc chuyển khoản vào tài khoản của Bên B như thông tin đã nêu ở phần đầu.</td>
-        </tr>
-    </table>
-
-    <h3 style="font-size: 13pt; font-weight: bold;">Điều 3: Thời gian và địa điểm giao hàng</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
-        <tr>
-            <td style="width: 5%; vertical-align: top;">3.1.</td>
-            <td><strong>Thời gian giao hàng:</strong> Thời gian thực hiện dự kiến theo kế hoạch đã thống nhất giữa hai bên.</td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">3.2.</td>
-            <td><strong>Địa điểm giao hàng:</strong> {{customer_address}} hoặc theo thỏa thuận khác.</td>
-        </tr>
-    </table>
-
-    <h3 style="font-size: 13pt; font-weight: bold;">Điều 4: Trách nhiệm các Bên</h3>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-        <tr>
-            <td style="width: 5%; vertical-align: top;">4.1.</td>
-            <td>Các bên cam kết thực hiện đầy đủ các điều khoản đã ghi trong đơn đặt hàng.</td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">4.2.</td>
-            <td>Bên B cam kết đảm bảo chất lượng và thời gian giao hàng theo yêu cầu của Bên A.</td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top;">4.3.</td>
-            <td>Bên A cam kết đảm bảo thanh toán đúng giá trị theo tiến độ ở điều 2.</td>
-        </tr>
-    </table>
+    <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px;">Điều 2: Giá trị hợp đồng và thanh toán</h3>
+    <div style="font-size: 10pt; border: 1px solid #000; padding: 20px; background-color: #fafafa;">
+        <p style="margin: 0 0 10px 0;">2.1. Tổng giá trị: <strong>{{total_amount_number}} VNĐ</strong></p>
+        <p style="margin: 0 0 15px 0;">(Bằng chữ: <em>{{amount_in_words}} đồng.</em>)</p>
+        <p style="margin: 0;">2.2. Phương thức thanh toán: Chuyển khoản qua ngân hàng:</p>
+        <div style="margin-top: 10px; padding-left: 15px; border-left: 2px solid #ddd;">
+            <p style="margin: 5px 0;">- Chủ tài khoản: <strong>CÔNG TY TNHH TULIE</strong></p>
+            <p style="margin: 5px 0;">- Số tài khoản: <strong>0110163102</strong> tại Techcombank</p>
+        </div>
+    </div>
 
     <!-- CHỮ KÝ -->
-    <table style="width: 100%; border-collapse: collapse; margin-top: 40px; text-align: center; page-break-inside: avoid;">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 60px; text-align: center; font-size: 10pt; page-break-inside: avoid;">
         <tr>
             <td style="width: 50%;">
-                <p style="font-weight: bold; margin: 0;">Đại diện Bên A</p>
-                <p style="margin: 0;">(Ký, ghi rõ họ tên và đóng dấu)</p>
+                <p style="font-weight: 800; text-transform: uppercase; margin: 0;">Đại diện Bên A</p>
+                <p style="margin: 5px 0 80px 0; font-size: 8pt; font-style: italic; color: #666;">(Ký và ghi rõ họ tên)</p>
+                <p style="font-weight: 800;">{{customer_representative}}</p>
             </td>
             <td style="width: 50%;">
-                <p style="font-weight: bold; margin: 0;">Đại diện Bên B</p>
-                <p style="margin: 0;">(Ký, ghi rõ họ tên và đóng dấu)</p>
-            </td>
-        </tr>
-        <tr>
-            <td style="height: 120px;"></td>
-            <td style="height: 120px;"></td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-weight: bold; margin: 0;">{{customer_representative}}</p>
-            </td>
-            <td>
-                <p style="font-weight: bold; margin: 0;">Ông Nguyễn Thanh Tùng</p>
+                <p style="font-weight: 800; text-transform: uppercase; margin: 0;">Đại diện Bên B</p>
+                <p style="margin: 5px 0 80px 0; font-size: 8pt; font-style: italic; color: #666;">(Ký và đóng dấu)</p>
+                <p style="font-weight: 800;">NGUYỄN THANH TÙNG</p>
             </td>
         </tr>
     </table>
-
 </div>
 `
