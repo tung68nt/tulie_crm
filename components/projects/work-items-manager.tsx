@@ -430,17 +430,19 @@ function WorkItemRow({
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-3">
                         {item.quotation && (
-                            <Badge variant="secondary" className="text-[10px] font-bold h-6 rounded-lg bg-zinc-100/50 text-zinc-600 border-none">
-                                <FileText className="w-3 h-3 mr-1" />{item.quotation.quotation_number}
+                            <Badge variant="secondary" className="text-[10px] font-bold h-8 flex items-center px-3 rounded-full bg-white border border-zinc-100 text-zinc-600 shadow-sm hover:border-zinc-300 transition-all">
+                                <FileText className="w-3 h-3 mr-1.5 text-zinc-400" />
+                                {item.quotation.quotation_number}
                             </Badge>
                         )}
                         {item.contract && (
-                            <Badge variant="secondary" className="text-[10px] font-bold h-6 rounded-lg bg-zinc-100/50 text-zinc-600 border-none">
-                                <FileSignature className="w-3 h-3 mr-1" />{item.contract.contract_number}
+                            <Badge variant="secondary" className="text-[10px] font-bold h-8 flex items-center px-3 rounded-full bg-white border border-zinc-100 text-zinc-600 shadow-sm hover:border-zinc-300 transition-all">
+                                <FileSignature className="w-3 h-3 mr-1.5 text-zinc-400" />
+                                {item.contract.contract_number}
                             </Badge>
                         )}
                         <Select value={item.status} onValueChange={onStatusChange}>
-                            <SelectTrigger className={cn("h-7 text-[11px] w-auto min-w-[130px] px-4 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider", statusOption?.color)} onClick={e => e.stopPropagation()}>
+                            <SelectTrigger className={cn("h-8 text-[11px] w-auto min-w-[130px] px-4 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-widest", statusOption?.color)} onClick={e => e.stopPropagation()}>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-zinc-100 shadow-xl">
@@ -462,7 +464,7 @@ function WorkItemRow({
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                                 <ListTodo className="w-3.5 h-3.5" />
                                 NỘI DUNG TRIỂN KHAI ({tasks.length})
                             </h5>
@@ -520,7 +522,7 @@ function WorkItemRow({
 
                         {/* Col 2: Delivery Links */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                                 <Link2 className="w-3.5 h-3.5" />
                                 LINK BÀN GIAO ({deliveryLinks.length})
                             </h5>
@@ -552,23 +554,23 @@ function WorkItemRow({
                                         value={newLinkLabel}
                                         onChange={e => setNewLinkLabel(e.target.value)}
                                         placeholder="Tên link..."
-                                        className="h-8 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50"
+                                        className="h-9 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50 rounded-xl"
                                     />
                                     <Input
                                         value={newLinkUrl}
                                         onChange={e => setNewLinkUrl(e.target.value)}
                                         placeholder="URL bàn giao..."
-                                        className="h-8 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50"
+                                        className="h-9 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50 rounded-xl"
                                         onKeyDown={e => e.key === 'Enter' && handleAddLink()}
                                     />
                                 </div>
                                 <Button
                                     size="sm"
-                                    className="w-full h-8 bg-zinc-900 text-white hover:bg-zinc-800 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
+                                    className="w-full h-9 bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98]"
                                     onClick={handleAddLink}
                                     disabled={isPending || !newLinkLabel.trim() || !newLinkUrl.trim()}
                                 >
-                                    <Plus className="w-3.5 h-3.5 mr-1.5" />
+                                    <Plus className="w-3.5 h-3.5 mr-2" />
                                     Thêm tài nguyên
                                 </Button>
                             </div>
@@ -576,7 +578,7 @@ function WorkItemRow({
 
                         {/* Col 3: Required Documents */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center justify-between gap-2">
+                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <ClipboardCheck className="w-3.5 h-3.5" />
                                     THỦ TỤC CHỨNG TỪ
@@ -584,10 +586,10 @@ function WorkItemRow({
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold p-1 px-2 rounded-lg"
+                                    className="h-7 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold px-3 rounded-full border border-blue-100 uppercase tracking-wider"
                                     onClick={() => setShowBundleDialog(true)}
                                 >
-                                    <Plus className="w-3 h-3 mr-1" />
+                                    <Plus className="w-3 h-3 mr-1.5" />
                                     {item.bundle_id ? 'Thay đổi' : 'Chọn bộ chứng từ'}
                                 </Button>
                             </h5>

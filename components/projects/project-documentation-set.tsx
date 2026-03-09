@@ -49,7 +49,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                         </div>
                     </div>
                 </div>
-                <Badge variant="secondary" className="bg-zinc-100 text-zinc-900 border-none font-bold text-[10px] rounded-full px-3 h-6 uppercase tracking-wider">
+                <Badge variant="secondary" className="bg-zinc-100 text-zinc-900 border-none font-bold text-[10px] rounded-full px-4 h-8 uppercase tracking-widest flex items-center">
                     Full Documents
                 </Badge>
             </CardHeader>
@@ -71,7 +71,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                     </div>
                                     <div className="min-w-0">
                                         <p className="font-bold text-sm text-zinc-900 truncate">{doc.title}</p>
-                                        <p className="text-[10px] text-zinc-400 font-medium truncate uppercase tracking-tighter">
+                                        <p className="text-[10px] text-zinc-400 font-bold truncate uppercase tracking-widest mt-0.5">
                                             {doc.workItemTitle}
                                         </p>
                                     </div>
@@ -85,7 +85,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                         </div>
                                     )}
                                     <Badge variant="secondary" className={cn(
-                                        "h-6 rounded-full px-3 text-[10px] font-bold border-none",
+                                        "h-8 rounded-full px-4 text-[10px] font-bold border-none uppercase tracking-widest flex items-center",
                                         doc.status === 'signed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                                     )}>
                                         <span className="w-1.5 h-1.5 rounded-full mr-2 bg-current" />

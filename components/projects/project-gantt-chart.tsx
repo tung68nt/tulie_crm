@@ -85,7 +85,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                 <div className="min-w-[800px] relative">
                     {/* Gantt Header - Days */}
                     <div className="flex border-b border-zinc-50 bg-zinc-50/50">
-                        <div className="w-[200px] shrink-0 p-3 border-r border-zinc-100 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <div className="w-[200px] shrink-0 p-3 border-r border-zinc-100 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                             ĐẦU VIỆC
                         </div>
                         <div className="flex-1 flex">
@@ -165,19 +165,19 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
             <div className="p-4 bg-zinc-50/50 border-t border-zinc-50 flex items-center gap-6 justify-center">
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Hoàn thành</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hoàn thành</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Đang triển khai</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Đang triển khai</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Đang vướng</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Đang vướng</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Chưa làm</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Chưa làm</span>
                 </div>
             </div>
         </Card>
