@@ -151,12 +151,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             >
                                 Tổng quan dự án
                             </TabsTrigger>
-                            <TabsTrigger
-                                value="details"
-                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-black data-[state=active]:bg-transparent rounded-none px-0 py-3 h-auto font-bold text-[11px] uppercase tracking-[0.2em] text-zinc-400 data-[state=active]:text-black transition-all"
-                            >
-                                Chi tiết dữ liệu
-                            </TabsTrigger>
                         </TabsList>
                     </div>
 
@@ -174,7 +168,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         Cập nhật hồ sơ
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[700px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl">
+                                <DialogContent className="sm:max-w-[700px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
                                     <div className="bg-zinc-900 text-white p-8">
                                         <DialogHeader>
                                             <DialogTitle className="text-2xl font-bold tracking-tight">Cập nhật hồ sơ khách hàng</DialogTitle>
@@ -327,77 +321,6 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
-                    </TabsContent>
-
-                    <TabsContent value="details" className="pt-4 outline-none">
-                        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
-                            <div className="px-8 py-6 border-b border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-                                <h3 className="text-xs font-bold uppercase tracking-wider">Hệ thống hồ sơ & Chứng từ</h3>
-                            </div>
-                            <div className="p-0 overflow-x-auto">
-                                <table className="w-full text-left border-collapse text-[11px]">
-                                    <thead>
-                                        <tr className="bg-zinc-900 border-b border-zinc-800">
-                                            <th className="py-5 px-8 font-black text-white uppercase tracking-[0.2em] text-[10px]">Phân loại hồ sơ / <span className="opacity-40">Document Type</span></th>
-                                            <th className="py-5 px-6 font-black text-white uppercase tracking-[0.2em] text-[10px] text-center">Trạng thái / <span className="opacity-40">Status</span></th>
-                                            <th className="py-5 px-8 font-black text-white uppercase tracking-[0.2em] text-[10px] text-right">Xem kết quả / <span className="opacity-40">Review</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-zinc-100">
-                                        <tr className="hover:bg-zinc-50/30 transition-colors group">
-                                            <td className="py-8 px-8">
-                                                <div className="flex items-center gap-6">
-                                                    <div className="h-12 w-12 rounded-2xl bg-black text-white flex items-center justify-center shadow-xl shadow-black/10 transition-transform group-hover:scale-110">
-                                                        <FileSignature className="w-6 h-6" />
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-black text-zinc-950 uppercase tracking-tight text-sm">Bộ báo giá dịch vụ & Đề nghị hợp tác</div>
-                                                        <div className="text-[10px] text-zinc-400 font-bold mt-1 tracking-widest">REF #{quotation.quotation_number} • ISSUED {formatDate(quotation.created_at)}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="py-6 px-6 text-center">
-                                                {getStatusBadge(quotation.status)}
-                                            </td>
-                                            <td className="py-6 px-8 text-right">
-                                                <Button size="sm" variant="outline" className="h-9 rounded-xl border-zinc-200 px-4 font-bold text-[10px] uppercase group-hover:bg-black group-hover:text-white group-hover:border-black transition-all" asChild>
-                                                    <a href={`/quote/${quotation.token}`} target="_blank" rel="noopener noreferrer">
-                                                        Xem chi tiết
-                                                    </a>
-                                                </Button>
-                                            </td>
-                                        </tr>
-                                        {/* Placeholder Docs */}
-                                        {[
-                                            { title: 'Hợp đồng kinh tế dự án', icon: <FilePenLine className="w-5 h-5" />, status: 'draft', id: 'CON-001' },
-                                            { title: 'Biên bản nghiệm thu bàn giao', icon: <UserCheck className="w-5 h-5" />, status: 'pending', id: 'REP-001' },
-                                        ].map((doc, i) => (
-                                            <tr key={i} className="hover:bg-zinc-50/30 transition-colors opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                                                <td className="py-6 px-8">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="h-10 w-10 rounded-xl bg-zinc-100 text-zinc-400 flex items-center justify-center border border-zinc-200">
-                                                            {doc.icon}
-                                                        </div>
-                                                        <div>
-                                                            <div className="font-bold uppercase tracking-tight text-zinc-500">{doc.title}</div>
-                                                            <div className="text-[9px] text-zinc-400 font-bold mt-0.5 tracking-wider">{doc.id} • Đợi hoàn tất dự án</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="py-6 px-6 text-center">
-                                                    {getStatusBadge(doc.status)}
-                                                </td>
-                                                <td className="py-6 px-8 text-right">
-                                                    <Button size="sm" variant="ghost" className="h-9 rounded-xl px-4 font-bold text-[10px] uppercase text-zinc-300 pointer-events-none" disabled>
-                                                        Chưa sẵn sàng
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </TabsContent>
