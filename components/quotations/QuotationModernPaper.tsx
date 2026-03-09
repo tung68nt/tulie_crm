@@ -326,76 +326,42 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                     </div>
                 </div>
 
-                {/* 6. SIGNATURE & BANKING */}
-                <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-20">
-                    <div className="space-y-8">
+                {/* 6. BANKING INFO (Company Only) */}
+                <div className="mt-10 max-w-md">
+                    <div className="space-y-6">
                         <div className="space-y-4">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
-                                01. Tài khoản công ty / <span className="text-black">Company Account</span>
+                            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">
+                                Thông tin thanh toán / <span className="text-black">Payment Details</span>
                             </h5>
-                            <div className="grid grid-cols-1 gap-2 text-[11px] font-bold">
-                                <div className="flex justify-between pb-1 border-b border-zinc-100">
-                                    <span className="text-zinc-400">NGÂN HÀNG</span>
-                                    <span className="text-black">{bankInfo.company.bank}</span>
+                            <div className="grid grid-cols-1 gap-3 text-[11px] font-medium p-6 bg-zinc-50 rounded-2xl border border-zinc-100">
+                                <div className="flex justify-between items-center py-2 border-b border-zinc-100/50">
+                                    <span className="text-zinc-400 uppercase text-[9px]">Ngân hàng / Bank</span>
+                                    <span className="text-black font-bold">{bankInfo.company.bank}</span>
                                 </div>
-                                <div className="flex justify-between pb-1 border-b border-zinc-100">
-                                    <span className="text-zinc-400">SỐ TÀI KHOẢN</span>
-                                    <span className="text-black text-sm tracking-wider">{bankInfo.company.no}</span>
+                                <div className="flex justify-between items-center py-2 border-b border-zinc-100/50">
+                                    <span className="text-zinc-400 uppercase text-[9px]">Số tài khoản / Account No.</span>
+                                    <span className="text-black font-black text-sm tracking-widest">{bankInfo.company.no}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">CHỦ TÀI KHOẢN</span>
-                                    <span className="text-black">{bankInfo.company.name}</span>
+                                <div className="flex justify-between items-center py-2">
+                                    <span className="text-zinc-400 uppercase text-[9px]">Chủ tài khoản / Account Name</span>
+                                    <span className="text-black font-bold uppercase">{bankInfo.company.name}</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">
-                                02. Tài khoản cá nhân / <span className="text-black">Personal Account</span>
-                            </h5>
-                            <div className="grid grid-cols-1 gap-2 text-[11px] font-bold">
-                                <div className="flex justify-between pb-1 border-b border-zinc-100">
-                                    <span className="text-zinc-400">NGÂN HÀNG</span>
-                                    <span className="text-black">{bankInfo.personal.bank}</span>
-                                </div>
-                                <div className="flex justify-between pb-1 border-b border-zinc-100">
-                                    <span className="text-zinc-400">SỐ TÀI KHOẢN</span>
-                                    <span className="text-black text-sm tracking-wider">{bankInfo.personal.no}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-zinc-400">CHỦ TÀI KHOẢN</span>
-                                    <span className="text-black">{bankInfo.personal.name}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-10 text-center">
-                        <div className="space-y-1">
-                            <p className="text-[11px] font-black uppercase tracking-tight mb-20 text-zinc-400">Đại diện khách hàng</p>
-                            <div className="w-full h-[1px] bg-zinc-200 mb-2" />
-                            <p className="text-[10px] font-bold text-black uppercase">Chữ ký xác nhận</p>
-                        </div>
-                        <div className="space-y-1">
-                            <p className="text-[11px] font-black uppercase tracking-tight mb-20">Phê duyệt / Tulie Agency</p>
-                            <div className="w-full h-[1px] bg-black mb-2" />
-                            <p className="text-[11px] font-black text-black mt-2 uppercase">Nguyễn Đức Tùng</p>
-                            <p className="text-[9px] text-zinc-400 font-bold uppercase italic">CEO & Founder</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* 7. COPYRIGHT FOOTER */}
-            <div className="p-10 border-t-2 border-black flex justify-between items-center bg-zinc-50 print:bg-zinc-50">
+            <div className="p-10 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50 print:bg-zinc-50">
                 <div className="flex items-center gap-6">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300">Tulie Agency © 2026</span>
-                    <span className="w-1 h-3 bg-zinc-200" />
-                    <span className="text-[9px] font-bold text-zinc-400">Business Management System</span>
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-300">Tulie Agency © {new Date().getFullYear()}</span>
+                    <span className="w-px h-3 bg-zinc-200" />
+                    <span className="text-[9px] font-medium text-zinc-400 uppercase tracking-tight">Global Creative Standards</span>
                 </div>
-                <div className="flex items-center gap-4 text-[9px] font-black text-zinc-950 uppercase tracking-[0.2em]">
+                <div className="flex items-center gap-4 text-[9px] font-bold text-zinc-950 uppercase tracking-[0.2em]">
                     <Globe className="h-4 w-4 text-zinc-200" />
-                    <span className="opacity-80">Global Creative Standards</span>
+                    <span className="opacity-60">tulie.vn</span>
                 </div>
             </div>
 

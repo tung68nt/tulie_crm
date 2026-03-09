@@ -49,11 +49,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         phone: '',
         position: ''
     })
-    const [layout, setLayout] = useState<'premium' | 'formal' | 'modern'>('modern')
+    const [layout, setLayout] = useState<'basic' | 'modern'>('modern')
 
     const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
-            toast.error("vui lòng nhập tên và số điện thoại")
+            toast.error("Vui lòng nhập tên và số điện thoại")
             return
         }
 
@@ -61,12 +61,12 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         try {
             const res = await updateQuotationStatus(quotation.id, 'accepted', confirmer)
             if (res.success) {
-                toast.success("đã xác nhận chấp nhận báo giá thành công")
+                toast.success("Đã xác nhận chấp nhận báo giá thành công")
                 setShowConfirm(false)
                 // Optionally reload or let handle the parent update
                 window.location.reload()
             } else {
-                toast.error(res.error || "lỗi khi xác nhận")
+                toast.error(res.error || "Lỗi khi xác nhận")
             }
         } finally {
             setIsSubmitting(false)
@@ -75,7 +75,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
     const handleRejectSubmit = async () => {
         if (!rejectReason.trim()) {
-            toast.error("vui lòng nhập lý do từ chối")
+            toast.error("Vui lòng nhập lý do từ chối")
             return
         }
 
@@ -83,11 +83,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         try {
             const res = await updateQuotationStatus(quotation.id, 'rejected', { reason: rejectReason })
             if (res.success) {
-                toast.success("đã gửi từ chối báo giá")
+                toast.success("Đã gửi từ chối báo giá")
                 setShowReject(false)
                 window.location.reload()
             } else {
-                toast.error(res.error || "lỗi khi xử lý")
+                toast.error(res.error || "Lỗi khi xử lý")
             }
         } finally {
             setIsSubmitting(false)
@@ -165,19 +165,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         }
     }
 
-    const initialPdfData = {
-        ...quotation,
-        brandConfig: brandConfig,
-        subtotal: quotation.subtotal || subtotalNet,
-        vat_amount: quotation.vat_amount || vatAmount,
-        total_amount: quotation.total_amount || finalAmount,
-        amount_in_words: readNumberToWords(finalAmount),
-    }
-
     const handleDownloadPDF = async () => {
         if (!printRef.current) return;
         setIsDownloading(true);
-        toast.info("đang khởi tạo file pdf chất lượng cao...");
+        toast.info("Đang khởi tạo file PDF chất lượng cao...");
 
         try {
             const html2canvas = (await import('html2canvas')).default;
@@ -190,7 +181,6 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                 logging: false,
                 windowWidth: 1200, // Fixed width for consistent layout
                 onclone: (clonedDoc) => {
-                    // Force print styles or hide things in clone if needed
                     const el = clonedDoc.querySelector('.quotation-inner-paper') as HTMLElement;
                     if (el) {
                         el.style.boxShadow = 'none';
@@ -210,118 +200,97 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-            // Handle multi-page if needed, but for now simple 1-page fit or split
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
             pdf.save(`Bao_gia_${quotation.quotation_number}.pdf`);
-            toast.success("đã tải báo giá thành công");
+            toast.success("Đã tải báo giá thành công");
         } catch (error) {
             console.error('PDF Generation Error:', error);
-            toast.error("lỗi khi tạo file pdf, vui lòng thử In nhanh (Ctrl+P)");
+            toast.error("Lỗi khi tạo file PDF, vui lòng thử In nhanh (Ctrl+P)");
         } finally {
             setIsDownloading(false);
         }
     };
 
     return (
-        <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
+        <div className="quotation-page min-h-screen bg-neutral-100 py-8 pb-32 font-sans text-neutral-900">
             <div
                 ref={printRef}
                 className="quotation-paper-wrapper mx-auto relative w-full max-w-[210mm]"
             >
                 {/* Main Paper Content */}
-                <div className="bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200 quotation-inner-paper">
+                <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-neutral-200 quotation-inner-paper">
                     {layout === 'modern' ? (
                         <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
-                    ) : layout === 'premium' ? (
-                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
                     ) : (
-                        <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
+                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
                     )}
                 </div>
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4  z-50 print:hidden overflow-hidden">
-                <div className="container max-w-4xl mx-auto">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div className="text-sm text-slate-700 hidden sm:block font-medium">
-                            Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
-                        </div>
-                        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <div className="bg-muted p-1 rounded-lg inline-flex items-center gap-1">
-                                <button
-                                    onClick={() => setLayout('modern')}
-                                    className={cn(
-                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
-                                        layout === 'modern' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
-                                    )}
+            <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl z-50 print:hidden">
+                <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-3 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    {/* Layout Switcher - Refined Tabs */}
+                    <div className="bg-neutral-100 p-1 rounded-xl flex items-center w-full sm:w-auto">
+                        <button
+                            onClick={() => setLayout('modern')}
+                            className={cn(
+                                "flex-1 sm:flex-none px-6 py-2 text-[11px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                                layout === 'modern' ? "bg-white text-black shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-black"
+                            )}
+                        >
+                            Modern
+                        </button>
+                        <button
+                            onClick={() => setLayout('basic')}
+                            className={cn(
+                                "flex-1 sm:flex-none px-6 py-2 text-[11px] font-bold rounded-lg transition-all uppercase tracking-wider",
+                                layout === 'basic' ? "bg-white text-black shadow-sm ring-1 ring-black/5" : "text-neutral-500 hover:text-black"
+                            )}
+                        >
+                            Basic
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                        <Button variant="outline" size="sm" className="h-10 rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-bold px-4" onClick={handleDownloadPDF} disabled={isDownloading}>
+                            {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                            Tải file
+                        </Button>
+                        <Button variant="outline" size="sm" className="h-10 rounded-xl border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-bold px-4" onClick={handlePrint}>
+                            <Printer className="mr-2 h-4 w-4" />
+                            In
+                        </Button>
+
+                        {quotation.status !== 'accepted' && quotation.status !== 'rejected' ? (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-10 rounded-xl text-neutral-500 hover:text-red-600 hover:bg-red-50 px-4"
+                                    onClick={() => setShowReject(true)}
+                                    disabled={isSubmitting}
                                 >
-                                    Modern
-                                </button>
-                                <button
-                                    onClick={() => setLayout('premium')}
-                                    className={cn(
-                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
-                                        layout === 'premium' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
-                                    )}
-                                >
-                                    Premium
-                                </button>
-                                <button
-                                    onClick={() => setLayout('formal')}
-                                    className={cn(
-                                        "px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase tracking-widest",
-                                        layout === 'formal' ? "bg-black text-white shadow-sm" : "hover:bg-zinc-200 text-zinc-500"
-                                    )}
-                                >
-                                    Formal
-                                </button>
-                            </div>
-                            {layout === 'formal' ? (
-                                <DocumentDownloadButton
-                                    type="quotation"
-                                    documentId={quotation.id}
-                                    customerId={quotation.customer_id}
-                                    variant="outline"
-                                    className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
-                                    label="Tải PDF"
-                                    initialData={quotation}
-                                />
-                            ) : (
-                                <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold" onClick={handleDownloadPDF} disabled={isDownloading}>
-                                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
-                                    {isDownloading ? 'Đang tạo...' : 'Tải PDF'}
+                                    Từ chối
                                 </Button>
-                            )}
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
-                                <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                In nhanh
-                            </Button>
-                            {quotation.status !== 'accepted' && quotation.status !== 'rejected' ? (
-                                <>
-                                    <Button
-                                        variant="ghost"
-                                        className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600"
-                                        onClick={() => setShowReject(true)}
-                                        disabled={isSubmitting}
-                                    >
-                                        Từ chối
-                                    </Button>
-                                    <Button
-                                        className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 font-semibold text-[13px] sm:text-sm px-6"
-                                        onClick={() => setShowConfirm(true)}
-                                        disabled={isSubmitting}
-                                    >
-                                        Xác nhận
-                                    </Button>
-                                </>
-                            ) : (
-                                <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} font-semibold text-sm`}>
-                                    {quotation.status === 'accepted' ? 'Đã được chấp nhận' : 'Đã bị từ chối'}
-                                </div>
-                            )}
-                        </div>
+                                <Button
+                                    size="sm"
+                                    className="h-10 rounded-xl bg-black text-white hover:bg-neutral-800 font-bold px-6 shadow-lg shadow-black/10"
+                                    onClick={() => setShowConfirm(true)}
+                                    disabled={isSubmitting}
+                                >
+                                    Chấp nhận
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className={cn(
+                                "h-10 px-4 flex items-center gap-2 rounded-xl border font-bold text-xs uppercase tracking-wider",
+                                quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+                            )}>
+                                {quotation.status === 'accepted' ? 'Đã duyệt' : 'Đã từ chối'}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -335,7 +304,6 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                         margin: 0;
                     }
                     
-                    /* Force total overflow and height to prevent single-page crop */
                     html, body, .quotation-page, .quotation-paper-wrapper, .quotation-inner-paper {
                         overflow: visible !important;
                         height: auto !important;
@@ -350,89 +318,67 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                         border: none !important;
                         width: 100% !important;
                         max-width: none !important;
+                        border-radius: 0 !important;
                     }
 
-                    /* Important: ensure the content inside QuotationPaper is well-spaced for paper */
-                    .quotation-paper-content {
-                        padding: 10mm 15mm !important;
-                    }
-                    
-                    /* Hide non-print UI elements */
                     .fixed, .print\\:hidden, [data-sonner-toaster], #headlessui-portal-root {
                         display: none !important;
                     }
                     
-                    /* Header Scaling */
-                    .text-\\[42px\\] { font-size: 32pt !important; }
-                    .text-\\[58px\\] { font-size: 36pt !important; }
-                    .text-\\[18px\\] { font-size: 14pt !important; }
-                    .text-\\[24px\\] { font-size: 17pt !important; }
-                    .leading-\\[0\\.8\\] { line-height: 0.8 !important; }
-                    
-                    /* Proposal Spacing */
-                    .relative.pl-12 { padding-left: 3rem !important; }
-                    
-                    /* Break control for sections and rows */
-                    .proposal-section, .rounded-3xl, .rounded-2xl, tr {
+                    * {
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
                     }
-
-                    /* Typography scaling for A4 */
-                    .text-xl { font-size: 1.25rem !important; }
-                    .text-lg { font-size: 1.125rem !important; }
-                    .text-sm { font-size: 10pt !important; }
-                    .text-xs { font-size: 8pt !important; }
-                    .text-white { color: white !important; -webkit-text-fill-color: white !important; }
-                    .text-zinc-400 { color: #a1a1aa !important; }
                 }
                 ` }} />
 
             {/* Confirmation Dialog */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <DialogContent>
+                <DialogContent className="rounded-3xl border-neutral-200">
                     <DialogHeader>
-                        <DialogTitle>Xác nhận chấp nhận báo giá</DialogTitle>
-                        <DialogDescription>
-                            Vui lòng kiểm tra lại thông tin xác nhận.
+                        <DialogTitle className="text-xl font-bold uppercase tracking-tight">Xác nhận chấp nhận báo giá</DialogTitle>
+                        <DialogDescription className="text-sm">
+                            Vui lòng kiểm tra lại thông tin xác nhận trước khi gửi.
                         </DialogDescription>
                     </DialogHeader>
-                    {/* ... Inputs ... */}
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-6 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Họ và tên <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="name" className="text-xs font-bold uppercase text-neutral-500">Họ và tên <span className="text-red-500">*</span></Label>
                             <Input
                                 id="name"
                                 value={confirmer.name}
                                 onChange={(e) => setConfirmer({ ...confirmer, name: e.target.value })}
                                 placeholder="Nhập họ tên của bạn"
+                                className="h-12 rounded-xl border-neutral-200"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="phone">Số điện thoại <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="phone" className="text-xs font-bold uppercase text-neutral-500">Số điện thoại <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="phone"
                                     value={confirmer.phone}
                                     onChange={(e) => setConfirmer({ ...confirmer, phone: e.target.value })}
                                     placeholder="VD: 090..."
+                                    className="h-12 rounded-xl border-neutral-200"
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email" className="text-xs font-bold uppercase text-neutral-500">Email</Label>
                                 <Input
                                     id="email"
                                     value={confirmer.email}
                                     onChange={(e) => setConfirmer({ ...confirmer, email: e.target.value })}
                                     placeholder="email@company.com"
+                                    className="h-12 rounded-xl border-neutral-200"
                                 />
                             </div>
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>Hủy</Button>
-                        <Button onClick={handleConfirm} className="bg-black text-white hover:bg-slate-800" disabled={isSubmitting}>
-                            {isSubmitting ? 'Đang xử lý...' : 'Xác nhận'}
+                    <DialogFooter className="gap-2">
+                        <Button variant="outline" className="h-12 rounded-xl border-neutral-200 font-bold px-6" onClick={() => setShowConfirm(false)} disabled={isSubmitting}>Hủy</Button>
+                        <Button onClick={handleConfirm} className="h-12 rounded-xl bg-black text-white hover:bg-neutral-800 font-bold px-8 shadow-lg shadow-black/10" disabled={isSubmitting}>
+                            {isSubmitting ? 'Đang xử lý...' : 'Xác nhận ngay'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -440,33 +386,33 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             {/* Rejection Dialog */}
             <Dialog open={showReject} onOpenChange={setShowReject}>
-                <DialogContent>
+                <DialogContent className="rounded-3xl border-neutral-200">
                     <DialogHeader>
-                        <DialogTitle>Lý do từ chối báo giá</DialogTitle>
-                        <DialogDescription>
-                            Chúng tôi rất tiếc vì báo giá này chưa đáp ứng được yêu cầu. Vui lòng cho biết lý do để chúng tôi cải thiện.
+                        <DialogTitle className="text-xl font-bold uppercase tracking-tight">Từ chối báo giá</DialogTitle>
+                        <DialogDescription className="text-sm">
+                            Vui lòng cho biết lý do để chúng tôi có thể cải thiện dịch vụ tốt hơn.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto px-1">
+                    <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="reason">Lý do từ chối <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="reason" className="text-xs font-bold uppercase text-neutral-500">Lý do từ chối <span className="text-red-500">*</span></Label>
                             <textarea
                                 id="reason"
-                                className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex min-h-[120px] w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm ring-offset-white placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
-                                placeholder="VD: Giá chưa phù hợp, Cần bổ sung thêm hạng mục, Đã chọn đơn vị khác..."
+                                placeholder="VD: Giá chưa phù hợp, Cần bổ sung thêm hạng mục..."
                             />
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowReject(false)} disabled={isSubmitting}>Hủy</Button>
-                        <Button onClick={handleRejectSubmit} variant="destructive" disabled={isSubmitting}>
+                    <DialogFooter className="gap-2">
+                        <Button variant="outline" className="h-12 rounded-xl border-neutral-200 font-bold px-6" onClick={() => setShowReject(false)} disabled={isSubmitting}>Hủy</Button>
+                        <Button onClick={handleRejectSubmit} className="h-12 rounded-xl bg-red-600 text-white hover:bg-red-700 font-bold px-8" disabled={isSubmitting}>
                             {isSubmitting ? 'Đang gửi...' : 'Gửi từ chối'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div >
+        </div>
     )
 }

@@ -372,8 +372,12 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                     </div>
                     <div className="space-y-1">
                         <div className="h-0.5 w-40 bg-zinc-200 mx-auto" />
-                        <p className="text-[11px] font-bold text-zinc-950 uppercase">Nguyễn Đức Tùng</p>
-                        <p className="text-[9px] text-slate-400 font-bold italic">CEO & Founder</p>
+                        <p className="text-[11px] font-bold text-zinc-950 uppercase tracking-tight">
+                            {quotation.signer_name || brandConfig?.ceo_name || 'Nguyễn Đức Tùng'}
+                        </p>
+                        <p className="text-[9px] text-slate-400 font-bold italic">
+                            {quotation.signer_title || brandConfig?.ceo_title || 'CEO & Founder'}
+                        </p>
                     </div>
                 </div>
             </div>
