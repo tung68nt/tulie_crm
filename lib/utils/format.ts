@@ -123,7 +123,6 @@ export function slugify(text: string): string {
         .replace(/(^-|-$)+/g, '')
 }
 
-// Number to Vietnamese text
 const UNITS = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
 const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
 
@@ -139,7 +138,6 @@ function readThreeDigits(n: number, readZero: boolean): string {
     }
 
     if (b === 0) {
-        if (readZero && a === 0 && c > 0) result += ''; // Special case
         if (a > 0 && c > 0) result += ' linh';
     } else if (b === 1) {
         result += ' mười';
@@ -149,6 +147,7 @@ function readThreeDigits(n: number, readZero: boolean): string {
 
     if (c > 0) {
         if (b > 0 && c === 1) result += ' mốt';
+        else if (b > 0 && c === 4) result += ' tư'; // Optional: "bốn" or "tư" -> we use "tư"
         else if (b > 0 && c === 5) result += ' lăm';
         else result += ' ' + DIGITS[c];
     }
@@ -163,18 +162,26 @@ export function readNumberToWords(n: number): string {
     let result = '';
     let unitIndex = 0;
 
+    // Special case for millions, billions without odd numbers
+    if (number === 0) return 'Không đồng';
+
+    // Xử lý các chunks 3 chữ số
     while (number > 0) {
         const chunk = number % 1000;
         if (chunk > 0) {
-            const chunkText = readThreeDigits(chunk, number >= 1000 && chunk < 100);
+            // Need to read leading zeros (e.g., 012 -> "không trăm mười hai")
+            // ONLY if there are higher magnitudes (number >= 1000)
+            const chunkText = readThreeDigits(chunk, n >= Math.pow(1000, unitIndex + 1));
             result = chunkText + ' ' + UNITS[unitIndex] + ' ' + result;
         }
         number = Math.floor(number / 1000);
         unitIndex++;
     }
 
-    // Capitalize first letter and add suffix
-    result = result.trim();
+    // Xóa các khoảng trắng lặp
+    result = result.replace(/\s+/g, ' ').trim();
+
+    // Viết hoa chữ cái đầu và thêm hậu tố
     result = result.charAt(0).toUpperCase() + result.slice(1);
-    return result + ' đồng';
+    return result + ' đồng./.';
 }

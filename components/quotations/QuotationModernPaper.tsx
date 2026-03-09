@@ -290,7 +290,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 <span className="font-black text-2xl text-slate-950">{formatCurrency(finalAmount)}</span>
                             </div>
                             <div className="text-right pt-2 text-[10px] italic text-slate-500 font-medium">
-                                {readNumberToWords(finalAmount)}./.
+                                Bằng chữ: {readNumberToWords(finalAmount)}
                             </div>
                         </div>
                     </div>
@@ -338,13 +338,13 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                 <span className="text-slate-500 italic">Chủ tài khoản:</span>
                                 <span className="font-bold text-black uppercase">{quotation.bank_account_name || brandConfig?.bank_account_name || "CÔNG TY TNHH TULIE"}</span>
                             </div>
+                            <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                <span className="text-slate-500 italic">Chi nhánh:</span>
+                                <span className="text-black font-medium">{quotation.bank_branch || brandConfig?.bank_branch || "Sở Giao Dịch"}</span>
+                            </div>
                         </div>
 
-                        <div className="mt-auto pt-8 flex flex-col items-center">
-                            <div className="w-16 h-1 w-1 bg-slate-900 rounded-full mb-4"></div>
-                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-1">Authenticated by</p>
-                            <p className="text-[12px] font-black uppercase text-black">Nguyễn Đức Tùng</p>
-                        </div>
+                        <div className="mt-auto pt-8"></div>
                     </div>
                 </div>
             </div>

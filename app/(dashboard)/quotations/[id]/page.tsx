@@ -233,22 +233,6 @@ export default function QuotationDetailPage() {
 
                         <Separator orientation="vertical" className="h-8 mx-1 hidden sm:block" />
 
-                        <DocumentDownloadButton
-                            type="quotation"
-                            documentId={quotation.id}
-                            customerId={quotation.customer_id}
-                            variant="outline"
-                            size="default"
-                            className="h-10 px-4 font-semibold gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
-                            label="Tải PDF"
-                            initialData={quotation}
-                        />
-
-                        <Button variant="outline" onClick={() => window.print()} className="h-10 px-4 font-semibold gap-2">
-                            <Printer className="h-4 w-4" />
-                            In nhanh
-                        </Button>
-
                         <Button variant="outline" asChild className="h-10 px-4 font-semibold">
                             <Link href={`/quotations/${quotation.id}/edit`} className="flex items-center gap-2">
                                 <Edit className="h-4 w-4" />
@@ -282,18 +266,6 @@ export default function QuotationDetailPage() {
                         </TabsList>
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={cn(
-                                    "h-8 px-3 font-semibold gap-2 transition-all",
-                                    layout === 'modern' ? "bg-primary/5 border-primary/20 text-primary" : "border-slate-200"
-                                )}
-                                onClick={() => setLayout(layout === 'modern' ? 'basic' : 'modern')}
-                            >
-                                <Layout className="h-3.5 w-3.5" />
-                                {layout === 'modern' ? 'Mẫu Hiện đại' : 'Mẫu Cơ bản'}
-                            </Button>
                         </div>
                     </div>
 
@@ -716,7 +688,56 @@ export default function QuotationDetailPage() {
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="preview">
+                    <TabsContent value="preview" className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            {/* Layout Toggle - Segmented Control */}
+                            <div className="bg-zinc-100/80 p-1 rounded-xl h-11 flex items-center gap-1 border border-zinc-200/50 w-full max-w-[300px]">
+                                <button
+                                    onClick={() => setLayout('modern')}
+                                    className={cn(
+                                        "flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all h-full",
+                                        layout === 'modern'
+                                            ? "bg-white text-black shadow-sm"
+                                            : "text-zinc-500 hover:text-zinc-900"
+                                    )}
+                                >
+                                    <Layout className="h-3.5 w-3.5" />
+                                    Mẫu Hiện đại
+                                </button>
+                                <button
+                                    onClick={() => setLayout('basic')}
+                                    className={cn(
+                                        "flex-1 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all h-full",
+                                        layout === 'basic'
+                                            ? "bg-white text-black shadow-sm"
+                                            : "text-zinc-500 hover:text-zinc-900"
+                                    )}
+                                >
+                                    <FileText className="h-3.5 w-3.5" />
+                                    Mẫu Cơ bản
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                {layout === 'modern' ? (
+                                    <Button variant="outline" className="h-10 px-4 font-semibold gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10" onClick={() => window.print()}>
+                                        Tải Mẫu Hiện đại
+                                    </Button>
+                                ) : (
+                                    <DocumentDownloadButton
+                                        type="quotation"
+                                        documentId={quotation.id}
+                                        customerId={quotation.customer_id}
+                                        variant="outline"
+                                        size="default"
+                                        className="h-10 px-4 font-semibold gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+                                        label="Tải Mẫu Cơ bản"
+                                        initialData={quotation}
+                                    />
+                                )}
+                            </div>
+                        </div>
+
                         <div className="flex justify-center bg-slate-200/50 rounded-2xl p-4 md:p-12 overflow-x-auto">
                             <div className="w-full max-w-[210mm] bg-white shadow-2xl quotation-inner-paper overflow-hidden">
                                 {layout === 'modern' ? (

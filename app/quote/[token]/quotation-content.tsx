@@ -616,7 +616,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                         <span className="font-bold text-lg text-slate-900">{formatCurrency(finalAmount)}</span>
                                     </div>
                                     <div className="text-right pt-2 text-[10px] italic text-slate-500">
-                                        {readNumberToWords(finalAmount)}./.
+                                        Bằng chữ: {readNumberToWords(finalAmount)}
                                     </div>
                                 </div>
                             </div>
@@ -665,10 +665,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Chủ TK<span className="text-[0.8em] italic opacity-70">/ Account Name</span>:</span>
                                             <span className=" font-semibold text-black">{quotation.bank_account_name || brandConfig?.bank_account_name || "Công ty TNHH Tulie"}</span>
                                         </div>
-                                        {brandConfig?.bank_branch && (
+                                        {(quotation.bank_branch || brandConfig?.bank_branch) && (
                                             <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                                 <span className="text-slate-500 sm:text-black italic sm:not-italic">Chi nhánh<span className="text-[0.8em] italic opacity-70">/ Branch</span>:</span>
-                                                <span className="font-semibold text-black">{quotation.bank_branch}</span>
+                                                <span className="font-semibold text-black">{quotation.bank_branch || brandConfig?.bank_branch}</span>
                                             </div>
                                         )}
                                     </div>
@@ -703,10 +703,6 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">{brandConfig?.hotline || "098.898.4554"}</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-2 sm:order-1" onClick={handlePrint}>
-                                <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                In báo giá
-                            </Button>
                             <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2" onClick={handleDownloadPDF} disabled={isDownloading}>
                                 <Download className="mr-1.5 h-3.5 w-3.5" />
                                 {isDownloading ? 'Đang tạo...' : 'Tải báo giá'}

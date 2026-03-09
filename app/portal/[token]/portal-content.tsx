@@ -26,6 +26,12 @@ import {
     Circle,
     CheckCircle,
     ArrowRight,
+    Wallet,
+    CreditCard,
+    Banknote,
+    Activity,
+    FileCheck,
+    Check
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
@@ -181,15 +187,17 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Stats Row — Clean, no uppercase, no letter-spacing */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                        { label: 'Tổng đầu tư', value: formatCurrency(totalInvestment), sub: 'Project Investment', dotColor: 'bg-zinc-900' },
-                        { label: 'Đã thanh toán', value: formatCurrency(totalPaid), sub: 'Total Paid', dotColor: 'bg-emerald-500' },
-                        { label: 'Còn lại', value: formatCurrency(balanceDue), sub: 'Balance Due', dotColor: 'bg-amber-500' },
-                        { label: 'Tiến độ', value: `${projectProgress}%`, sub: 'Project Progress', dotColor: 'bg-blue-500' },
+                        { label: 'Tổng đầu tư', value: formatCurrency(totalInvestment), sub: 'Project Investment', icon: Wallet, color: 'text-zinc-600', bgColor: 'bg-zinc-100' },
+                        { label: 'Đã thanh toán', value: formatCurrency(totalPaid), sub: 'Total Paid', icon: CreditCard, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+                        { label: 'Còn lại', value: formatCurrency(balanceDue), sub: 'Balance Due', icon: Banknote, color: 'text-amber-600', bgColor: 'bg-amber-50' },
+                        { label: 'Tiến độ', value: `${projectProgress}%`, sub: 'Project Progress', icon: Activity, color: 'text-blue-600', bgColor: 'bg-blue-50' },
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm">
+                        <div key={i} className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm transition-all hover:shadow-md">
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-[13px] font-medium text-zinc-500">{stat.label}</span>
-                                <div className={cn("w-2 h-2 rounded-full", stat.dotColor)} />
+                                <div className={cn("p-1.5 rounded-lg", stat.bgColor)}>
+                                    <stat.icon className={cn("w-3.5 h-3.5", stat.color)} />
+                                </div>
                             </div>
                             <div className="text-xl font-bold text-zinc-900">{stat.value}</div>
                             <div className="text-[11px] text-zinc-400 mt-0.5">{stat.sub}</div>
@@ -403,11 +411,11 @@ function DocumentProceduresSection({ workItems }: { workItems: any[] }) {
 
     // Default procedures for projects
     const defaultProcedures = [
-        { title: 'Báo giá đã được duyệt', status: 'auto' },
-        { title: 'Hợp đồng đã ký kết', status: 'auto' },
-        { title: 'Biên bản bàn giao sản phẩm', status: 'auto' },
-        { title: 'Yêu cầu thanh toán / Hóa đơn', status: 'auto' },
-        { title: 'Biên bản nghiệm thu', status: 'auto' },
+        { title: 'Báo giá dịch vụ', status: 'completed' },
+        { title: 'Hợp đồng & Phụ lục', status: 'completed' },
+        { title: 'Biên bản tạm ứng / Hóa đơn', status: 'completed' },
+        { title: 'Biên bản bàn giao sản phẩm', status: 'pending' },
+        { title: 'Quyết toán & Thanh lý', status: 'pending' },
     ]
 
     workItems.forEach((item: any) => {
@@ -423,44 +431,71 @@ function DocumentProceduresSection({ workItems }: { workItems: any[] }) {
     }))
 
     return (
-        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden">
-            <div className="p-5 border-b border-zinc-100">
-                <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                    <ClipboardCheck className="w-4 h-4 text-zinc-400" />
-                    Bộ thủ tục chứng từ
-                </h3>
-                <p className="text-xs text-zinc-500 mt-1">Các giấy tờ cần ký kết/hoàn thiện trong quá trình triển khai</p>
+        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
+            <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
+                <div>
+                    <h3 className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                        <FileCheck className="w-4 h-4 text-zinc-400" />
+                        Bộ chứng từ dự án
+                    </h3>
+                    <p className="text-xs text-zinc-500 mt-1">Lộ trình hoàn thiện hồ sơ pháp lý và thủ tục</p>
+                </div>
+                <div className="hidden sm:block">
+                    <Badge variant="outline" className="text-[10px] bg-zinc-50/50">Full Documents</Badge>
+                </div>
             </div>
-            <div className="divide-y divide-zinc-100">
-                {displayDocs.map((doc: any, i: number) => (
-                    <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50 transition-colors">
-                        <div className="flex items-center gap-3">
-                            {doc.status === 'signed' || doc.status === 'completed' ? (
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                            ) : doc.status === 'auto' ? (
-                                <Circle className="w-4 h-4 text-zinc-300" />
-                            ) : (
-                                <Clock className="w-4 h-4 text-amber-500" />
-                            )}
-                            <div>
-                                <p className="text-[13px] text-zinc-800">{doc.title}</p>
-                                {doc.workItemTitle && doc.workItemTitle !== 'Dự án' && (
-                                    <p className="text-[11px] text-zinc-400">{doc.workItemTitle}</p>
-                                )}
+            <div className="p-6">
+                <div className="relative space-y-0">
+                    {/* Vertical line */}
+                    <div className="absolute left-[11px] top-2 bottom-6 w-0.5 bg-zinc-100" />
+
+                    {displayDocs.map((doc: any, i: number) => {
+                        const isDone = doc.status === 'signed' || doc.status === 'completed' || doc.status === 'auto'
+                        const isPending = doc.status === 'pending'
+
+                        return (
+                            <div key={i} className="relative pl-10 pb-8 last:pb-0 group">
+                                {/* Dot */}
+                                <div className={cn(
+                                    "absolute left-0 top-1 w-[24px] h-[24px] rounded-full text-white flex items-center justify-center z-10 transition-all shadow-sm",
+                                    isDone ? "bg-emerald-500" : isPending ? "bg-amber-400" : "bg-zinc-200"
+                                )}>
+                                    {isDone ? <Check className="w-3 h-3 stroke-[3]" /> : <span className="text-[10px] font-bold text-zinc-500 group-last:text-zinc-500">{i + 1}</span>}
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div>
+                                        <p className={cn(
+                                            "text-sm font-bold transition-all",
+                                            isDone ? "text-zinc-900" : "text-zinc-500"
+                                        )}>{doc.title}</p>
+                                        {doc.workItemTitle && doc.workItemTitle !== 'Dự án' && (
+                                            <p className="text-[11px] text-zinc-400 mt-0.5">{doc.workItemTitle}</p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        {doc.date && <span className="text-[11px] text-zinc-400 font-medium">{formatDate(doc.date)}</span>}
+                                        {doc.status === 'signed' || doc.status === 'completed' ? (
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-bold">
+                                                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                                                Đã hoàn thành
+                                            </div>
+                                        ) : doc.status === 'pending' ? (
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[10px] font-bold">
+                                                Chờ xử lý
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-50 text-zinc-400 rounded-full border border-zinc-100 text-[10px] font-bold">
+                                                Chưa có
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            {doc.date && <span className="text-[11px] text-zinc-400">{formatDate(doc.date)}</span>}
-                            {doc.status === 'signed' ? (
-                                <Badge className="text-[10px] font-medium bg-emerald-50 text-emerald-700 border-emerald-200 rounded-full px-2">Đã ký</Badge>
-                            ) : doc.status === 'pending' ? (
-                                <Badge className="text-[10px] font-medium bg-amber-50 text-amber-600 border-amber-200 rounded-full px-2">Chờ ký</Badge>
-                            ) : (
-                                <Badge className="text-[10px] font-medium bg-zinc-50 text-zinc-400 border-zinc-200 rounded-full px-2">Chưa có</Badge>
-                            )}
-                        </div>
-                    </div>
-                ))}
+                        )
+                    })}
+                </div>
             </div>
         </div>
     )

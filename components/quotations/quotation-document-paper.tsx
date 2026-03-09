@@ -31,27 +31,21 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
     return (
         <div className="bg-white p-[2cm] min-h-[297mm] text-black font-sans leading-normal overflow-hidden print:p-0">
             {/* Header following administrative style */}
-            <div className="flex justify-between items-start mb-8">
-                {/* Left Side: Company Contact Info */}
-                <div className="w-[60%] text-left">
-                    <h3 className="text-[12px] font-extrabold uppercase mb-2 border-b-2 border-black inline-block pb-1 tracking-tight">
+            <div className="flex gap-4 items-start mb-8 text-left">
+                {/* Logo */}
+                <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} alt="Tulie" className="h-14 w-auto object-contain grayscale" />
+
+                {/* Company Contact Info */}
+                <div>
+                    <h3 className="text-[13px] font-bold uppercase mb-1">
                         {brandConfig?.brand_name?.toUpperCase() || "CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE"}
                     </h3>
-                    <div className="text-[10px] space-y-1 font-medium">
-                        <p><span className="font-bold">Địa chỉ:</span> {brandConfig?.address || "Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Q. Hà Đông, Hà Nội"}</p>
-                        <p><span className="font-bold">MST:</span> {brandConfig?.tax_code || "0110163102"}</p>
-                        <p><span className="font-bold">Hotline:</span> {brandConfig?.phone || "098.898.4554"}</p>
-                        <p><span className="font-bold">Email:</span> {brandConfig?.email || "hi@tulie.vn"} - <span className="font-bold">Website:</span> {brandConfig?.website || "tulie.vn"}</p>
+                    <div className="text-[11px] space-y-0.5 font-normal">
+                        <p><span className="font-semibold">Địa chỉ:</span> {brandConfig?.address || "Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Q. Hà Đông, Hà Nội"}</p>
+                        <p><span className="font-semibold">MST:</span> {brandConfig?.tax_code || "0110163102"}</p>
+                        <p><span className="font-semibold">Hotline:</span> {brandConfig?.phone || "098.898.4554"} - <span className="font-semibold">Email:</span> {brandConfig?.email || "hi@tulie.vn"}</p>
+                        <p><span className="font-semibold">Website:</span> {brandConfig?.website || "tulie.vn"}</p>
                     </div>
-                </div>
-
-                {/* Right Side: Logo & Brand */}
-                <div className="w-[35%] flex flex-col items-center">
-                    <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} alt="Tulie" className="h-14 w-auto mb-2 object-contain grayscale" />
-                    <h1 className="text-[18px] font-black uppercase text-center tracking-tighter leading-tight">
-                        {brandConfig?.brand_name || "TULIE AGENCY"}
-                    </h1>
-                    <div className="w-24 h-0.5 bg-black mt-1" />
                 </div>
             </div>
 
@@ -67,7 +61,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
 
             {/* Title */}
             <div className="text-center mb-10">
-                <h1 className="text-[28px] font-black uppercase tracking-widest">Báo giá dịch vụ</h1>
+                <h1 className="text-[24px] font-bold uppercase">Báo giá dịch vụ</h1>
                 <p className="text-[12px] mt-1 italic font-medium">(V/v: Cung cấp giải pháp {quotation.title || 'Marketing & Công nghệ'})</p>
             </div>
 
@@ -91,7 +85,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                 <thead>
                     <tr className="bg-zinc-50 grayscale">
                         <th className="border border-black py-2 px-1 text-center w-10 font-bold">#</th>
-                        <th className="border border-black py-2 px-3 text-left font-bold uppercase tracking-tight">
+                        <th className="border border-black py-2 px-3 text-left font-bold uppercase">
                             Dịch vụ & Hạng mục chi tiết <br />
                             <span className="text-[10px] font-normal opacity-60 normal-case">/ Service & Description</span>
                         </th>
@@ -118,7 +112,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                         <React.Fragment key={sectionName || sIdx}>
                             {sectionName && (
                                 <tr className="bg-zinc-100">
-                                    <td colSpan={6} className="border border-black py-1.5 px-3 font-black uppercase text-[10px] tracking-widest">
+                                    <td colSpan={6} className="border border-black py-1.5 px-3 font-bold uppercase text-[10px]">
                                         {sectionName}
                                     </td>
                                 </tr>
@@ -127,7 +121,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                                 <tr key={item.id} className="font-medium">
                                     <td className="border border-black py-2 px-1 text-center align-top">{iIdx + 1}</td>
                                     <td className="border border-black py-2 px-3 align-top">
-                                        <p className="font-bold mb-1 uppercase tracking-tight">{item.name || item.product_name}</p>
+                                        <p className="font-bold mb-1 uppercase">{item.name || item.product_name}</p>
                                         {(item.description) && <p className="text-[10px] text-zinc-600 whitespace-pre-line italic leading-snug">{item.description}</p>}
                                     </td>
                                     <td className="border border-black py-2 px-1 text-center align-top">{item.unit || 'Bộ'}</td>
@@ -140,36 +134,36 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                     ))}
                     {/* Summary Rows */}
                     <tr className="font-bold">
-                        <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px] tracking-wider">Tổng tiền dịch vụ (Sub-total):</td>
+                        <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px]">Tổng tiền dịch vụ (Sub-total):</td>
                         <td className="border border-black py-2 px-3 text-right tabular-nums">{formatCurrency(quotation.subtotal || 0).replace('₫', '')}</td>
                     </tr>
                     {(quotation.discount_amount > 0) && (
                         <tr className="font-bold text-zinc-600">
-                            <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px] tracking-wider">Chiết khấu / Discount:</td>
+                            <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px]">Chiết khấu / Discount:</td>
                             <td className="border border-black py-2 px-3 text-right tabular-nums">-{formatCurrency(quotation.discount_amount).replace('₫', '')}</td>
                         </tr>
                     )}
                     {quotation.vat_amount > 0 && (
                         <tr className="font-medium">
-                            <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px] tracking-wider">Thuế VAT ({quotation.vat_percent || 8}%):</td>
+                            <td colSpan={5} className="border border-black py-2 px-3 text-right uppercase text-[10px]">Thuế VAT ({quotation.vat_percent || 8}%):</td>
                             <td className="border border-black py-2 px-3 text-right tabular-nums">{formatCurrency(quotation.vat_amount).replace('₫', '')}</td>
                         </tr>
                     )}
                     <tr className="bg-zinc-50">
-                        <td colSpan={5} className="border border-black py-3 px-3 text-right font-black uppercase text-[12px] tracking-widest">Tổng cộng thanh toán (Total Payment):</td>
-                        <td className="border border-black py-3 px-3 text-right font-black text-[14px] tabular-nums underline decoration-2 underline-offset-4">{formatCurrency(quotation.total_amount || 0).replace('₫', '')} VNĐ</td>
+                        <td colSpan={5} className="border border-black py-3 px-3 text-right font-bold uppercase text-[12px]">Tổng cộng thanh toán (Total Payment):</td>
+                        <td className="border border-black py-3 px-3 text-right font-bold text-[14px] tabular-nums underline decoration-2 underline-offset-4">{formatCurrency(quotation.total_amount || 0).replace('₫', '')} VNĐ</td>
                     </tr>
                 </tbody>
             </table>
 
             {/* Amount in words */}
             <div className="mb-10 text-[12px] italic font-medium">
-                <span className="font-bold underline uppercase tracking-tight">Bằng chữ:</span> {readNumberToWords(quotation.total_amount || 0)} đồng chẵn./.
+                <span className="font-bold underline uppercase">Bằng chữ:</span> {readNumberToWords(quotation.total_amount || 0)}
             </div>
 
             {/* Terms & Conditions / Notes */}
             <div className="mb-8 space-y-4">
-                <h4 className="text-[13px] font-bold uppercase underline tracking-wider">Điều khoản & Ghi chú (Terms & Conditions):</h4>
+                <h4 className="text-[13px] font-bold uppercase underline">Điều khoản & Ghi chú (Terms & Conditions):</h4>
                 <div className="grid grid-cols-1 gap-1.5 text-[11px] ml-4 font-medium leading-relaxed">
                     <p>1. <span className="font-bold">Phương thức thanh toán:</span> Chuyển khoản hoặc Tiền mặt.</p>
                     <p>2. <span className="font-bold">Thời gian thực hiện:</span> Theo thỏa thuận chi tiết trong phụ lục hợp đồng.</p>
@@ -189,11 +183,11 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
 
             {/* Banking Info Section */}
             <div className="mb-12 p-5 border border-black bg-zinc-50 grayscale">
-                <h4 className="text-[13px] font-bold uppercase underline tracking-wider mb-4">Thông tin chuyển khoản (Payment Information):</h4>
+                <h4 className="text-[13px] font-bold uppercase underline mb-4">Thông tin chuyển khoản (Payment Information):</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[12px] ml-4 font-medium">
                     <div className="space-y-2">
                         <p><span className="font-bold">Chủ tài khoản:</span> <span className="uppercase">{quotation.bank_account_name || brandConfig?.bank_account_name || 'CÔNG TY TNHH TULIE'}</span></p>
-                        <p><span className="font-bold">Số tài khoản:</span> <span className="text-[14px] font-black tracking-widest">{quotation.bank_account_no || brandConfig?.bank_account_no || '0110163102'}</span></p>
+                        <p><span className="font-bold">Số tài khoản:</span> <span className="text-[14px] font-bold">{quotation.bank_account_no || brandConfig?.bank_account_no || '0110163102'}</span></p>
                     </div>
                     <div className="space-y-2">
                         <p><span className="font-bold">Ngân hàng:</span> {quotation.bank_name || brandConfig?.bank_name || 'MB BANK'}</p>
@@ -205,25 +199,23 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
             {/* Signature Section */}
             <div className="grid grid-cols-2 gap-10 mt-12 text-center text-[12px]">
                 <div className="space-y-1">
-                    <p className="font-black uppercase tracking-widest text-zinc-950">Đại diện khách hàng</p>
-                    <p className="italic text-[10px] font-bold text-zinc-400">(Ký & ghi rõ họ tên / Customer Signature)</p>
+                    <p className="font-bold uppercase text-zinc-950">Đại diện khách hàng</p>
+                    <p className="italic text-[10px] text-zinc-400">(Ký & ghi rõ họ tên / Customer Signature)</p>
                     <div className="h-24"></div>
                     <div className="h-px w-32 bg-zinc-200 mx-auto" />
                 </div>
                 <div className="space-y-1">
-                    <p className="font-black uppercase tracking-widest text-zinc-950">Đại diện {brandConfig?.brand_name || "Công ty Tulie"}</p>
-                    <p className="italic text-[10px] font-bold text-zinc-400">(Ký & đóng dấu / Authorized Signature)</p>
-                    <div className="h-24 flex items-center justify-center opacity-10 grayscale">
+                    <p className="font-bold uppercase text-zinc-950">Đại diện {brandConfig?.brand_name || "Công ty Tulie"}</p>
+                    <p className="font-bold uppercase text-zinc-950 mt-1">Giám đốc</p>
+                    <p className="italic text-[10px] text-zinc-400">(Ký & đóng dấu / Authorized Signature)</p>
+                    <div className="h-28 flex items-center justify-center opacity-10 grayscale">
                         <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} alt="Seal" className="h-16 w-auto" />
                     </div>
-                    <div className="h-px w-40 bg-zinc-200 mx-auto" />
-                    <p className="font-black text-[14px] uppercase tracking-tighter mt-4">{quotation.signer_name || brandConfig?.ceo_name || 'NGUYỄN THANH TÙNG'}</p>
-                    <p className="font-bold text-zinc-400 italic text-[10px] uppercase tracking-widest">{quotation.signer_title || brandConfig?.ceo_title || 'Giám đốc'}</p>
                 </div>
             </div>
 
             {/* Footer Contact */}
-            <div className="mt-auto pt-8 border-t border-zinc-100 text-center text-[9px] text-zinc-400 font-bold uppercase tracking-[0.2em]">
+            <div className="mt-auto pt-8 border-t border-zinc-100 text-center text-[9px] text-zinc-400 font-bold uppercase tracking-wider">
                 {brandConfig?.brand_name || "Tulie Agency"} - Creative Solution & Digital Strategy | Hotline: {brandConfig?.phone || "098.898.4554"} | Website: {brandConfig?.website || "tulie.vn"}
             </div>
         </div>
