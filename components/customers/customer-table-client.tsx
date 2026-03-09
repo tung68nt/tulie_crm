@@ -11,9 +11,15 @@ interface CustomerTableClientProps {
     data: any[]
     users: any[]
     defaultTab?: 'business' | 'individual'
+    hideTabs?: boolean
 }
 
-export function CustomerTableClient({ data, users, defaultTab = 'business' }: CustomerTableClientProps) {
+export function CustomerTableClient({
+    data,
+    users,
+    defaultTab = 'business',
+    hideTabs = false
+}: CustomerTableClientProps) {
     const handleDelete = async (rows: any[]) => {
         const ids = rows.map((r) => r.id)
         await deleteCustomers(ids)
@@ -52,28 +58,30 @@ export function CustomerTableClient({ data, users, defaultTab = 'business' }: Cu
 
     const [activeTab, setActiveTab] = useState<'business' | 'individual'>(defaultTab)
 
-    const filteredData = data.filter(c => c.customer_type === activeTab)
+    const filteredData = data.filter(c => c.customer_type === (hideTabs ? defaultTab : activeTab))
 
     return (
         <div className="space-y-4">
-            <Tabs defaultValue={defaultTab} className="w-full" onValueChange={(v) => setActiveTab(v as any)}>
-                <TabsList className="bg-zinc-100/50 p-1 h-11 rounded-xl">
-                    <TabsTrigger value="business" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Building2 className="w-4 h-4 mr-2" />
-                        Doanh nghiệp
-                    </TabsTrigger>
-                    <TabsTrigger value="individual" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <User className="w-4 h-4 mr-2" />
-                        Cá nhân
-                    </TabsTrigger>
-                </TabsList>
-            </Tabs>
+            {!hideTabs && (
+                <Tabs defaultValue={defaultTab} className="w-full" onValueChange={(v) => setActiveTab(v as any)}>
+                    <TabsList className="bg-zinc-100/50 p-1 h-11 rounded-xl">
+                        <TabsTrigger value="business" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                            <Building2 className="w-4 h-4 mr-2" />
+                            Doanh nghiệp
+                        </TabsTrigger>
+                        <TabsTrigger value="individual" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                            <User className="w-4 h-4 mr-2" />
+                            Cá nhân
+                        </TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            )}
 
             <DataTable
                 columns={customerColumns}
                 data={filteredData}
-                searchKey={activeTab === 'business' ? "company_name" : "representative"}
-                searchPlaceholder={activeTab === 'business' ? "Tìm theo tên công ty..." : "Tìm tên khách hàng..."}
+                searchKey={hideTabs ? (defaultTab === 'business' ? "company_name" : "representative") : (activeTab === 'business' ? "company_name" : "representative")}
+                searchPlaceholder={hideTabs ? (defaultTab === 'business' ? "Tìm theo tên công ty..." : "Tìm tên khách hàng...") : (activeTab === 'business' ? "Tìm theo tên công ty..." : "Tìm tên khách hàng...")}
                 filters={[
                     {
                         columnId: 'status',

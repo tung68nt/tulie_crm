@@ -44,7 +44,7 @@ const navGroups: NavGroup[] = [
         title: 'Tulie Agency',
         items: [
             { title: 'Cơ hội Agency', href: '/deals', icon: TrendingUp },
-            { title: 'Khách hàng', href: '/customers', icon: Users },
+            { title: 'Khách hàng Agency', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
             { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
             { title: 'Đơn hàng Agency', href: '/orders', icon: ShoppingCart },
@@ -57,7 +57,7 @@ const navGroups: NavGroup[] = [
         items: [
             { title: 'Cơ hội Studio', href: '/studio/deals', icon: TrendingUp },
             { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
-            { title: 'Khách hàng', href: '/studio/customers', icon: Users },
+            { title: 'Khách hàng Studio', href: '/studio/customers', icon: Users },
         ]
     },
     {
@@ -123,16 +123,16 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             <Button
                                 variant="ghost"
                                 className={cn(
-                                    'w-full justify-start gap-3 h-10 text-sm font-medium transition-all duration-200',
-                                    pathname === '/dashboard' ? 'bg-secondary text-secondary-foreground' : 'text-muted-foreground hover:text-foreground',
+                                    'w-full justify-start gap-3 h-10 text-[13px] transition-all duration-200 rounded-xl',
+                                    pathname === '/dashboard' ? 'bg-zinc-950 text-white font-black' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
                                 <LayoutGrid className={cn(
                                     "h-5 w-5 shrink-0 transition-colors",
-                                    pathname === '/dashboard' ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                                    pathname === '/dashboard' ? "text-white" : "text-zinc-400 group-hover:text-zinc-900"
                                 )} />
-                                {!isCollapsed && <span className="truncate">Dashboard</span>}
+                                {!isCollapsed && <span className="truncate uppercase tracking-widest font-black text-[10px]">Dashboard</span>}
                             </Button>
                         </Link>
                     </div>
@@ -163,17 +163,17 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                             <Button
                                                 variant="ghost"
                                                 className={cn(
-                                                    'w-full justify-start gap-3 h-8 text-sm font-medium transition-all duration-200',
-                                                    isActive ? 'bg-secondary text-secondary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground',
+                                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 rounded-xl',
+                                                    isActive ? 'bg-zinc-950 text-white font-black' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
                                                     isCollapsed && 'justify-center px-0'
                                                 )}
                                             >
                                                 <Icon className={cn(
                                                     "h-4 w-4 shrink-0 transition-colors",
-                                                    isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                                                    isActive ? "text-white" : "text-zinc-400 group-hover:text-zinc-900"
                                                 )} />
                                                 {!isCollapsed && (
-                                                    <span className="truncate">
+                                                    <span className="truncate font-medium">
                                                         {item.title}
                                                     </span>
                                                 )}

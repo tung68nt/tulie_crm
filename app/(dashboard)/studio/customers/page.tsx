@@ -17,22 +17,22 @@ export default async function StudioCustomersPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                        <Camera className="h-6 w-6 text-orange-500" />
+                    <div className="h-10 w-10 rounded-xl bg-zinc-100 flex items-center justify-center">
+                        <Camera className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold">Khách hàng Studio</h1>
-                        <p className="text-muted-foreground font-normal">
+                        <h1 className="text-3xl font-black text-zinc-950 tracking-tighter">Khách hàng Studio</h1>
+                        <p className="text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-60">
                             Quản lý danh sách khách hàng cá nhân cho khối Studio
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="rounded-xl">
+                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-200">
                         <Download className="mr-2 h-4 w-4" />
                         Xuất file
                     </Button>
-                    <Button asChild className="rounded-xl bg-zinc-900">
+                    <Button asChild className="rounded-xl bg-zinc-950 hover:bg-zinc-800 transition-all font-black uppercase text-[11px] tracking-widest px-6 h-10">
                         <Link href="/studio/new?step=customer">
                             <Plus className="mr-2 h-4 w-4" />
                             Thêm khách hàng
@@ -41,7 +41,7 @@ export default async function StudioCustomersPage() {
                 </div>
             </div>
 
-            <CustomerTableClient data={customers} users={users} defaultTab="individual" />
+            <CustomerTableClient data={customers} users={users} defaultTab="individual" hideTabs={true} />
         </div>
     )
 }

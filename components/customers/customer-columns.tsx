@@ -12,6 +12,7 @@ import {
 import { formatRelativeTime } from '@/lib/utils/format'
 import { ArrowUpDown, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 import { CellAction } from './cell-action'
 
 export const customerColumns: ColumnDef<Customer>[] = [
@@ -54,20 +55,20 @@ export const customerColumns: ColumnDef<Customer>[] = [
         cell: ({ row }) => {
             const customer = row.original
             return (
-                <div>
+                <div className="py-1">
                     <Link
                         href={`/customers/${customer.id}`}
-                        className="font-bold hover:underline"
+                        className="text-[14px] font-black text-zinc-950 hover:underline tracking-tight"
                     >
                         {customer.customer_type === 'individual'
                             ? (customer.representative || 'Chưa đặt tên')
                             : customer.company_name}
                     </Link>
                     {customer.customer_type === 'business' && customer.tax_code && (
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-tight">MST: {customer.tax_code}</p>
+                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest mt-0.5 opacity-60">MST: {customer.tax_code}</p>
                     )}
                     {customer.customer_type === 'individual' && customer.address && (
-                        <p className="text-[10px] text-muted-foreground truncate max-w-[200px]">{customer.address}</p>
+                        <p className="text-[10px] text-zinc-500 font-medium truncate max-w-[200px] mt-0.5">{customer.address}</p>
                     )}
                 </div>
             )
@@ -102,7 +103,10 @@ export const customerColumns: ColumnDef<Customer>[] = [
         cell: ({ row }) => {
             const status = row.getValue('status') as Customer['status']
             return (
-                <Badge className={CUSTOMER_STATUS_COLORS[status]}>
+                <Badge className={cn(
+                    "text-[9px] font-black uppercase tracking-widest border-none px-2.5 py-1 rounded-full",
+                    CUSTOMER_STATUS_COLORS[status] || "bg-zinc-100 text-zinc-500"
+                )}>
                     {CUSTOMER_STATUS_LABELS[status]}
                 </Badge>
             )
@@ -116,13 +120,13 @@ export const customerColumns: ColumnDef<Customer>[] = [
         header: 'Phụ trách',
         cell: ({ row }) => {
             const user = row.original.assigned_user
-            if (!user) return <span className="text-muted-foreground">-</span>
+            if (!user) return <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Chưa gán</span>
             return (
                 <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                    <div className="h-6 w-6 rounded-full bg-zinc-100 flex items-center justify-center text-[10px] font-black text-zinc-950 border border-zinc-200">
                         {user.full_name.charAt(0)}
                     </div>
-                    <span className="text-sm">{user.full_name}</span>
+                    <span className="text-[12px] font-black text-zinc-950 tracking-tight">{user.full_name}</span>
                 </div>
             )
         },
