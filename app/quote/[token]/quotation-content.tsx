@@ -468,8 +468,8 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                         {hasProposal && proposalSections.length > 0 && (
                             <div className="mb-10">
                                 {/* Proposal Header */}
-                                <div className="relative mb-6 py-4 px-5 rounded-xl text-white overflow-hidden shadow-sm bg-zinc-950"
-                                    style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}>
+                                <div className="relative mb-6 py-4 px-5 rounded-xl text-white overflow-hidden bg-zinc-950"
+                                    style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
                                     {/* Dot pattern as a separate layer for html2canvas compatibility */}
                                     <div className="absolute inset-0 opacity-20 pointer-events-none"
                                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
@@ -481,21 +481,24 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 </div>
 
                                 {/* Timeline Steps */}
-                                <div className="relative pl-8 before:absolute before:left-[11px] before:top-[23px] before:bottom-2 before:w-[2px] before:bg-slate-200 before:rounded-full">
+                                <div className="relative pl-8 before:absolute before:left-[11px] before:top-[24px] before:bottom-2 before:w-[2px] before:bg-slate-200 before:rounded-full">
                                     {proposalSections.map((section, idx) => {
                                         const icon = sectionIcons[section.label] || <Info className="w-4 h-4" />;
                                         return (
                                             <div key={idx} className="proposal-section relative mb-5 last:mb-0">
                                                 {/* Timeline dot */}
-                                                <div className="absolute -left-8 top-[23px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[9px] font-bold z-10">
+                                                <div className="absolute -left-8 top-[24px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[9px] font-bold z-10"
+                                                    style={{ WebkitPrintColorAdjust: 'exact' }}>
                                                     {idx + 1}
                                                 </div>
 
                                                 {/* Content Card */}
                                                 <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                                                     {/* Card Header */}
-                                                    <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900">
-                                                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white shadow-sm">
+                                                    <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900"
+                                                        style={{ WebkitPrintColorAdjust: 'exact' }}>
+                                                        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white shadow-sm"
+                                                            style={{ WebkitPrintColorAdjust: 'exact' }}>
                                                             {icon}
                                                         </span>
                                                         <h4 className="text-[13px] font-bold leading-tight">
@@ -557,10 +560,11 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                     <tr className="bg-slate-100 border-b border-slate-200">
                                                         <td colSpan={hasDiscount ? 7 : 6} className="px-3 py-2.5 font-bold text-slate-900 text-[13px] normal-case">
                                                             <div className="flex items-center gap-3">
-                                                                <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold">
+                                                                <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold"
+                                                                    style={{ WebkitPrintColorAdjust: 'exact' }}>
                                                                     {sectionIndex + 1}
                                                                 </span>
-                                                                <span>{sectionName}</span>
+                                                                <span>{sectionName || "Sản phẩm & Dịch vụ chi tiết"}</span>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -626,7 +630,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                         <div className="text-xs text-black leading-relaxed space-y-1">
                                             {(quotation.notes || brandConfig?.default_notes || 'Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.').split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
                                                 <div key={i} className="flex gap-2">
-                                                    <span className="shrink-0 text-slate-400">•</span>
+                                                    <span className="shrink-0 text-slate-500">•</span>
                                                     <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                 </div>
                                             ))}
@@ -637,7 +641,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                         <div className="text-xs text-black leading-relaxed space-y-1">
                                             {(quotation.terms || brandConfig?.default_payment_terms || "50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành").split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
                                                 <div key={i} className="flex gap-2">
-                                                    <span className="shrink-0 text-slate-400">•</span>
+                                                    <span className="shrink-0 text-slate-500">•</span>
                                                     <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                 </div>
                                             ))}
