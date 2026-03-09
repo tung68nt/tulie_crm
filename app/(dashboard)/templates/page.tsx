@@ -15,6 +15,8 @@ const getTypeIcon = (type: DocumentTemplate['type']) => {
             return <Wallet className="h-4 w-4" />
         case 'delivery_minutes':
             return <FileCheck className="h-4 w-4" />
+        case 'quotation':
+            return <FileText className="h-4 w-4" />
         case 'order':
             return <Plus className="h-4 w-4" />
         default:
@@ -47,7 +49,7 @@ export default async function TemplatesPage() {
                     <div>
                         <h1 className="text-3xl font-semibold">Mẫu giấy tờ</h1>
                         <p className="text-muted-foreground font-normal">
-                            Quản lý các mẫu hợp đồng, đơn hàng, đề nghị thanh toán, biên bản giao nhận
+                            Quản lý các mẫu báo giá, hợp đồng, đơn hàng, đề nghị thanh toán, biên bản giao nhận
                         </p>
                     </div>
                 </div>

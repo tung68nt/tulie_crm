@@ -8,12 +8,27 @@ import { contractTemplate } from './contract-template'
 import { paymentTemplate } from './payment-template'
 import { orderTemplate } from './order-template'
 import { deliveryMinutesTemplate } from './delivery-minutes-template'
+import { quotationTemplate } from './quotation-template'
 
 /**
  * Standard templates with common variables for HTML fallback and variable definition
  * Variables map to {{variable_name}} placeholders in HTML templates
  */
 const defaultTemplates: Omit<DocumentTemplate, 'id' | 'created_at' | 'updated_at'>[] = [
+    {
+        name: 'Báo giá (Mẫu chuẩn)',
+        type: 'quotation',
+        content: quotationTemplate,
+        variables: [
+            'quotation_number', 'quotation_date', 'day', 'month', 'year',
+            'customer_company', 'customer_representative', 'customer_position',
+            'customer_address', 'customer_phone', 'customer_mobile',
+            'customer_tax_code', 'customer_email', 'customer_bank_account', 'customer_bank_name',
+            'quotation_items_table', 'subtotal', 'vat_rate', 'vat_amount',
+            'total_amount_number', 'amount_in_words',
+            'payment_terms', 'delivery_time', 'delivery_address'
+        ]
+    },
     {
         name: 'Hợp đồng kinh tế (Mẫu chuẩn)',
         type: 'contract',
