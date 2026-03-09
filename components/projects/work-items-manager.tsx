@@ -45,6 +45,9 @@ import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 import { createWorkItem, updateWorkItem, deleteWorkItem, addTaskToWorkItem, updateTaskStatus, deleteTask } from '@/lib/supabase/services/work-item-service'
 import { useRouter } from 'next/navigation'
+import { BundleSelectorDialog } from './bundle-selector-dialog'
+import { DocumentEditorDialog } from './document-editor-dialog'
+import { FileEdit, Eye } from 'lucide-react'
 
 interface WorkItemsManagerProps {
     project: any
@@ -70,6 +73,7 @@ const DEFAULT_DOCUMENTS = [
 export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkItemsManagerProps) {
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
     const [showCreateDialog, setShowCreateDialog] = useState(false)
+    const [showBundleDialog, setShowBundleDialog] = useState(false)
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
 
@@ -133,10 +137,22 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
         })
     }
 
+    const [activeEditDocId, setActiveEditDocId] = useState<string | null>(null)
+    const [activeWorkItemForBundle, setActiveWorkItemForBundle] = useState<any>(null)
+
     const handleUpdateStatus = async (id: string, status: string) => {
+        const item = initialWorkItems.find(i => i.id === id)
+
         startTransition(async () => {
             try {
                 await updateWorkItem(id, { status: status as any })
+
+                // If moving to in_progress and no bundle assigned, prompt for bundle
+                if (status === 'in_progress' && !item?.bundle_id) {
+                    setActiveWorkItemForBundle(item)
+                    setShowBundleDialog(true)
+                }
+
                 router.refresh()
             } catch {
                 toast.error('Lỗi khi cập nhật')
@@ -246,9 +262,22 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                             onDelete={() => handleDelete(item.id)}
                             onStatusChange={(status) => handleUpdateStatus(item.id, status)}
                             project={project}
+                            onEditDoc={setActiveEditDocId}
                         />
                     ))
                 )}
+
+                <BundleSelectorDialog
+                    isOpen={showBundleDialog}
+                    onOpenChange={setShowBundleDialog}
+                    workItem={activeWorkItemForBundle}
+                    project={project}
+                />
+
+                <DocumentEditorDialog
+                    docId={activeEditDocId}
+                    onClose={() => setActiveEditDocId(null)}
+                />
             </CardContent>
         </Card>
     )
@@ -256,16 +285,17 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
 
 /* ===== Single Work Item Row ===== */
 function WorkItemRow({
-    item, idx, isExpanded, onToggle, onDelete, onStatusChange, project
+    item, idx, isExpanded, onToggle, onDelete, onStatusChange, project, onEditDoc
 }: {
     item: any; idx: number; isExpanded: boolean; onToggle: () => void;
     onDelete: () => void; onStatusChange: (s: string) => void;
-    project: any;
+    project: any; onEditDoc: (docId: string) => void;
 }) {
     const [isPending, startTransition] = useTransition()
     const [newTaskTitle, setNewTaskTitle] = useState('')
     const [newLinkLabel, setNewLinkLabel] = useState('')
     const [newLinkUrl, setNewLinkUrl] = useState('')
+    const [showBundleDialog, setShowBundleDialog] = useState(false)
     const router = useRouter()
 
     const tasks = item.tasks || []
@@ -506,9 +536,22 @@ function WorkItemRow({
 
                         {/* Col 3: Required Documents */}
                         <div className="space-y-3">
-                            <h5 className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                                <ClipboardCheck className="w-3.5 h-3.5" />
-                                Thủ tục chứng từ
+                            <h5 className="text-xs font-semibold text-muted-foreground flex items-center justify-between gap-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <ClipboardCheck className="w-3.5 h-3.5" />
+                                    Thủ tục chứng từ
+                                </div>
+                                {!item.bundle_id && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 text-[10px] text-blue-600 hover:text-blue-700 p-0"
+                                        onClick={() => setShowBundleDialog(true)}
+                                    >
+                                        <Plus className="w-3 h-3 mr-1" />
+                                        Chọn bộ chứng từ
+                                    </Button>
+                                )}
                             </h5>
                             <div className="space-y-1">
                                 {requiredDocs.map((doc: any, dIdx: number) => (
@@ -525,11 +568,21 @@ function WorkItemRow({
                                             )}
                                         </button>
                                         <span className={cn(
-                                            "text-xs",
+                                            "text-xs flex-1 truncate",
                                             doc.status === 'signed' && "line-through text-muted-foreground"
                                         )}>
                                             {doc.title}
                                         </span>
+                                        {doc.generated_doc_id ? (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-6 w-6 p-0 text-muted-foreground hover:text-zinc-900"
+                                                onClick={() => onEditDoc(doc.generated_doc_id)}
+                                            >
+                                                <FileEdit className="w-3.5 h-3.5" />
+                                            </Button>
+                                        ) : null}
                                         {doc.date && <span className="text-[10px] text-muted-foreground ml-auto">{formatDate(doc.date)}</span>}
                                     </div>
                                 ))}
@@ -544,6 +597,13 @@ function WorkItemRow({
                             Xóa hạng mục
                         </Button>
                     </div>
+
+                    <BundleSelectorDialog
+                        isOpen={showBundleDialog}
+                        onOpenChange={setShowBundleDialog}
+                        workItem={item}
+                        project={project}
+                    />
                 </div>
             )}
         </div>

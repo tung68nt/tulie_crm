@@ -34,6 +34,7 @@ export async function updateProjectTasks(projectId: string, tasks: any[]) {
             id: t.id?.startsWith('temp-') ? undefined : t.id,
             project_id: projectId,
             milestone_id: t.milestone_id || null,
+            work_item_id: t.work_item_id || null,
             title: t.title,
             description: t.description || '',
             status: t.status || 'todo',

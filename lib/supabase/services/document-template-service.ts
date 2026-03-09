@@ -1,7 +1,7 @@
 'use server'
 import { createClient } from '../server'
 import { createAdminClient } from '../admin'
-import { DocumentTemplate, DocumentBundle } from '@/types'
+import { DocumentTemplate, DocumentBundle, GeneratedDocument } from '@/types'
 import { readNumberToWords } from '@/lib/utils/format'
 
 import { contractTemplate } from './contract-template'
@@ -395,6 +395,59 @@ export async function createDocumentBundle(bundle: Omit<DocumentBundle, 'id' | '
 
     if (error) throw error
     return data as DocumentBundle
+}
+
+export async function getDocumentBundles() {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('document_bundles')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        if (error) throw error
+        return (data || []) as DocumentBundle[]
+    } catch (err) {
+        console.error('Error fetching bundles:', err)
+        return []
+    }
+}
+
+export async function saveGeneratedDocument(doc: Partial<GeneratedDocument>) {
+    try {
+        const supabase = await createClient()
+        let query;
+
+        if (doc.id) {
+            query = supabase.from('generated_documents').update(doc).eq('id', doc.id)
+        } else {
+            query = supabase.from('generated_documents').insert([doc])
+        }
+
+        const { data, error } = await query.select().single()
+        if (error) throw error
+        return data as GeneratedDocument
+    } catch (err) {
+        console.error('Error saving generated doc:', err)
+        throw err
+    }
+}
+
+export async function getGeneratedDocumentById(id: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('generated_documents')
+            .select('*')
+            .eq('id', id)
+            .single()
+
+        if (error) throw error
+        return data as GeneratedDocument
+    } catch (err) {
+        console.error('Error fetching generated doc:', err)
+        return null
+    }
 }
 
 // Generate secure share token using global crypto (Node/Browser compatible)

@@ -307,6 +307,8 @@ export interface RequiredDocument {
   title: string
   status: 'pending' | 'signed' | 'not_required'
   date?: string
+  template_id?: string
+  generated_doc_id?: string
 }
 
 export interface ProjectWorkItem {
@@ -315,6 +317,7 @@ export interface ProjectWorkItem {
   title: string
   description?: string
   status: WorkItemStatus
+  bundle_id?: string
   quotation_id?: string
   contract_id?: string
   quotation?: Quotation

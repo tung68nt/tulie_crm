@@ -31,8 +31,12 @@ import {
     Banknote,
     Activity,
     FileCheck,
-    Check
+    Check,
+    BookOpen,
+    Eye,
+    Receipt
 } from 'lucide-react'
+import { getGeneratedDocumentById } from '@/lib/supabase/services/document-template-service'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { CustomerInfoForm } from '@/components/portal/customer-info-form'
@@ -85,6 +89,20 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         workItems = [], tasks = []
     } = data
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [selectedDocContent, setSelectedDocContent] = useState<string | null>(null)
+    const [isViewingDoc, setIsViewingDoc] = useState(false)
+
+    const handleViewDoc = async (docId: string) => {
+        try {
+            const doc = await getGeneratedDocumentById(docId)
+            if (doc) {
+                setSelectedDocContent(doc.content)
+                setIsViewingDoc(true)
+            }
+        } catch (err) {
+            toast.error('Không thể tải tài liệu')
+        }
+    }
     const router = useRouter()
 
     // Aggregate Calculations
@@ -213,10 +231,67 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </div>
                 )}
 
+                {/* Lịch trình triển khai & Thanh toán (Project Milestones) */}
+                {timeline.filter(t => t.type === 'work' || t.type === 'payment').length > 0 && (
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-zinc-400" />
+                                Lịch trình triển khai & Thanh toán
+                            </h3>
+                            <Badge variant="outline" className="text-[10px] bg-zinc-50/50">Project Timeline</Badge>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {timeline
+                                .filter(t => t.type === 'work' || t.type === 'payment')
+                                .map((milestone: any, mIdx: number) => (
+                                    <div key={mIdx} className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn(
+                                                    "w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold",
+                                                    milestone.status === 'completed' ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-500"
+                                                )}>
+                                                    #{mIdx + 1}
+                                                </div>
+                                                <StatusBadge status={milestone.status} />
+                                            </div>
+                                            {milestone.type === 'payment' && (
+                                                <div className="p-1.5 bg-zinc-100 rounded-lg">
+                                                    <Wallet className="w-3.5 h-3.5 text-zinc-600" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <h4 className="text-[14px] font-bold text-zinc-900 mb-1">{milestone.title}</h4>
+                                        {milestone.description && (
+                                            <p className="text-[11px] text-zinc-500 line-clamp-2 mb-4 h-8">{milestone.description}</p>
+                                        )}
+                                        <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] text-zinc-400 font-medium">Hạn hoàn thành</span>
+                                                <span className="text-[11px] font-bold text-zinc-700">{formatDate(milestone.date)}</span>
+                                            </div>
+                                            {milestone.amount > 0 && (
+                                                <div className="text-right">
+                                                    <span className="text-[9px] text-zinc-400 font-medium">Số tiền</span>
+                                                    <p className="text-[12px] font-bold text-zinc-900">{formatCurrency(milestone.amount)}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Hạng mục dự án */}
                 <div className="space-y-6">
                     <div>
-                        <h3 className="text-lg font-bold text-zinc-900">Hạng mục & Lộ trình thực hiện</h3>
+                        <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                            <Package className="w-5 h-5 text-zinc-400" />
+                            Hạng mục & Lộ trình thực hiện
+                        </h3>
                         <p className="text-sm text-zinc-500 mt-1">
                             {displayItems.length} hạng mục · {completedItems} đã nghiệm thu
                         </p>
@@ -237,10 +312,24 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 </div>
 
                 {/* Bộ thủ tục chứng từ — aggregate from all work items */}
-                <DocumentProceduresSection workItems={displayItems} />
+                <DocumentProceduresSection workItems={displayItems} handleViewDoc={handleViewDoc} />
 
-                {/* Timeline tổng hợp */}
-                <TimelineSection timeline={timeline} />
+                {/* Tiện ích khác — Hidden for now as it's redundant with the new milestone cards */}
+                {/* Document Viewer Dialog for Portal */}
+                <Dialog open={isViewingDoc} onOpenChange={setIsViewingDoc}>
+                    <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>Xem tài liệu</DialogTitle>
+                        </DialogHeader>
+                        <div
+                            className="p-8 prose prose-zinc max-w-none bg-white min-h-[400px]"
+                            dangerouslySetInnerHTML={{ __html: selectedDocContent || '' }}
+                        />
+                        <div className="flex justify-end pt-4 border-t">
+                            <Button onClick={() => setIsViewingDoc(false)}>Đóng</Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </main>
         </div>
     )
@@ -405,9 +494,9 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
 }
 
 /* ===== Document Procedures Section ===== */
-function DocumentProceduresSection({ workItems }: { workItems: any[] }) {
+function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: any[]; handleViewDoc: (id: string) => void }) {
     // Aggregate all required_documents from all work items
-    const allDocs: { title: string; status: string; workItemTitle: string; date?: string }[] = []
+    const allDocs: { title: string; status: string; workItemTitle: string; date?: string; generated_doc_id?: string }[] = []
 
     // Default procedures for projects
     const defaultProcedures = [
@@ -475,13 +564,24 @@ function DocumentProceduresSection({ workItems }: { workItems: any[] }) {
                                     </div>
 
                                     <div className="flex items-center gap-3">
+                                        {doc.generated_doc_id && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-7 text-[10px] border-zinc-200 hover:bg-zinc-50"
+                                                onClick={() => handleViewDoc(doc.generated_doc_id)}
+                                            >
+                                                <Eye className="w-3 h-3 mr-1" />
+                                                Xem dự thảo
+                                            </Button>
+                                        )}
                                         {doc.date && <span className="text-[11px] text-zinc-400 font-medium">{formatDate(doc.date)}</span>}
-                                        {doc.status === 'signed' || doc.status === 'completed' ? (
+                                        {isDone ? (
                                             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-bold">
                                                 <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                                                 Đã hoàn thành
                                             </div>
-                                        ) : doc.status === 'pending' ? (
+                                        ) : isPending ? (
                                             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[10px] font-bold">
                                                 Chờ xử lý
                                             </div>

@@ -68,6 +68,7 @@ export async function updateWorkItem(id: string, updates: Partial<ProjectWorkIte
                 ...(updates.contract_id !== undefined && { contract_id: updates.contract_id }),
                 ...(updates.delivery_links !== undefined && { delivery_links: updates.delivery_links }),
                 ...(updates.required_documents !== undefined && { required_documents: updates.required_documents }),
+                ...(updates.bundle_id !== undefined && { bundle_id: updates.bundle_id }),
                 ...(updates.sort_order !== undefined && { sort_order: updates.sort_order }),
                 ...(updates.total_amount !== undefined && { total_amount: updates.total_amount }),
                 ...(updates.accepted_at !== undefined && { accepted_at: updates.accepted_at }),

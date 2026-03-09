@@ -16,6 +16,7 @@ import { ProjectTasks } from '@/components/projects/project-tasks'
 import { ProjectSidebar } from '@/components/projects/project-sidebar'
 import { WorkItemsManager } from '@/components/projects/work-items-manager'
 import { FileText as FileTextIcon, Receipt, ArrowUpRight, Lock } from 'lucide-react'
+import { ProjectDescriptionForm } from '@/components/projects/project-description-form'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 import { DeleteProjectButton } from '@/components/projects/delete-project-button'
 
@@ -207,7 +208,7 @@ export default async function ProjectDetailPage({ params }: any) {
                     </Card>
 
                     {/* Detailed Tasks */}
-                    <ProjectTasks project={project} />
+                    <ProjectTasks project={project} workItems={workItems} />
 
                     {/* Description Section */}
                     <Card>
@@ -215,9 +216,7 @@ export default async function ProjectDetailPage({ params }: any) {
                             <CardTitle className="text-lg">Mô tả dự án</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-sm p-4 bg-muted/20 rounded-xl border border-dashed whitespace-pre-line leading-relaxed">
-                                {project.description || "Chưa có mô tả chi tiết cho dự án này."}
-                            </div>
+                            <ProjectDescriptionForm project={project} />
                         </CardContent>
                     </Card>
                 </div>
