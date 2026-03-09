@@ -1,5 +1,5 @@
 import React from 'react';
-import { Page, Text, View, Document } from '@react-pdf/renderer';
+import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
 import { docStyles as styles } from './document-styles';
 import { formatCurrency } from '@/lib/utils/format';
 
@@ -28,11 +28,17 @@ const PaymentRequestPdfTemplate: React.FC<PaymentRequestPdfTemplateProps> = ({ d
                     <View style={styles.headerLeft}>
                         <Text style={styles.companyName}>Công ty TNHH Dịch vụ và Giải pháp</Text>
                         <Text style={styles.brandName}>Công nghệ Tulie</Text>
+                        <View style={{ marginTop: 5, fontSize: 8 }}>
+                            <Text>MST: 0110163102</Text>
+                            <Text>Hotline: 098.898.4554</Text>
+                        </View>
                     </View>
-                    <View style={styles.headerRight}>
-                        <Text style={styles.nationalTitle}>Cộng hoà Xã hội Chủ nghĩa Việt Nam</Text>
-                        <Text style={styles.nationalMotto}>Độc lập - Tự do - Hạnh phúc</Text>
-                        <View style={styles.underline} />
+                    <View style={[styles.headerRight, { alignItems: 'center' }]}>
+                        <View style={{ width: 80, height: 40, marginBottom: 5 }}>
+                            <Image src="/file/tulie-agency-logo.png" style={{ objectFit: 'contain' }} />
+                        </View>
+                        <Text style={[styles.companyName, { fontSize: 14 }]}>TULIE AGENCY</Text>
+                        <View style={[styles.underline, { width: '60%' }]} />
                     </View>
                 </View>
 

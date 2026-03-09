@@ -42,6 +42,7 @@ import {
     Printer,
 } from 'lucide-react'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
+import { QuotationDocumentPaper } from '@/components/quotations/quotation-document-paper'
 import { QuotationStatus, QuotationItem, Quotation } from '@/types'
 import { QuotationEmailButton } from '@/components/quotations/quotation-email-button'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
@@ -66,6 +67,7 @@ export default function QuotationDetailPage() {
     const [brandConfig, setBrandConfig] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [baseUrl, setBaseUrl] = useState('')
+    const [layout, setLayout] = useState<'premium' | 'formal'>('premium')
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -237,6 +239,15 @@ export default function QuotationDetailPage() {
                         <Button variant="outline" onClick={() => window.print()} className="h-10 px-4 font-semibold gap-2">
                             <Printer className="h-4 w-4" />
                             In nhanh
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            className="h-10 px-4 font-semibold gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+                            onClick={() => setLayout(layout === 'premium' ? 'formal' : 'premium')}
+                        >
+                            <Layout className="h-4 w-4" />
+                            {layout === 'premium' ? 'Mẫu Hành chính' : 'Mẫu Cao cấp'}
                         </Button>
 
                         <Button variant="outline" asChild className="h-10 px-4 font-semibold">
@@ -676,10 +687,16 @@ export default function QuotationDetailPage() {
                     @media print {
                         @page { margin: 0; size: auto; }
                         body { margin: 0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                        .quotation-inner { padding: 40px !important; }
+                        .quotation-inner-paper { padding: 0 !important; border: none !important; box-shadow: none !important; }
                     }
                 ` }} />
-                <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                <div className="quotation-inner-paper bg-white">
+                    {layout === 'premium' ? (
+                        <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
+                    ) : (
+                        <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
+                    )}
+                </div>
             </div>
         </div>
     )
