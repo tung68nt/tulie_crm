@@ -227,8 +227,32 @@ export async function getPortalDataByToken(token: string) {
         // Fetch Brand Config
         const brandConfig = await getBrandConfig()
 
+        // Fetch Activities for the project/quotation
+        let activities: any[] = []
+        try {
+            if (projectId) {
+                const { data: actData } = await supabase
+                    .from('activity_log')
+                    .select('*, user:users(*)')
+                    .or(`entity_id.eq.${projectId},metadata->>project_id.eq.${projectId}`)
+                    .order('created_at', { ascending: false })
+                    .limit(20)
+                if (actData) activities = actData
+            } else {
+                const { data: actData } = await supabase
+                    .from('activity_log')
+                    .select('*, user:users(*)')
+                    .eq('entity_id', primaryQuotation.id)
+                    .order('created_at', { ascending: false })
+                    .limit(20)
+                if (actData) activities = actData
+            }
+        } catch (actErr) {
+            console.error('Error fetching portal activities:', actErr)
+        }
+
         return {
-            quotation: primaryQuotation, // Keep this for password check if needed
+            quotation: primaryQuotation,
             quotations: allQuotations,
             contracts: allContracts,
             invoices: allInvoices,
@@ -238,7 +262,8 @@ export async function getPortalDataByToken(token: string) {
             project: primaryQuotation.project,
             projectMetadata,
             brandConfig,
-            workItems: allWorkItems
+            workItems: allWorkItems,
+            activities
         }
     } catch (err) {
         console.error('Error fetching portal data:', err)

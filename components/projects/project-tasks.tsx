@@ -164,14 +164,14 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
 
                             <div className="md:col-span-2">
                                 <Select value={task.status} onValueChange={(v) => updateTask(task.id, 'status', v)}>
-                                    <SelectTrigger className={cn("h-8 text-[11px] font-bold rounded-full border-none", getStatusColor(task.status))}>
+                                    <SelectTrigger className={cn("h-8 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider", getStatusColor(task.status))}>
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="todo" className="text-[11px]">Chưa làm</SelectItem>
-                                        <SelectItem value="in_progress" className="text-[11px]">Đang làm</SelectItem>
-                                        <SelectItem value="completed" className="text-[11px]">Xong</SelectItem>
-                                        <SelectItem value="blocked" className="text-[11px]">Vướng</SelectItem>
+                                    <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
+                                        <SelectItem value="todo" className="text-[11px] font-medium">Chưa làm</SelectItem>
+                                        <SelectItem value="in_progress" className="text-[11px] font-medium">Đang tiến hành</SelectItem>
+                                        <SelectItem value="completed" className="text-[11px] font-medium">Hoàn thành</SelectItem>
+                                        <SelectItem value="blocked" className="text-[11px] font-medium">Vướng mắc</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -203,13 +203,18 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
 
                             <div className="md:col-span-2 flex justify-end gap-1">
                                 <Select value={task.priority} onValueChange={(v) => updateTask(task.id, 'priority', v)}>
-                                    <SelectTrigger className="h-8 w-20 text-[10px] border-zinc-100">
+                                    <SelectTrigger className={cn(
+                                        "h-8 w-24 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider",
+                                        task.priority === 'high' ? "bg-red-50 text-red-700" :
+                                            task.priority === 'medium' ? "bg-amber-50 text-amber-700" :
+                                                "bg-zinc-100 text-zinc-600"
+                                    )}>
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="low" className="text-[11px]">Thấp</SelectItem>
-                                        <SelectItem value="medium" className="text-[11px]">Vừa</SelectItem>
-                                        <SelectItem value="high" className="text-[11px]">Cao</SelectItem>
+                                    <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
+                                        <SelectItem value="low" className="text-[11px] font-medium">Thấp</SelectItem>
+                                        <SelectItem value="medium" className="text-[11px] font-medium">Vừa</SelectItem>
+                                        <SelectItem value="high" className="text-[11px] font-medium">Cao</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <Button variant="ghost" size="icon" onClick={() => removeTask(task.id)} className="h-8 w-8 text-destructive/60 hover:text-destructive hover:bg-destructive/10 rounded-lg">

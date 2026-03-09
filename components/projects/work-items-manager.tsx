@@ -464,9 +464,9 @@ function WorkItemRow({
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
-                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                                 <ListTodo className="w-3.5 h-3.5" />
-                                NỘI DUNG TRIỂN KHAI ({tasks.length})
+                                Nội dung triển khai ({tasks.length})
                             </h5>
                             <div className="space-y-1">
                                 {tasks.map((task: any) => (
@@ -522,9 +522,9 @@ function WorkItemRow({
 
                         {/* Col 2: Delivery Links */}
                         <div className="space-y-4">
-                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                                 <Link2 className="w-3.5 h-3.5" />
-                                LINK BÀN GIAO ({deliveryLinks.length})
+                                Link bàn giao ({deliveryLinks.length})
                             </h5>
                             <div className="space-y-2">
                                 {deliveryLinks.map((link: any, lIdx: number) => (
@@ -578,15 +578,15 @@ function WorkItemRow({
 
                         {/* Col 3: Required Documents */}
                         <div className="space-y-4">
-                            <h5 className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center justify-between gap-2">
+                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <ClipboardCheck className="w-3.5 h-3.5" />
-                                    THỦ TỤC CHỨNG TỪ
+                                    Thủ tục chứng từ
                                 </div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-7 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold px-3 rounded-full border border-blue-100 uppercase tracking-wider"
+                                    className="h-7 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-black px-4 rounded-full border border-blue-100 uppercase tracking-widest"
                                     onClick={() => setShowBundleDialog(true)}
                                 >
                                     <Plus className="w-3 h-3 mr-1.5" />
@@ -617,11 +617,11 @@ function WorkItemRow({
                                                 {doc.title}
                                             </span>
                                             {doc.date ? (
-                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">
-                                                    {doc.status === 'signed' ? 'ĐÃ KÝ:' : 'DỰ KIẾN:'} {formatDate(doc.date)}
+                                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">
+                                                    {doc.status === 'signed' ? 'Đã ký:' : 'Dự kiến:'} {formatDate(doc.date)}
                                                 </span>
                                             ) : (
-                                                <span className="text-[9px] font-bold text-zinc-300 uppercase tracking-tighter">CHƯA CÓ NGÀY</span>
+                                                <span className="text-[9px] font-black text-zinc-300 uppercase tracking-wider">Chưa có ngày</span>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover/doc:opacity-100 transition-opacity">

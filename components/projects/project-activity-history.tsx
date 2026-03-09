@@ -10,13 +10,15 @@ import { createClient } from '@/lib/supabase/client'
 
 interface ProjectActivityHistoryProps {
     projectId: string
+    activities?: any[]
 }
 
-export function ProjectActivityHistory({ projectId }: ProjectActivityHistoryProps) {
-    const [activities, setActivities] = useState<any[]>([])
-    const [isLoading, setIsLoading] = useState(true)
+export function ProjectActivityHistory({ projectId, activities: initialActivities }: ProjectActivityHistoryProps) {
+    const [activities, setActivities] = useState<any[]>(initialActivities || [])
+    const [isLoading, setIsLoading] = useState(!initialActivities)
 
     useEffect(() => {
+        if (initialActivities) return
         const fetchActivities = async () => {
             const supabase = createClient()
             const { data, error } = await supabase
