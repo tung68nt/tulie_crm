@@ -507,11 +507,11 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-3xl font-semibold">
+                            <h1 className="text-3xl font-black tracking-tighter text-zinc-950">
                                 {quotation ? `Chỉnh sửa ${quotation.quotation_number}` : "Tạo báo giá mới"}
                             </h1>
-                            <p className="text-muted-foreground">
-                                {quotation ? "Cập nhật thông tin báo giá" : "Nhập thông tin cho báo giá mới"}
+                            <p className="text-[11px] font-black text-zinc-400 uppercase tracking-widest mt-1 opacity-70">
+                                {quotation ? "Cập nhật dữ liệu & Proposal" : "Khởi tạo hồ sơ báo giá mới"}
                             </p>
                         </div>
                     </div>
@@ -522,9 +522,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 {/* Main Content */}
                 <div className="space-y-6">
                     {/* Basic Info */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Thông tin cơ bản</CardTitle>
+                    <Card className="rounded-2xl shadow-sm border-zinc-200 overflow-hidden">
+                        <CardHeader className="bg-zinc-50/50 border-b border-zinc-100 py-4">
+                            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Thông tin cơ bản</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
@@ -1128,52 +1128,62 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-8 shadow-lg border-primary/20 bg-background/95 backdrop-blur">
-                    <CardHeader className="pb-2">
-                        <CardTitle>Tổng kết & Hoàn tất</CardTitle>
+                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border-zinc-200 bg-white/95 backdrop-blur-md rounded-[32px] overflow-hidden group">
+                    <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5 flex flex-row items-center justify-between">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Real-time Summary</span>
+                        </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                            <div className="flex-1 flex flex-col sm:flex-row gap-6 w-full md:w-auto">
-                                <div className="space-y-1 min-w-[120px]">
-                                    <p className="text-sm text-muted-foreground">Tạm tính</p>
-                                    <p className="font-medium">{formatCurrency(subtotal)}</p>
+                    <CardContent className="space-y-4 px-8 pb-8 pt-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+                            <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Tạm tính</p>
+                                    <p className="text-xl font-black text-zinc-950 tracking-tight">{formatCurrency(subtotal)}</p>
                                 </div>
 
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Thuế VAT</p>
-                                    <div className="flex items-center gap-2">
+                                <div className="space-y-2">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Thuế VAT</p>
+                                    <div className="flex items-center gap-4">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-20 h-8">
+                                            <SelectTrigger className="w-20 h-9 font-black border-zinc-200 rounded-xl">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="0">0%</SelectItem>
-                                                <SelectItem value="8">8%</SelectItem>
-                                                <SelectItem value="10">10%</SelectItem>
+                                            <SelectContent className="rounded-xl">
+                                                <SelectItem value="0" className="text-xs font-bold">0%</SelectItem>
+                                                <SelectItem value="8" className="text-xs font-bold">8%</SelectItem>
+                                                <SelectItem value="10" className="text-xs font-bold">10%</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <span className="font-medium min-w-[100px] text-right">{formatCurrency(vatAmount)}</span>
+                                        <span className="text-[15px] font-black text-zinc-950 tracking-tight">{formatCurrency(vatAmount)}</span>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1 min-w-[150px]">
-                                    <p className="text-sm text-muted-foreground">Tổng cộng</p>
-                                    <p className="text-2xl font-bold text-primary">{formatCurrency(totalAmount)}</p>
+                                <div className="space-y-2 min-w-[200px] border-l border-zinc-100 pl-10">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Tổng đầu tư</p>
+                                    <p className="text-3xl font-black text-zinc-950 tracking-tighter">{formatCurrency(totalAmount)}</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap gap-2 w-full md:w-auto justify-end">
-                                <Button variant="ghost" asChild disabled={isLoading}>
-                                    <Link href={quotation ? `/quotations/${quotation.id}` : "/quotations"}>Hủy</Link>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => handleSave(false)}
+                                    disabled={isLoading}
+                                    className="h-14 px-8 rounded-2.5xl font-black uppercase text-[10px] tracking-widest border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
+                                >
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                                    Lưu Dự thảo
                                 </Button>
-                                <Button variant="outline" onClick={() => handleSave(true)} disabled={isLoading}>
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                                    Lưu & Gửi
-                                </Button>
-                                <Button onClick={() => handleSave(false)} disabled={isLoading}>
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                    Lưu thay đổi
+                                <Button
+                                    onClick={() => handleSave(true)}
+                                    disabled={isLoading}
+                                    className="h-14 px-10 rounded-2.5xl font-black uppercase text-[10px] tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-2xl shadow-zinc-950/20 transition-all active:scale-[0.98] group"
+                                >
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
+                                    {quotation?.status === 'sent' || quotation?.status === 'accepted' ? 'Cập nhật & Gửi lại' : 'Lưu & Gửi báo giá'}
                                 </Button>
                             </div>
                         </div>

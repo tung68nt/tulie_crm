@@ -405,7 +405,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     {brandConfig?.tax_code && (
                                         <div className="flex items-center gap-2 text-[12px] sm:text-[13px] text-slate-700">
                                             <FileText className="h-3 w-3 shrink-0" />
-                                            <span>{brandConfig.tax_code}</span>
+                                            <span>MST: {brandConfig.tax_code}</span>
                                         </div>
                                     )}
                                 </div>
@@ -703,6 +703,14 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">{brandConfig?.hotline || "098.898.4554"}</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+                            <Button
+                                variant="outline"
+                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-2 sm:order-1"
+                                onClick={() => window.print()}
+                            >
+                                <Printer className="mr-1.5 h-3.5 w-3.5" />
+                                In báo giá
+                            </Button>
                             <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2" onClick={handleDownloadPDF} disabled={isDownloading}>
                                 <Download className="mr-1.5 h-3.5 w-3.5" />
                                 {isDownloading ? 'Đang tạo...' : 'Tải báo giá'}

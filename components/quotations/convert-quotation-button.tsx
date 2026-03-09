@@ -38,11 +38,11 @@ export function ConvertQuotationButton({ quotationId }: { quotationId: string })
         <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={isLoading}>
                 <Button
-                    className="h-10 px-4 bg-black hover:bg-zinc-900 text-white border-black font-semibold flex items-center gap-2 rounded-md"
+                    className="h-11 px-6 bg-zinc-950 hover:bg-zinc-800 text-white border-zinc-950 font-bold flex items-center gap-2.5 rounded-2xl shadow-lg transition-all active:scale-[0.98] uppercase text-[11px] tracking-widest"
                 >
                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
                     Chuyển thành Đơn hàng / Hợp đồng
-                    <ChevronDown className="h-4 w-4 ml-1 opacity-50 group-data-[state=open]:rotate-180 transition-transform" />
+                    <ChevronDown className="h-4 w-4 ml-1 opacity-50" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-1">
