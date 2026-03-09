@@ -45,150 +45,129 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
     ].filter(s => !!pc[s.key]);
 
     return (
-        <div className="quotation-inner">
-            {/* Premium Header Section */}
-            <div className="bg-zinc-950 text-white p-8 mb-8 rounded-b-[2.5rem] relative overflow-hidden group">
-                <div className="absolute inset-0 opacity-10 pointer-events-none"
-                    style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+        <div className="quotation-inner bg-white">
+            {/* Premium Header Section - Bilingual & Full Info */}
+            <div className="p-8 pb-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start gap-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 z-0 opacity-50" />
+
+                {/* Tulie Company Info (Left) */}
+                <div className="relative z-10 space-y-3 max-w-xl">
+                    <div className="space-y-1">
+                        <h1 className="text-[15px] font-bold text-slate-900 uppercase">
+                            {brandConfig?.company_full_name || 'Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie'}
+                        </h1>
+                    </div>
+
+                    <div className="space-y-1.5 text-[12px] text-slate-600 font-medium">
+                        <p className="flex items-start gap-3">
+                            <Building2 className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                            <span>{brandConfig?.company_address || 'Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam'}</span>
+                        </p>
+                        <p className="flex items-center gap-3">
+                            <Clock className="h-4 w-4 text-slate-400 shrink-0" />
+                            <span>{brandConfig?.company_phone || '098.898.4554'}</span>
+                        </p>
+                        <p className="flex items-center gap-3">
+                            <Info className="h-4 w-4 text-slate-400 shrink-0" />
+                            <span>{brandConfig?.company_email || 'info@tulie.vn'}</span>
+                        </p>
+                        <p className="flex items-center gap-3">
+                            <Receipt className="h-4 w-4 text-slate-400 shrink-0" />
+                            <span>MST/ Tax Code: {brandConfig?.tax_code || '0110163102'}</span>
+                        </p>
+                    </div>
                 </div>
-                <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
 
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                    {/* Brand/Company Info */}
-                    <div className="space-y-4 max-w-md">
+                {/* Quotation Summary (Right) - Bilingual */}
+                <div className="relative z-10 text-right space-y-1 min-w-[220px]">
+                    <div className="flex flex-col items-end gap-1 mb-3">
                         {brandConfig?.logo_url ? (
-                            <img src={brandConfig.logo_url} alt="Logo" className="h-10 w-auto invert brightness-0" />
+                            <img src={brandConfig.logo_url} alt="Logo" className="h-10 w-auto" />
                         ) : (
-                            <h1 className="text-2xl font-black tracking-tighter uppercase italic">{brandConfig?.brand_name || 'TULIE STUDIO'}</h1>
+                            <span className="text-2xl font-black tracking-tighter text-slate-900 italic">TULIE</span>
                         )}
-                        <div className="space-y-1 text-xs text-zinc-400 font-medium">
-                            <p className="flex items-center gap-2">
-                                <Building2 className="h-3 w-3" />
-                                {brandConfig?.company_address || 'Hanoi, Vietnam'}
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <Info className="h-3 w-3" />
-                                {brandConfig?.company_email || 'hello@tuliestudio.com'} — {brandConfig?.company_phone || '098.898.4554'}
-                            </p>
-                        </div>
                     </div>
-
-                    {/* Quotation Summary Badge */}
-                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-5 rounded-2xl flex flex-col md:items-end min-w-[200px]">
-                        <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold mb-1">Quotation Document</div>
-                        <h2 className="text-2xl font-black tabular-nums tracking-tight mb-2">#{quotation.quotation_number}</h2>
-                        <div className="h-px w-full bg-white/10 mb-2" />
-                        <div className="flex flex-col md:items-end gap-0.5">
-                            <p className="text-xs text-zinc-400 font-medium">Ngày lập: <span className="text-white font-bold">{formatDate(quotation.created_at)}</span></p>
-                            <p className="text-xs text-zinc-400 font-medium">Hết hạn: <span className="text-white font-bold">{quotation.valid_until ? formatDate(quotation.valid_until) : '30 ngày'}</span></p>
-                        </div>
-                    </div>
+                    <p className="text-[12px] font-medium text-slate-500">
+                        Số/ No: <span className="text-slate-900 font-bold ml-1">#{quotation.quotation_number}</span>
+                    </p>
+                    <p className="text-[12px] font-medium text-slate-500">
+                        Ngày/ Date: <span className="text-slate-900 font-bold ml-1">{formatDate(quotation.created_at)}</span>
+                    </p>
+                    <p className="text-[12px] font-medium text-slate-500">
+                        Hết hạn/ Valid until: <span className="text-slate-900 font-bold ml-1">{quotation.valid_until ? formatDate(quotation.valid_until) : '21/03/2026'}</span>
+                    </p>
                 </div>
             </div>
 
-            <div className="px-8 pb-10 space-y-6">
-                {/* Customer Info Card */}
-                <Card className="border-slate-200">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-base font-bold">
-                            <Building2 className="h-5 w-5" />
-                            Thông tin khách hàng
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-6 sm:grid-cols-2">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Đơn vị</p>
-                                <p className="font-bold text-lg text-slate-900">{quotation.customer?.company_name}</p>
-                                <p className="text-sm text-muted-foreground mt-2">Địa chỉ</p>
-                                <p className="text-sm">{quotation.customer?.address || 'N/A'}</p>
-                            </div>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground font-medium">Email:</span>
-                                    <span className="font-semibold">{quotation.customer?.email || 'N/A'}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground font-medium">Điện thoại:</span>
-                                    <span className="font-semibold">{quotation.customer?.phone || 'N/A'}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+            <div className="px-8 py-8 space-y-8">
+                {/* Customer Info Card - Bilingual */}
+                <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-[14px] font-bold text-slate-900 uppercase tracking-tight border-l-4 border-slate-900 pl-3">
+                        Thông tin khách hàng<span className="text-slate-400 font-medium ml-1 text-[12px] normal-case">/ Customer</span>
+                    </h3>
 
-                {/* Proposal Content - Premium Timeline Style */}
+                    <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-6 grid gap-4 grid-cols-1">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <span className="text-slate-500 text-[12px] font-medium min-w-[120px]">Đơn vị/ <span className="text-slate-400">Company:</span></span>
+                            <span className="text-slate-900 text-[14px] font-bold">{quotation.customer?.company_name}</span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-2">
+                            <span className="text-slate-500 text-[12px] font-medium min-w-[120px]">Địa chỉ/ <span className="text-slate-400">Address:</span></span>
+                            <span className="text-slate-900 text-[13px] font-medium">{quotation.customer?.address || 'Hanoi, Vietnam'}</span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <span className="text-slate-500 text-[12px] font-medium min-w-[120px]">Người liên hệ/ <span className="text-slate-400">Attn:</span></span>
+                            <span className="text-slate-900 text-[13px] font-medium">{quotation.customer?.contact_person || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Proposal Content */}
                 {hasProposal && proposalSections.length > 0 && (
-                    <Card className="overflow-hidden border-slate-200 p-0 gap-0">
-                        <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
-                            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                                style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
-                            </div>
-                            <div className="relative z-10 flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-base font-bold">Đề xuất giải pháp</CardTitle>
-                                    <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Proposal — {proposalSections.length} hạng mục</CardDescription>
-                                </div>
-                                <Layout className="h-5 w-5 text-zinc-500" />
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-6 bg-white">
-                            <div className="relative pl-8 before:absolute before:left-[11px] before:top-[23px] before:bottom-2 before:w-[2px] before:bg-slate-200 before:rounded-full">
-                                {proposalSections.map((section, idx) => {
-                                    const icon = sectionIcons[section.key] || <Info className="w-4 h-4" />;
-                                    return (
-                                        <div key={idx} className="proposal-section relative mb-5 last:mb-0">
-                                            <div className="absolute -left-8 top-[23px] -translate-y-1/2 w-[22px] h-[22px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[9px] font-bold z-10">
-                                                {idx + 1}
-                                            </div>
-                                            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-                                                <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900">
-                                                    <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900 text-white ">
-                                                        {icon}
-                                                    </span>
-                                                    <h4 className="text-[13px] font-bold leading-tight">
-                                                        {section.label}
-                                                    </h4>
-                                                </div>
-                                                <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">
-                                                    {pc[section.key]}
-                                                </div>
+                    <div className="space-y-4">
+                        <h3 className="flex items-center gap-2 text-[14px] font-bold text-slate-900 uppercase tracking-tight border-l-4 border-slate-900 pl-3">
+                            Đề xuất giải pháp<span className="text-slate-400 font-medium ml-1 text-[12px] normal-case">/ Proposal</span>
+                        </h3>
+                        <div className="relative pl-8 before:absolute before:left-[11px] before:top-4 before:bottom-0 before:w-[2px] before:bg-slate-100">
+                            {proposalSections.map((section, idx) => {
+                                const icon = sectionIcons[section.key] || <Info className="w-4 h-4" />;
+                                return (
+                                    <div key={idx} className="relative mb-6 last:mb-0">
+                                        <div className="absolute -left-8 top-1 translate-y-0 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold bg-slate-900 text-white z-10 border-4 border-white shadow-sm">
+                                            {idx + 1}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h4 className="text-[13px] font-bold text-slate-800 flex items-center gap-2">
+                                                {icon}
+                                                {section.label}
+                                            </h4>
+                                            <div className="text-[12px] text-slate-600 leading-relaxed whitespace-pre-line pl-6">
+                                                {pc[section.key]}
                                             </div>
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 )}
 
-                {/* Items Card */}
-                <Card className="overflow-hidden border-slate-200 p-0 gap-0">
-                    <CardHeader className="bg-zinc-950 py-4 px-5 text-white relative rounded-none border-b-0">
-                        <div className="absolute inset-0 opacity-10 pointer-events-none"
-                            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
-                        </div>
-                        <div className="relative z-10 flex items-center justify-between">
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <CardTitle className="text-base font-bold text-white">Chi tiết hạng mục</CardTitle>
-                                    <div className="text-[10px] bg-white/20 px-2 py-0.5 rounded text-white font-mono">Quotation Items</div>
-                                </div>
-                                <CardDescription className="text-[11px] text-zinc-400 mt-0.5">Chi tiết các hạng mục và chi phí dịch vụ</CardDescription>
-                            </div>
-                            <Receipt className="h-5 w-5 text-zinc-500" />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
+                {/* Items Card - Bilingual Table */}
+                <div className="space-y-4">
+                    <h3 className="flex items-center gap-2 text-[14px] font-bold text-slate-900 uppercase tracking-tight border-l-4 border-slate-900 pl-3">
+                        Chi tiết hạng mục<span className="text-slate-400 font-medium ml-1 text-[12px] normal-case">/ Quotation Items</span>
+                    </h3>
+
+                    <div className="rounded-2xl border border-slate-100 overflow-hidden">
                         <Table className="table-fixed w-full">
-                            <TableHeader className="bg-zinc-950">
-                                <TableRow className="border-b-zinc-800 hover:bg-zinc-950">
-                                    <TableHead className="w-[40px] text-center py-3 font-bold text-white text-[10px] uppercase tracking-wider">#</TableHead>
-                                    <TableHead className="py-3 font-bold text-white text-[10px] uppercase tracking-wider">Hạng mục & Mô tả</TableHead>
-                                    <TableHead className="w-[80px] text-center py-3 font-bold text-white text-[10px] uppercase tracking-wider">ĐVT</TableHead>
-                                    <TableHead className="w-[60px] text-center py-3 font-bold text-white text-[10px] uppercase tracking-wider">SL</TableHead>
-                                    <TableHead className="w-[120px] text-right py-3 font-bold text-white text-[10px] uppercase tracking-wider">Đơn giá</TableHead>
-                                    <TableHead className="w-[140px] text-right pr-6 py-3 font-bold text-white text-[10px] uppercase tracking-wider">Thành tiền</TableHead>
+                            <TableHeader className="bg-slate-900">
+                                <TableRow className="hover:bg-slate-900 border-none">
+                                    <TableHead className="w-[40px] text-center text-white text-[10px] font-bold tracking-wider uppercase">#</TableHead>
+                                    <TableHead className="text-white text-[10px] font-bold tracking-wider uppercase">Hạng mục & Mô tả/ <span className="text-slate-400">Items & Description</span></TableHead>
+                                    <TableHead className="w-[80px] text-center text-white text-[10px] font-bold tracking-wider uppercase">ĐVT/ <span className="text-slate-400">Unit</span></TableHead>
+                                    <TableHead className="w-[60px] text-center text-white text-[10px] font-bold tracking-wider uppercase">SL/ <span className="text-slate-400">Qty</span></TableHead>
+                                    <TableHead className="w-[120px] text-right text-white text-[10px] font-bold tracking-wider uppercase">Đơn giá/ <span className="text-slate-400">Unit Price</span></TableHead>
+                                    <TableHead className="w-[140px] text-right pr-6 text-white text-[10px] font-bold tracking-wider uppercase">Thành tiền/ <span className="text-slate-400">Amount</span></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -210,30 +189,25 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                     return sectionEntries.map(([sectionName, sectionItems], sIdx) => (
                                         <React.Fragment key={sIdx}>
                                             {(sectionName || sectionEntries.length > 1) && (
-                                                <TableRow className="bg-slate-50 hover:bg-slate-50">
-                                                    <TableCell colSpan={6} className="px-5 py-2.5 border-b border-slate-200">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="flex h-6 w-6 items-center justify-center rounded bg-zinc-900 text-white text-[10px] font-bold">
-                                                                {sIdx + 1}
-                                                            </div>
-                                                            <span className="text-[12px] font-bold text-slate-800 uppercase tracking-tight">
-                                                                {sectionName || `Nhóm dịch vụ ${sIdx + 1}`}
-                                                            </span>
-                                                        </div>
+                                                <TableRow className="bg-slate-50 hover:bg-slate-50 border-b border-slate-100">
+                                                    <TableCell colSpan={6} className="px-5 py-2">
+                                                        <span className="text-[11px] font-bold text-slate-800 uppercase">
+                                                            {sectionName || `Nhóm dịch vụ ${sIdx + 1}`}
+                                                        </span>
                                                     </TableCell>
                                                 </TableRow>
                                             )}
                                             {sectionItems.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map((item, iIdx) => {
                                                 const currentGlobalIdx = ++globalItemIndex;
                                                 return (
-                                                    <TableRow key={item.id} className="hover:bg-slate-50/50 group/row border-b border-slate-100 last:border-0 h-auto">
-                                                        <TableCell className="text-center py-4 bg-slate-50/20 font-bold border-r border-slate-50 text-slate-400 group-hover/row:text-zinc-900">
-                                                            <span className="text-[10px] tabular-nums">{currentGlobalIdx}</span>
+                                                    <TableRow key={item.id} className="hover:bg-slate-50/30 border-b border-slate-100 last:border-0 group">
+                                                        <TableCell className="text-center py-4 text-[10px] font-bold text-slate-400 group-hover:text-slate-900 border-r border-slate-50">
+                                                            {currentGlobalIdx}
                                                         </TableCell>
-                                                        <TableCell className="px-4 py-4 align-top overflow-hidden">
+                                                        <TableCell className="px-5 py-4 align-top">
                                                             <p className="font-bold text-slate-900 text-[13px] leading-tight mb-1">{item.product_name}</p>
                                                             {item.description && (
-                                                                <p className="text-[11px] text-slate-500 leading-relaxed whitespace-pre-line font-medium border-l-2 border-slate-200 pl-3">
+                                                                <p className="text-[11px] text-slate-500 leading-relaxed whitespace-pre-line font-medium pl-3 border-l-2 border-slate-100">
                                                                     {item.description}
                                                                 </p>
                                                             )}
@@ -244,10 +218,10 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                                         <TableCell className="text-center py-4 font-bold text-slate-900 text-[12px] border-l border-slate-50/50">
                                                             {item.quantity}
                                                         </TableCell>
-                                                        <TableCell className="text-right py-4 tabular-nums font-bold text-slate-900 text-[12px] border-l border-slate-50/50">
+                                                        <TableCell className="text-right py-4 font-bold text-slate-900 text-[12px] border-l border-slate-50/50 tabular-nums">
                                                             {formatCurrency(item.unit_price || 0)}
                                                         </TableCell>
-                                                        <TableCell className="text-right font-bold pr-6 py-4 tabular-nums bg-slate-50/30 text-[13px] border-l border-slate-50/50">
+                                                        <TableCell className="text-right font-black pr-6 py-4 bg-slate-50/30 text-[13px] text-slate-900 border-l border-slate-50/50 tabular-nums">
                                                             {formatCurrency(item.total_price || 0)}
                                                         </TableCell>
                                                     </TableRow>
@@ -259,104 +233,93 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                             </TableBody>
                         </Table>
 
-                        <div className="border-t p-6 bg-white">
-                            <div className="flex justify-end">
-                                <div className="w-full max-w-xs space-y-3">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Tạm tính:</span>
-                                        <span className="font-semibold">{formatCurrency(quotation.subtotal || 0)}</span>
+                        <div className="bg-slate-50/50 p-8 border-t border-slate-100 flex justify-end">
+                            <div className="w-full max-w-xs space-y-4">
+                                <div className="flex justify-between items-center text-[12px]">
+                                    <span className="text-slate-500 font-medium uppercase tracking-wider">Tạm tính/ <span className="text-slate-400">Subtotal:</span></span>
+                                    <span className="font-bold text-slate-900 tabular-nums">{formatCurrency(quotation.subtotal || 0)}</span>
+                                </div>
+                                {(quotation.discount_amount || 0) > 0 && (
+                                    <div className="flex justify-between items-center text-[12px] text-destructive">
+                                        <span className="font-medium uppercase tracking-wider">Chiết khấu ({quotation.discount_percent || 0}%):</span>
+                                        <span className="font-bold tabular-nums">-{formatCurrency(quotation.discount_amount || 0)}</span>
                                     </div>
-                                    {(quotation.discount_amount || 0) > 0 && (
-                                        <div className="flex justify-between text-sm text-destructive font-medium">
-                                            <span>Chiết khấu ({quotation.discount_percent || 0}%):</span>
-                                            <span>-{formatCurrency(quotation.discount_amount || 0)}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">VAT ({quotation.vat_percent || 0}%):</span>
-                                        <span className="font-semibold">{formatCurrency(quotation.vat_amount || 0)}</span>
-                                    </div>
-                                    <Separator />
-                                    <div className="flex justify-between items-center pt-2">
-                                        <span className="font-bold text-lg text-slate-900">Tổng cộng:</span>
-                                        <span className="font-bold text-2xl text-primary">{formatCurrency(quotation.total_amount || 0)}</span>
-                                    </div>
+                                )}
+                                <div className="flex justify-between items-center text-[12px]">
+                                    <span className="text-slate-500 font-medium uppercase tracking-wider">VAT ({quotation.vat_percent || 0}%):</span>
+                                    <span className="font-bold text-slate-900 tabular-nums">{formatCurrency(quotation.vat_amount || 0)}</span>
+                                </div>
+                                <div className="h-px bg-slate-200 w-full" />
+                                <div className="flex justify-between items-center pt-2">
+                                    <span className="font-black text-[14px] text-slate-900 uppercase">Tổng cộng/ <span className="text-slate-400 font-bold">Total:</span></span>
+                                    <span className="font-black text-2xl text-slate-900 tabular-nums">{formatCurrency(quotation.total_amount || 0)}</span>
                                 </div>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                {/* Terms & Bank Card */}
-                <div className="grid gap-6 sm:grid-cols-2">
-                    <Card className="border-slate-200">
-                        <CardHeader>
-                            <CardTitle className="text-base font-bold">Ghi chú & Điều khoản</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                {/* Terms & Bank Info - Bilingual */}
+                <div className="grid gap-8 sm:grid-cols-2 pt-4">
+                    <div className="space-y-4">
+                        <h3 className="flex items-center gap-2 text-[14px] font-bold text-slate-900 uppercase tracking-tight border-l-4 border-slate-900 pl-3">
+                            Ghi chú & Điều khoản<span className="text-slate-400 font-medium ml-1 text-[12px] normal-case">/ Notes & Terms</span>
+                        </h3>
+                        <div className="space-y-4">
                             <div className="space-y-1">
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Ghi chú</p>
-                                <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed border-slate-300">
-                                    <ul className="list-none space-y-1 text-slate-600 font-medium">
-                                        {String(quotation.notes || brandConfig?.default_notes || 'Không có ghi chú')
-                                            .split('\n')
-                                            .filter(Boolean)
-                                            .map((line, i) => (
-                                                <li key={i} className="flex gap-2">
-                                                    <span className="text-slate-400">•</span>
-                                                    <span className="whitespace-pre-line text-slate-900">{line.replace(/^[-•]\s*/, '')}</span>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </div>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-3">Ghi chú/ Notes</p>
+                                <ul className="list-none space-y-1.5 pl-3">
+                                    {String(quotation.notes || brandConfig?.default_notes || 'N/A')
+                                        .split('\n')
+                                        .filter(Boolean)
+                                        .map((line, i) => (
+                                            <li key={i} className="flex gap-2 text-[12px] leading-relaxed text-slate-600 font-medium">
+                                                <span className="text-slate-300">•</span>
+                                                <span className="whitespace-pre-line text-slate-800">{line.replace(/^[-•]\s*/, '')}</span>
+                                            </li>
+                                        ))}
+                                </ul>
                             </div>
                             <div className="space-y-1">
-                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Điều khoản thanh toán</p>
-                                <div className="text-sm bg-muted/30 p-3 rounded-lg border border-dashed border-slate-300">
-                                    <ul className="list-none space-y-1 text-slate-600 font-medium">
-                                        {String(quotation.terms || brandConfig?.default_payment_terms || 'Theo quy định công ty')
-                                            .split('\n')
-                                            .filter(Boolean)
-                                            .map((line, i) => (
-                                                <li key={i} className="flex gap-2">
-                                                    <span className="text-slate-400">•</span>
-                                                    <span className="whitespace-pre-line text-slate-900">{line.replace(/^[-•]\s*/, '')}</span>
-                                                </li>
-                                            ))}
-                                    </ul>
-                                </div>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-3">Điều khoản/ Terms</p>
+                                <ul className="list-none space-y-1.5 pl-3">
+                                    {String(quotation.terms || brandConfig?.default_payment_terms || 'N/A')
+                                        .split('\n')
+                                        .filter(Boolean)
+                                        .map((line, i) => (
+                                            <li key={i} className="flex gap-2 text-[12px] leading-relaxed text-slate-600 font-medium">
+                                                <span className="text-slate-300">•</span>
+                                                <span className="whitespace-pre-line text-slate-800">{line.replace(/^[-•]\s*/, '')}</span>
+                                            </li>
+                                        ))}
+                                </ul>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
 
-                    <Card className="border-primary/20 bg-primary/5">
-                        <CardHeader>
-                            <CardTitle className="text-base font-bold flex items-center gap-2 text-slate-900">
-                                <CreditCard className="h-4 w-4" />
-                                Thông tin thanh toán
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3 text-sm">
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Ngân hàng</span>
-                                    <span className="font-bold text-slate-900">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</span>
-                                </div>
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Số tài khoản</span>
-                                    <span className="font-mono text-base font-bold text-primary">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</span>
-                                </div>
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Chủ tài khoản</span>
-                                    <span className="font-bold text-slate-900 uppercase">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</span>
-                                </div>
-                                <div className="flex flex-col gap-0.5">
-                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Chi nhánh</span>
-                                    <span className="font-semibold text-slate-700">{quotation.bank_branch || brandConfig?.bank_branch || "Chưa cấu hình"}</span>
-                                </div>
+                    <div className="space-y-4">
+                        <h3 className="flex items-center gap-2 text-[14px] font-bold text-slate-900 uppercase tracking-tight border-l-4 border-slate-900 pl-3">
+                            Thông tin thanh toán<span className="text-slate-400 font-medium ml-1 text-[12px] normal-case">/ Payment Info</span>
+                        </h3>
+                        <div className="bg-slate-900 rounded-2xl p-6 text-white space-y-4 shadow-xl">
+                            <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Ngân hàng/ Bank</span>
+                                <p className="text-[13px] font-bold text-white">{quotation.bank_name || brandConfig?.bank_name || "Chưa cấu hình"}</p>
                             </div>
-                        </CardContent>
-                    </Card>
+                            <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Số tài khoản/ Account No</span>
+                                <p className="text-lg font-black tracking-wider text-white font-mono">{quotation.bank_account_no || brandConfig?.bank_account_no || "Chưa cấu hình"}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Chủ tài khoản/ Account Name</span>
+                                <p className="text-[13px] font-black text-white uppercase">{quotation.bank_account_name || brandConfig?.bank_account_name || "Chưa cấu hình"}</p>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Chi nhánh/ Branch</span>
+                                <p className="text-[12px] font-bold text-slate-300">{quotation.bank_branch || brandConfig?.bank_branch || "Chưa cấu hình"}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
