@@ -56,12 +56,12 @@ export default function LabPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <Layout className="h-6 w-6 text-zinc-600 dark:text-zinc-400" />
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Layout className="h-6 w-6 text-primary" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-semibold">Tulie Lab Control</h1>
-                        <p className="text-muted-foreground">Đồng bộ dữ liệu tập trung từ thelab.tulie.vn.</p>
+                        <p className="text-muted-foreground font-normal">Đồng bộ dữ liệu tập trung từ thelab.tulie.vn.</p>
                     </div>
                 </div>
                 <Button

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Plus, Eye, Edit, FileSignature, Receipt, Wallet, FileCheck } from 'lucide-react'
+import { FileText, Plus, Eye, Edit, FileSignature, Receipt, Wallet, FileCheck, Files } from 'lucide-react'
 import Link from 'next/link'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
 import { DocumentTemplate } from '@/types'
@@ -40,13 +40,16 @@ export default async function TemplatesPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold">
-                        Mẫu giấy tờ
-                    </h1>
-                    <p className="text-sm text-muted-foreground">
-                        Quản lý các mẫu hợp đồng, đơn hàng, đề nghị thanh toán, biên bản giao nhận
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Files className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-semibold">Mẫu giấy tờ</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý các mẫu hợp đồng, đơn hàng, đề nghị thanh toán, biên bản giao nhận
+                        </p>
+                    </div>
                 </div>
                 <Button asChild>
                     <Link href="/templates/new">

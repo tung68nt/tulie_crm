@@ -32,11 +32,16 @@ export default async function TeamPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Nhân sự</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý team và theo dõi hiệu suất làm việc
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <UserCheck className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold">Nhân sự</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý team và theo dõi hiệu suất làm việc
+                        </p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" asChild>

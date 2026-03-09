@@ -1,0 +1,46 @@
+[dotenv@17.3.1] injecting env (7) from .env.local -- tip: ⚙️  write to custom object with { processEnv: myObject }
+Checking retail_orders table...
+retail_orders: [
+  { column_name: 'id', data_type: 'uuid' },
+  { column_name: 'order_number', data_type: 'text' },
+  { column_name: 'stt', data_type: 'integer' },
+  { column_name: 'customer_name', data_type: 'text' },
+  { column_name: 'customer_phone', data_type: 'text' },
+  { column_name: 'customer_email', data_type: 'text' },
+  { column_name: 'order_date', data_type: 'date' },
+  { column_name: 'total_amount', data_type: 'numeric' },
+  { column_name: 'deposit_amount', data_type: 'numeric' },
+  { column_name: 'paid_amount', data_type: 'numeric' },
+  { column_name: 'payment_status', data_type: 'text' },
+  { column_name: 'order_status', data_type: 'text' },
+  { column_name: 'resource_link', data_type: 'text' },
+  { column_name: 'demo_link', data_type: 'text' },
+  { column_name: 'needs_vat', data_type: 'boolean' },
+  { column_name: 'vat_info', data_type: 'jsonb' },
+  { column_name: 'notes', data_type: 'text' },
+  { column_name: 'metadata', data_type: 'jsonb' },
+  { column_name: 'created_by', data_type: 'uuid' },
+  { column_name: 'created_at', data_type: 'timestamp with time zone' },
+  { column_name: 'updated_at', data_type: 'timestamp with time zone' },
+  { column_name: 'source_system', data_type: 'text' },
+  { column_name: 'external_id', data_type: 'text' },
+  { column_name: 'brand', data_type: 'USER-DEFINED' },
+  { column_name: 'shipping_fee', data_type: 'numeric' },
+  {
+    column_name: 'delivery_date',
+    data_type: 'timestamp with time zone'
+  },
+  { column_name: 'public_token', data_type: 'uuid' }
+]
+Checking retail_order_items table...
+retail_order_items: [
+  { column_name: 'id', data_type: 'uuid' },
+  { column_name: 'order_id', data_type: 'uuid' },
+  { column_name: 'product_id', data_type: 'uuid' },
+  { column_name: 'product_name', data_type: 'text' },
+  { column_name: 'quantity', data_type: 'integer' },
+  { column_name: 'unit_price', data_type: 'numeric' },
+  { column_name: 'total_price', data_type: 'numeric' },
+  { column_name: 'sort_order', data_type: 'integer' },
+  { column_name: 'created_at', data_type: 'timestamp with time zone' }
+]

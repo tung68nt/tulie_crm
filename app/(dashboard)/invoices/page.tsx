@@ -24,11 +24,16 @@ export default async function InvoicesPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold">Hóa đơn</h1>
-                    <p className="text-muted-foreground">
-                        Quản lý hóa đơn bán hàng và mua vào
-                    </p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Banknote className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold">Hóa đơn</h1>
+                        <p className="text-muted-foreground font-normal">
+                            Quản lý hóa đơn bán hàng và mua vào
+                        </p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline">

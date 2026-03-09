@@ -11,12 +11,12 @@ export default async function StudioDealsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                        <TrendingUp className="h-6 w-6 text-zinc-600 dark:text-zinc-400" />
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <TrendingUp className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold">Cơ hội Studio</h1>
-                        <p className="text-muted-foreground">
+                        <h1 className="text-3xl font-semibold">Cơ hội Studio</h1>
+                        <p className="text-muted-foreground font-normal">
                             Quản lý phễu khách hàng cá nhân & Studio.
                         </p>
                     </div>

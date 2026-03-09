@@ -32,7 +32,7 @@ export default async function OrdersPage() {
                         <ShoppingCart className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-semibold">Đơn hàng</h1>
+                        <h1 className="text-3xl font-bold">Đơn hàng</h1>
                         <p className="text-muted-foreground font-normal">
                             Quản lý và theo dõi các đơn hàng dịch vụ
                         </p>

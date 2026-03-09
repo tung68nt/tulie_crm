@@ -399,7 +399,7 @@ export default function SettingsPage() {
                     <Settings className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-semibold">Cài đặt</h1>
+                    <h1 className="text-3xl font-bold">Cài đặt</h1>
                     <p className="text-muted-foreground font-normal">
                         Quản lý cài đặt hệ thống và tài khoản
                     </p>

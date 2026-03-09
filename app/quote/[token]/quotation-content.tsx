@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
-import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
+import { CheckCircle, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen, Loader2 } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -170,6 +170,55 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         amount_in_words: readNumberToWords(finalAmount),
     }
 
+    const handleDownloadPDF = async () => {
+        if (!printRef.current) return;
+        setIsDownloading(true);
+        toast.info("đang khởi tạo file pdf chất lượng cao...");
+
+        try {
+            const html2canvas = (await import('html2canvas')).default;
+            const jsPDF = (await import('jspdf')).default;
+
+            const element = printRef.current;
+            const canvas = await html2canvas(element, {
+                scale: 2, // High quality
+                useCORS: true,
+                logging: false,
+                windowWidth: 1200, // Fixed width for consistent layout
+                onclone: (clonedDoc) => {
+                    // Force print styles or hide things in clone if needed
+                    const el = clonedDoc.querySelector('.quotation-inner-paper') as HTMLElement;
+                    if (el) {
+                        el.style.boxShadow = 'none';
+                        el.style.borderRadius = '0';
+                    }
+                }
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: 'a4'
+            });
+
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            // Handle multi-page if needed, but for now simple 1-page fit or split
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+            pdf.save(`Bao_gia_${quotation.quotation_number}.pdf`);
+            toast.success("đã tải báo giá thành công");
+        } catch (error) {
+            console.error('PDF Generation Error:', error);
+            toast.error("lỗi khi tạo file pdf, vui lòng thử In nhanh (Ctrl+P)");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     return (
         <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
             <div
@@ -190,22 +239,16 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             Cần hỗ trợ? <span className="text-slate-900 font-semibold">098.898.4554</span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold" onClick={handleDownloadPDF} disabled={isDownloading}>
+                                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
+                                {isDownloading ? 'Đang tạo...' : 'Tải PDF'}
+                            </Button>
+                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
+                                <Printer className="mr-1.5 h-3.5 w-3.5" />
+                                In nhanh
+                            </Button>
                             {quotation.status !== 'accepted' && quotation.status !== 'rejected' ? (
                                 <>
-                                    <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
-                                        <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                        In nhanh
-                                    </Button>
-                                    <DocumentDownloadButton
-                                        type="quotation"
-                                        label="Tải PDF"
-                                        variant="outline"
-                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
-                                        documentId={quotation.id}
-                                        customerId={quotation.customer_id}
-                                        fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
-                                        initialData={initialPdfData}
-                                    />
                                     <Button
                                         variant="ghost"
                                         className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600"
@@ -223,24 +266,8 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     </Button>
                                 </>
                             ) : (
-                                <div className="col-span-2 flex items-center gap-3">
-                                    <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
-                                        <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                        In nhanh
-                                    </Button>
-                                    <DocumentDownloadButton
-                                        type="quotation"
-                                        label="Tải PDF"
-                                        variant="outline"
-                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
-                                        documentId={quotation.id}
-                                        customerId={quotation.customer_id}
-                                        fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
-                                        initialData={initialPdfData}
-                                    />
-                                    <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} font-semibold text-sm`}>
-                                        {quotation.status === 'accepted' ? 'Đã được chấp nhận' : 'Đã bị từ chối'}
-                                    </div>
+                                <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} font-semibold text-sm`}>
+                                    {quotation.status === 'accepted' ? 'Đã được chấp nhận' : 'Đã bị từ chối'}
                                 </div>
                             )}
                         </div>
@@ -276,7 +303,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
                     /* Important: ensure the content inside QuotationPaper is well-spaced for paper */
                     .quotation-paper-content {
-                        padding: 15mm !important;
+                        padding: 10mm 15mm !important;
                     }
                     
                     /* Hide non-print UI elements */
@@ -284,24 +311,29 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                         display: none !important;
                     }
                     
-                    /* Force colors */
-                    * {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                    }
+                    /* Header Scaling */
+                    .text-\\[42px\\] { font-size: 32pt !important; }
+                    .text-\\[58px\\] { font-size: 36pt !important; }
+                    .text-\\[18px\\] { font-size: 14pt !important; }
+                    .text-\\[24px\\] { font-size: 17pt !important; }
+                    .leading-\\[0\\.8\\] { line-height: 0.8 !important; }
+                    
+                    /* Proposal Spacing */
+                    .relative.pl-12 { padding-left: 3rem !important; }
                     
                     /* Break control for sections and rows */
-                    .proposal-section, .rounded-3xl, tr {
+                    .proposal-section, .rounded-3xl, .rounded-2xl, tr {
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
                     }
 
                     /* Typography scaling for A4 */
-                    .text-5xl { font-size: 3rem !important; }
                     .text-xl { font-size: 1.25rem !important; }
                     .text-lg { font-size: 1.125rem !important; }
                     .text-sm { font-size: 10pt !important; }
                     .text-xs { font-size: 8pt !important; }
+                    .text-white { color: white !important; -webkit-text-fill-color: white !important; }
+                    .text-zinc-400 { color: #a1a1aa !important; }
                 }
                 ` }} />
 
