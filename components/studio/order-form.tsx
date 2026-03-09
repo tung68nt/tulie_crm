@@ -490,5 +490,4 @@ export function RetailOrderForm() {
             </div>
         </form>
     )
-    )
 }
