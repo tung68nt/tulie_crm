@@ -18,7 +18,8 @@ import {
     Receipt,
     CheckCircle,
     Clock,
-    AlertTriangle
+    AlertTriangle,
+    FileSignature
 } from 'lucide-react'
 import { getContractById } from '@/lib/supabase/services/contract-service'
 import { notFound } from 'next/navigation'
@@ -61,14 +62,21 @@ export default async function ContractDetailPage({ params }: any) {
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-semibold">{contract.contract_number}</h1>
-                            <Badge className={CONTRACT_STATUS_COLORS[contract.status as ContractStatus] || 'bg-gray-100'}>
-                                {CONTRACT_STATUS_LABELS[contract.status as ContractStatus] || contract.status}
-                            </Badge>
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <FileSignature className="h-6 w-6 text-primary" />
                         </div>
-                        <p className="text-muted-foreground">{contract.title}</p>
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 font-bold text-slate-700 h-6 flex items-center text-xs uppercase tracking-wider">
+                                    {contract.contract_number}
+                                </div>
+                                <Badge className={CONTRACT_STATUS_COLORS[contract.status as ContractStatus] || 'bg-gray-100'}>
+                                    {CONTRACT_STATUS_LABELS[contract.status as ContractStatus] || contract.status}
+                                </Badge>
+                            </div>
+                            <h1 className="text-3xl font-bold leading-none">{contract.customer?.company_name}</h1>
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">

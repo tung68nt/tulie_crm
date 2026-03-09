@@ -18,7 +18,8 @@ import {
     FileText,
     MessageSquare,
     Plus,
-    ExternalLink
+    ExternalLink,
+    Users
 } from 'lucide-react'
 import { getCustomerById } from '@/lib/supabase/services/customer-service'
 import { getQuotations } from '@/lib/supabase/services/quotation-service'
@@ -64,15 +65,13 @@ export default async function CustomerDetailPage({ params }: any) {
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-14 w-14">
-                            <AvatarFallback className="text-lg bg-foreground text-background">
-                                {customer.company_name.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <Users className="h-6 w-6 text-primary" />
+                        </div>
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="text-3xl font-semibold">{customer.company_name}</h1>
+                                <h1 className="text-3xl font-bold">{customer.company_name}</h1>
                                 <Badge className={CUSTOMER_STATUS_COLORS[customer.status] || 'bg-gray-100'}>
                                     {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
                                 </Badge>

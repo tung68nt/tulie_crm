@@ -253,10 +253,22 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 <ClipboardList className="mr-1.5 h-3.5 w-3.5" />
                                 {layout === 'premium' ? 'Mẫu Hành chính' : 'Mẫu Cao cấp'}
                             </Button>
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold" onClick={handleDownloadPDF} disabled={isDownloading}>
-                                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
-                                {isDownloading ? 'Đang tạo...' : 'Tải PDF'}
-                            </Button>
+                            {layout === 'formal' ? (
+                                <DocumentDownloadButton
+                                    type="quotation"
+                                    documentId={quotation.id}
+                                    customerId={quotation.customer_id}
+                                    variant="outline"
+                                    className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
+                                    label="Tải PDF"
+                                    initialData={quotation}
+                                />
+                            ) : (
+                                <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold" onClick={handleDownloadPDF} disabled={isDownloading}>
+                                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-3.5 w-3.5" />}
+                                    {isDownloading ? 'Đang tạo...' : 'Tải PDF'}
+                                </Button>
+                            )}
                             <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
                                 <Printer className="mr-1.5 h-3.5 w-3.5" />
                                 In nhanh

@@ -33,10 +33,9 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
             {/* Header following administrative style */}
             <div className="flex justify-between items-start mb-8">
                 {/* Left Side: Company Contact Info */}
-                <div className="w-[45%] text-center">
-                    <h3 className="text-[12px] font-bold uppercase mb-1">Công ty TNHH Dịch vụ và Giải pháp</h3>
-                    <h2 className="text-[14px] font-extrabold uppercase mb-2 border-b-2 border-black inline-block pb-0.5">Công nghệ Tulie</h2>
-                    <div className="mt-3 text-[10px] space-y-1 text-left">
+                <div className="w-[60%] text-left">
+                    <h3 className="text-[12px] font-extrabold uppercase mb-2 border-b-2 border-slate-200 inline-block pb-1">Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie</h3>
+                    <div className="text-[10px] space-y-1">
                         <p><span className="font-bold">Địa chỉ:</span> Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Q. Hà Đông, Hà Nội</p>
                         <p><span className="font-bold">MST:</span> 0110163102</p>
                         <p><span className="font-bold">Hotline:</span> 098.898.4554 - 08.6683.9791</p>
@@ -44,13 +43,13 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                     </div>
                 </div>
 
-                {/* Right Side: Replaces National Motto with Logo & Big Name */}
-                <div className="w-[50%] flex flex-col items-center">
-                    <img src="/file/tulie-agency-logo.png" alt="Tulie" className="h-16 w-auto mb-2 object-contain" />
-                    <h1 className="text-[20px] font-extrabold uppercase text-center tracking-tighter leading-tight">
-                        Quotation Management
+                {/* Right Side: Logo & Brand */}
+                <div className="w-[35%] flex flex-col items-center">
+                    <img src="/file/tulie-agency-logo.png" alt="Tulie" className="h-14 w-auto mb-2 object-contain" />
+                    <h1 className="text-[18px] font-black uppercase text-center tracking-tighter leading-tight">
+                        TULIE AGENCY
                     </h1>
-                    <div className="w-32 h-0.5 bg-black mt-2" />
+                    <div className="w-24 h-0.5 bg-black mt-1" />
                 </div>
             </div>
 

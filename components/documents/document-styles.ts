@@ -41,11 +41,11 @@ export const docStyles = StyleSheet.create({
         marginBottom: 10,
     },
     headerLeft: {
-        width: '45%',
+        width: '50%',
         textAlign: 'center',
     },
     headerRight: {
-        width: '55%',
+        width: '50%',
         textAlign: 'center',
     },
     companyName: {

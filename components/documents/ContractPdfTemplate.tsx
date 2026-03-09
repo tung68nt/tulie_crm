@@ -27,8 +27,7 @@ const ContractPdfTemplate: React.FC<ContractPdfTemplateProps> = ({ data }) => {
                 {/* Header */}
                 <View style={styles.companyHeader}>
                     <View style={styles.headerLeft}>
-                        <Text style={styles.companyName}>Công ty TNHH Dịch vụ và Giải pháp</Text>
-                        <Text style={styles.brandName}>Công nghệ Tulie</Text>
+                        <Text style={[styles.companyName, { fontSize: 8 }]}>CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</Text>
                         <View style={{ marginTop: 5, fontSize: 8 }}>
                             <Text>MST: 0110163102</Text>
                             <Text>Hotline: 098.898.4554</Text>
@@ -38,7 +37,7 @@ const ContractPdfTemplate: React.FC<ContractPdfTemplateProps> = ({ data }) => {
                         <View style={{ width: 80, height: 40, marginBottom: 5 }}>
                             <Image src="/file/tulie-agency-logo.png" style={{ objectFit: 'contain' }} />
                         </View>
-                        <Text style={[styles.companyName, { fontSize: 14 }]}>TULIE AGENCY</Text>
+                        <Text style={[styles.companyName, { fontSize: 12 }]}>TULIE AGENCY</Text>
                         <View style={[styles.underline, { width: '60%' }]} />
                     </View>
                 </View>

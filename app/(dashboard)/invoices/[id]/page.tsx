@@ -15,7 +15,9 @@ import {
     Building2,
     FileSignature,
     Calendar,
-    CheckCircle
+    CheckCircle,
+    Receipt,
+    Banknote
 } from 'lucide-react'
 import { getInvoiceById } from '@/lib/supabase/services/invoice-service'
 import { notFound } from 'next/navigation'
@@ -50,16 +52,21 @@ export default async function InvoiceDetailPage({ params }: any) {
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-semibold">{invoice.invoice_number}</h1>
-                            <Badge className={INVOICE_STATUS_COLORS[invoice.status] || 'bg-gray-100'}>
-                                {INVOICE_STATUS_LABELS[invoice.status] || invoice.status}
-                            </Badge>
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                            <Banknote className="h-6 w-6 text-primary" />
                         </div>
-                        <p className="text-muted-foreground">
-                            Ngày phát hành: {formatDate(invoice.issue_date)}
-                        </p>
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 font-bold text-slate-700 h-6 flex items-center text-xs uppercase tracking-wider">
+                                    {invoice.invoice_number}
+                                </div>
+                                <Badge className={INVOICE_STATUS_COLORS[invoice.status] || 'bg-gray-100'}>
+                                    {INVOICE_STATUS_LABELS[invoice.status] || invoice.status}
+                                </Badge>
+                            </div>
+                            <h1 className="text-3xl font-bold leading-none">{invoice.customer?.company_name}</h1>
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
