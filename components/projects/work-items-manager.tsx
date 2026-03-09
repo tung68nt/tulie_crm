@@ -639,14 +639,24 @@ function WorkItemRow({
                                                 </PopoverContent>
                                             </Popover>
                                             {doc.generated_doc_id && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg"
-                                                    onClick={() => onEditDoc(doc.generated_doc_id)}
-                                                >
-                                                    <FileEdit className="w-3.5 h-3.5" />
-                                                </Button>
+                                                <div className="flex items-center gap-1">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-7 w-7 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg"
+                                                        onClick={() => onEditDoc(doc.generated_doc_id)}
+                                                    >
+                                                        <Eye className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-7 w-7 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg"
+                                                        onClick={() => onEditDoc(doc.generated_doc_id)}
+                                                    >
+                                                        <FileEdit className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>

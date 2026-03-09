@@ -19,13 +19,18 @@ import { FileText as FileTextIcon, Receipt, ArrowUpRight, Lock } from 'lucide-re
 import { ProjectDescriptionForm } from '@/components/projects/project-description-form'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 import { DeleteProjectButton } from '@/components/projects/delete-project-button'
+import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
+import { ProjectDocumentationSet } from '@/components/projects/project-documentation-set'
+import { ProjectActivityHistory } from '@/components/projects/project-activity-history'
+import { getProjectTasks } from '@/lib/supabase/services/task-service'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
-    const [project, teamMembers, workItems] = await Promise.all([
+    const [project, teamMembers, workItems, tasks] = await Promise.all([
         getProjectById(id),
         getUsers(),
-        getWorkItemsByProject(id)
+        getWorkItemsByProject(id),
+        getProjectTasks(id)
     ])
 
     if (!project) notFound()
@@ -102,6 +107,12 @@ export default async function ProjectDetailPage({ params }: any) {
 
                     {/* Milestones / Schedule */}
                     <ProjectMilestones project={project} />
+
+                    {/* Gantt Chart Progress */}
+                    <ProjectGanttChart tasks={tasks} />
+
+                    {/* Documentation Set (Bộ chứng từ dự án) */}
+                    <ProjectDocumentationSet project={project} workItems={workItems} />
 
                     {/* Financial Documents Section (Quotations & Contracts) */}
                     <Card>
@@ -222,7 +233,10 @@ export default async function ProjectDetailPage({ params }: any) {
                 </div>
 
                 {/* Sidebar - client component with status, PM, dates, acceptance reports */}
-                <ProjectSidebar project={project} teamMembers={teamMembers} />
+                <div className="space-y-6">
+                    <ProjectSidebar project={project} teamMembers={teamMembers} />
+                    <ProjectActivityHistory projectId={project.id} />
+                </div>
             </div>
         </div>
     )
