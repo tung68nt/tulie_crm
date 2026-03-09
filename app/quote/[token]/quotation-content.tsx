@@ -925,7 +925,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             {/* Confirmation Dialog */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl">
+                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
                     <div className="bg-zinc-900 text-white p-8">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-bold tracking-tight">Xác nhận chấp nhận báo giá</DialogTitle>
@@ -1002,7 +1002,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             {/* Reject Dialog */}
             <Dialog open={showReject} onOpenChange={setShowReject}>
-                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl">
+                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
                     <div className="bg-red-600 text-white p-8">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-bold tracking-tight text-white">Từ chối báo giá</DialogTitle>

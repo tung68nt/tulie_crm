@@ -249,6 +249,7 @@ export interface ProjectTask {
   id: string
   project_id: string
   milestone_id?: string
+  work_item_id?: string
   title: string
   description?: string
   status: 'todo' | 'in_progress' | 'completed' | 'blocked'
@@ -290,6 +291,42 @@ export interface Project {
   contracts?: Contract[]
   brand: Brand
   password_hash?: string
+  created_at: string
+  updated_at: string
+}
+
+export type WorkItemStatus = 'pending' | 'in_progress' | 'delivered' | 'accepted' | 'rejected'
+
+export interface DeliveryLink {
+  label: string
+  url: string
+  date?: string
+}
+
+export interface RequiredDocument {
+  title: string
+  status: 'pending' | 'signed' | 'not_required'
+  date?: string
+}
+
+export interface ProjectWorkItem {
+  id: string
+  project_id: string
+  title: string
+  description?: string
+  status: WorkItemStatus
+  quotation_id?: string
+  contract_id?: string
+  quotation?: Quotation
+  contract?: Contract
+  delivery_links: DeliveryLink[]
+  required_documents: RequiredDocument[]
+  accepted_at?: string
+  accepted_by?: string
+  rejection_reason?: string
+  sort_order: number
+  total_amount: number
+  tasks?: ProjectTask[]
   created_at: string
   updated_at: string
 }

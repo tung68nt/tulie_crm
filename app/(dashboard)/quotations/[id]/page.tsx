@@ -147,11 +147,11 @@ export default function QuotationDetailPage() {
                                 <FileText className="h-6 w-6 text-primary" />
                             </div>
                             <div className="space-y-1">
-                                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                                    <div className="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 font-bold text-slate-700 h-6 flex items-center">
+                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider">
+                                    <div className="px-3 py-1 rounded-full border border-zinc-200 bg-zinc-50 text-zinc-700 font-black h-6 flex items-center">
                                         {quotation.quotation_number}
                                     </div>
-                                    <Badge className={cn("px-2 py-0 h-6 flex items-center", QUOTATION_STATUS_COLORS[quotation.status as QuotationStatus] || 'bg-gray-100')}>
+                                    <Badge className={cn("px-3 py-0 h-6 flex items-center rounded-full text-[10px] uppercase font-black tracking-tight", QUOTATION_STATUS_COLORS[quotation.status as QuotationStatus] || 'bg-gray-100')}>
                                         {QUOTATION_STATUS_LABELS[quotation.status as QuotationStatus] || quotation.status}
                                     </Badge>
                                 </div>
@@ -264,19 +264,19 @@ export default function QuotationDetailPage() {
 
                 <Tabs defaultValue="data" className="w-full">
                     <div className="flex items-center justify-between mb-4 border-b pb-1">
-                        <TabsList className="bg-transparent h-auto p-0 gap-6">
+                        <TabsList className="bg-zinc-100/80 p-1 rounded-xl h-11 gap-1 border border-zinc-200/50">
                             <TabsTrigger
                                 value="data"
-                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
+                                className="rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm text-zinc-500 data-[state=active]:border-none"
                             >
-                                <Info className="h-4 w-4 mr-2" />
+                                <Info className="h-3.5 w-3.5 mr-2" />
                                 Chi tiết dữ liệu
                             </TabsTrigger>
                             <TabsTrigger
                                 value="preview"
-                                className="bg-transparent border-b-2 border-x-0 border-t-0 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-0 py-2 h-auto font-bold text-sm text-muted-foreground data-[state=active]:text-primary"
+                                className="rounded-lg px-6 py-2 text-xs font-bold transition-all data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm text-zinc-500 data-[state=active]:border-none"
                             >
-                                <Eye className="h-4 w-4 mr-2" />
+                                <Eye className="h-3.5 w-3.5 mr-2" />
                                 Xem trước bản in
                             </TabsTrigger>
                         </TabsList>

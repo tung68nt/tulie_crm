@@ -1,5 +1,6 @@
 import { getProjectById } from '@/lib/supabase/services/project-service'
 import { getUsers } from '@/lib/supabase/services/user-service'
+import { getWorkItemsByProject } from '@/lib/supabase/services/work-item-service'
 import { notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -13,14 +14,16 @@ import { ProjectMetadataForm } from '@/components/projects/project-metadata-form
 import { ProjectMilestones } from '@/components/projects/project-milestones'
 import { ProjectTasks } from '@/components/projects/project-tasks'
 import { ProjectSidebar } from '@/components/projects/project-sidebar'
+import { WorkItemsManager } from '@/components/projects/work-items-manager'
 import { FileText as FileTextIcon, Receipt, ArrowUpRight, Lock } from 'lucide-react'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
-    const [project, teamMembers] = await Promise.all([
+    const [project, teamMembers, workItems] = await Promise.all([
         getProjectById(id),
-        getUsers()
+        getUsers(),
+        getWorkItemsByProject(id)
     ])
 
     if (!project) notFound()
@@ -77,6 +80,9 @@ export default async function ProjectDetailPage({ params }: any) {
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-6">
+                    {/* Work Items Manager */}
+                    <WorkItemsManager project={project} workItems={workItems} />
+
                     {/* Overview & Metadata */}
                     <Card>
                         <CardHeader>

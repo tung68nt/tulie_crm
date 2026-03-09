@@ -33,6 +33,7 @@ export async function getPortalDataByToken(token: string) {
         let allContracts: any[] = []
         let allInvoices: any[] = []
         let allTasks: any[] = []
+        let allWorkItems: any[] = []
         let projectMetadata: any = null
 
         let extraMilestones: any[] = []
@@ -87,6 +88,20 @@ export async function getPortalDataByToken(token: string) {
                 .eq('project_id', projectId)
 
             if (projectTasks) allTasks = projectTasks
+
+            // 5. Get work items with their tasks
+            const { data: workItemsData } = await supabase
+                .from('project_work_items')
+                .select(`
+                    *,
+                    quotation:quotations(id, quotation_number, title, status, total_amount, public_token, created_at),
+                    contract:contracts(id, contract_number, title, status, total_amount, created_at),
+                    tasks:project_tasks(*)
+                `)
+                .eq('project_id', projectId)
+                .order('sort_order', { ascending: true })
+
+            if (workItemsData) allWorkItems = workItemsData
         } else {
             // Standalone mode: Only fetch descendants (Contract + Invoices) for this specific quote
             const { data: contract } = await supabase
@@ -222,7 +237,8 @@ export async function getPortalDataByToken(token: string) {
             customer: primaryQuotation.customer,
             project: primaryQuotation.project,
             projectMetadata,
-            brandConfig
+            brandConfig,
+            workItems: allWorkItems
         }
     } catch (err) {
         console.error('Error fetching portal data:', err)

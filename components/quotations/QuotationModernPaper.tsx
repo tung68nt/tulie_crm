@@ -2,9 +2,8 @@
 
 import React from 'react'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
-import { MapPin, Phone, Mail, Globe, Info, Calendar, User, Building2, CreditCard, ChevronRight, FileText, CheckCircle2, Clock } from 'lucide-react'
+import { MapPin, Phone, Mail, FileText, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen, Info } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
 
 interface QuotationModernPaperProps {
     quotation: any
@@ -12,15 +11,16 @@ interface QuotationModernPaperProps {
 }
 
 /**
- * Modern B&W Quotation Paper with Bilingual Support
- * Designed for 1:1 LiveView and PDF/Print fidelity.
+ * Premium Modern Quotation Paper (Magazine Layout)
+ * Matches the LiveView (Portal) style 1:1.
  */
 export function QuotationModernPaper({ quotation, brandConfig }: QuotationModernPaperProps) {
     if (!quotation) return null
 
     const items = quotation.items || []
+    const hasDiscount = items.some((item: any) => item.discount > 0)
 
-    // Group items by section
+    // Helper: Group items by section_name
     const sections: Record<string, any[]> = items.reduce((acc: any, item: any) => {
         const sectionName = item.section_name || '';
         if (!acc[sectionName]) acc[sectionName] = [];
@@ -34,458 +34,349 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
         return (a[1][0].sort_order || 0) - (b[1][0].sort_order || 0);
     });
 
-    const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0);
-    const totalDiscount = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price * (item.discount || 0) / 100), 0);
-    const subtotal = subtotalRaw - totalDiscount;
-    const vatAmount = subtotal * (quotation.vat_rate || 0) / 100;
-    const finalAmount = subtotal + vatAmount;
+    // Icon mapping for proposal section types
+    const sectionIcons: Record<string, React.ReactNode> = {
+        'Mục tiêu & Giới thiệu': <Target className="w-4 h-4" />,
+        'Phạm vi công việc (Scope of Work)': <ClipboardList className="w-4 h-4" />,
+        'Phương pháp & Cách tiếp cận': <Lightbulb className="w-4 h-4" />,
+        'Sản phẩm bàn giao (Deliverables)': <Package className="w-4 h-4" />,
+        'Đội ngũ chuyên trách': <Users className="w-4 h-4" />,
+        'Lộ trình triển khai (Timeline)': <Clock className="w-4 h-4" />,
+        'Bảo hành & Hỗ trợ': <Shield className="w-4 h-4" />,
+        'Vì sao chọn chúng tôi?': <Award className="w-4 h-4" />,
+        'Case Studies & Portfolio': <BookOpen className="w-4 h-4" />,
+    };
 
-    // Proposal sections from database or dynamic calculation
-    let proposalContent = quotation.proposal_content || {}
-    if (typeof proposalContent === 'string') {
-        try {
-            proposalContent = JSON.parse(proposalContent)
-        } catch (e) {
-            proposalContent = {}
-        }
-    }
-    const hasProposal = proposalContent && Object.values(proposalContent).some(v => v && String(v).trim().length > 0)
+    // Calculations
+    const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
+    const subtotalNet = items.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
+    const totalDiscount = subtotalRaw - subtotalNet
+    const vatAmount = quotation.vat_amount || 0
+    const finalAmount = quotation.total_amount || (subtotalNet + vatAmount)
 
-    const bankInfo = {
-        company: {
-            name: brandConfig?.bank_account_name || 'CÔNG TY TNHH TULIE',
-            no: brandConfig?.bank_account_no || '0110163102',
-            bank: brandConfig?.bank_name || 'MB BANK',
-            branch: brandConfig?.bank_branch || 'SỞ GIAO DỊCH'
-        },
-        personal: {
-            name: brandConfig?.studio_bank_account_name || 'NGUYỄN ĐỨC TÙNG',
-            no: brandConfig?.studio_bank_account_no || '0988984554',
-            bank: brandConfig?.studio_bank_name || 'TECHCOMBANK'
+    // Proposal content
+    const pc = quotation.proposal_content || {}
+    const hasProposal = quotation.type === 'proposal' && pc
+
+    const proposalSections: { label: string; content: string }[] = []
+    if (hasProposal) {
+        if (pc.introduction) proposalSections.push({ label: 'Mục tiêu & Giới thiệu', content: pc.introduction })
+        if (pc.scope_of_work) proposalSections.push({ label: 'Phạm vi công việc (Scope of Work)', content: pc.scope_of_work })
+        if (pc.methodology) proposalSections.push({ label: 'Phương pháp & Cách tiếp cận', content: pc.methodology })
+        if (pc.deliverables) proposalSections.push({ label: 'Sản phẩm bàn giao (Deliverables)', content: pc.deliverables })
+        if (pc.team) proposalSections.push({ label: 'Đội ngũ chuyên trách', content: pc.team })
+        if (pc.timeline) proposalSections.push({ label: 'Lộ trình triển khai (Timeline)', content: pc.timeline })
+        if (pc.warranty) proposalSections.push({ label: 'Bảo hành & Hỗ trợ', content: pc.warranty })
+        if (pc.why_us) proposalSections.push({ label: 'Vì sao chọn chúng tôi?', content: pc.why_us })
+        if (pc.case_studies) proposalSections.push({ label: 'Case Studies & Portfolio', content: pc.case_studies })
+        if (pc.custom_sections) {
+            try {
+                const custom = typeof pc.custom_sections === 'string' ? JSON.parse(pc.custom_sections) : pc.custom_sections
+                if (Array.isArray(custom)) {
+                    custom.forEach((s: any) => {
+                        if (s.title && s.content) proposalSections.push({ label: s.title, content: s.content })
+                    })
+                }
+            } catch (e) { /* skip */ }
         }
     }
 
     return (
-        <div
-            className="flex flex-col bg-white text-black font-sans min-h-[297mm] w-full max-w-[210mm] mx-auto overflow-hidden print:m-0 print:p-0"
-            style={{
-                '--font-kaine': "'Kaine', 'Inter', sans-serif"
-            } as any}
-        >
-            {/* 1. BRANDING HEADER */}
-            <div className="p-12 pb-8 border-b-2 border-black flex justify-between items-start bg-black text-white print:bg-black print:text-white">
-                <div className="flex flex-col gap-4">
-                    <img
-                        src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"}
-                        alt="Logo"
-                        className="h-12 w-auto object-contain invert brightness-0 grayscale brightness-200"
-                    />
-                    <div className="space-y-1 text-[10px] font-bold uppercase tracking-widest opacity-80">
-                        <p>Tulie Agency — Solution & Services</p>
-                        <p>www.tulie.vn | 098.898.4554</p>
-                    </div>
-                </div>
-                <div className="text-right flex flex-col items-end">
-                    <h1 className="text-5xl font-black uppercase leading-none tracking-tighter" style={{ fontFamily: 'var(--font-kaine)' }}>
-                        Báo giá
-                    </h1>
-                    <p className="text-xl font-bold uppercase tracking-tight -mt-1 opacity-70">
-                        Quotation
-                    </p>
-                    <div className="mt-8 space-y-1 text-[11px] font-bold text-right border-r-4 border-white/20 pr-4">
-                        <p className="opacity-60 uppercase">Reference No.</p>
-                        <p className="text-lg">#{quotation.quotation_number}</p>
-                    </div>
-                </div>
-            </div>
+        <div className="quotation-paper-modern bg-white w-full max-w-[210mm] mx-auto shadow-sm print:shadow-none min-h-[297mm] flex flex-col">
+            {/* 1:1 SYNCED HEADER */}
+            <div className="p-10">
+                <div className="flex flex-row justify-between items-start">
+                    <div className="flex flex-col items-start w-[65%]">
+                        <div className="h-24 flex items-end mb-4">
+                            <img
+                                src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"}
+                                alt={brandConfig?.brand_name || "Tulie Agency"}
+                                className="h-20 w-auto object-contain grayscale"
+                            />
+                        </div>
 
-            <div className="p-12 pt-10 flex-1 flex flex-col gap-14">
-                {/* 2. CLIENT & QUOTE INFO AREA */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-                    <div className="space-y-6">
-                        <div className="space-y-2 pb-4 border-b border-zinc-100">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-                                Kính gửi / <span className="text-black">Attention To</span>
+                        <div className="space-y-1.5 w-full">
+                            <h1 className="text-sm font-bold text-black flex items-center h-4">
+                                {brandConfig?.company_name || "Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie"}
+                            </h1>
+
+                            <div className="flex items-start gap-2 text-[13px] text-slate-700 leading-snug">
+                                <MapPin className="h-3 w-3 mt-1 shrink-0" />
+                                <span>{brandConfig?.address || "Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội"}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-[13px] text-slate-700">
+                                <Phone className="h-3 w-3 shrink-0" />
+                                <span>{brandConfig?.hotline || "098.898.4554"}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 text-[13px] text-slate-700">
+                                <Mail className="h-3 w-3 shrink-0" />
+                                <span>{brandConfig?.email || "support@tulielab.vn"}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-right">
+                        <div className="h-24 flex flex-col justify-end mb-4">
+                            <h2 className="text-5xl font-black text-black leading-none" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Báo giá</h2>
+                            <p className="text-2xl text-black font-medium mt-1" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Quotation</p>
+                        </div>
+
+                        <div className="space-y-0.5 text-[13px] text-black">
+                            <p className="flex justify-end gap-1 h-4 items-center">
+                                <span className="font-medium text-black">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span>
+                                <span>{quotation.quotation_number}</span>
                             </p>
-                            <h2 className="text-2xl font-black uppercase tracking-tight leading-tight">
-                                {quotation.customer?.company_name || quotation.customer?.name}
-                            </h2>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 text-[11px] font-semibold text-zinc-600">
-                            <div className="flex items-start gap-4">
-                                <User className="h-4 w-4 shrink-0 mt-0.5 text-black" />
-                                <div>
-                                    <p className="uppercase text-[9px] text-zinc-400">Người liên hệ / Contact personnel</p>
-                                    <p className="text-black">{quotation.customer?.name || quotation.customer?.representative || 'Vui lòng cập nhật'}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <Mail className="h-4 w-4 shrink-0 mt-0.5 text-black" />
-                                <div>
-                                    <p className="uppercase text-[9px] text-zinc-400">Email address</p>
-                                    <p className="text-black">{quotation.customer?.email || '-'}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <Phone className="h-4 w-4 shrink-0 mt-0.5 text-black" />
-                                <div>
-                                    <p className="uppercase text-[9px] text-zinc-400">Phone number</p>
-                                    <p className="text-black">{quotation.customer?.phone || '-'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-zinc-50 rounded-3xl p-8 flex flex-col justify-between border border-zinc-100">
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center group">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Ban hành / Issue Date</p>
-                                    <p className="text-sm font-black text-black">{formatDate(quotation.created_at)}</p>
-                                </div>
-                                <Calendar className="h-5 w-5 text-zinc-300" />
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Hết hạn / Valid Until</p>
-                                    <p className="text-sm font-black text-black">{formatDate(quotation.valid_until)}</p>
-                                </div>
-                                <Clock className="h-5 w-5 text-zinc-300" />
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Duyệt bởi / Created By</p>
-                                    <p className="text-sm font-black text-black">Nguyễn Đức Tùng</p>
-                                </div>
-                                <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold">NT</div>
-                            </div>
+                            <p className="flex justify-end gap-1 h-4 items-center">
+                                <span className="font-medium text-black">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span>
+                                <span>{formatDate(quotation.created_at)}</span>
+                            </p>
+                            <p className="flex justify-end gap-1 h-4 items-center">
+                                <span className="font-medium text-black">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span>
+                                <span>{formatDate(quotation.valid_until)}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* 3. PROPOSAL CONTENT (MODERN MAGAZINE STYLE) */}
-                {hasProposal && (
-                    <div className="space-y-12">
-                        <div className="flex items-baseline gap-4 border-b-4 border-black pb-4">
-                            <h3 className="text-3xl font-black uppercase tracking-tight" style={{ fontFamily: 'var(--font-kaine)' }}>
-                                Kế hoạch & Giải pháp
-                            </h3>
-                            <span className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Solution Proposal</span>
+                <hr className="border-slate-200 my-8" />
+
+                {/* CUSTOMER INFO */}
+                <div className="mb-8">
+                    <h3 className="text-[13px] font-semibold text-black mb-3 border-l-4 border-black pl-3 flex items-center h-4">
+                        Thông tin khách hàng<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Customer</span>
+                    </h3>
+                    <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col gap-2.5 text-[13px]">
+                        <div className="grid grid-cols-[140px_1fr]">
+                            <span className="text-slate-700">Đơn vị<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Company</span>:</span>
+                            <span className="font-semibold text-black">{quotation.customer?.company_name || "N/A"}</span>
+                        </div>
+                        <div className="grid grid-cols-[140px_1fr]">
+                            <span className="text-slate-700">Địa chỉ<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Address</span>:</span>
+                            <span className="text-black">{quotation.customer?.address || "N/A"}</span>
+                        </div>
+                        <div className="grid grid-cols-[140px_1fr]">
+                            <span className="text-slate-700">Người liên hệ<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Attn</span>:</span>
+                            <span className="font-medium text-black">{quotation.customer?.contact_name || "N/A"}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* PROPOSAL TIMELINE */}
+                {hasProposal && proposalSections.length > 0 && (
+                    <div className="mb-12">
+                        <div className="relative mb-8 py-4 px-6 rounded-xl text-white overflow-hidden bg-zinc-950"
+                            style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
+                            <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                            </div>
+                            <div className="relative z-10">
+                                <h3 className="text-[16px] font-bold uppercase tracking-tight">Đề xuất giải pháp & Kế hoạch</h3>
+                                <p className="text-[11px] text-zinc-300 mt-0.5 font-medium">Strategic Solution Proposal — {proposalSections.length} Sections</p>
+                            </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-12">
-                            {proposalContent.introduction && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        01. Mục tiêu chiến lược / <span className="text-zinc-400 text-xs">Strategic Goals</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.introduction}
+                        <div className="relative pl-10 before:absolute before:left-[13px] before:top-[28px] before:bottom-4 before:w-[2px] before:bg-slate-200 before:rounded-full">
+                            {proposalSections.map((section, idx) => {
+                                const icon = sectionIcons[section.label] || <Info className="w-4 h-4" />;
+                                return (
+                                    <div key={idx} className="relative mb-6 last:mb-0">
+                                        <div className="absolute -left-10 top-[28px] -translate-y-1/2 w-[28px] h-[28px] rounded-full flex items-center justify-center text-white bg-zinc-900 text-[10px] font-bold z-10"
+                                            style={{ WebkitPrintColorAdjust: 'exact' }}>
+                                            {idx + 1}
+                                        </div>
+
+                                        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                                            <div className="flex items-center gap-3 px-5 py-3 border-b bg-slate-50/80 border-slate-100 text-zinc-900">
+                                                <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 text-white shadow-sm"
+                                                    style={{ WebkitPrintColorAdjust: 'exact' }}>
+                                                    {icon}
+                                                </span>
+                                                <h4 className="text-[14px] font-bold leading-tight">
+                                                    {section.label}
+                                                </h4>
+                                            </div>
+                                            <div className="px-5 py-4 text-[12px] text-slate-600 leading-relaxed whitespace-pre-line">
+                                                {section.content}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {proposalContent.scope_of_work && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        02. Phạm vi công việc / <span className="text-zinc-400 text-xs">Scope of Work</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.scope_of_work}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.methodology && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        03. Phương pháp tiếp cận / <span className="text-zinc-400 text-xs">Methodology</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.methodology}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.deliverables && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        04. Sản phẩm bàn giao / <span className="text-zinc-400 text-xs">Deliverables</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.deliverables}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.team && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        05. Đội ngũ thực hiện / <span className="text-zinc-400 text-xs">Project Team</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.team}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.timeline && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        06. Lộ trình triển khai / <span className="text-zinc-400 text-xs">Implementation</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.timeline}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.warranty && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        07. Chính sách bảo hành / <span className="text-zinc-400 text-xs">Warranty & Support</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.warranty}
-                                    </div>
-                                </div>
-                            )}
-                            {proposalContent.why_us && (
-                                <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 text-sm font-black uppercase tracking-tight">
-                                        <div className="w-2 h-6 bg-black" />
-                                        08. Vì sao chọn chúng tôi? / <span className="text-zinc-400 text-xs">Why Us?</span>
-                                    </h4>
-                                    <div className="text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap font-medium pl-4">
-                                        {proposalContent.why_us}
-                                    </div>
-                                </div>
-                            )}
+                                );
+                            })}
                         </div>
                     </div>
                 )}
 
-                {/* 4. PRICING TABLE */}
-                <div className="overflow-hidden border-2 border-black rounded-3xl">
-                    <div className="bg-black p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b-2 border-black">
-                        <div>
-                            <div className="flex items-center gap-3 mb-1">
-                                <h4 className="text-white text-xl font-black uppercase tracking-tight">Chi tiết hạng mục</h4>
-                                <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700 text-[9px] font-bold uppercase tracking-widest px-2 h-5">Quotation items</Badge>
-                            </div>
-                            <p className="text-zinc-400 text-[11px] font-medium">Chi tiết các hạng mục và chi phí dịch vụ</p>
-                        </div>
-                        <div className="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-zinc-500">
-                            <Building2 className="h-5 w-5" />
-                        </div>
-                    </div>
-                    <table className="w-full text-left border-collapse text-[11px]">
-                        <thead>
-                            <tr className="bg-black/5 text-black border-b border-black/10 uppercase font-black tracking-tight print:bg-transparent">
-                                <th className="py-4 px-6 w-12 text-center">#</th>
-                                <th className="py-4 px-6">Hạng mục & Mô tả / <span className="opacity-40">Items</span></th>
-                                <th className="py-4 px-6 w-20 text-center uppercase tracking-wider">ĐVT / <span className="opacity-40 text-[9px]">Unit</span></th>
-                                <th className="py-4 px-6 w-16 text-center">SL / <span className="opacity-40 text-[9px]">Qty</span></th>
-                                <th className="py-4 px-6 w-32 text-right">Đơn giá / <span className="opacity-40 text-[9px]">Price</span></th>
-                                <th className="py-4 px-6 w-36 text-right">Thành tiền / <span className="opacity-40 text-[9px]">Amount</span></th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y-2 divide-zinc-200">
-                            {sectionEntries.map(([sectionName, sectionItems], sIdx) => (
-                                <React.Fragment key={sectionName || sIdx}>
-                                    {sectionName && (
-                                        <tr className="bg-zinc-50 border-y-2 border-black">
-                                            <td colSpan={6} className="py-2.5 px-4 font-black text-[10px] text-black uppercase tracking-[0.3em] bg-zinc-200 print:bg-zinc-200">
-                                                Section {sIdx + 1}: {sectionName}
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {sectionItems.map((item: any, iIdx: number) => (
-                                        <tr key={item.id} className="hover:bg-zinc-50 transition-colors">
-                                            <td className="py-4 px-4 text-center font-black text-zinc-300 group-hover:text-black">{iIdx + 1}</td>
-                                            <td className="py-5 px-6">
-                                                <p className="font-black text-black text-[13px] uppercase tracking-tight mb-1">{item.product_name || item.name}</p>
-                                                {item.description && (
-                                                    <p className="text-zinc-500 text-[10px] leading-relaxed italic pr-10">{item.description}</p>
+                {/* PRICING TABLE */}
+                <div className="mb-10">
+                    <h3 className="text-[15px] font-bold text-black mb-6 border-l-4 border-black pl-3 flex items-center h-4">
+                        <span className="text-black mr-2 font-black">{hasProposal ? `${proposalSections.length + 1}.` : ''}</span>
+                        {hasProposal ? 'Kế hoạch đầu tư' : 'Chi tiết dịch vụ'}
+                        <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>
+                    </h3>
+
+                    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <table className="w-full text-left border-collapse text-[12px]">
+                            <thead>
+                                <tr className="text-white" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
+                                    <th className="py-4 px-4 font-bold w-10 text-center">#</th>
+                                    <th className="py-4 px-4 font-bold">Hạng mục & Mô tả <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Items</span></th>
+                                    <th className="py-4 px-4 font-bold text-center w-20">ĐVT <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Unit</span></th>
+                                    <th className="py-4 px-4 font-bold text-center w-20">SL <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Qty</span></th>
+                                    <th className="py-4 px-4 font-bold text-right w-28">Đơn giá <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Price</span></th>
+                                    {hasDiscount && <th className="py-4 px-4 font-bold text-center w-20 text-[10px]">CK(%)</th>}
+                                    <th className="py-4 px-6 font-bold text-right w-32">Thành tiền <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Amount</span></th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {sectionEntries.map(([sectionName, sectionItems], sIdx) => (
+                                    <React.Fragment key={sIdx}>
+                                        {sectionName && (
+                                            <tr className="bg-slate-100 border-b border-slate-200">
+                                                <td colSpan={hasDiscount ? 7 : 6} className="px-5 py-3 font-bold text-slate-900 text-[13px]">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold"
+                                                            style={{ WebkitPrintColorAdjust: 'exact' }}>
+                                                            {sIdx + 1}
+                                                        </span>
+                                                        <span>{sectionName}</span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {sectionItems.map((item: any, iIdx: number) => (
+                                            <tr key={iIdx} className="hover:bg-slate-50/50">
+                                                <td className="px-4 text-slate-400 align-top text-center py-4">{iIdx + 1}</td>
+                                                <td className="px-4 align-top py-4">
+                                                    <p className="font-bold text-slate-900 text-[13px]">{item.product_name}</p>
+                                                    {item.description && (
+                                                        <p className="text-slate-500 text-[11px] mt-1.5 leading-relaxed whitespace-pre-line border-l-2 border-slate-100 pl-3 italic">{item.description}</p>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 text-center text-slate-600 align-top py-4">{item.unit}</td>
+                                                <td className="px-4 text-center text-slate-600 align-top py-4">{item.quantity}</td>
+                                                <td className="px-4 text-right text-slate-600 align-top py-4">{formatCurrency(item.unit_price)}</td>
+                                                {hasDiscount && (
+                                                    <td className="px-4 text-center text-slate-500 align-top py-4">{item.discount || 0}%</td>
                                                 )}
-                                            </td>
-                                            <td className="py-4 px-4 text-center text-zinc-400 font-bold">{item.unit || '-'}</td>
-                                            <td className="py-4 px-4 text-center font-black text-black">{item.quantity}</td>
-                                            <td className="py-4 px-4 text-right font-bold text-zinc-500 tabular-nums">
-                                                {formatCurrency(item.unit_price).replace('₫', '')}
-                                            </td>
-                                            <td className="py-4 px-4 text-right font-black text-black text-[12px] tabular-nums">
-                                                {formatCurrency(item.quantity * item.unit_price).replace('₫', '')}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* 5. TOTALS AREA */}
-                <div className="flex flex-col md:flex-row justify-between items-end gap-10">
-                    <div className="flex-1 w-full space-y-6">
-                        <div className="bg-zinc-50 p-10 rounded-[32px] border border-zinc-100 flex flex-col justify-center min-h-[160px]">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">
-                                Tổng cộng bằng chữ / <span className="text-black">Amount in words</span>
-                            </p>
-                            <p className="text-base text-black font-black leading-tight italic first-letter:uppercase">
-                                {readNumberToWords(finalAmount)} đồng chẵn./.
-                            </p>
-                        </div>
-                        {/* Notes */}
-                        {quotation.notes && (
-                            <div className="space-y-3">
-                                <h5 className="text-[10px] font-black uppercase tracking-[0.2em] border-l-4 border-black pl-3 flex justify-between">
-                                    Ghi chú thêm / <span className="text-zinc-400">Additional Notes</span>
-                                </h5>
-                                <div className="text-[10px] leading-relaxed text-zinc-600 font-medium italic whitespace-pre-wrap pl-4 max-w-lg">
-                                    {quotation.notes}
-                                </div>
-                            </div>
-                        )}
+                                                <td className="px-6 text-right font-black text-slate-900 align-top py-4">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
 
-                    <div className="w-full md:w-[420px] bg-black text-white p-12 rounded-[48px] shadow-2xl space-y-6 relative overflow-hidden print:bg-black">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                        <div className="absolute bottom-0 left-0 w-40 h-40 bg-zinc-400/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-
-                        <div className="space-y-4 relative z-10">
-                            <div className="flex justify-between items-center text-sm font-bold opacity-50">
-                                <span>Tạm tính / Subtotal</span>
-                                <span className="tabular-nums">{formatCurrency(subtotalRaw).replace('₫', '')}</span>
+                    <div className="flex justify-end mt-8">
+                        <div className="w-[360px] bg-slate-50 p-6 rounded-2xl border border-slate-200/50 space-y-3">
+                            <div className="flex justify-between text-[13px]">
+                                <span className="text-slate-500 font-medium italic">Tạm tính:</span>
+                                <span className="font-black text-slate-950">{formatCurrency(subtotalRaw)}</span>
                             </div>
                             {totalDiscount > 0 && (
-                                <div className="flex justify-between items-center text-sm font-bold text-zinc-300">
-                                    <span>Chiết khấu / Discount</span>
-                                    <span className="tabular-nums">-{formatCurrency(totalDiscount).replace('₫', '')}</span>
+                                <div className="flex justify-between text-[13px]">
+                                    <span className="text-emerald-600 font-medium italic">Chiết khấu:</span>
+                                    <span className="text-emerald-700">-{formatCurrency(totalDiscount)}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between items-center text-sm font-bold opacity-50">
-                                <span>Thuế VAT / Tax ({quotation.vat_rate || 0}%)</span>
-                                <span className="tabular-nums">{formatCurrency(vatAmount).replace('₫', '')}</span>
+                            <div className="flex justify-between text-[13px]">
+                                <span className="text-slate-500 font-medium italic">VAT ({quotation.vat_percent}%):</span>
+                                <span className="font-black text-slate-950">{formatCurrency(vatAmount)}</span>
+                            </div>
+                            <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
+                                <span className="font-black text-slate-950 uppercase tracking-tighter text-sm">Tổng thanh toán:</span>
+                                <span className="font-black text-2xl text-slate-950">{formatCurrency(finalAmount)}</span>
+                            </div>
+                            <div className="text-right pt-2 text-[10px] italic text-slate-500 font-medium">
+                                {readNumberToWords(finalAmount)}./.
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div className="pt-8 mt-4 border-t border-white/10 relative z-10">
-                            <div className="flex justify-between items-end">
-                                <div className="space-y-1.5">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.3em] opacity-40">Tổng thanh toán / Total Payment</p>
-                                    <div className="flex items-baseline gap-3">
-                                        <p className="text-5xl font-black tabular-nums tracking-tighter" style={{ fontFamily: 'var(--font-kaine)' }}>
-                                            {formatCurrency(finalAmount).replace('₫', '')}
-                                        </p>
-                                        <span className="text-sm font-black opacity-30">VNĐ</span>
+                {/* TERMS & BANKING */}
+                <div className="grid grid-cols-2 gap-6 mt-12 pb-12">
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col gap-6">
+                        <div>
+                            <h4 className="font-bold text-black mb-2.5 text-[13px] uppercase tracking-wide">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span></h4>
+                            <div className="text-[11px] text-slate-800 space-y-1.5 font-medium">
+                                {(quotation.notes || brandConfig?.default_notes || 'Báo giá có hiệu lực trong vòng 07 ngày.').split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                                    <div key={i} className="flex gap-2.5 items-start">
+                                        <span className="shrink-0 text-slate-400 mt-1">•</span>
+                                        <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="border-t border-slate-200 pt-5 mt-auto">
+                            <h4 className="font-bold text-black mb-2.5 text-[13px] uppercase tracking-wide">Thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment</span></h4>
+                            <div className="text-[11px] text-slate-800 space-y-1.5 font-medium">
+                                {(quotation.terms || brandConfig?.default_payment_terms || "50% đặt cọc khi xác nhận\n50% khi hoàn thành").split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                                    <div key={i} className="flex gap-2.5 items-start">
+                                        <span className="shrink-0 text-slate-400 mt-1">•</span>
+                                        <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* 6. BANKING INFO (Company Only) */}
-                <div className="mt-10 max-w-md">
-                    <div className="space-y-6">
-                        <div className="space-y-4">
-                            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">
-                                Thông tin thanh toán / <span className="text-black">Payment Details</span>
-                            </h5>
-                            <div className="grid grid-cols-1 gap-3 text-[11px] font-medium p-6 bg-zinc-50 rounded-2xl border border-zinc-100">
-                                <div className="flex justify-between items-center py-2 border-b border-zinc-100/50">
-                                    <span className="text-zinc-400 uppercase text-[9px]">Ngân hàng / Bank</span>
-                                    <span className="text-black font-bold">{bankInfo.company.bank}</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2 border-b border-zinc-100/50">
-                                    <span className="text-zinc-400 uppercase text-[9px]">Số tài khoản / Account No.</span>
-                                    <span className="text-black font-black text-sm tracking-widest">{bankInfo.company.no}</span>
-                                </div>
-                                <div className="flex justify-between items-center py-2">
-                                    <span className="text-zinc-400 uppercase text-[9px]">Chủ tài khoản / Account Name</span>
-                                    <span className="text-black font-bold uppercase">{bankInfo.company.name}</span>
-                                </div>
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col">
+                        <h4 className="font-bold text-black mb-4 text-[13px] uppercase tracking-wide">Thông tin chuyển khoản <span className="text-[0.8em] italic font-normal opacity-70">/ Bank</span></h4>
+                        <div className="space-y-4 text-[12px]">
+                            <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                <span className="text-slate-500 italic">Ngân hàng:</span>
+                                <span className="font-bold text-black">{quotation.bank_name || brandConfig?.bank_name || "MB Bank"}</span>
+                            </div>
+                            <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                <span className="text-slate-500 italic">Số tài khoản:</span>
+                                <span className="font-mono font-black text-sm text-black tracking-tight">{quotation.bank_account_no || brandConfig?.bank_account_no || "0110163102"}</span>
+                            </div>
+                            <div className="grid grid-cols-[110px_1fr] items-baseline">
+                                <span className="text-slate-500 italic">Chủ tài khoản:</span>
+                                <span className="font-bold text-black uppercase">{quotation.bank_account_name || brandConfig?.bank_account_name || "CÔNG TY TNHH TULIE"}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* 6.5 SIGNATURE SECTION */}
-                <div className="mt-16 grid grid-cols-2 gap-20 text-center">
-                    <div className="space-y-4">
-                        <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện khách hàng</p>
-                        <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & ghi rõ họ tên / Customer Signature)</p>
-                        <div className="h-28" />
-                        <div className="h-px w-40 bg-zinc-200 mx-auto" />
-                    </div>
-                    <div className="space-y-4">
-                        <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
-                        <p className="text-[9px] text-zinc-400 uppercase tracking-tight font-bold italic">(Ký & đóng dấu / Authorized Signature)</p>
-                        <div className="h-28 relative flex items-center justify-center">
-                            {/* Digital Signature Placeholder or Seal if needed */}
-                            <div className="absolute opacity-10 grayscale">
-                                <img src={brandConfig?.logo_url || "/file/tulie-agency-logo.png"} className="w-24 h-auto" alt="Seal" />
-                            </div>
-                        </div>
-                        <div className="space-y-1">
-                            <div className="h-px w-40 bg-zinc-200 mx-auto" />
-                            <p className="text-[12px] font-black uppercase tracking-tighter text-black mt-2">
-                                {quotation.signer_name || brandConfig?.ceo_name || 'Nguyễn Đức Tùng'}
-                            </p>
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest italic leading-none">
-                                {quotation.signer_title || brandConfig?.ceo_title || 'CEO & Founder'}
-                            </p>
+                        <div className="mt-auto pt-8 flex flex-col items-center">
+                            <div className="w-16 h-1 w-1 bg-slate-900 rounded-full mb-4"></div>
+                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em] mb-1">Authenticated by</p>
+                            <p className="text-[12px] font-black uppercase text-black">Nguyễn Đức Tùng</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* 7. COPYRIGHT FOOTER */}
-            <div className="p-10 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50 print:bg-zinc-50">
-                <div className="flex items-center gap-6">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-300">Tulie Agency © {new Date().getFullYear()}</span>
-                    <span className="w-px h-3 bg-zinc-200" />
-                    <span className="text-[9px] font-medium text-zinc-400 uppercase tracking-tight">Global Creative Standards</span>
-                </div>
-                <div className="flex items-center gap-4 text-[9px] font-bold text-zinc-950 uppercase tracking-[0.2em]">
-                    <Globe className="h-4 w-4 text-zinc-200" />
-                    <span className="opacity-60">tulie.vn</span>
+            {/* SYNCED DECORATIVE FOOTER */}
+            <div className="mt-auto p-10 border-t border-slate-100 flex flex-col items-center">
+                <div className="flex justify-between items-center w-full text-[11px] text-slate-500 font-bold uppercase tracking-widest">
+                    <div className="flex items-center gap-4">
+                        <span className="text-slate-950">{brandConfig?.brand_name || "Tulie Agency"}</span>
+                        <span className="h-3 w-px bg-slate-200"></span>
+                        <span>{brandConfig?.company_name || "Digital Solutions"}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span>{brandConfig?.website || "tulie.vn"}</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Print Injected Styles for 1:1 Fidelity */}
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @media print {
-                    @page {
-                        size: A4;
-                        margin: 0;
-                    }
-                    body {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        background: white !important;
-                    }
-                    .print\\:bg-black {
-                        background-color: black !important;
-                        color: white !important;
-                    }
-                    .print\\:bg-zinc-200 {
-                         background-color: #e4e4e7 !important;
-                    }
-                    .print\\:bg-zinc-50 {
-                         background-color: #fafafa !important;
-                    }
-                    .print\\:text-white {
-                        color: white !important;
+                    .quotation-paper-modern {
+                        box-shadow: none !important;
+                        margin: 0 !important;
+                        width: 100% !important;
                     }
                     * {
-                        page-break-inside: avoid !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                 }
-            `}} />
+            ` }} />
         </div>
     )
 }
