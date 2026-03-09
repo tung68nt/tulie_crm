@@ -247,116 +247,132 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
     return (
         <Document title={`Bao gia ${quotation.quotation_number || ''}`}>
             <Page size="A4" style={styles.page}>
-                {/* Header */}
-                <View style={[styles.header, { borderBottomColor: '#000', borderBottomWidth: 2 }]}>
-                    <View style={styles.companyInfo}>
-                        <Text style={[styles.companyName, { fontSize: 22, letterSpacing: -0.5 }]}>THIỆP NHANH</Text>
-                        <Text style={{ fontSize: 9, color: '#666', marginBottom: 8, fontWeight: 'bold' }}>THIỆP MỜI & QUÀ TẶNG CAO CẤP</Text>
-                        <Text style={{ fontSize: 8 }}>Website: thiepnhanh.vn</Text>
-                        <Text style={{ fontSize: 8 }}>Email: hello@thiepnhanh.vn</Text>
-                        <Text style={{ fontSize: 8 }}>Hotline: 098.898.4554</Text>
+                {/* Header Block */}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 40, alignItems: 'flex-start' }}>
+                    {/* Left: Company Logo & Info */}
+                    <View style={{ width: '60%' }}>
+                        <Text style={{ fontSize: 13, fontFamily: 'Roboto-Bold', color: '#000', marginBottom: 6, textTransform: 'uppercase' }}>
+                            Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie
+                        </Text>
+                        <View style={{ gap: 2 }}>
+                            <Text style={{ fontSize: 8, color: '#444' }}>Địa chỉ: Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, TP. Hà Nội</Text>
+                            <Text style={{ fontSize: 8, color: '#444' }}>Điện thoại: 098.898.4554</Text>
+                            <Text style={{ fontSize: 8, color: '#444' }}>Email: info@tulie.vn</Text>
+                            <Text style={{ fontSize: 8, color: '#444' }}>MST: 0110163102</Text>
+                        </View>
                     </View>
-                    <View style={styles.metaInfo}>
-                        <Text style={[styles.title, { fontSize: 20, letterSpacing: 0, marginBottom: 4 }]}>BÁO GIÁ DỊCH VỤ</Text>
-                        <Text style={{ fontSize: 10, fontWeight: 'bold' }}>SỐ: {quotation.quotation_number || 'BG-XXXX'}</Text>
-                        <Text style={{ fontSize: 9, color: '#666' }}>Ngày lập: {new Date().toLocaleDateString('vi-VN')}</Text>
-                        <Text style={{ fontSize: 9, color: '#666' }}>Hiệu lực: {quotation.valid_days || 30} ngày</Text>
+
+                    {/* Right: Title & Meta */}
+                    <View style={{ width: '35%', textAlign: 'right' }}>
+                        <Text style={{ fontSize: 42, fontFamily: 'Roboto-Bold', color: '#000', letterSpacing: -1, textTransform: 'uppercase', lineHeight: 0.8 }}>Báo giá</Text>
+                        <Text style={{ fontSize: 18, fontFamily: 'Roboto', color: '#666', marginBottom: 15 }}>Quotation</Text>
+
+                        <View style={{ gap: 2 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>Số/ No:</Text>
+                                <Text style={{ fontSize: 8 }}>{quotation.quotation_number || '---'}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>Ngày/ Date:</Text>
+                                <Text style={{ fontSize: 8 }}>{new Date(quotation.created_at || new Date()).toLocaleDateString('vi-VN')}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>Hiệu lực/ Valid:</Text>
+                                <Text style={{ fontSize: 8 }}>{quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString('vi-VN') : (quotation.valid_days || 30) + ' ngày'}</Text>
+                            </View>
+                        </View>
                     </View>
                 </View>
 
                 {/* Customer Info */}
-                <View style={{ marginBottom: 25, backgroundColor: '#f9f9f9', padding: 15, borderRadius: 4 }}>
-                    <Text style={{ fontSize: 8, color: '#666', textTransform: 'uppercase', marginBottom: 4, fontWeight: 'bold' }}>Khách hàng / Client:</Text>
-                    <Text style={{ fontSize: 14, fontFamily: 'Roboto', color: '#000' }}>{quotation.customer?.company_name || 'Quý khách hàng'}</Text>
-                    {quotation.customer?.address && <Text style={{ fontSize: 9, marginTop: 4, color: '#444' }}>Địa chỉ: {quotation.customer.address}</Text>}
-                    <View style={{ flexDirection: 'row', marginTop: 6 }}>
-                        <Text style={{ fontSize: 9, color: '#444', marginRight: 20 }}>SĐT: {quotation.customer?.phone || 'N/A'}</Text>
-                        <Text style={{ fontSize: 9, color: '#444' }}>Email: {quotation.customer?.email || 'N/A'}</Text>
+                <View style={{ marginBottom: 30, backgroundColor: '#fcfcfc', padding: 15, borderRadius: 8, border: '1px solid #efefef' }}>
+                    <Text style={{ fontSize: 9, color: '#888', textTransform: 'uppercase', marginBottom: 6, fontFamily: 'Roboto-Bold' }}>Thông tin khách hàng / Customer:</Text>
+                    <Text style={{ fontSize: 13, fontFamily: 'Roboto-Bold', color: '#000', marginBottom: 4 }}>{quotation.customer?.company_name || quotation.customer_name || 'Quý khách hàng'}</Text>
+                    <Text style={{ fontSize: 9, color: '#444' }}>Địa chỉ: {quotation.customer?.address || 'N/A'}</Text>
+                    <View style={{ flexDirection: 'row', marginTop: 4, gap: 20 }}>
+                        <Text style={{ fontSize: 9, color: '#444' }}>Người liên hệ: {quotation.customer?.contact_person || quotation.customer?.contact_name || 'N/A'}</Text>
+                        <Text style={{ fontSize: 9, color: '#444' }}>SĐT: {quotation.customer?.phone || 'N/A'}</Text>
                     </View>
                 </View>
 
-                {/* Proposal Section (Simplified) */}
+                {/* Proposal Sections */}
                 {hasProposal && (
-                    <View style={{ marginBottom: 20 }}>
-                        <Text style={[styles.sectionTitle, { backgroundColor: '#000', color: '#fff', padding: 6, borderBottomWidth: 0 }]}>ĐỀ XUẤT GIẢI PHÁP / PROPOSAL</Text>
-                        {Object.entries({
-                            introduction: 'Giới thiệu',
-                            scope_of_work: 'Phạm vi công việc',
-                            timeline: 'Tiến độ thực hiện'
-                        }).map(([key, label]) => pc[key] ? (
-                            <View key={key} style={{ marginTop: 10, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: '#eee' }}>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 }}>{label}:</Text>
-                                <Text style={{ fontSize: 9, color: '#444', lineHeight: 1.4 }}>{pc[key]}</Text>
-                            </View>
-                        ) : null)}
+                    <View style={{ marginBottom: 30 }}>
+                        <View style={{ backgroundColor: '#000', padding: 10, borderRadius: 4, marginBottom: 15 }}>
+                            <Text style={{ color: '#fff', fontSize: 11, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>Đề xuất giải pháp / Proposal</Text>
+                        </View>
+
+                        {/* Map dynamic sections */}
+                        {Object.entries(pc).map(([key, value], idx) => {
+                            if (!value || typeof value !== 'string' || value.trim().length === 0 || ['custom_sections'].includes(key)) return null;
+                            const labels: Record<string, string> = {
+                                introduction: 'Mục tiêu & Giới thiệu',
+                                transition: 'Tiếp cận & Giải pháp',
+                                scope_of_work: 'Phạm vi công việc',
+                                why_us: 'Tại sao chọn Tulie',
+                                case_studies: 'Kinh nghiệm thực tế',
+                                timeline: 'Lộ trình triển khai'
+                            };
+                            return (
+                                <View key={key} wrap={false} style={{ marginBottom: 15, paddingLeft: 15, borderLeft: '2px solid #efefef' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                        <View style={{ backgroundColor: '#000', color: '#fff', width: 14, height: 14, borderRadius: 7, justifyContent: 'center', alignItems: 'center', marginRight: 8 }}>
+                                            <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{idx + 1}</Text>
+                                        </View>
+                                        <Text style={{ fontSize: 10, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>{labels[key] || key}</Text>
+                                    </View>
+                                    <Text style={{ fontSize: 9, color: '#555', lineHeight: 1.6 }}>{value}</Text>
+                                </View>
+                            );
+                        })}
                     </View>
                 )}
 
-                {/* Table Content */}
-                <View style={styles.table}>
-                    <Text style={[styles.sectionTitle, { backgroundColor: '#000', color: '#fff', padding: 6, borderBottomWidth: 0, marginBottom: 0 }]}>CHI TIẾT HẠNG MỤC / INVESTMENT PLAN</Text>
-
-                    {/* Table Header */}
-                    <View style={styles.tableHeader}>
+                {/* Item Table */}
+                <View style={[styles.table, { border: '1px solid #efefef', borderRadius: 8, overflow: 'hidden' }]}>
+                    <View style={[styles.tableHeader, { backgroundColor: '#000', borderBottomWidth: 0 }]}>
                         <Text style={[styles.col1, styles.tableHeaderChild]}>#</Text>
                         <View style={[styles.col2, { width: hasDiscount ? '37%' : '44%' }]}>
-                            <Text style={styles.tableHeaderChild}>Hạng mục & Mô tả</Text>
-                            <Text style={styles.tableHeaderSub}>/ Items</Text>
+                            <Text style={styles.tableHeaderChild}>Dịch vụ & Mô tả / Description</Text>
                         </View>
                         <View style={styles.col3}>
                             <Text style={styles.tableHeaderChild}>ĐVT</Text>
-                            <Text style={styles.tableHeaderSub}>/ Unit</Text>
                         </View>
                         <View style={styles.col4}>
                             <Text style={styles.tableHeaderChild}>SL</Text>
-                            <Text style={styles.tableHeaderSub}>/ Qty</Text>
                         </View>
                         <View style={styles.col5}>
                             <Text style={styles.tableHeaderChild}>Đơn giá</Text>
-                            <Text style={styles.tableHeaderSub}>/ Price</Text>
                         </View>
-                        {hasDiscount && (
-                            <View style={styles.col6}>
-                                <Text style={[styles.tableHeaderChild, { fontSize: 8 }]}>CK(%)</Text>
-                            </View>
-                        )}
+                        {hasDiscount && <View style={styles.col6}><Text style={styles.tableHeaderChild}>CK%</Text></View>}
                         <View style={styles.col8}>
                             <Text style={styles.tableHeaderChild}>Thành tiền</Text>
-                            <Text style={styles.tableHeaderSub}>/ Amount</Text>
                         </View>
                     </View>
 
-                    {/* Render items by section */}
                     {sectionEntries.map(([sectionName, sectionItems], sectionIdx) => (
                         <View key={sectionIdx} wrap={false}>
-                            {/* Section Header - Show if a name is provided OR if there are multiple sections */}
+                            {/* Section Divider */}
                             {(sectionName !== DEFAULT_SECTION || sectionEntries.length > 1) && (
-                                <View style={{ backgroundColor: '#f9f9f9', paddingVertical: 6, paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#eee', flexDirection: 'row', alignItems: 'center' }}>
-                                    <View style={{ backgroundColor: '#000', borderRadius: 2, paddingHorizontal: 4, paddingVertical: 1, marginRight: 8 }}>
-                                        <Text style={{ color: '#fff', fontSize: 8, fontWeight: 'bold' }}>{sectionIdx + 1}</Text>
-                                    </View>
-                                    <Text style={{ fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' }}>
-                                        {sectionName || `Hạng mục ${sectionIdx + 1}`}
-                                    </Text>
+                                <View style={{ backgroundColor: '#f9f9f9', padding: 8, borderBottom: '1px solid #efefef' }}>
+                                    <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>{sectionName}</Text>
                                 </View>
                             )}
-                            {/* Items */}
+
                             {sectionItems.map((item, idx) => {
                                 globalItemIndex++;
                                 return (
-                                    <View style={styles.tableRow} key={item.id}>
+                                    <View style={[styles.tableRow, { borderBottomColor: idx === sectionItems.length - 1 ? 'transparent' : '#f5f5f5' }]} key={item.id}>
                                         <Text style={styles.col1}>{globalItemIndex}</Text>
                                         <View style={[styles.col2, { width: hasDiscount ? '37%' : '44%' }]}>
-                                            <Text style={[styles.productName, { fontWeight: 'bold' }]}>{item.product_name}</Text>
-                                            {item.description && (
-                                                <Text style={[styles.productDesc, { marginTop: 2, fontSize: 8 }]}>{item.description}</Text>
-                                            )}
+                                            <Text style={{ fontSize: 10, fontFamily: 'Roboto-Bold' }}>{item.product_name}</Text>
+                                            {item.description && <Text style={{ fontSize: 8, color: '#666', marginTop: 2 }}>{item.description}</Text>}
                                         </View>
-                                        <Text style={styles.col3}>{item.unit}</Text>
+                                        <Text style={styles.col3}>{item.unit || '---'}</Text>
                                         <Text style={styles.col4}>{item.quantity}</Text>
-                                        <Text style={styles.col5}>{new Intl.NumberFormat('vi-VN').format(item.unit_price)} ₫</Text>
+                                        <Text style={styles.col5}>{formatCurrency(item.unit_price)}</Text>
                                         {hasDiscount && <Text style={styles.col6}>{item.discount || 0}%</Text>}
-                                        <Text style={[styles.col8, { fontWeight: 'bold' }]}>{new Intl.NumberFormat('vi-VN').format(item.total_price)} ₫</Text>
+                                        <Text style={[styles.col8, { fontFamily: 'Roboto-Bold' }]}>{formatCurrency(item.total_price)}</Text>
                                     </View>
                                 );
                             })}
@@ -364,74 +380,65 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                     ))}
                 </View>
 
-                {/* Summary & Footer */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15 }}>
-                    <View style={{ width: '56%' }}>
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>GHI CHÚ / NOTES:</Text>
-                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4, marginBottom: 12 }}>
-                            {String(
-                                (quotation.notes && quotation.notes.trim() !== '')
-                                    ? quotation.notes
-                                    : (quotation.brandConfig?.default_notes || "Báo giá có hiệu lực trong vòng 07 ngày.")
-                            )
-                                .split('\n')
-                                .filter(Boolean)
-                                .map((line, i) => (
-                                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-                                        <Text style={{ width: 10 }}>•</Text>
-                                        <Text style={{ flex: 1 }}>{line.replace(/^[-•]\s*/, '')}</Text>
-                                    </View>
-                                ))}
+                {/* Summary Table */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 20 }}>
+                    <View style={{ width: '40%', gap: 4 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={{ fontSize: 9 }}>Tạm tính:</Text>
+                            <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(quotation.subtotal || 0)}</Text>
                         </View>
-
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>ĐIỀU KHOẢN THANH TOÁN / TERMS:</Text>
-                        <View style={{ fontSize: 8, color: '#666', lineHeight: 1.4, marginBottom: 12 }}>
-                            {String(
-                                (quotation.terms && quotation.terms.trim() !== '')
-                                    ? quotation.terms
-                                    : (quotation.brandConfig?.default_payment_terms || '50% đặt cọc khi xác nhận báo giá')
-                            )
-                                .split('\n')
-                                .filter(Boolean)
-                                .map((line, i) => (
-                                    <View key={i} style={{ flexDirection: 'row', marginBottom: 2 }}>
-                                        <Text style={{ width: 10 }}>•</Text>
-                                        <Text style={{ flex: 1 }}>{line.replace(/^[-•]\s*/, '')}</Text>
-                                    </View>
-                                ))}
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={{ fontSize: 9 }}>VAT ({quotation.vat_percent || 0}%):</Text>
+                            <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(quotation.vat_amount || 0)}</Text>
                         </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10, backgroundColor: '#000', borderRadius: 4, marginTop: 5 }}>
+                            <Text style={{ fontSize: 11, color: '#fff', fontFamily: 'Roboto-Bold' }}>TỔNG CỘNG:</Text>
+                            <Text style={{ fontSize: 11, color: '#fff', fontFamily: 'Roboto-Bold' }}>{formatCurrency(quotation.total_amount || 0)}</Text>
+                        </View>
+                    </View>
+                </View>
 
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', marginBottom: 5 }}>THÔNG TIN CHUYỂN KHOẢN:</Text>
-                        <View style={{ fontSize: 8, color: '#444' }}>
-                            <Text>Chủ TK: {quotation.bank_account_name || quotation.brandConfig?.bank_account_name || 'Chưa cấu hình'}</Text>
-                            <Text>Số TK: {quotation.bank_account_no || quotation.brandConfig?.bank_account_no || 'Chưa cấu hình'}</Text>
-                            <Text>Ngân hàng: {quotation.bank_name || quotation.brandConfig?.bank_name || 'Chưa cấu hình'}{quotation.bank_branch || quotation.brandConfig?.bank_branch ? ` - ${quotation.bank_branch || quotation.brandConfig?.bank_branch}` : ''}</Text>
+                {/* Notes & Bank */}
+                <View style={{ marginTop: 40, flexDirection: 'row', gap: 30 }}>
+                    {/* Notes & Terms */}
+                    <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold', marginBottom: 8, textTransform: 'uppercase' }}>Ghi chú & Điều khoản / Terms:</Text>
+                        <View style={{ gap: 4 }}>
+                            {String(quotation.notes || quotation.brandConfig?.default_notes || '').split('\n').filter(Boolean).map((line, i) => (
+                                <Text key={`n-${i}`} style={{ fontSize: 8, color: '#666' }}>• {line.replace(/^[-•]\s*/, '')}</Text>
+                            ))}
+                            {String(quotation.terms || quotation.brandConfig?.default_payment_terms || '').split('\n').filter(Boolean).map((line, i) => (
+                                <Text key={`t-${i}`} style={{ fontSize: 8, color: '#666' }}>• {line.replace(/^[-•]\s*/, '')}</Text>
+                            ))}
                         </View>
                     </View>
 
-                    <View style={{ width: '40%' }}>
-                        <View style={{ borderTopWidth: 1, borderTopColor: '#000', paddingTop: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <Text style={{ fontSize: 9 }}>Tạm tính:</Text>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.subtotal || 0)}</Text>
+                    {/* Bank Info */}
+                    <View style={{ width: '40%', padding: 12, backgroundColor: '#fcfcfc', borderRadius: 8, border: '1px solid #efefef' }}>
+                        <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold', marginBottom: 8, textTransform: 'uppercase', textAlign: 'center' }}>Thông tin thanh toán</Text>
+                        <View style={{ gap: 4 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ fontSize: 8, color: '#888' }}>Số TK:</Text>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{quotation.bank_account_no || quotation.bank_account_number || quotation.brandConfig?.bank_account_no}</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                                <Text style={{ fontSize: 9 }}>VAT ({quotation.vat_percent}%):</Text>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.vat_amount || 0)}</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ fontSize: 8, color: '#888' }}>Chủ TK:</Text>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{quotation.bank_account_name || quotation.brandConfig?.bank_account_name}</Text>
                             </View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#eee', backgroundColor: '#000', padding: 8, borderRadius: 2 }}>
-                                <Text style={{ fontSize: 11, color: '#fff', fontWeight: 'bold' }}>TỔNG CỘNG:</Text>
-                                <Text style={{ fontSize: 11, color: '#fff', fontWeight: 'bold' }}>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(quotation.total_amount || 0)}</Text>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ fontSize: 8, color: '#888' }}>Ngân hàng:</Text>
+                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{quotation.bank_name || quotation.brandConfig?.bank_name}</Text>
                             </View>
                         </View>
                     </View>
                 </View>
 
-                <View style={styles.footer}>
-                    <Text>Cảm ơn quý khách đã tin tưởng dịch vụ của Thiệp Nhanh (thiepnhanh.vn)!</Text>
+                {/* Footer Message */}
+                <View style={{ position: 'absolute', bottom: 30, left: 40, right: 40, textAlign: 'center', borderTop: '1px solid #efefef', paddingTop: 20 }}>
+                    <Text style={{ fontSize: 8, color: '#aaa' }}>Cảm ơn Quý khách đã tin tưởng và đồng hành cùng Tulie Agency!</Text>
                 </View>
             </Page>
-        </Document >
+        </Document>
     );
 };
 

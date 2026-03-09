@@ -162,34 +162,22 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     }
 
     const initialPdfData = {
-        type: 'quotation',
-        quotation_number: quotation.quotation_number,
-        customer: quotation.customer,
-        items: quotation.items,
-        total_amount: finalAmount,
-        amount_in_words: readNumberToWords(finalAmount),
-        valid_until: quotation.valid_until ? formatDate(quotation.valid_until) : '30 ngày kể từ ngày báo giá',
-        day: new Date(quotation.created_at || new Date()).getDate(),
-        month: new Date(quotation.created_at || new Date()).getMonth() + 1,
-        year: new Date(quotation.created_at || new Date()).getFullYear(),
+        ...quotation,
         brandConfig: brandConfig,
-        bank_account_number: quotation.bank_account_number,
-        bank_account_name: quotation.bank_account_name,
-        bank_name: quotation.bank_name,
-        bank_branch: quotation.bank_branch,
-        terms: quotation.terms,
-        notes: quotation.notes,
-        proposal_content: quotation.proposal_content,
+        subtotal: quotation.subtotal || subtotalNet,
+        vat_amount: quotation.vat_amount || vatAmount,
+        total_amount: quotation.total_amount || finalAmount,
+        amount_in_words: readNumberToWords(finalAmount),
     }
 
     return (
         <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
             <div
                 ref={printRef}
-                className="quotation-paper mx-auto relative w-full max-w-[210mm] overflow-hidden"
+                className="quotation-paper-wrapper mx-auto relative w-full max-w-[210mm]"
             >
                 {/* Main Paper Content */}
-                <div className="bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200 quotation-paper">
+                <div className="bg-white shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200 quotation-inner-paper">
                     <QuotationPaper quotation={quotation} brandConfig={brandConfig} />
                 </div>
             </div>
@@ -206,13 +194,13 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 <>
                                     <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
                                         <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                        In báo giá
+                                        In nhanh
                                     </Button>
                                     <DocumentDownloadButton
                                         type="quotation"
-                                        label="Tải báo giá"
+                                        label="Tải PDF"
                                         variant="outline"
-                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
+                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
                                         documentId={quotation.id}
                                         customerId={quotation.customer_id}
                                         fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
@@ -231,32 +219,27 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                         onClick={() => setShowConfirm(true)}
                                         disabled={isSubmitting}
                                     >
-                                        <CheckCircle className="mr-2 h-4 w-4" />
-                                        Chấp nhận ngay
+                                        Xác nhận
                                     </Button>
                                 </>
                             ) : (
                                 <div className="col-span-2 flex items-center gap-3">
                                     <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700" onClick={handlePrint}>
                                         <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                        In báo giá
+                                        In nhanh
                                     </Button>
                                     <DocumentDownloadButton
                                         type="quotation"
-                                        label="Tải báo giá"
+                                        label="Tải PDF"
                                         variant="outline"
-                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700"
+                                        className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 font-bold"
                                         documentId={quotation.id}
                                         customerId={quotation.customer_id}
                                         fileName={`Bao_gia_${quotation.quotation_number}.pdf`}
                                         initialData={initialPdfData}
                                     />
                                     <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${quotation.status === 'accepted' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'} font-semibold text-sm`}>
-                                        {quotation.status === 'accepted' ? (
-                                            <><CheckCircle className="h-4 w-4" /> Bạn đã chấp nhận báo giá này</>
-                                        ) : (
-                                            <><XCircle className="h-4 w-4" /> Bạn đã từ chối báo giá này</>
-                                        )}
+                                        {quotation.status === 'accepted' ? 'Đã được chấp nhận' : 'Đã bị từ chối'}
                                     </div>
                                 </div>
                             )}
@@ -271,177 +254,56 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                 @media print {
                     @page {
                         size: A4;
-                        margin: 5mm;
+                        margin: 0;
                     }
                     
-                    /* Force color printing */
-                    *, *::before, *::after {
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                        color-adjust: exact !important;
-                    }
-                    
-                    html, body {
+                    /* Force total overflow and height to prevent single-page crop */
+                    html, body, .quotation-page, .quotation-paper-wrapper, .quotation-inner-paper {
+                        overflow: visible !important;
+                        height: auto !important;
+                        min-height: 0 !important;
                         margin: 0 !important;
                         padding: 0 !important;
-                        background: white !important;
+                        position: static !important;
+                    }
+
+                    .quotation-inner-paper {
+                        box-shadow: none !important;
+                        border: none !important;
                         width: 100% !important;
-                        overflow: visible !important;
+                        max-width: none !important;
+                    }
+
+                    /* Important: ensure the content inside QuotationPaper is well-spaced for paper */
+                    .quotation-paper-content {
+                        padding: 15mm !important;
                     }
                     
-                    /* Hide non-print elements */
-                    .fixed.bottom-0,
-                    #headlessui-portal-root,
-                    [data-sonner-toaster] {
+                    /* Hide non-print UI elements */
+                    .fixed, .print\\:hidden, [data-sonner-toaster], #headlessui-portal-root {
                         display: none !important;
                     }
                     
-                    /* === MAIN CONTAINERS - remove all min-height === */
-                    .quotation-page {
-                        background: white !important;
-                        padding: 0 !important;
-                        margin: 0 !important;
-                        min-height: 0 !important;
-                        height: auto !important;
+                    /* Force colors */
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                     
-                    .quotation-paper {
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        width: 100% !important;
-                        max-width: none !important;
-                        box-: none !important;
-                        min-height: 0 !important;
-                        height: auto !important;
-                        overflow: visible !important;
-                    }
-                    
-                    .quotation-inner {
-                        padding: 3mm 5mm !important;
-                        min-height: 0 !important;
-                        height: auto !important;
-                        display: block !important;
-                    }
-                    
-                    /* === FORCE DESKTOP LAYOUT for all sm: classes === */
-                    .flex-col.sm\\:flex-row { flex-direction: row !important; }
-                    .sm\\:flex-row { flex-direction: row !important; }
-                    .sm\\:gap-0 { gap: 0 !important; }
-                    .w-full.sm\\:w-\\[65\\%\\] { width: 65% !important; }
-                    .sm\\:w-auto { width: auto !important; }
-                    .sm\\:text-right { text-align: right !important; }
-                    .sm\\:justify-end { justify-content: flex-end !important; }
-                    .sm\\:not-italic { font-style: normal !important; }
-                    .sm\\:text-slate-700 { color: rgb(51 65 85) !important; }
-                    .sm\\:text-black { color: #000 !important; }
-                    .sm\\:text-sm { font-size: 12px !important; }
-                    .sm\\:text-5xl { font-size: 3rem !important; }
-                    .sm\\:text-2xl { font-size: 1.5rem !important; }
-                    .sm\\:text-\\[13px\\] { font-size: 13px !important; }
-                    .hidden.sm\\:block { display: block !important; }
-                    .sm\\:block { display: block !important; }
-                    .sm\\:h-24 { height: 6rem !important; }
-                    .sm\\:h-20 { height: 5rem !important; }
-                    .sm\\:p-10 { padding: 3mm 5mm !important; }
-                    .sm\\:min-w-0 { min-width: 0 !important; }
-                    .text-left.sm\\:text-right { text-align: right !important; }
-                    
-                    /* Grid layouts - force desktop */
-                    .grid.grid-cols-1.sm\\:grid-cols-2 {
-                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                    }
-                    .grid.grid-cols-1.sm\\:grid-cols-\\[140px_1fr\\] {
-                        grid-template-columns: 140px 1fr !important;
-                    }
-                    
-                    /* Quotation info right side - force right align */
-                    .quotation-inner p.flex.sm\\:justify-end {
-                        justify-content: flex-end !important;
-                    }
-                    
-                    /* === BACKGROUNDS === */
-                    .bg-slate-50 {
-                        background-color: #f8fafc !important;
-                    }
-                    .bg-slate-100 {
-                        background-color: #f1f5f9 !important;
-                    }
-                    
-                    /* === TABLE === */
-                    table {
-                        width: 100% !important;
-                        border-collapse: separate !important;
-                        border-spacing: 0 !important;
-                        border: 1px solid #e2e8f0 !important;
-                        border-radius: 8px !important;
-                        overflow: hidden !important;
-                        min-width: 0 !important;
-                    }
-                    
-                    /* Table body cells only - NOT header */
-                    td {
-                        border-bottom: 0.5px solid #e2e8f0 !important;
-                        padding: 5px 10px !important;
-                        vertical-align: top !important;
-                        font-size: 9px !important;
-                    }
-                    
-                    tbody tr:last-child td { border-bottom: none !important; }
-                    
-                    /* === FONT SIZES - smaller for print === */
-                    .text-xs { font-size: 9px !important; }
-                    .text-sm { font-size: 11px !important; }
-                    .text-\\[12px\\] { font-size: 10px !important; }
-                    .text-\\[13px\\] { font-size: 11px !important; }
-                    .text-\\[14px\\] { font-size: 12px !important; }
-                    .text-\\[11px\\] { font-size: 9px !important; }
-                    .text-\\[10px\\] { font-size: 8px !important; }
-                    .text-\\[9px\\] { font-size: 7px !important; }
-                    .text-\\[15px\\] { font-size: 13px !important; }
-                    
-                    /* Divider */
-                    hr {
-                        border-top: 1px solid #e2e8f0 !important;
-                        margin: 8px 0 !important;
-                    }
-                    
-                    /* Overflow fix */
-                    .overflow-x-auto { overflow: visible !important; }
-                    .min-w-\\[600px\\] { min-width: 0 !important; }
-                    
-                    /* Summary section */
-                    .sm\\:w-\\[60\\%\\] { width: 55% !important; }
-                    
-                    /* Page break control */
-                    .proposal-section { 
+                    /* Break control for sections and rows */
+                    .proposal-section, .rounded-3xl, tr {
                         page-break-inside: avoid !important;
                         break-inside: avoid !important;
                     }
-                    
-                    tr {
-                        page-break-inside: avoid !important;
-                        break-inside: avoid !important;
-                    }
-                    
-                    /* Spacing adjustments for print - tighter */
-                    .mb-5 { margin-bottom: 8px !important; }
-                    .mb-6 { margin-bottom: 10px !important; }
-                    .mb-8 { margin-bottom: 12px !important; }
-                    .mb-10 { margin-bottom: 16px !important; }
-                    .mt-8 { margin-top: 12px !important; }
-                    .my-6 { margin-top: 8px !important; margin-bottom: 8px !important; }
-                    .gap-6 { gap: 10px !important; }
-                    .gap-4 { gap: 6px !important; }
-                    .space-y-5 > * + * { margin-top: 8px !important; }
-                    .space-y-1\.5 > * + * { margin-top: 2px !important; }
-                    .pt-6 { padding-top: 10px !important; }
-                    
-                    .p-4 { padding: 8px !important; }
-                    .p-5 { padding: 10px !important; }
-                    .rounded-xl { border-radius: 12px !important; }
-                    .rounded-lg { border-radius: 8px !important; }
+
+                    /* Typography scaling for A4 */
+                    .text-5xl { font-size: 3rem !important; }
+                    .text-xl { font-size: 1.25rem !important; }
+                    .text-lg { font-size: 1.125rem !important; }
+                    .text-sm { font-size: 10pt !important; }
+                    .text-xs { font-size: 8pt !important; }
                 }
-            ` }} />
+                ` }} />
 
             {/* Confirmation Dialog */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
