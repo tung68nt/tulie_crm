@@ -92,16 +92,16 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold'
-            case 'in_progress': return 'bg-blue-50 text-blue-700 border-blue-200'
+            case 'completed': return 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold border-zinc-900'
+            case 'in_progress': return 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
             case 'blocked': return 'bg-red-50 text-red-700 border-red-200'
             default: return 'bg-zinc-100 text-zinc-600 border-zinc-200'
         }
     }
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
+            <CardHeader className="flex flex-row items-center justify-between py-6 px-6">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
                         <ListTodo className="h-5 w-5 text-zinc-900" />

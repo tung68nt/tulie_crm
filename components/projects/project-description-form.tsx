@@ -36,9 +36,10 @@ export function ProjectDescriptionForm({ project }: ProjectDescriptionFormProps)
     if (!isEditing) {
         return (
             <div className="group relative">
-                <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="h-8 w-8 p-0">
-                        <Edit className="h-4 w-4 text-muted-foreground" />
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="h-8 gap-2 bg-white/80 backdrop-blur-sm border-zinc-200 shadow-sm rounded-lg hover:shadow-md transition-all">
+                        <Edit className="h-3.5 w-3.5 text-zinc-600" />
+                        <span className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">Chỉnh sửa</span>
                     </Button>
                 </div>
                 <div className="text-sm p-4 bg-muted/20 rounded-xl border border-dashed whitespace-pre-line leading-relaxed min-h-[100px]">

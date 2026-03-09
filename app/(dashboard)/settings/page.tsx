@@ -10,9 +10,10 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
+import { cn } from '@/lib/utils'
 import {
     getProductCategories,
     createProductCategory,
@@ -32,6 +33,13 @@ import {
 } from '@/lib/supabase/services/settings-service'
 import { testTelegramConnection } from '@/lib/supabase/services/telegram-service'
 import { testSmtpConnection, sendEmail } from '@/lib/supabase/services/email-service'
+import {
+    getDocumentBundles,
+    deleteDocumentBundle,
+    createDocumentBundle,
+    getDocumentTemplates
+} from '@/lib/supabase/services/document-template-service'
+import { DocumentBundle, DocumentTemplate } from '@/types'
 
 export default function SettingsPage() {
     const [companySettings, setCompanySettings] = useState({
@@ -117,8 +125,52 @@ export default function SettingsPage() {
         loadTelegram()
         loadAppearance()
         loadSmtp()
-        loadBrand() // This seems to load the company's brand config, not the list of brands. Keeping it for now as it was pre-existing.
+        loadBrand()
+        loadBundles()
     }, [])
+
+    const [bundles, setBundles] = useState<DocumentBundle[]>([])
+    const [templates, setTemplates] = useState<DocumentTemplate[]>([])
+    const [isSavingBundle, setIsSavingBundle] = useState(false)
+    const [newBundle, setNewBundle] = useState({ name: '', description: '', templates: [] as string[] })
+
+    async function loadBundles() {
+        const [bData, tData] = await Promise.all([
+            getDocumentBundles(),
+            getDocumentTemplates()
+        ])
+        setBundles(bData)
+        setTemplates(tData)
+    }
+
+    const handleCreateBundle = async () => {
+        if (!newBundle.name || newBundle.templates.length === 0) {
+            toast.error('Vui lòng nhập tên và chọn ít nhất 1 mẫu giấy tờ')
+            return
+        }
+        setIsSavingBundle(true)
+        try {
+            await createDocumentBundle(newBundle)
+            setNewBundle({ name: '', description: '', templates: [] })
+            await loadBundles()
+            toast.success('Đã tạo bộ chứng từ mới')
+        } catch {
+            toast.error('Lỗi khi tạo bộ chứng từ')
+        } finally {
+            setIsSavingBundle(false)
+        }
+    }
+
+    const handleDeleteBundle = async (id: string) => {
+        if (!confirm('Xoá bộ chứng từ này?')) return
+        try {
+            await deleteDocumentBundle(id)
+            await loadBundles()
+            toast.success('Đã xoá')
+        } catch {
+            toast.error('Lỗi khi xoá')
+        }
+    }
 
     async function loadBrand() {
         const config = await getBrandConfig()
@@ -485,6 +537,13 @@ export default function SettingsPage() {
                         >
                             <DatabaseIcon className="h-4 w-4" />
                             Dữ liệu
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="bundles"
+                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                        >
+                            <BookOpen className="h-4 w-4" />
+                            Bộ chứng từ (Bundle)
                         </TabsTrigger>
                     </TabsList>
                 </aside>
@@ -1357,6 +1416,109 @@ export default function SettingsPage() {
                                         </p>
                                     </div>
                                     <Button variant="outline">Chọn file</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Bundles Settings */}
+                    <TabsContent value="bundles">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Quản lý bộ chứng từ (Document Bundles)</CardTitle>
+                                <CardDescription>
+                                    Tạo các bộ mẫu giấy tờ (Hợp đồng, Báo giá, BBGN...) để áp dụng nhanh cho dự án
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4 p-4 border rounded-2xl bg-zinc-50/50">
+                                    <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Tạo bộ mới</h4>
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label>Tên bộ chứng từ</Label>
+                                            <Input
+                                                placeholder="VD: In ấn - Trọng gói"
+                                                value={newBundle.name}
+                                                onChange={e => setNewBundle({ ...newBundle, name: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Mô tả ngắn</Label>
+                                            <Input
+                                                placeholder="Dùng cho các dự án in ấn..."
+                                                value={newBundle.description}
+                                                onChange={e => setNewBundle({ ...newBundle, description: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Chọn các mẫu giấy tờ đi kèm</Label>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                            {templates.map(t => (
+                                                <div
+                                                    key={t.id}
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all",
+                                                        newBundle.templates.includes(t.id)
+                                                            ? "bg-zinc-900 text-white border-zinc-900"
+                                                            : "bg-white hover:border-zinc-400"
+                                                    )}
+                                                    onClick={() => {
+                                                        const current = newBundle.templates
+                                                        if (current.includes(t.id)) {
+                                                            setNewBundle({ ...newBundle, templates: current.filter(id => id !== t.id) })
+                                                        } else {
+                                                            setNewBundle({ ...newBundle, templates: [...current, t.id] })
+                                                        }
+                                                    }}
+                                                >
+                                                    <FileText className={cn("w-4 h-4", newBundle.templates.includes(t.id) ? "text-zinc-400" : "text-zinc-500")} />
+                                                    <span className="text-xs font-medium">{t.name}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <Button onClick={handleCreateBundle} disabled={isSavingBundle} className="w-full h-11 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all font-bold">
+                                        {isSavingBundle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                                        Tạo bộ mẫu
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Danh sách hiện có</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {bundles.map(bundle => (
+                                            <Card key={bundle.id} className="overflow-hidden border-zinc-200 shadow-sm rounded-2xl group hover:border-zinc-400 transition-all">
+                                                <CardHeader className="p-4 bg-zinc-50/50 border-b border-zinc-100 flex flex-row items-center justify-between space-y-0">
+                                                    <div>
+                                                        <CardTitle className="text-sm font-bold">{bundle.name}</CardTitle>
+                                                        {bundle.description && <CardDescription className="text-xs">{bundle.description}</CardDescription>}
+                                                    </div>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-400 hover:text-red-500 rounded-full" onClick={() => handleDeleteBundle(bundle.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </CardHeader>
+                                                <CardContent className="p-4">
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {bundle.templates.map(tid => {
+                                                            const t = templates.find(temp => temp.id === tid)
+                                                            return (
+                                                                <Badge key={tid} variant="secondary" className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border-zinc-100 text-zinc-600">
+                                                                    {t?.name || tid}
+                                                                </Badge>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                        {bundles.length === 0 && (
+                                            <div className="col-span-full py-12 text-center text-zinc-400 border-2 border-dashed border-zinc-100 rounded-2xl">
+                                                <BookOpen className="h-8 w-8 mx-auto mb-3 opacity-20" />
+                                                <p className="text-sm">Chưa có bộ mẫu nào</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

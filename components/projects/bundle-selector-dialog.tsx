@@ -24,6 +24,7 @@ import { updateWorkItem } from '@/lib/supabase/services/work-item-service'
 import { DocumentBundle, RequiredDocument } from '@/types'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 interface BundleSelectorDialogProps {
     isOpen: boolean
@@ -129,36 +130,65 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-4 py-4">
-                    <div className="space-y-2">
-                        <Label>Bộ chứng từ mẫu</Label>
-                        <Select value={selectedBundleId} onValueChange={setSelectedBundleId}>
-                            <SelectTrigger>
-                                <SelectValue placeholder={isLoading ? "Đang tải..." : "Chọn bộ mẫu..."} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {bundles.map((b) => (
-                                    <SelectItem key={b.id} value={b.id}>
-                                        {b.name} ({b.templates.length} loại giấy tờ)
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {selectedBundleId && (
-                        <div className="bg-zinc-50 p-3 rounded-xl border border-dashed border-zinc-200">
-                            <h6 className="text-[11px] font-bold text-zinc-500 uppercase mb-2">Giấy tờ sẽ khởi tạo:</h6>
-                            <div className="space-y-1.5">
-                                {bundles.find(b => b.id === selectedBundleId)?.templates.map((tid, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-xs text-zinc-600">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                                        Mẫu ID: {tid}
+                <div className="py-4">
+                    <div className="space-y-3">
+                        <Label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Chọn bộ mẫu phù hợp</Label>
+                        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {isLoading ? (
+                                <div className="flex flex-col items-center justify-center py-12 gap-3">
+                                    <Loader2 className="w-6 h-6 animate-spin text-zinc-300" />
+                                    <p className="text-xs text-zinc-400">Đang tải danh sách...</p>
+                                </div>
+                            ) : bundles.length === 0 ? (
+                                <div className="text-center py-8 border-2 border-dashed border-zinc-100 rounded-2xl">
+                                    <p className="text-xs text-zinc-400">Chưa có bộ mẫu nào. Vui lòng tạo trong Cài đặt.</p>
+                                </div>
+                            ) : (
+                                bundles.map((b) => (
+                                    <div
+                                        key={b.id}
+                                        className={cn(
+                                            "relative p-4 rounded-2xl border transition-all cursor-pointer group",
+                                            selectedBundleId === b.id
+                                                ? "bg-zinc-900 border-zinc-900 text-white shadow-lg shadow-zinc-200"
+                                                : "bg-white border-zinc-100 hover:border-zinc-300"
+                                        )}
+                                        onClick={() => setSelectedBundleId(b.id)}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <h6 className="font-bold text-sm">{b.name}</h6>
+                                            <div className={cn(
+                                                "w-4 h-4 rounded-full border flex items-center justify-center",
+                                                selectedBundleId === b.id ? "border-white bg-white" : "border-zinc-200 group-hover:border-zinc-400"
+                                            )}>
+                                                {selectedBundleId === b.id && <CheckCircle2 className="w-3 h-3 text-zinc-900" />}
+                                            </div>
+                                        </div>
+                                        <p className={cn(
+                                            "text-[10px] mb-3 leading-relaxed",
+                                            selectedBundleId === b.id ? "text-zinc-400" : "text-zinc-500"
+                                        )}>
+                                            {b.description || `Gồm ${b.templates.length} loại giấy tờ chuẩn cho dự án.`}
+                                        </p>
+                                        <div className="flex flex-wrap gap-1">
+                                            {b.templates.map((_, i) => (
+                                                <div key={i} className={cn(
+                                                    "w-1.5 h-1.5 rounded-full",
+                                                    selectedBundleId === b.id ? "bg-white/40" : "bg-zinc-200"
+                                                )} />
+                                            ))}
+                                            <span className={cn(
+                                                "text-[9px] font-bold ml-1 tracking-widest uppercase",
+                                                selectedBundleId === b.id ? "text-white/60" : "text-zinc-400"
+                                            )}>
+                                                {b.templates.length} FILES
+                                            </span>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
+                                ))
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
 
                 <DialogFooter>

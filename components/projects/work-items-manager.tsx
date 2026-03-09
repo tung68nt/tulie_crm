@@ -22,6 +22,12 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import {
     Plus,
     Trash2,
     ChevronDown,
@@ -55,11 +61,11 @@ interface WorkItemsManagerProps {
 }
 
 const STATUS_OPTIONS = [
-    { value: 'pending', label: 'Chờ xử lý' },
-    { value: 'in_progress', label: 'Đang thực hiện' },
-    { value: 'delivered', label: 'Đã bàn giao' },
-    { value: 'accepted', label: 'Đã nghiệm thu' },
-    { value: 'rejected', label: 'Từ chối' },
+    { value: 'pending', label: 'Chờ xử lý', color: 'bg-zinc-100 text-zinc-600 border-zinc-200' },
+    { value: 'in_progress', label: 'Đang thực hiện', color: 'bg-blue-50 text-blue-700 border-blue-200 font-bold' },
+    { value: 'delivered', label: 'Đã bàn giao', color: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold border-zinc-900' },
+    { value: 'accepted', label: 'Đã nghiệm thu', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold' },
+    { value: 'rejected', label: 'Từ chối', color: 'bg-red-50 text-red-700 border-red-200' },
 ]
 
 const DEFAULT_DOCUMENTS = [
@@ -167,11 +173,11 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <div>
-                    <CardTitle className="text-xl flex items-center gap-2">
-                        <Package className="h-5 w-5 text-muted-foreground" />
+                    <CardTitle className="text-lg font-bold flex items-center gap-2">
+                        <Package className="h-5 w-5 text-zinc-900" />
                         Hạng mục dự án
                     </CardTitle>
-                    <CardDescription>Quản lý các hạng mục, công việc, link bàn giao và chứng từ</CardDescription>
+                    <CardDescription className="text-xs">Quản lý các hạng mục, công việc, link bàn giao và chứng từ</CardDescription>
                 </div>
 
                 <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -365,6 +371,24 @@ function WorkItemRow({
         })
     }
 
+    const handleUpdateDocDate = async (docIdx: number, date: Date | undefined) => {
+        if (!date) return
+        const updated = requiredDocs.map((d: any, i: number) => {
+            if (i === docIdx) {
+                return { ...d, date: date.toISOString() }
+            }
+            return d
+        })
+        startTransition(async () => {
+            try {
+                await updateWorkItem(item.id, { required_documents: updated })
+                router.refresh()
+            } catch {
+                toast.error('Lỗi')
+            }
+        })
+    }
+
     const handleToggleDoc = async (docIdx: number) => {
         const updated = requiredDocs.map((d: any, i: number) => {
             if (i === docIdx) {
@@ -411,12 +435,12 @@ function WorkItemRow({
                         <Badge variant="outline" className="text-[10px] h-5"><FileSignature className="w-3 h-3 mr-1" />{item.contract.contract_number}</Badge>
                     )}
                     <Select value={item.status} onValueChange={onStatusChange}>
-                        <SelectTrigger className="h-7 text-xs w-[130px]" onClick={e => e.stopPropagation()}>
+                        <SelectTrigger className={cn("h-7 text-xs w-auto min-w-[130px] px-3 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95", statusOption?.color)} onClick={e => e.stopPropagation()}>
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-xl border-zinc-200">
                             {STATUS_OPTIONS.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                <SelectItem key={opt.value} value={opt.value} className="text-xs">{opt.label}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
@@ -541,7 +565,7 @@ function WorkItemRow({
                                     <ClipboardCheck className="w-3.5 h-3.5" />
                                     Thủ tục chứng từ
                                 </div>
-                                {!item.bundle_id && (
+                                <div className="flex items-center gap-1.5">
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -549,13 +573,13 @@ function WorkItemRow({
                                         onClick={() => setShowBundleDialog(true)}
                                     >
                                         <Plus className="w-3 h-3 mr-1" />
-                                        Chọn bộ chứng từ
+                                        {item.bundle_id ? 'Thay đổi' : 'Chọn bộ chứng từ'}
                                     </Button>
-                                )}
+                                </div>
                             </h5>
                             <div className="space-y-1">
                                 {requiredDocs.map((doc: any, dIdx: number) => (
-                                    <div key={dIdx} className="flex items-center gap-2 py-1">
+                                    <div key={dIdx} className="flex items-center gap-2 py-1 group/doc">
                                         <button
                                             onClick={() => handleToggleDoc(dIdx)}
                                             className="shrink-0"
@@ -569,21 +593,39 @@ function WorkItemRow({
                                         </button>
                                         <span className={cn(
                                             "text-xs flex-1 truncate",
-                                            doc.status === 'signed' && "line-through text-muted-foreground"
+                                            doc.status === 'signed' && "text-muted-foreground"
                                         )}>
                                             {doc.title}
                                         </span>
-                                        {doc.generated_doc_id ? (
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="h-6 w-6 p-0 text-muted-foreground hover:text-zinc-900"
-                                                onClick={() => onEditDoc(doc.generated_doc_id)}
-                                            >
-                                                <FileEdit className="w-3.5 h-3.5" />
-                                            </Button>
-                                        ) : null}
-                                        {doc.date && <span className="text-[10px] text-muted-foreground ml-auto">{formatDate(doc.date)}</span>}
+                                        <div className="flex items-center gap-1.5 opacity-0 group-hover/doc:opacity-100 transition-opacity">
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <button className="text-[10px] text-zinc-400 hover:text-zinc-900 underline underline-offset-2">
+                                                        {doc.date ? formatDate(doc.date) : 'Đặt ngày'}
+                                                    </button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="end">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={doc.date ? new Date(doc.date) : undefined}
+                                                        onSelect={(d) => handleUpdateDocDate(dIdx, d)}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                            {doc.generated_doc_id && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-6 w-6 text-zinc-400 hover:text-zinc-900"
+                                                    onClick={() => onEditDoc(doc.generated_doc_id)}
+                                                >
+                                                    <FileEdit className="w-3.5 h-3.5" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                        {!doc.date && <span className="text-[10px] text-zinc-300 group-hover/doc:hidden">--/--/--</span>}
+                                        {doc.date && <span className="text-[10px] text-zinc-500 group-hover/doc:hidden">{formatDate(doc.date)}</span>}
                                     </div>
                                 ))}
                             </div>

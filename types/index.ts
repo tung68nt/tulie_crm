@@ -491,10 +491,11 @@ export interface DocumentTemplate {
 export interface DocumentBundle {
   id: string
   name: string
-  customer_id: string
+  description?: string
+  customer_id?: string
   contract_id?: string
   templates: string[] // Template IDs included in bundle
-  generated_documents: GeneratedDocument[]
+  generated_documents?: GeneratedDocument[]
   share_token?: string
   expires_at?: string
   created_at: string

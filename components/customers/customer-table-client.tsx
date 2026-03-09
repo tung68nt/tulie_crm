@@ -2,8 +2,10 @@
 
 import { DataTable } from '@/components/shared/data-table'
 import { customerColumns } from './customer-columns'
-import { Tag, UserPlus } from 'lucide-react'
+import { Tag, UserPlus, Building2, User } from 'lucide-react'
 import { deleteCustomers, updateCustomersStatus, reassignCustomers } from '@/lib/supabase/services/customer-service'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState } from 'react'
 
 interface CustomerTableClientProps {
     data: any[]
@@ -47,21 +49,40 @@ export function CustomerTableClient({ data, users }: CustomerTableClientProps) {
         onAction: async (rows: any[]) => handleBulkReassign(rows, user.id)
     }))
 
+    const [activeTab, setActiveTab] = useState<'business' | 'individual'>('business')
+
+    const filteredData = data.filter(c => c.customer_type === activeTab)
+
     return (
-        <DataTable
-            columns={customerColumns}
-            data={data}
-            searchKey="company_name"
-            searchPlaceholder="Tìm theo tên công ty..."
-            filters={[
-                {
-                    columnId: 'status',
-                    title: 'Trạng thái',
-                    options: statusOptions
-                }
-            ]}
-            onDelete={handleDelete}
-            bulkActions={[...statusActions, ...reassignmentActions]}
-        />
+        <div className="space-y-4">
+            <Tabs defaultValue="business" className="w-full" onValueChange={(v) => setActiveTab(v as any)}>
+                <TabsList className="bg-zinc-100/50 p-1 h-11 rounded-xl">
+                    <TabsTrigger value="business" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <Building2 className="w-4 h-4 mr-2" />
+                        Doanh nghiệp
+                    </TabsTrigger>
+                    <TabsTrigger value="individual" className="rounded-lg px-6 h-9 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                        <User className="w-4 h-4 mr-2" />
+                        Cá nhân
+                    </TabsTrigger>
+                </TabsList>
+            </Tabs>
+
+            <DataTable
+                columns={customerColumns}
+                data={filteredData}
+                searchKey={activeTab === 'business' ? "company_name" : "representative"}
+                searchPlaceholder={activeTab === 'business' ? "Tìm theo tên công ty..." : "Tìm tên khách hàng..."}
+                filters={[
+                    {
+                        columnId: 'status',
+                        title: 'Trạng thái',
+                        options: statusOptions
+                    }
+                ]}
+                onDelete={handleDelete}
+                bulkActions={[...statusActions, ...reassignmentActions]}
+            />
+        </div>
     )
 }

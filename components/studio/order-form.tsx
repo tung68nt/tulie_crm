@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
-import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed } from 'lucide-react'
+import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
@@ -40,8 +40,7 @@ export function RetailOrderForm() {
         delivery_date: '',
         needs_vat: false,
         brand: 'studio' as any,
-        customer_type: 'individual' as 'individual' | 'business',
-        use_deposit: true, // Local UI state
+        use_deposit: true,
     })
 
     const [brandConfig, setBrandConfig] = useState<any>(null)
@@ -49,9 +48,7 @@ export function RetailOrderForm() {
     useEffect(() => {
         const fetchProducts = async () => {
             const data = await getProducts()
-            // Filter products for Studio brand, or those with no brand yet (migration period)
-            const studioProducts = data.filter(p => !p.brand || p.brand === 'studio')
-            setProducts(studioProducts)
+            setProducts(data.filter(p => p.is_active))
         }
         const fetchConfig = async () => {
             const { getBrandConfig } = await import('@/lib/supabase/services/settings-service')
@@ -62,7 +59,6 @@ export function RetailOrderForm() {
         fetchConfig()
     }, [])
 
-    // Recalculate total
     useEffect(() => {
         const itemsTotal = selectedItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
         const total = itemsTotal + (formData.shipping_fee || 0)
@@ -93,6 +89,13 @@ export function RetailOrderForm() {
         const newItems = [...selectedItems]
         newItems[index].quantity = quantity
         newItems[index].total_price = quantity * newItems[index].unit_price
+        setSelectedItems(newItems)
+    }
+
+    const updateItemPrice = (index: number, price: number) => {
+        const newItems = [...selectedItems]
+        newItems[index].unit_price = price
+        newItems[index].total_price = newItems[index].quantity * price
         setSelectedItems(newItems)
     }
 
@@ -137,7 +140,6 @@ export function RetailOrderForm() {
         }
     }
 
-    // Use STUDIO bank account (personal), not Agency
     const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
     const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
     const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
@@ -149,35 +151,13 @@ export function RetailOrderForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 lg:grid-cols-12 items-start">
-                {/* Left Side: Forms */}
                 <div className="lg:col-span-8 space-y-6">
-                    {/* Customer Info */}
                     <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl overflow-hidden">
-                        <CardHeader className="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-6">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
-                                    <User className="h-4 w-4" />
-                                    Thông tin khách hàng
-                                </CardTitle>
-                                <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, customer_type: 'individual' })}
-                                        className={cn(
-                                            "px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all",
-                                            formData.customer_type === 'individual' ? "bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white" : "text-zinc-500"
-                                        )}
-                                    >Cá nhân</button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, customer_type: 'business' })}
-                                        className={cn(
-                                            "px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all",
-                                            formData.customer_type === 'business' ? "bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white" : "text-zinc-500"
-                                        )}
-                                    >Doanh nghiệp</button>
-                                </div>
-                            </div>
+                        <CardHeader className="bg-white border-b border-zinc-100 py-4 px-6">
+                            <CardTitle className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                                <User className="h-4 w-4" />
+                                Thông tin khách hàng
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
                             <div className="grid gap-6 md:grid-cols-2">
@@ -185,7 +165,7 @@ export function RetailOrderForm() {
                                     <Label htmlFor="customer_name" className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Họ tên / Đơn vị *</Label>
                                     <Input
                                         id="customer_name"
-                                        placeholder={formData.customer_type === 'individual' ? "Nguyễn Văn A" : "Tên công ty / Studio"}
+                                        placeholder="Nguyễn Văn A"
                                         value={formData.customer_name}
                                         onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
                                         className="h-11 border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30 focus:bg-white transition-colors"
@@ -232,7 +212,6 @@ export function RetailOrderForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Product Selection */}
                     <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl overflow-hidden">
                         <CardHeader className="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 py-4 px-6 flex flex-row items-center justify-between">
                             <CardTitle className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-widest text-zinc-500">
@@ -268,20 +247,29 @@ export function RetailOrderForm() {
                                                     <td className="px-6 py-4">
                                                         <Input
                                                             type="number"
+                                                            min="1"
                                                             value={item.quantity}
                                                             onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
-                                                            className="h-9 text-center px-1 w-20 mx-auto border-zinc-200 dark:border-zinc-700 rounded-lg"
+                                                            className="h-8 w-16 text-center border-zinc-200 dark:border-zinc-700 bg-transparent mx-auto font-bold"
                                                         />
                                                     </td>
-                                                    <td className="px-6 py-4 text-right text-zinc-500">{formatCurrency(item.unit_price)}</td>
-                                                    <td className="px-6 py-4 text-right font-bold text-zinc-900 dark:text-zinc-100">{formatCurrency(item.total_price)}</td>
-                                                    <td className="px-6 py-4">
+                                                    <td className="px-6 py-4 text-right tabular-nums">
+                                                        <PriceInput
+                                                            value={item.unit_price}
+                                                            onChange={(val) => updateItemPrice(index, val)}
+                                                            className="h-8 w-28 text-right bg-transparent border-none focus-visible:ring-0 p-0 font-bold ml-auto"
+                                                        />
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right font-black tabular-nums text-zinc-900 dark:text-zinc-100">
+                                                        {formatCurrency(item.total_price)}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right">
                                                         <Button
-                                                            type="button"
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-full transition-colors"
                                                             onClick={() => removeItem(index)}
+                                                            className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+                                                            type="button"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </Button>
@@ -289,24 +277,27 @@ export function RetailOrderForm() {
                                                 </tr>
                                             ))}
                                         </tbody>
-                                        <tfoot className="bg-zinc-50/30 dark:bg-zinc-900/30 border-t border-zinc-100 dark:border-zinc-800">
+                                        <tfoot className="bg-zinc-50/30 dark:bg-zinc-900/30 font-bold border-t border-zinc-100 dark:border-zinc-800">
                                             <tr>
-                                                <td colSpan={3} className="px-6 py-4 text-right text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Tạm tính:</td>
-                                                <td className="px-6 py-4 text-right font-extrabold text-zinc-900 dark:text-zinc-100 text-lg">{formatCurrency(selectedItems.reduce((s, i) => s + i.total_price, 0))}</td>
+                                                <td colSpan={3} className="px-6 py-4 text-zinc-500 uppercase text-[10px] tracking-widest">Tổng cộng tạm tính</td>
+                                                <td className="px-6 py-4 text-right text-lg font-black text-zinc-900 dark:text-zinc-100 tabular-nums">
+                                                    {formatCurrency(formData.total_amount)}
+                                                </td>
                                                 <td></td>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                             ) : (
-                                <div className="py-16 text-center text-zinc-400 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-2xl bg-zinc-50/20 dark:bg-zinc-950/20">
-                                    <Package className="h-10 w-10 mx-auto mb-3 opacity-20" />
-                                    <p className="text-sm font-bold text-zinc-500">Chưa có sản phẩm nào</p>
-                                    <p className="text-xs mt-1 text-zinc-400">Vui lòng chọn sản phẩm hỗ trợ dịch vụ</p>
+                                <div className="text-center py-12 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-2xl">
+                                    <div className="bg-zinc-50 dark:bg-zinc-900 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <Plus className="h-6 w-6 text-zinc-300" />
+                                    </div>
+                                    <p className="text-zinc-400 text-sm font-medium">Chưa chọn sản phẩm nào cho đơn hàng này.</p>
                                 </div>
                             )}
 
-                            <div className="grid gap-6 md:grid-cols-2 pt-2">
+                            <div className="grid gap-6 md:grid-cols-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                                 <div className="space-y-2">
                                     <Label htmlFor="shipping_fee" className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                                         <Truck className="h-3.5 w-3.5" /> Phí vận chuyển
@@ -315,19 +306,19 @@ export function RetailOrderForm() {
                                         id="shipping_fee"
                                         value={formData.shipping_fee}
                                         onChange={(val) => setFormData({ ...formData, shipping_fee: val })}
-                                        className="h-11 border-zinc-200 dark:border-zinc-700 rounded-xl font-bold bg-zinc-50/30"
+                                        className="h-11 border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30 focus:bg-white transition-colors font-bold"
                                     />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="delivery_date" className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
-                                        <CalendarIcon className="h-3.5 w-3.5" /> Hẹn trả file
+                                        <Clock className="h-3.5 w-3.5" /> Hẹn trả file
                                     </Label>
                                     <Input
                                         id="delivery_date"
                                         type="date"
                                         value={formData.delivery_date}
                                         onChange={(e) => setFormData({ ...formData, delivery_date: e.target.value })}
-                                        className="h-11 border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30"
+                                        className="h-11 border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30 focus:bg-white transition-colors"
                                     />
                                 </div>
                             </div>
@@ -346,42 +337,39 @@ export function RetailOrderForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="notes" className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Ghi chú</Label>
+                                <Label htmlFor="notes" className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Mô tả sản phẩm (Ghi chú)</Label>
                                 <Textarea
                                     id="notes"
-                                    placeholder="Yêu cầu riêng, địa chỉ nhận hàng..."
+                                    placeholder="Ví dụ: Giao tận nơi, đóng khung gỗ, in decal..."
                                     rows={3}
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                    className="border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30 focus:bg-white resize-none"
+                                    className="border-zinc-200 dark:border-zinc-700 rounded-xl bg-zinc-50/30 focus:bg-white resize-none text-sm"
                                 />
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Right Side: Payment & QR & Action */}
                 <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
-                    {/* Payment Summary */}
-                    <Card className="bg-zinc-950 text-zinc-50 border-none overflow-hidden shadow-2xl rounded-[24px] ring-1 ring-white/10">
-                        <CardHeader className="pb-4 pt-6 px-6 border-b border-white/5">
+                    <Card className="bg-white border border-zinc-200 overflow-hidden shadow-sm rounded-[24px]">
+                        <CardHeader className="pb-4 pt-6 px-6 border-b border-zinc-100">
                             <CardTitle className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500 flex items-center gap-2.5">
                                 <CircleDollarSign className="h-4 w-4" /> Thanh toán
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="px-6 py-8 space-y-6">
                             <div className="space-y-1">
-                                <span className="text-[10px] uppercase font-bold text-zinc-600 tracking-widest">Tổng giá trị đơn hàng</span>
-                                <div className="text-4xl font-black text-white tracking-tighter tabular-nums drop-shadow-sm">{formatCurrency(formData.total_amount)}</div>
+                                <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-widest">Tổng giá trị đơn hàng</span>
+                                <div className="text-4xl font-black text-zinc-900 tracking-tighter tabular-nums">{formatCurrency(formData.total_amount)}</div>
                             </div>
 
-                            <div className="space-y-4 bg-zinc-900/80 p-5 rounded-[20px] border border-white/5 backdrop-blur-sm">
+                            <div className="space-y-4 bg-zinc-50 p-5 rounded-[20px] border border-zinc-100">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-[11px] uppercase font-bold text-zinc-400 tracking-wider">Sử dụng cọc</Label>
+                                    <Label className="text-[11px] uppercase font-bold text-zinc-500 tracking-wider">Sử dụng cọc</Label>
                                     <Switch
                                         checked={formData.use_deposit}
                                         onCheckedChange={(val) => setFormData({ ...formData, use_deposit: val })}
-                                        className="data-[state=checked]:bg-white data-[state=checked]:text-zinc-950"
                                     />
                                 </div>
                                 {formData.use_deposit && (
@@ -389,27 +377,26 @@ export function RetailOrderForm() {
                                         <PriceInput
                                             value={formData.deposit_amount}
                                             onChange={(val) => setFormData({ ...formData, deposit_amount: val })}
-                                            className="bg-zinc-800/80 border-white/10 text-white text-xl font-black h-12 rounded-xl focus:ring-white/20"
+                                            className="bg-white border-zinc-200 text-zinc-900 text-xl font-black h-12 rounded-xl focus:ring-zinc-900"
                                         />
-                                        <p className="text-[10px] text-zinc-500 font-medium italic">Gợi ý: Cọc 30-50% giá trị đơn hàng</p>
+                                        <p className="text-[10px] text-zinc-400 font-medium italic">Gợi ý: Cọc 30-50% giá trị đơn hàng</p>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex justify-between items-end pt-2">
+                            <div className="flex justify-between items-end pt-2 border-t border-zinc-100 pt-4">
                                 <div className="space-y-0.5">
-                                    <span className="text-zinc-600 font-bold uppercase text-[10px] tracking-wider">{formData.use_deposit ? 'Còn lại:' : 'Thanh toán ngay:'}</span>
-                                    <div className="font-extrabold text-white text-2xl tabular-nums">{formatCurrency(formData.use_deposit ? balance : formData.total_amount)}</div>
+                                    <span className="text-zinc-400 font-bold uppercase text-[10px] tracking-wider">{formData.use_deposit ? 'Còn lại:' : 'Thanh toán ngay:'}</span>
+                                    <div className="font-extrabold text-zinc-900 text-2xl tabular-nums">{formatCurrency(formData.use_deposit ? balance : formData.total_amount)}</div>
                                 </div>
                                 <div className="text-right">
-                                    <span className="text-zinc-600 font-bold uppercase text-[10px] tracking-wider">Mã đơn</span>
-                                    <p className="text-zinc-300 font-mono text-[11px] tracking-widest">{orderIdPreview}</p>
+                                    <span className="text-zinc-500 font-bold uppercase text-[10px] tracking-wider">Mã đơn</span>
+                                    <p className="text-zinc-900 font-mono text-[12px] font-bold tracking-tight">{orderIdPreview}</p>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* QR Code Section */}
                     <div className="grid grid-cols-2 gap-4">
                         {formData.use_deposit && formData.deposit_amount > 0 && (
                             <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl overflow-hidden bg-white dark:bg-zinc-950">
@@ -442,7 +429,6 @@ export function RetailOrderForm() {
                         </Card>
                     </div>
 
-                    {/* Status & Action */}
                     <div className="space-y-4">
                         <Card className="border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl overflow-hidden">
                             <CardHeader className="py-3 px-5 border-b border-zinc-50 dark:border-zinc-900 bg-zinc-50/30">

@@ -73,14 +73,14 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
     }
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between bg-muted/30">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
+            <CardHeader className="flex flex-row items-center justify-between py-6 px-6">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-slate-700" />
+                        <FileText className="h-5 w-5 text-zinc-900" />
                         Lịch trình triển khai & Thanh toán (Portal View)
                     </CardTitle>
-                    <CardDescription className="font-normal">Các mốc thời gian này sẽ hiển thị trực tiếp trên Portal của khách hàng.</CardDescription>
+                    <CardDescription className="font-normal text-xs">Các mốc thời gian này sẽ hiển thị trực tiếp trên Portal của khách hàng.</CardDescription>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={addMilestone}>

@@ -413,6 +413,27 @@ export async function getDocumentBundles() {
     }
 }
 
+export async function deleteDocumentBundle(id: string) {
+    const supabase = await createClient()
+    const { error } = await supabase
+        .from('document_bundles')
+        .delete()
+        .eq('id', id)
+    if (error) throw error
+}
+
+export async function updateDocumentBundle(id: string, bundle: Partial<DocumentBundle>) {
+    const supabase = await createClient()
+    const { data, error } = await supabase
+        .from('document_bundles')
+        .update(bundle)
+        .eq('id', id)
+        .select()
+        .single()
+    if (error) throw error
+    return data as DocumentBundle
+}
+
 export async function saveGeneratedDocument(doc: Partial<GeneratedDocument>) {
     try {
         const supabase = await createClient()
