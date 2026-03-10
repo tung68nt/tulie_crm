@@ -121,34 +121,49 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         }
     })
 
-    const [items, setItems] = useState<Partial<QuotationItem>[]>(() => {
+    const [items, setItems] = useState<(Partial<QuotationItem> & { section_id?: string })[]>(() => {
+        let rawItems: any[] = []
         if (quotation?.items && Array.isArray(quotation.items) && quotation.items.length > 0) {
-            return quotation.items.map(item => ({ ...item }))
+            rawItems = quotation.items.map(item => ({ ...item }))
+        } else {
+            rawItems = [
+                {
+                    id: `temp-${Date.now()}`,
+                    product_id: '',
+                    product_name: '',
+                    description: '',
+                    section_name: '',
+                    quantity: 1,
+                    unit: 'cái',
+                    unit_price: 0,
+                    discount: 0,
+                    total_price: 0,
+                    sort_order: 0
+                }
+            ]
         }
-        return [
-            {
-                id: `temp-${Date.now()}`,
-                product_id: '',
-                product_name: '',
-                description: '',
-                section_name: '',
-                quantity: 1,
-                unit: 'cái',
-                unit_price: 0,
-                discount: 0,
-                total_price: 0,
-                sort_order: 0
+
+        // Assign section_id based on section_name transitions to keep initial sections separate
+        let currentSecId = 0
+        let lastSectionName: string | null = null
+        return rawItems.map((item, idx) => {
+            if (idx === 0 || item.section_name !== lastSectionName) {
+                currentSecId++
+                lastSectionName = item.section_name || ''
             }
-        ]
+            return { ...item, section_id: `sec-${currentSecId}` }
+        })
     })
 
     const addItem = () => {
-        const newItem: Partial<QuotationItem> = {
+        const lastItem = items[items.length - 1]
+        const newItem: any = {
             id: `temp-${Date.now()}`,
             product_id: '',
             product_name: '',
             description: '',
-            section_name: '',
+            section_name: lastItem?.section_name || '',
+            section_id: lastItem?.section_id || 'sec-1',
             quantity: 1,
             unit: 'cái',
             unit_price: 0,
@@ -182,13 +197,15 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         setItems(newItems)
     }
 
-    const addItemToSection = (sectionName: string) => {
-        const newItem: Partial<QuotationItem> = {
+    const addItemToSection = (sectionName: string, sectionId?: string) => {
+        const sId = sectionId || `sec-${Date.now()}`
+        const newItem: any = {
             id: `temp-${Date.now()}`,
             product_id: '',
             product_name: '',
             description: '',
             section_name: sectionName,
+            section_id: sId,
             quantity: 1,
             unit: 'cái',
             unit_price: 0,
@@ -214,15 +231,16 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         }
     }
 
-    const updateSectionName = (oldName: string, newName: string) => {
+    const updateSectionName = (sectionId: string, newName: string) => {
         setItems(prev => prev.map(item =>
-            (item.section_name || 'Khác') === oldName ? { ...item, section_name: newName } : item
+            item.section_id === sectionId ? { ...item, section_name: newName } : item
         ))
     }
 
-    const removeSection = (sectionName: string) => {
-        if (confirm(`Bạn có chắc muốn xóa toàn bộ phần "${sectionName}" không?`)) {
-            setItems(prev => prev.filter(item => (item.section_name || 'Khác') !== sectionName))
+    const removeSection = (sectionId: string) => {
+        const group = sectionGroups.find(g => g.id === sectionId)
+        if (confirm(`Bạn có chắc muốn xóa toàn bộ phần "${group?.name || 'này'}" không?`)) {
+            setItems(prev => prev.filter(item => item.section_id !== sectionId))
         }
     }
 
@@ -266,13 +284,13 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const existingSections = Array.from(new Set(items.map(i => i.section_name).filter(Boolean))) as string[]
     const sectionOptions = Array.from(new Set([...commonSections, ...existingSections]))
 
-    // Group items for display
-    const sectionGroups: { name: string; items: any[] }[] = []
+    // Group items for display using section_id
+    const sectionGroups: { id: string; name: string; items: any[] }[] = []
     items.forEach((item, index) => {
-        const sName = item.section_name || ''
-        let group = sectionGroups.find(g => g.name === sName)
+        const sId = item.section_id || 'sec-default'
+        let group = sectionGroups.find(g => g.id === sId)
         if (!group) {
-            group = { name: sName, items: [] }
+            group = { id: sId, name: item.section_name || '', items: [] }
             sectionGroups.push(group)
         }
         group.items.push({ ...item, actualIndex: index })
@@ -878,24 +896,30 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 sectionGroups.map((group, groupIdx) => (
                                     <div key={groupIdx} className="bg-white rounded-xl shadow-sm border overflow-hidden">
                                         {/* Section Header */}
-                                        <div className="bg-zinc-900 px-4 py-2 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                                            <div className="flex items-center gap-2 flex-1 w-full max-w-md">
-                                                <span className="text-white/60 font-bold">{groupIdx + 1}.</span>
-                                                <Input
-                                                    value={group.name}
-                                                    onChange={(e) => updateSectionName(group.name, e.target.value)}
-                                                    placeholder="Tên phần (vd: Thiết kế, In ấn, Website...)"
-                                                    className="bg-transparent border-none text-white font-bold h-8 focus-visible:ring-0 px-0 placeholder:text-white/40"
-                                                />
+                                        <div className="bg-zinc-900 px-5 py-3 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                            <div className="flex items-center gap-3 flex-1 w-full">
+                                                <div className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center text-[11px] font-black text-white/80">
+                                                    {groupIdx + 1}
+                                                </div>
+                                                <div className="relative flex-1 group/input">
+                                                    <Input
+                                                        value={group.name}
+                                                        onChange={(e) => updateSectionName(group.id, e.target.value)}
+                                                        placeholder="Nhập tên phần (vd: Thiết kế, Media...)"
+                                                        className="bg-transparent border-none text-white font-black text-sm h-8 focus-visible:ring-0 px-0 placeholder:text-white/30 truncate"
+                                                    />
+                                                    <div className="absolute bottom-0 left-0 w-full h-px bg-white/10 group-focus-within/input:bg-white/40 transition-colors" />
+                                                </div>
                                             </div>
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => removeSection(group.name)}
-                                                className="text-white/60 hover:text-red-400 h-8 px-2"
+                                                onClick={() => removeSection(group.id)}
+                                                className="text-white/40 hover:text-red-400 hover:bg-white/5 h-8 px-3 rounded-xl transition-all font-black uppercase text-[10px] tracking-widest"
                                             >
-                                                <Trash2 className="h-4 w-4 mr-1" /> Xóa phần
+                                                <Trash2 className="h-3.5 w-3.5 mr-2" />
+                                                Xoá phần này
                                             </Button>
                                         </div>
 
@@ -1045,15 +1069,15 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             </Table>
                                         </div>
 
-                                        <div className="bg-slate-50/50 p-2 border-t">
+                                        <div className="bg-zinc-50/50 p-2 border-t">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => addItemToSection(group.name)}
-                                                className="w-full h-8 border border-dashed border-slate-200 hover:border-slate-400 hover:bg-white text-slate-500 font-medium"
+                                                onClick={() => addItemToSection(group.name, group.id)}
+                                                className="w-full h-9 border border-dashed border-zinc-200 hover:border-zinc-400 hover:bg-white text-zinc-500 font-black uppercase text-[9px] tracking-widest transition-all rounded-xl"
                                             >
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                Thêm sản phẩm vào phần "{group.name}"
+                                                <Plus className="h-3 w-3 mr-2" />
+                                                Thêm sản phẩm vào phần "{group.name || 'này'}"
                                             </Button>
                                         </div>
                                     </div>
@@ -1128,42 +1152,47 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border-zinc-200 bg-white/95 backdrop-blur-md rounded-[32px] overflow-hidden group">
+                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.2)] border-zinc-200 bg-white/95 backdrop-blur-md rounded-[32px] overflow-hidden group">
                     <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5 flex flex-row items-center justify-between">
                         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Real-time Summary</span>
-                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4 px-8 pb-8 pt-6">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-10">
                             <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
-                                <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Tạm tính</p>
-                                    <p className="text-xl font-black text-zinc-950 tracking-tight">{formatCurrency(subtotal)}</p>
+                                <div className="space-y-1.5">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Tạm tính</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xl font-black text-zinc-950 tracking-tighter">{formatCurrency(subtotal).replace(' đ', '')}</span>
+                                        <span className="text-xs font-black text-zinc-950 uppercase">đ</span>
+                                    </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Thuế VAT</p>
+                                <div className="space-y-1.5">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Thuế VAT</p>
                                     <div className="flex items-center gap-4">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-20 h-9 font-black border-zinc-200 rounded-xl">
+                                            <SelectTrigger className="w-20 h-9 font-black border-zinc-200 rounded-xl bg-zinc-50/50">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-xl">
+                                            <SelectContent className="rounded-xl border-zinc-200">
                                                 <SelectItem value="0" className="text-xs font-bold">0%</SelectItem>
                                                 <SelectItem value="8" className="text-xs font-bold">8%</SelectItem>
                                                 <SelectItem value="10" className="text-xs font-bold">10%</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <span className="text-[15px] font-black text-zinc-950 tracking-tight">{formatCurrency(vatAmount)}</span>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-[15px] font-black text-zinc-950 tracking-tight">{formatCurrency(vatAmount).replace(' đ', '')}</span>
+                                            <span className="text-[10px] font-black text-zinc-950 uppercase">đ</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2 min-w-[200px] border-l border-zinc-100 pl-10">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Tổng đầu tư</p>
-                                    <p className="text-3xl font-black text-zinc-950 tracking-tighter">{formatCurrency(totalAmount)}</p>
+                                <div className="space-y-1 min-w-[200px] border-l border-zinc-100 pl-10">
+                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Tổng đầu tư</p>
+                                    <div className="flex items-baseline gap-1.5">
+                                        <span className="text-4xl font-black text-zinc-950 tracking-tighter">{formatCurrency(totalAmount).replace(' đ', '')}</span>
+                                        <span className="text-lg font-black text-zinc-950 uppercase">đ</span>
+                                    </div>
                                 </div>
                             </div>
 
