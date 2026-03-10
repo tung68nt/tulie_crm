@@ -46,15 +46,15 @@ export function ProjectActivityHistory({ projectId, activities: initialActivitie
     if (isLoading) return null
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
             <CardHeader className="py-6 px-6 border-b border-zinc-50">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
                         <Activity className="w-5 h-5 text-zinc-900" />
                     </div>
                     <div className="space-y-0.5">
-                        <CardTitle className="text-base font-bold text-zinc-900">Lịch sử hoạt động</CardTitle>
-                        <CardDescription className="text-[11px] font-medium text-zinc-400">Các thay đổi và cập nhật gần đây trong dự án.</CardDescription>
+                        <CardTitle className="text-base font-semibold text-zinc-900 tracking-tight">Lịch sử hoạt động</CardTitle>
+                        <CardDescription className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Các thay đổi và cập nhật gần đây trong dự án.</CardDescription>
                     </div>
                 </div>
             </CardHeader>
@@ -81,15 +81,15 @@ export function ProjectActivityHistory({ projectId, activities: initialActivitie
                                         <div className="flex items-center justify-between gap-4">
                                             <p className="text-[13px] font-semibold text-zinc-900 leading-tight">
                                                 {activity.user?.full_name || 'Hệ thống'}
-                                                <span className="font-normal text-zinc-500 ml-1">{activity.description}</span>
+                                                <span className="font-normal text-muted-foreground ml-1">{activity.description}</span>
                                             </p>
-                                            <span className="text-[10px] font-bold text-zinc-400 whitespace-nowrap">
+                                            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                                                 {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true, locale: vi })}
                                             </span>
                                         </div>
                                         {activity.metadata && (
-                                            <div className="p-2.5 bg-zinc-50 rounded-xl border border-zinc-100/50">
-                                                <p className="text-[11px] text-zinc-500 line-clamp-2">{JSON.stringify(activity.metadata)}</p>
+                                            <div className="p-2.5 bg-zinc-50 rounded-lg border border-zinc-100/50">
+                                                <p className="text-[11px] text-muted-foreground line-clamp-2 font-medium">{JSON.stringify(activity.metadata)}</p>
                                             </div>
                                         )}
                                     </div>

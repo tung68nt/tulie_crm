@@ -530,7 +530,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             {!hideHeader && (
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-zinc-100 h-10 w-10">
+                        <Button variant="ghost" size="icon" asChild className="rounded-full">
                             <Link href={quotation ? `/quotations/${quotation.id}` : "/quotations"}>
                                 <ArrowLeft className="h-5 w-5" />
                             </Link>
@@ -929,7 +929,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => removeSection(group.id)}
-                                                className="text-white/40 hover:text-red-400 hover:bg-white/5 h-8 px-3 rounded-xl transition-all font-bold text-[11px] border-none shadow-none"
+                                                className="text-white/40 hover:text-red-400 hover:bg-white/5 h-8 px-3 rounded-md transition-all font-semibold text-[11px] border-none shadow-none"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5 mr-2" />
                                                 Xoá phần
@@ -1108,7 +1108,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => addItemToSection(group.name, group.id)}
-                                                className="w-full h-9 border border-dashed text-muted-foreground transition-all"
+                                                className="w-full h-9 border border-dashed rounded-md text-muted-foreground transition-all font-medium"
                                             >
                                                 <Plus className="h-3 w-3 mr-2" />
                                                 Thêm sản phẩm vào phần "{group.name || 'này'}"
@@ -1242,7 +1242,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     variant="outline"
                                     onClick={() => handleSave(true)}
                                     disabled={isLoading}
-                                    className="border-zinc-200 font-bold"
+                                    className="font-semibold"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                                     Lưu & Gửi
@@ -1250,7 +1250,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <Button
                                     onClick={() => handleSave(false)}
                                     disabled={isLoading}
-                                    className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold"
+                                    className="bg-zinc-950 hover:bg-zinc-800 text-white font-semibold"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                                     Lưu thay đổi

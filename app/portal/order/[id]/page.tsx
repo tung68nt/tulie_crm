@@ -37,18 +37,18 @@ export default async function RetailOrderPortalPage({ params }: any) {
             <div className="max-w-3xl mx-auto space-y-8">
                 {/* Brand Header */}
                 <div className="text-center space-y-2">
-                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-xl shadow-primary/20 mb-4 animate-in zoom-in duration-500">
+                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 mb-4 animate-in zoom-in duration-500">
                         <Camera className="h-8 w-8 text-white" />
                     </div>
                 </div>
 
-                <Card className="border-none shadow-2xl shadow-primary/5 overflow-hidden ring-1 ring-primary/5">
+                <Card className="border-none shadow-lg shadow-primary/5 overflow-hidden ring-1 ring-primary/5">
                     <div className="h-2 bg-primary" />
                     <CardHeader className="text-center pb-8 border-b bg-muted/20">
-                        <CardDescription className="font-semibold text-primary/60 text-[10px] mb-2">Customer Portal</CardDescription>
-                        <CardTitle className="text-3xl font-bold font-mono">{order.order_number}</CardTitle>
+                        <CardDescription className="font-medium text-primary text-[10px] mb-2 uppercase tracking-wider">Customer Portal</CardDescription>
+                        <CardTitle className="text-3xl font-bold tracking-tight">{order.order_number}</CardTitle>
                         <div className="flex justify-center mt-4">
-                            <Badge className={cn("text-xs font-black px-4 py-1  ", STATUS_COLORS[order.order_status])}>
+                            <Badge className={cn("text-[10px] font-semibold px-4 py-1", STATUS_COLORS[order.order_status])}>
                                 {STATUS_LABELS[order.order_status]}
                             </Badge>
                         </div>
@@ -59,16 +59,16 @@ export default async function RetailOrderPortalPage({ params }: any) {
                         <div className="p-8 grid md:grid-cols-2 gap-8 bg-white dark:bg-card">
                             <div className="space-y-6 text-center md:text-left">
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black  text-muted-foreground ">Khách hàng</p>
-                                    <p className="text-xl font-bold">{order.customer_name}</p>
+                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Khách hàng</p>
+                                    <p className="text-xl font-semibold text-zinc-900">{order.customer_name}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-[10px] font-black  text-muted-foreground ">Ngày đặt đơn</p>
-                                    <p className="text-sm font-bold text-muted-foreground">{formatDate(order.created_at)}</p>
+                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ngày đặt đơn</p>
+                                    <p className="text-sm font-medium text-zinc-600">{formatDate(order.created_at)}</p>
                                 </div>
                                 {order.notes && (
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-black  text-muted-foreground ">Ghi chú gói chụp</p>
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ghi chú gói chụp</p>
                                         <p className="text-xs text-muted-foreground leading-relaxed">{order.notes}</p>
                                     </div>
                                 )}
@@ -76,14 +76,14 @@ export default async function RetailOrderPortalPage({ params }: any) {
 
                             <div className="flex flex-col items-center md:items-end justify-center">
                                 <div className="text-center md:text-right space-y-1">
-                                    <p className="text-[10px] font-black  text-muted-foreground ">Tổng giá trị</p>
-                                    <p className="text-4xl font-black italic text-primary font-mono">{formatCurrency(order.total_amount)}</p>
+                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tổng giá trị</p>
+                                    <p className="text-4xl font-bold text-primary tracking-tighter">{formatCurrency(order.total_amount)}</p>
                                     {order.payment_status === 'paid' ? (
-                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-700 text-[10px] font-black   mt-2">
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/50 text-emerald-700 text-[10px] font-semibold mt-2 border border-emerald-200">
                                             <CheckCircle2 className="h-3 w-3" /> Đã hoàn tất thanh toán
                                         </div>
                                     ) : (
-                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-[10px] font-black   mt-2">
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/50 text-amber-700 text-[10px] font-semibold mt-2 border border-amber-200">
                                             Đã nhận: {formatCurrency(order.paid_amount || 0)}
                                         </div>
                                     )}
@@ -94,29 +94,29 @@ export default async function RetailOrderPortalPage({ params }: any) {
                         {/* Deliverables Section */}
                         {order.order_status === 'completed' || order.resource_link || order.demo_link ? (
                             <div className="p-8 border-t bg-gradient-to-b from-primary/5 to-transparent">
-                                <h3 className="text-sm font-black   mb-6 flex items-center gap-2">
+                                <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
                                     <Sparkles className="h-4 w-4 text-primary" />
                                     Tài nguyên dự án của bạn
                                 </h3>
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     {order.demo_link && (
-                                        <Button asChild variant="outline" className="h-16 group hover:border-primary/50 transition-all border-dashed border-2">
+                                        <Button asChild variant="outline" className="h-16 group hover:border-primary/30 transition-all border-dashed rounded-xl">
                                             <a href={order.demo_link} target="_blank">
                                                 <div className="text-left flex-1 py-1">
-                                                    <p className="text-[10px] font-black  text-muted-foreground mb-0.5">Mẫu ảnh xem thử</p>
-                                                    <p className="text-sm font-bold">Link Google Drive</p>
+                                                    <p className="text-[10px] font-semibold text-muted-foreground mb-0.5 uppercase tracking-wider">Mẫu ảnh xem thử</p>
+                                                    <p className="text-sm font-semibold">Link Google Drive</p>
                                                 </div>
                                                 <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                                             </a>
                                         </Button>
                                     )}
                                     {order.resource_link && (
-                                        <Button asChild className="h-16 group hover:scale-[1.02] transition-transform shadow-lg shadow-primary/20">
+                                        <Button asChild className="h-16 group hover:shadow-xl hover:shadow-primary/20 transition-all rounded-xl">
                                             <a href={order.resource_link} target="_blank">
-                                                <Download className="mr-3 h-5 w-5 animate-bounce" />
+                                                <Download className="mr-3 h-5 w-5" />
                                                 <div className="text-left flex-1 py-1">
-                                                    <p className="text-[10px] font-black  opacity-60 mb-0.5">Sản phẩm hoàn thiện</p>
-                                                    <p className="text-sm font-bold">Tải ảnh gốc siêu nét</p>
+                                                    <p className="text-[10px] font-medium opacity-70 mb-0.5 uppercase tracking-wider">Sản phẩm hoàn thiện</p>
+                                                    <p className="text-sm font-semibold">Tải ảnh gốc siêu nét</p>
                                                 </div>
                                             </a>
                                         </Button>
@@ -135,53 +135,53 @@ export default async function RetailOrderPortalPage({ params }: any) {
                             <div className="p-8 border-t bg-slate-50 dark:bg-slate-900/50">
                                 <div className="flex flex-col md:flex-row gap-8 items-center">
                                     <div className="flex-1 space-y-4">
-                                        <h3 className="text-sm font-black   flex items-center gap-2">
+                                        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                                             <CreditCard className="h-4 w-4 text-primary" /> Thanh toán còn lại
                                         </h3>
                                         <div className="space-y-1">
                                             <p className="text-xs text-muted-foreground font-medium">Số tiền cần thanh toán:</p>
-                                            <p className="text-3xl font-black italic font-mono text-primary">{formatCurrency(remainingAmount)}</p>
+                                            <p className="text-3xl font-bold tracking-tighter text-primary">{formatCurrency(remainingAmount)}</p>
                                         </div>
-                                        <div className="space-y-4 p-4 rounded-xl border border-primary/20 bg-white dark:bg-card">
-                                            <p className="text-[10px] font-black  text-muted-foreground  text-center">Thông tin chuyển khoản</p>
+                                        <div className="space-y-4 p-5 rounded-xl border border-zinc-200 bg-white dark:bg-card shadow-sm">
+                                            <p className="text-[10px] font-semibold text-muted-foreground text-center uppercase tracking-widest">Thông tin chuyển khoản</p>
                                             <div className="grid grid-cols-2 gap-4 text-xs">
                                                 <div>
-                                                    <p className="text-muted-foreground">Ngân hàng</p>
-                                                    <p className="font-bold">VietinBank</p>
+                                                    <p className="text-muted-foreground mb-0.5">Ngân hàng</p>
+                                                    <p className="font-semibold text-zinc-900">VietinBank</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-muted-foreground">Chủ tài khoản</p>
-                                                    <p className="font-bold">Nghiem Thi Lien</p>
+                                                    <p className="text-muted-foreground mb-0.5">Chủ tài khoản</p>
+                                                    <p className="font-semibold text-zinc-900">Nghiem Thi Lien</p>
                                                 </div>
                                                 <div className="col-span-2">
-                                                    <p className="text-muted-foreground">Số tài khoản</p>
-                                                    <p className="font-bold text-base ">104002106705</p>
+                                                    <p className="text-muted-foreground mb-0.5">Số tài khoản</p>
+                                                    <p className="font-bold text-lg text-zinc-900 tracking-tight">104002106705</p>
                                                 </div>
-                                                <div className="col-span-2 p-2 bg-muted rounded font-mono text-[10px] flex justify-between items-center">
-                                                    <span>Nội dung: <b>SEVQR</b></span>
-                                                    <span className="text-primary font-bold">Quét mã để tự điền</span>
+                                                <div className="col-span-2 p-3 bg-zinc-50 border border-zinc-100 rounded-lg text-[10px] flex justify-between items-center">
+                                                    <span className="text-zinc-500">Nội dung: <b className="text-zinc-900">SEVQR</b></span>
+                                                    <span className="text-primary font-semibold">Quét mã để tự điền</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="w-full md:w-auto p-4 bg-white dark:bg-card rounded-2xl shadow-xl border flex flex-col items-center gap-3">
-                                        <QrCode className="h-5 w-5 text-primary" />
+                                    <div className="w-full md:w-auto p-6 bg-white dark:bg-card rounded-xl shadow-lg border border-zinc-100 flex flex-col items-center gap-3">
+                                        <QrCode className="h-5 w-5 text-primary opacity-50" />
                                         <img src={qrUrl} alt="SePay QR" className="w-48 h-48 sm:w-56 sm:h-56" />
-                                        <p className="text-[9px] text-muted-foreground text-center w-full max-w-[200px]">Quét bằng ứng dụng Ngân hàng để tự động điền số tiền & nội dung.</p>
+                                        <p className="text-[9px] text-muted-foreground text-center w-full max-w-[200px] leading-relaxed">Quét bằng ứng dụng Ngân hàng để tự động điền số tiền & nội dung.</p>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </CardContent>
 
-                    <div className="p-6 text-center border-t bg-muted/10 opacity-60 text-[9px] font-bold  ">
+                    <div className="p-6 text-center border-t bg-muted/10 text-[9px] font-medium text-muted-foreground/60 uppercase tracking-widest">
                         © {new Date().getFullYear()} Tulie Studio. Professional Photography.
                     </div>
                 </Card>
 
                 {/* Support Link */}
                 <div className="text-center">
-                    <p className="text-xs text-muted-foreground font-medium">Bạn cần hỗ trợ? <a href="https://zalo.me/0963715692" target="_blank" className="font-bold text-primary hover:underline">Chat qua Zalo</a></p>
+                    <p className="text-xs text-muted-foreground font-medium">Bạn cần hỗ trợ? <a href="https://zalo.me/0963715692" target="_blank" className="font-semibold text-primary hover:underline">Chat qua Zalo</a></p>
                 </div>
             </div>
         </div>

@@ -83,8 +83,8 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const s = STATUS_MAP[status] || { label: status, color: 'bg-zinc-100 text-zinc-500 border-zinc-200' }
-    return <Badge className={cn("text-[10px] font-bold border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
+    const s = STATUS_MAP[status] || { label: status, color: 'bg-zinc-100 text-muted-foreground border-zinc-200' }
+    return <Badge className={cn("text-[10px] font-semibold border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
@@ -152,16 +152,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         />
                         <div className="w-px h-10 bg-zinc-200" />
                         <div>
-                            <h1 className="text-xl font-bold text-zinc-900">Customer Portal</h1>
-                            <p className="text-xs text-zinc-500 mt-0.5">Dự án & Tài liệu</p>
+                            <h1 className="text-xl font-semibold text-zinc-900 tracking-tight">Customer Portal</h1>
+                            <p className="text-xs text-muted-foreground mt-0.5 font-medium uppercase tracking-wider">Dự án & Tài liệu</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-center md:items-end">
                         <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200 mt-2">
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200 mt-2">
                             <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-emerald-500" : "bg-amber-500")} />
-                            <span className="text-[10px] font-bold text-zinc-600">{projectStatusLabel}</span>
+                            <span className="text-[10px] font-semibold text-zinc-600">{projectStatusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -175,21 +175,21 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
                     </div>
                     <div className="relative z-10 space-y-2">
-                        <h3 className="text-lg font-bold">Cần cập nhật thông tin?</h3>
-                        <p className="text-sm text-zinc-400 max-w-md">Vui lòng kiểm tra và cập nhật thông tin xuất hóa đơn hoặc yêu cầu thay đổi trực tiếp tại đây.</p>
+                        <h3 className="text-lg font-semibold tracking-tight">Cần cập nhật thông tin?</h3>
+                        <p className="text-sm text-zinc-400 max-w-md font-normal">Vui lòng kiểm tra và cập nhật thông tin xuất hóa đơn hoặc yêu cầu thay đổi trực tiếp tại đây.</p>
                     </div>
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-bold rounded-2xl px-10 h-12 shadow-2xl transition-all text-[11px]">
+                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold rounded-xl px-10 h-12 shadow-xl transition-all text-[11px]">
                                 Cập nhật hồ sơ
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[700px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
+                        <DialogContent className="sm:max-w-[700px] rounded-xl p-0 overflow-hidden border-none shadow-xl [&_[data-slot=dialog-close]_svg]:text-white">
                             <div className="bg-zinc-900 text-white p-8">
                                 <DialogHeader>
-                                    <DialogTitle className="text-2xl font-bold">Cập nhật hồ sơ khách hàng</DialogTitle>
-                                    <p className="text-zinc-400 text-xs mt-1">Customer Information & Identity</p>
+                                    <DialogTitle className="text-2xl font-bold tracking-tight">Cập nhật hồ sơ khách hàng</DialogTitle>
+                                    <p className="text-zinc-400 text-xs mt-1 uppercase tracking-wider font-medium">Customer Information & Identity</p>
                                 </DialogHeader>
                             </div>
                             <div className="p-8">
@@ -215,9 +215,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         { label: 'Còn lại', value: balanceDue, sub: 'Balance Due', icon: Banknote, color: 'text-zinc-950', bgColor: 'bg-zinc-100' },
                         { label: 'Tiến độ', value: `${projectProgress}%`, sub: 'Project Progress', icon: Activity, color: 'text-zinc-950', bgColor: 'bg-zinc-100' },
                     ].map((stat, i) => (
-                        <div key={i} className="bg-white p-6 rounded-[24px] border border-zinc-200 shadow-sm transition-all hover:shadow-md">
+                        <div key={i} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm transition-all hover:shadow-md">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[10px] font-bold text-zinc-500">{stat.label}</span>
+                                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</span>
                                 <div className={cn("p-1.5 rounded-lg border border-zinc-100", stat.bgColor)}>
                                     <stat.icon className={cn("w-4 h-4", stat.color)} />
                                 </div>
@@ -227,19 +227,19 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(' đ', '') : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
-                                    <div className="text-sm font-bold text-zinc-950">đ</div>
+                                    <div className="text-sm font-semibold text-muted-foreground">đ</div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-bold text-zinc-400 mt-1">{stat.sub}</div>
+                            <div className="text-[10px] font-semibold text-muted-foreground mt-1 uppercase tracking-widest">{stat.sub}</div>
                         </div>
                     ))}
                 </div>
 
                 {/* Mô tả dự án */}
                 {project?.description && (
-                    <div className="bg-white rounded-2xl border border-zinc-200 p-6">
-                        <h3 className="text-base font-bold text-zinc-900 mb-3">Mô tả dự án</h3>
-                        <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-line">{project.description}</p>
+                    <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+                        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả dự án</h3>
+                        <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-line font-medium">{project.description}</p>
                     </div>
                 )}
 
@@ -252,23 +252,23 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <Clock className="w-5 h-5 text-zinc-900" />
                                 </div>
                                 <div className="space-y-0.5">
-                                    <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Lịch trình triển khai & Thanh toán</h3>
-                                    <p className="text-[11px] font-medium text-zinc-400">Project Milestones & Billing</p>
+                                    <h3 className="text-base font-semibold text-zinc-950 tracking-tight leading-none">Lịch trình triển khai & Thanh toán</h3>
+                                    <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Project Milestones & Billing</p>
                                 </div>
                             </div>
-                            <Badge variant="outline" className="text-[10px] font-bold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Timeline</Badge>
+                            <Badge variant="outline" className="text-[10px] font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Timeline</Badge>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {timeline
                                 .filter(t => t.type === 'work' || t.type === 'payment')
                                 .map((milestone: any, mIdx: number) => (
-                                    <div key={mIdx} className="bg-white p-6 rounded-[24px] border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
+                                    <div key={mIdx} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-2.5">
                                                 <div className={cn(
-                                                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all group-hover:scale-105",
-                                                    milestone.status === 'completed' ? "bg-zinc-950 text-white shadow-lg shadow-black/10" : "bg-zinc-100 text-zinc-400 border border-zinc-200"
+                                                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold transition-all group-hover:scale-105",
+                                                    milestone.status === 'completed' ? "bg-zinc-950 text-white shadow-lg shadow-black/10" : "bg-zinc-100 text-muted-foreground border border-zinc-200"
                                                 )}>
                                                     #{mIdx + 1}
                                                 </div>
@@ -313,11 +313,11 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 <Package className="w-5 h-5 text-zinc-900" />
                             </div>
                             <div className="space-y-0.5">
-                                <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Hạng mục & Lộ trình thực hiện</h3>
-                                <p className="text-[11px] font-medium text-zinc-400">Deliverables & Progress</p>
+                                <h3 className="text-base font-semibold text-zinc-950 tracking-tight leading-none">Hạng mục & Lộ trình thực hiện</h3>
+                                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Deliverables & Progress</p>
                             </div>
                         </div>
-                        <p className="text-[10px] font-bold text-zinc-500 mt-2">
+                        <p className="text-[10px] font-semibold text-muted-foreground mt-2 uppercase tracking-widest font-mono">
                             {displayItems.length} hạng mục · {completedItems} đã nghiệm thu
                         </p>
                     </div>
@@ -380,12 +380,12 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-zinc-100">
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 text-white text-sm font-bold">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 text-white text-sm font-semibold">
                         {idx + 1}
                     </div>
                     <div>
-                        <h4 className="text-[15px] font-bold text-zinc-950 tracking-tight leading-tight">{item.title}</h4>
-                        {item.description && <p className="text-[11px] font-medium text-zinc-500 mt-1 line-clamp-1">{item.description}</p>}
+                        <h4 className="text-[15px] font-semibold text-zinc-950 tracking-tight leading-tight">{item.title}</h4>
+                        {item.description && <p className="text-[11px] font-medium text-muted-foreground mt-1 line-clamp-1">{item.description}</p>}
                     </div>
                 </div>
                 <StatusBadge status={item.status} />
@@ -400,10 +400,10 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                             <a href={`/quote/${quotation.public_token || token}`} target="_blank"
                                 className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
                                 <div className="flex items-center gap-3">
-                                    <FileText className="w-4 h-4 text-zinc-400" />
+                                    <FileText className="w-4 h-4 text-muted-foreground" />
                                     <div>
-                                        <p className="text-[10px] font-bold text-zinc-500">Báo giá</p>
-                                        <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{quotation.quotation_number}</p>
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Báo giá</p>
+                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{quotation.quotation_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -415,10 +415,10 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                         {contract && (
                             <div className="flex items-center justify-between p-3 rounded-xl border border-zinc-100">
                                 <div className="flex items-center gap-3">
-                                    <FileSignature className="w-4 h-4 text-zinc-400" />
+                                    <FileSignature className="w-4 h-4 text-muted-foreground" />
                                     <div>
-                                        <p className="text-[10px] font-bold text-zinc-500">Hợp đồng</p>
-                                        <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{contract.contract_number}</p>
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
+                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
                                     </div>
                                 </div>
                                 <StatusBadge status={contract.status} />
@@ -428,10 +428,10 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
 
                     {/* Amount */}
                     <div className="pt-4 border-t border-zinc-100">
-                        <p className="text-[10px] font-bold text-zinc-400 mb-1.5">Giá trị hạng mục</p>
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-bold text-zinc-950 tracking-tighter">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
-                            <span className="text-sm font-bold text-zinc-950">đ</span>
+                            <span className="text-sm font-semibold text-zinc-900">đ</span>
                         </div>
                     </div>
 
@@ -554,7 +554,7 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
     }))
 
     return (
-        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
             <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
                 <div>
                     <div className="flex items-center gap-3">
@@ -562,13 +562,13 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                             <FileCheck className="w-5 h-5 text-zinc-900" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Bộ chứng từ & Hồ sơ dự án</h3>
-                            <p className="text-[11px] font-medium text-zinc-400">Project Procedures & Docs</p>
+                            <h3 className="text-base font-semibold text-zinc-950 tracking-tight leading-none">Bộ chứng từ & Hồ sơ dự án</h3>
+                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">Project Procedures & Docs</p>
                         </div>
                     </div>
                 </div>
                 <div className="hidden sm:block">
-                    <Badge variant="outline" className="text-[10px] font-bold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Full Docs</Badge>
+                    <Badge variant="outline" className="text-[10px] font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Full Docs</Badge>
                 </div>
             </div>
             <div className="p-6">
@@ -587,17 +587,17 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                     "absolute left-0 top-1 w-[24px] h-[24px] rounded-full text-white flex items-center justify-center z-10 transition-all shadow-sm",
                                     isDone ? "bg-emerald-500" : isPending ? "bg-amber-400" : "bg-zinc-200"
                                 )}>
-                                    {isDone ? <Check className="w-3 h-3 stroke-[3]" /> : <span className="text-[10px] font-bold text-zinc-500 group-last:text-zinc-500">{i + 1}</span>}
+                                    {isDone ? <Check className="w-3 h-3 stroke-[3]" /> : <span className="text-[10px] font-semibold text-muted-foreground group-last:text-muted-foreground">{i + 1}</span>}
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
                                         <p className={cn(
-                                            "text-sm font-bold transition-all",
-                                            isDone ? "text-zinc-900" : "text-zinc-500"
+                                            "text-sm font-semibold transition-all",
+                                            isDone ? "text-zinc-900" : "text-muted-foreground"
                                         )}>{doc.title}</p>
                                         {doc.workItemTitle && doc.workItemTitle !== 'Dự án' && (
-                                            <p className="text-[11px] text-zinc-400 mt-0.5">{doc.workItemTitle}</p>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">{doc.workItemTitle}</p>
                                         )}
                                     </div>
 
@@ -615,16 +615,16 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                         )}
                                         {doc.date && <span className="text-[11px] text-zinc-400 font-medium">{formatDate(doc.date)}</span>}
                                         {isDone ? (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-bold">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-semibold">
                                                 <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
                                                 Đã hoàn thành
                                             </div>
                                         ) : isPending ? (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[10px] font-bold">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[10px] font-semibold">
                                                 Chờ xử lý
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-50 text-zinc-400 rounded-full border border-zinc-100 text-[10px] font-bold">
+                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-50 text-muted-foreground rounded-full border border-zinc-100 text-[10px] font-semibold">
                                                 Chưa có
                                             </div>
                                         )}
@@ -651,8 +651,8 @@ function TimelineSection({ timeline }: { timeline: any[] }) {
                         <Clock className="w-5 h-5 text-zinc-900" />
                     </div>
                     <div className="space-y-0.5">
-                        <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Tiến độ triển khai chi tiết</h3>
-                        <p className="text-[11px] font-medium text-zinc-400">Live Updates & Timeline</p>
+                        <h3 className="text-base font-semibold text-zinc-950 tracking-tight leading-none">Tiến độ triển khai chi tiết</h3>
+                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">Live Updates & Timeline</p>
                     </div>
                 </div>
             </div>

@@ -5,9 +5,10 @@ import { Badge } from '@/components/ui/badge'
 import { format, differenceInDays, startOfDay, addDays, isSameDay, isWithinInterval } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { LayoutGrid, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { differenceInMilliseconds } from 'date-fns'
 
 interface ProjectGanttChartProps {
     tasks: any[]
@@ -22,7 +23,14 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
         return Array.from({ length: daysInView }).map((_, i) => addDays(addDays(viewDate, -7), i))
     }, [viewDate])
 
-    const today = startOfDay(new Date())
+    const [now, setNow] = useState(new Date())
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 60000)
+        return () => clearInterval(timer)
+    }, [])
+
+    const today = startOfDay(now)
 
     const getTaskStyle = (task: any) => {
         const start = task.start_date ? startOfDay(new Date(task.start_date)) : null
@@ -56,16 +64,16 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
     }
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
-            <div className="p-6 border-b border-zinc-100 flex flex-row items-center justify-between bg-white">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
+            <div className="p-6 border-b border-zinc-100 flex flex-row items-center justify-between bg-white/50 backdrop-blur-sm">
                 <div>
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
                             <LayoutGrid className="w-5 h-5 text-zinc-900" />
                         </div>
                         <div className="space-y-0.5">
-                            <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Lộ trình triển khai (Gantt View)</h3>
-                            <p className="text-[11px] font-medium text-zinc-400">Visual Project Timeline</p>
+                            <h3 className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Lộ trình triển khai (Gantt View)</h3>
+                            <p className="text-[11px] font-medium text-muted-foreground">Visual Project Timeline</p>
                         </div>
                     </div>
                 </div>
@@ -73,7 +81,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                     <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-lg" onClick={() => setViewDate(addDays(viewDate, -7))}>
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs font-bold" onClick={() => setViewDate(today)}>
+                    <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs font-semibold" onClick={() => setViewDate(today)}>
                         Hôm nay
                     </Button>
                     <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-lg" onClick={() => setViewDate(addDays(viewDate, 7))}>
@@ -85,7 +93,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                 <div className="min-w-[800px] relative">
                     {/* Gantt Header - Days */}
                     <div className="flex border-b border-zinc-50 bg-zinc-50/50">
-                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-bold text-zinc-400">
+                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center">
                             Đầu việc
                         </div>
                         <div className="flex-1 flex">
@@ -93,13 +101,15 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                 <div
                                     key={i}
                                     className={cn(
-                                        "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0",
-                                        isSameDay(date, today) && "bg-zinc-100/50"
+                                        "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0 flex flex-col items-center justify-center min-h-[50px]",
+                                        isSameDay(date, today) && "bg-zinc-100/30"
                                     )}
                                 >
-                                    <p className="text-[10px] font-bold text-zinc-400 tracking-tight">{format(date, 'EEE', { locale: vi })}</p>
+                                    <p className="text-[10px] font-semibold text-muted-foreground tracking-tight h-4 flex items-center">
+                                        {format(date, 'i') === '7' ? 'CN' : `Thứ ${Number(format(date, 'i')) + 1}`}
+                                    </p>
                                     <p className={cn(
-                                        "text-[11px] font-bold",
+                                        "text-[11px] font-bold h-4 flex items-center",
                                         isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
                                     )}>{format(date, 'dd')}</p>
                                 </div>
@@ -110,12 +120,12 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                     {/* Today Line */}
                     {timelineDates.some(d => isSameDay(d, today)) && (
                         <div
-                            className="absolute top-0 bottom-0 w-[1px] bg-red-400/50 z-20 pointer-events-none"
+                            className="absolute top-0 bottom-0 w-[1px] bg-red-400 z-20 pointer-events-none"
                             style={{
-                                left: `calc(200px + ${(differenceInDays(today, timelineDates[0])) * (100 / daysInView)}%)`,
+                                left: `calc(240px + ${(differenceInMilliseconds(now, startOfDay(timelineDates[0])) / (24 * 60 * 60 * 1000)) * (100 / daysInView)}%)`,
                             }}
                         >
-                            <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm" />
+                            <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" />
                         </div>
                     )}
 
@@ -130,7 +140,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                             return (
                                 <div key={task.id} className="flex group hover:bg-zinc-50/30 transition-colors">
                                     <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white z-10">
-                                        <p className="text-[11px] font-bold text-zinc-900 leading-tight">{task.title}</p>
+                                        <p className="text-[11px] font-semibold text-zinc-900 leading-tight">{task.title}</p>
                                     </div>
                                     <div className="flex-1 relative h-12 flex items-center px-0.5">
                                         {/* Grid Background */}
@@ -150,7 +160,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                                 style={style}
                                             >
                                                 <p className={cn(
-                                                    "text-[9px] font-bold truncate tracking-tight",
+                                                    "text-[9px] font-semibold truncate tracking-tight",
                                                     task.status === 'completed' || task.status === 'active' || task.status === 'in_progress' ? "text-white" : "text-zinc-100"
                                                 )}>
                                                     {task.title}
@@ -167,19 +177,19 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
             <div className="p-5 bg-zinc-50/30 border-t border-zinc-100 flex items-center gap-8 justify-center">
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-[11px] font-bold text-zinc-500">Hoàn thành</span>
+                    <span className="text-[11px] font-semibold text-zinc-500">Hoàn thành</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                    <span className="text-[11px] font-bold text-zinc-500">Đang triển khai</span>
+                    <span className="text-[11px] font-semibold text-zinc-500">Đang triển khai</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                    <span className="text-[11px] font-bold text-zinc-500">Đang vướng</span>
+                    <span className="text-[11px] font-semibold text-zinc-500">Đang vướng</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-zinc-400" />
-                    <span className="text-[11px] font-bold text-zinc-500">Chưa làm</span>
+                    <span className="text-[11px] font-semibold text-zinc-500">Chưa làm</span>
                 </div>
             </div>
         </Card>

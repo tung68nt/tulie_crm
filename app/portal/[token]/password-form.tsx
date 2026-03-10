@@ -46,15 +46,15 @@ export default function PortalPasswordForm({ token, companyName }: { token: stri
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-neutral-50 dark:bg-neutral-950 font-sans">
-            <Card className="w-full max-w-md border-neutral-200  dark:border-neutral-800">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-muted/40 dark:bg-neutral-950 font-sans">
+            <Card className="w-full max-w-md border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg">
                 <CardHeader className="text-center space-y-4 pb-6 mt-4">
                     <div className="mx-auto h-12 w-12 rounded-full bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center">
                         <Lock className="h-6 w-6 text-neutral-50 dark:text-neutral-900" />
                     </div>
                     <div>
-                        <CardTitle className="text-2xl font-bold ">Portal khách hàng</CardTitle>
-                        <CardDescription className="text-neutral-500 mt-2">
+                        <CardTitle className="text-2xl font-semibold tracking-tight">Portal khách hàng</CardTitle>
+                        <CardDescription className="text-muted-foreground mt-2 font-medium">
                             {companyName ? `Tài liệu bảo mật dành cho ${companyName}` : 'Vui lòng nhập mật khẩu để tiếp tục'}
                         </CardDescription>
                     </div>
@@ -96,7 +96,7 @@ export default function PortalPasswordForm({ token, companyName }: { token: stri
                         </div>
                         <Button
                             type="submit"
-                            className="w-full h-12 text-base font-medium bg-neutral-900 hover:bg-neutral-800 text-neutral-50 dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 transition-all active:scale-[0.98]"
+                            className="w-full h-12 text-base font-semibold rounded-xl bg-neutral-900 hover:bg-neutral-800 text-neutral-50 dark:bg-neutral-100 dark:hover:bg-neutral-200 dark:text-neutral-900 transition-all active:scale-[0.98] shadow-md"
                             disabled={isLoading || !password || !captchaValue}
                         >
                             {isLoading ? (

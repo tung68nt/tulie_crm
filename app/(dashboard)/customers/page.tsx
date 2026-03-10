@@ -37,15 +37,15 @@ export default async function CustomersPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="default">
                         <Upload className="mr-2 h-4 w-4" />
                         Import
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="default">
                         <Download className="mr-2 h-4 w-4" />
                         Export
                     </Button>
-                    <Button asChild className="px-6 h-10 font-bold">
+                    <Button asChild size="default">
                         <Link href="/customers/new">
                             <Plus className="mr-2 h-4 w-4" />
                             Thêm khách hàng

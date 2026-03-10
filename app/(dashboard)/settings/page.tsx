@@ -447,7 +447,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Settings className="h-6 w-6 text-primary" />
                 </div>
                 <div>
@@ -463,84 +463,84 @@ export default function SettingsPage() {
                     <TabsList className="flex flex-col h-auto bg-transparent p-0 space-y-1 items-stretch border-none shadow-none">
                         <TabsTrigger
                             value="company"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Building2 className="h-4 w-4" />
                             Công ty
                         </TabsTrigger>
                         <TabsTrigger
                             value="categories"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Tag className="h-4 w-4" />
                             Danh mục
                         </TabsTrigger>
                         <TabsTrigger
                             value="units"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Box className="h-4 w-4" />
                             Đơn vị tính
                         </TabsTrigger>
                         <TabsTrigger
                             value="brands" // Changed value from "brand" to "brands"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Globe className="h-4 w-4" />
                             Thương hiệu
                         </TabsTrigger>
                         <TabsTrigger
                             value="statuses"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <ListFilter className="h-4 w-4" />
                             Trạng thái
                         </TabsTrigger>
                         <TabsTrigger
                             value="telegram"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Send className="h-4 w-4" />
                             Cài đặt Telegram
                         </TabsTrigger>
                         <TabsTrigger
                             value="mail"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Mail className="h-4 w-4" />
                             Email SMTP
                         </TabsTrigger>
                         <TabsTrigger
                             value="notifications"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Bell className="h-4 w-4" />
                             Thông báo
                         </TabsTrigger>
                         <TabsTrigger
                             value="appearance"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Palette className="h-4 w-4" />
                             Giao diện
                         </TabsTrigger>
                         <TabsTrigger
                             value="security"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <Shield className="h-4 w-4" />
                             Bảo mật
                         </TabsTrigger>
                         <TabsTrigger
                             value="data"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <DatabaseIcon className="h-4 w-4" />
                             Dữ liệu
                         </TabsTrigger>
                         <TabsTrigger
                             value="bundles"
-                            className="justify-start gap-3 px-4 py-2 h-10 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
+                            className="justify-start gap-3 px-4 py-2 h-9 data-[state=active]:bg-secondary data-[state=active]:text-secondary-foreground hover:bg-muted/50 transition-all font-medium border-none data-[state=active]:shadow-none"
                         >
                             <BookOpen className="h-4 w-4" />
                             Bộ chứng từ (Bundle)
@@ -1085,7 +1085,7 @@ export default function SettingsPage() {
                                                 />
                                             </div>
                                         </div>
-                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm mb-[0px]" onClick={() => {
+                                        <Button size="sm" variant="outline" className="font-semibold border-zinc-300 shadow-sm" onClick={() => {
                                             const url = `${window.location.origin}/api/webhooks/academy`
                                             navigator.clipboard.writeText(url)
                                             toast.success('Đã copy Academy Webhook URL')
@@ -1145,12 +1145,12 @@ export default function SettingsPage() {
                                         variant="outline"
                                         onClick={handleTestTelegram}
                                         disabled={isTestingTelegram || !telegramConfig.bot_token || !telegramConfig.chat_id}
-                                        className="h-12 px-6 rounded-xl font-bold border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 transition-all"
+                                        className="font-medium"
                                     >
                                         {isTestingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi tin nhắn thử
                                     </Button>
-                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 h-12 px-8 rounded-xl font-bold shadow-lg shadow-zinc-200 dark:shadow-none transition-all active:scale-95">
+                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-semibold">
                                         {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         Lưu cấu hình Telegram
                                     </Button>
@@ -1161,7 +1161,7 @@ export default function SettingsPage() {
 
                     {/* Email SMTP Settings */}
                     <TabsContent value="mail">
-                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-2xl">
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm overflow-hidden rounded-xl">
                             <CardHeader className="bg-muted/30 border-b border-border/50 p-6">
                                 <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
@@ -1181,7 +1181,7 @@ export default function SettingsPage() {
                                             placeholder="smtp.gmail.com"
                                             value={smtpConfig.host}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, host: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1190,7 +1190,7 @@ export default function SettingsPage() {
                                             placeholder="587"
                                             value={smtpConfig.port}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, port: Number(e.target.value) || 587 })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1199,7 +1199,7 @@ export default function SettingsPage() {
                                             placeholder="email@example.com"
                                             value={smtpConfig.user}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, user: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1209,7 +1209,7 @@ export default function SettingsPage() {
                                             placeholder="****************"
                                             value={smtpConfig.pass}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, pass: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1218,7 +1218,7 @@ export default function SettingsPage() {
                                             placeholder="Tulie CRM"
                                             value={smtpConfig.from_name}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, from_name: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -1227,7 +1227,7 @@ export default function SettingsPage() {
                                             placeholder="info@tulie.vn"
                                             value={smtpConfig.from_email}
                                             onChange={e => setSmtpConfig({ ...smtpConfig, from_email: e.target.value })}
-                                            className="h-12 rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
+                                            className="rounded-xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-zinc-500/20"
                                         />
                                     </div>
                                 </div>
@@ -1246,12 +1246,12 @@ export default function SettingsPage() {
                                         variant="outline"
                                         onClick={handleTestSmtp}
                                         disabled={isTestingSmtp || !smtpConfig.host || !smtpConfig.user}
-                                        className="h-12 px-6 rounded-xl font-bold border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 transition-all"
+                                        className="font-medium"
                                     >
                                         {isTestingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi email thử
                                     </Button>
-                                    <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 h-12 px-8 rounded-xl font-bold shadow-lg shadow-zinc-200 dark:shadow-none transition-all active:scale-95">
+                                    <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="font-semibold">
                                         {isSavingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         Lưu cấu hình SMTP
                                     </Button>
@@ -1488,7 +1488,7 @@ export default function SettingsPage() {
                                     <h4 className="text-sm font-medium">Danh sách hiện có</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {bundles.map(bundle => (
-                                            <Card key={bundle.id} className="overflow-hidden border-zinc-200 shadow-sm rounded-2xl group hover:border-zinc-400 transition-all">
+                                            <Card key={bundle.id} className="overflow-hidden border-zinc-200 shadow-sm rounded-xl group hover:border-zinc-400 transition-all">
                                                 <CardHeader className="p-4 bg-zinc-50/50 border-b border-zinc-100 flex flex-row items-center justify-between space-y-0">
                                                     <div>
                                                         <CardTitle className="text-sm font-bold">{bundle.name}</CardTitle>

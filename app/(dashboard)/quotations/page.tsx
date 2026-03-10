@@ -30,7 +30,7 @@ export default async function QuotationsPage() {
                         </p>
                     </div>
                 </div>
-                <Button asChild className="px-6 h-10 font-bold">
+                <Button asChild size="default">
                     <Link href="/quotations/new">
                         <Plus className="mr-2 h-4 w-4" />
                         Tạo báo giá

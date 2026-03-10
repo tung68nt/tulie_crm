@@ -112,7 +112,7 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-zinc-100 h-10 w-10">
+                    <Button variant="ghost" size="icon" asChild className="rounded-full">
                         <Link href="/quotations">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
@@ -125,15 +125,15 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => setShowPreview(true)} disabled={isLoading} className="rounded-xl font-bold h-10">
+                    <Button variant="outline" onClick={() => setShowPreview(true)} disabled={isLoading} className="font-medium">
                         <Eye className="mr-2 h-4 w-4" />
                         Xem trước PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleSave(false)} disabled={isLoading} className="rounded-xl font-bold h-10">
+                    <Button variant="outline" onClick={() => handleSave(false)} disabled={isLoading} className="font-medium">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                         Lưu nháp
                     </Button>
-                    <Button onClick={() => handleSave(true)} disabled={isLoading} className="px-6 h-10 font-bold rounded-xl">
+                    <Button onClick={() => handleSave(true)} disabled={isLoading} className="font-semibold">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                         Lưu & Gửi
                     </Button>
