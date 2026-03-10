@@ -135,7 +135,7 @@ export default function LabPage() {
                                 <div className="pt-4">
                                     <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-400">
                                         <TrendingUp className="h-3 w-3" />
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">Hiệu suất đồng bộ: 100%</span>
+                                        <span className="text-xs font-medium">Hiệu suất đồng bộ: 100%</span>
                                     </div>
                                 </div>
                             </div>

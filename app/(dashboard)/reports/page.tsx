@@ -42,7 +42,7 @@ export default async function ReportsPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Doanh thu thực tế
                         </CardTitle>
                         <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
@@ -51,16 +51,16 @@ export default async function ReportsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{formatCurrency(stats.revenue.total)}</div>
-                        <p className="text-[10px] text-green-600 font-bold flex items-center mt-1 uppercase tracking-tighter">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                            Dữ liệu từ hệ thống
+                        <p className="text-xs text-muted-foreground flex items-center mt-1">
+                            <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
+                            <span className="text-green-600 font-medium">Dữ liệu từ hệ thống</span>
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Tổng khách hàng
                         </CardTitle>
                         <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
@@ -69,7 +69,7 @@ export default async function ReportsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.customers.total}</div>
-                        <p className="text-[10px] text-zinc-500 font-bold flex items-center mt-1 uppercase tracking-tighter">
+                        <p className="text-xs text-muted-foreground flex items-center mt-1">
                             <ArrowUpRight className="h-3 w-3 mr-1" />
                             Đã ghi nhận thực tế
                         </p>
@@ -78,7 +78,7 @@ export default async function ReportsPage() {
 
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Hợp đồng đang thực hiện
                         </CardTitle>
                         <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
@@ -87,16 +87,16 @@ export default async function ReportsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.contracts.active}</div>
-                        <p className="text-[10px] text-green-600 font-bold flex items-center mt-1 uppercase tracking-tighter">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                            Trạng thái Active
+                        <p className="text-xs text-muted-foreground flex items-center mt-1">
+                            <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
+                            <span className="text-green-600 font-medium">Trạng thái Active</span>
                         </p>
                     </CardContent>
                 </Card>
 
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Hóa đơn chờ thu
                         </CardTitle>
                         <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400">
@@ -105,7 +105,7 @@ export default async function ReportsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{stats.invoices.pending}</div>
-                        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-tighter">
+                        <p className="text-xs text-muted-foreground mt-1">
                             Hóa đơn chưa hoàn tất
                         </p>
                     </CardContent>

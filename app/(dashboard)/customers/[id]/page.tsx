@@ -153,11 +153,11 @@ export default async function CustomerDetailPage({ params }: any) {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-muted/50 p-4 rounded-xl text-center">
                                 <p className="text-2xl font-bold">{quotations.length}</p>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-1">Báo giá</p>
+                                <p className="text-sm text-muted-foreground font-medium mt-1">Báo giá</p>
                             </div>
                             <div className="bg-muted/50 p-4 rounded-xl text-center">
                                 <p className="text-2xl font-bold">{contracts.length}</p>
-                                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-1">Hợp đồng</p>
+                                <p className="text-sm text-muted-foreground font-medium mt-1">Hợp đồng</p>
                             </div>
                         </div>
                         <Separator />

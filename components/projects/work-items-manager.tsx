@@ -430,28 +430,28 @@ function WorkItemRow({
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-3">
                         {item.quotation && (
-                            <Badge variant="secondary" className="text-[10px] font-bold h-8 flex items-center px-3 rounded-full bg-white border border-zinc-100 text-zinc-600 shadow-sm hover:border-zinc-300 transition-all">
-                                <FileText className="w-3 h-3 mr-1.5 text-zinc-400" />
+                            <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                                <FileText className="w-3 h-3 mr-1.5" />
                                 {item.quotation.quotation_number}
                             </Badge>
                         )}
                         {item.contract && (
-                            <Badge variant="secondary" className="text-[10px] font-bold h-8 flex items-center px-3 rounded-full bg-white border border-zinc-100 text-zinc-600 shadow-sm hover:border-zinc-300 transition-all">
-                                <FileSignature className="w-3 h-3 mr-1.5 text-zinc-400" />
+                            <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                                <FileSignature className="w-3 h-3 mr-1.5" />
                                 {item.contract.contract_number}
                             </Badge>
                         )}
                         <Select value={item.status} onValueChange={onStatusChange}>
-                            <SelectTrigger className={cn("h-8 text-[11px] w-auto min-w-[130px] px-4 rounded-full border-none font-bold shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-widest", statusOption?.color)} onClick={e => e.stopPropagation()}>
+                            <SelectTrigger className={cn("h-7 text-xs w-auto min-w-[130px] px-3 font-medium shadow-none outline-none focus:ring-0", statusOption?.color)} onClick={e => e.stopPropagation()}>
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="rounded-2xl border-zinc-100 shadow-xl">
+                            <SelectContent>
                                 {STATUS_OPTIONS.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium focus:bg-zinc-50">{opt.label}</SelectItem>
+                                    <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">{opt.label}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        <div className="p-1 hover:bg-zinc-100 rounded-full transition-colors">
+                        <div className="p-1 hover:bg-muted rounded-md transition-colors">
                             {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
                         </div>
                     </div>
@@ -464,8 +464,8 @@ function WorkItemRow({
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                                <ListTodo className="w-3.5 h-3.5" />
+                            <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                                <ListTodo className="w-4 h-4" />
                                 Nội dung triển khai ({tasks.length})
                             </h5>
                             <div className="space-y-1">
@@ -522,8 +522,8 @@ function WorkItemRow({
 
                         {/* Col 2: Delivery Links */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                                <Link2 className="w-3.5 h-3.5" />
+                            <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                                <Link2 className="w-4 h-4" />
                                 Link bàn giao ({deliveryLinks.length})
                             </h5>
                             <div className="space-y-2">
@@ -566,7 +566,7 @@ function WorkItemRow({
                                 </div>
                                 <Button
                                     size="sm"
-                                    className="w-full h-9 bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-md active:scale-[0.98]"
+                                    className="w-full h-9"
                                     onClick={handleAddLink}
                                     disabled={isPending || !newLinkLabel.trim() || !newLinkUrl.trim()}
                                 >
@@ -578,21 +578,21 @@ function WorkItemRow({
 
                         {/* Col 3: Required Documents */}
                         <div className="space-y-4">
-                            <h5 className="text-[11px] font-black text-zinc-400 uppercase tracking-widest flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                    <ClipboardCheck className="w-3.5 h-3.5" />
+                            <div className="flex items-center justify-between gap-2">
+                                <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                                    <ClipboardCheck className="w-4 h-4" />
                                     Thủ tục chứng từ
-                                </div>
+                                </h5>
                                 <Button
-                                    variant="ghost"
+                                    variant="outline"
                                     size="sm"
-                                    className="h-7 text-[10px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-black px-4 rounded-full border border-blue-100 uppercase tracking-widest"
+                                    className="h-8 text-xs shrink-0"
                                     onClick={() => setShowBundleDialog(true)}
                                 >
                                     <Plus className="w-3 h-3 mr-1.5" />
                                     {item.bundle_id ? 'Thay đổi' : 'Chọn bộ chứng từ'}
                                 </Button>
-                            </h5>
+                            </div>
                             <div className="space-y-1.5">
                                 {requiredDocs.map((doc: any, dIdx: number) => (
                                     <div key={dIdx} className="flex items-center gap-3 p-2 px-3 rounded-xl hover:bg-white/50 transition-all group/doc">
@@ -617,11 +617,11 @@ function WorkItemRow({
                                                 {doc.title}
                                             </span>
                                             {doc.date ? (
-                                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">
+                                                <span className="text-[10px] font-medium text-muted-foreground">
                                                     {doc.status === 'signed' ? 'Đã ký:' : 'Dự kiến:'} {formatDate(doc.date)}
                                                 </span>
                                             ) : (
-                                                <span className="text-[9px] font-black text-zinc-300 uppercase tracking-wider">Chưa có ngày</span>
+                                                <span className="text-[10px] font-medium text-muted-foreground/50">Chưa có ngày</span>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover/doc:opacity-100 transition-opacity">
@@ -668,12 +668,12 @@ function WorkItemRow({
                     </div>
 
                     {/* Delete and Footer */}
-                    <div className="flex justify-between items-center pt-4 border-t border-zinc-100">
+                    <div className="flex justify-between items-center pt-4 border-t">
                         <div className="flex items-center gap-4">
-                            <p className="text-[10px] text-zinc-400 italic">Cập nhật lần cuối: {formatDate(item.updated_at || item.created_at)}</p>
+                            <p className="text-xs text-muted-foreground">Cập nhật lần cuối: {formatDate(item.updated_at || item.created_at)}</p>
                         </div>
-                        <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-600 hover:bg-red-50 text-[11px] font-bold rounded-xl px-4 h-9 uppercase tracking-wider" onClick={onDelete}>
-                            <Trash2 className="w-3.5 h-3.5 mr-2" />
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={onDelete}>
+                            <Trash2 className="w-4 h-4 mr-2" />
                             Xóa hạng mục
                         </Button>
                     </div>

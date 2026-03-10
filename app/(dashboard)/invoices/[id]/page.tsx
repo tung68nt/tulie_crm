@@ -58,7 +58,7 @@ export default async function InvoiceDetailPage({ params }: any) {
                         </div>
                         <div>
                             <div className="flex items-center gap-3 mb-1">
-                                <div className="px-2 py-0.5 rounded border border-slate-200 bg-slate-50 font-bold text-slate-700 h-6 flex items-center text-xs uppercase tracking-wider">
+                                <div className="px-2 py-0.5 rounded-md border bg-muted font-medium h-6 flex items-center text-xs">
                                     {invoice.invoice_number}
                                 </div>
                                 <Badge className={INVOICE_STATUS_COLORS[invoice.status] || 'bg-gray-100'}>

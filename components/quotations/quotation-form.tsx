@@ -540,9 +540,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 {/* Main Content */}
                 <div className="space-y-6">
                     {/* Basic Info */}
-                    <Card className="rounded-2xl shadow-sm border-zinc-200 overflow-hidden bg-white">
-                        <CardHeader className="bg-zinc-50/50 border-b border-zinc-100 py-4 px-6">
-                            <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Thông tin cơ bản</CardTitle>
+                    <Card className="overflow-hidden">
+                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                            <CardTitle>Thông tin cơ bản</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-2">
@@ -617,10 +617,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {type === 'proposal' && (
                         <Card>
-                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 border-b border-zinc-100 bg-zinc-50/50 py-4">
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 border-b bg-muted/50 py-4">
                                 <div>
-                                    <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Nội dung Proposal</CardTitle>
-                                    <p className="text-[13px] text-muted-foreground mt-1">Mô tả chi tiết giải pháp, phạm vi, đội ngũ cho khách hàng</p>
+                                    <CardTitle>Nội dung Proposal</CardTitle>
+                                    <CardDescription className="mt-1">Mô tả chi tiết giải pháp, phạm vi, đội ngũ cho khách hàng</CardDescription>
                                 </div>
                                 <Button
                                     type="button"
@@ -630,7 +630,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         setImportText(JSON.stringify(proposalContent, null, 2))
                                         setIsImportProposalOpen(true)
                                     }}
-                                    className="gap-2 rounded-xl font-bold"
+                                    className="gap-2"
                                 >
                                     <FileJson className="h-4 w-4" /> JSON Nội dung
                                 </Button>
@@ -837,14 +837,14 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     )}
 
                     {/* Items */}
-                    <Card className="rounded-2xl border-zinc-200 overflow-hidden shadow-sm">
-                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 gap-4 bg-zinc-50/50 py-4 border-b border-zinc-100">
+                    <Card className="overflow-hidden">
+                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 gap-4 bg-muted/50 py-4 border-b">
                             <div>
-                                <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Sản phẩm / Dịch vụ</CardTitle>
-                                <p className="text-[13px] text-muted-foreground mt-1">Danh sách hạng mục báo giá được phân loại</p>
+                                <CardTitle>Sản phẩm / Dịch vụ</CardTitle>
+                                <CardDescription className="mt-1">Danh sách hạng mục báo giá được phân loại</CardDescription>
                             </div>
                             <div className="flex gap-2 flex-wrap">
-                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-bold" onClick={() => {
+                                <Button type="button" variant="outline" size="sm" onClick={() => {
                                     const exportData = {
                                         title,
                                         quotation_number: quotationNumber,
@@ -875,12 +875,12 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <FileJson className="mr-2 h-4 w-4" />
                                     <span>Báo giá JSON</span>
                                 </Button>
-                                <Button type="button" variant="outline" size="sm" className="rounded-xl font-bold" onClick={addSection}>
+                                <Button type="button" variant="outline" size="sm" onClick={addSection}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     <span className="hidden sm:inline">Thêm phần mới</span>
                                     <span className="sm:hidden">Thêm mục</span>
                                 </Button>
-                                <Button type="button" size="sm" className="rounded-xl font-bold" onClick={addItem}>
+                                <Button type="button" size="sm" onClick={addItem}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Thêm nhanh
                                 </Button>
@@ -1074,7 +1074,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => addItemToSection(group.name, group.id)}
-                                                className="w-full h-9 border border-dashed border-zinc-200 hover:border-zinc-400 hover:bg-white text-zinc-500 font-bold uppercase text-[9px] tracking-widest transition-all rounded-xl"
+                                                className="w-full h-9 border border-dashed text-muted-foreground transition-all"
                                             >
                                                 <Plus className="h-3 w-3 mr-2" />
                                                 Thêm sản phẩm vào phần "{group.name || 'này'}"
@@ -1089,9 +1089,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Terms & Notes */}
-                    <Card className="rounded-2xl border-zinc-200 overflow-hidden shadow-sm">
-                        <CardHeader className="bg-zinc-50/50 border-b border-zinc-100 py-4 px-6">
-                            <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Điều khoản & Ghi chú</CardTitle>
+                    <Card className="overflow-hidden">
+                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                            <CardTitle>Điều khoản & Ghi chú</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
@@ -1106,9 +1106,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     </Card>
 
                     {/* Bank Transfer Info */}
-                    <Card className="rounded-2xl border-zinc-200 overflow-hidden shadow-sm">
-                        <CardHeader className="bg-zinc-50/50 border-b border-zinc-100 py-4 px-6">
-                            <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Thông tin chuyển khoản</CardTitle>
+                    <Card className="overflow-hidden">
+                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                            <CardTitle>Thông tin chuyển khoản</CardTitle>
                         </CardHeader>
                         <CardContent className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
@@ -1152,9 +1152,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-12 shadow-xl border-zinc-200 bg-white/90 backdrop-blur-md rounded-2xl overflow-hidden ring-1 ring-zinc-950/5">
-                    <CardHeader className="py-4 px-6 border-b border-zinc-100 bg-zinc-50/30">
-                        <CardTitle className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">Tổng kết & Hoàn tất</CardTitle>
+                <Card className="sticky bottom-6 z-10 mt-12 shadow-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 overflow-hidden">
+                    <CardHeader className="py-4 px-6 border-b bg-muted/50">
+                        <CardTitle>Tổng kết & Hoàn tất</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-6">

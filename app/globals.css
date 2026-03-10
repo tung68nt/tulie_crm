@@ -134,40 +134,20 @@
   }
 }
 
-/* Global Style Overrides */
+/* Global Style Overrides — shadcn/ui Design System
+ *
+ * RULES:
+ * 1. Don't override font-weight globally — let components manage their own
+ * 2. Remove shadows only on cards/buttons, preserve for dropdowns/popovers/tooltips
+ * 3. Keep text-transform: none to enforce sentence case (Vercel style)
+ *
+ * Reference: @doc/guides/ui-guidelines-shadcn-ui-design-system
+ */
 @layer base {
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  b,
-  strong,
-  .font-bold,
-  .font-semibold {
-    font-weight: 700 !important;
-  }
-
-  /* Remove shadow boxes globally */
-  .shadow-sm,
-  .shadow,
-  .shadow-md,
-  .shadow-lg,
-  .shadow-xl,
-  .shadow-2xl,
-  [class*="shadow-"],
-  [class^="shadow-"] {
+  /* Cards: border only, no shadow (Vercel style) */
+  [data-slot="card"] {
     box-shadow: none !important;
-  }
-
-  /* Force borders for cards and containers instead of shadows */
-  .card,
-  .rounded-xl.border,
-  .rounded-lg.border {
-    box-shadow: none !important;
-    border: 1px solid var(--border) !important;
   }
 }
 

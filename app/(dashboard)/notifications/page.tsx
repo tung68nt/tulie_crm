@@ -44,17 +44,19 @@ export default async function NotificationsPage() {
     const alerts = await getSystemAlerts()
 
     return (
-        <div className="container mx-auto py-10 space-y-6">
+        <div className="space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold flex items-center gap-2">
-                        <Bell className="h-6 w-6" />
-                        Thông báo & Cảnh báo
-                    </h1>
-                    <p className="text-muted-foreground">Theo dõi tình trạng hệ thống và các thông báo quan trọng</p>
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Bell className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold">Thông báo</h1>
+                        <p className="text-muted-foreground">Theo dõi tình trạng hệ thống và các thông báo quan trọng</p>
+                    </div>
                 </div>
                 {alerts.length > 0 && (
-                    <Badge variant="outline" className="text-sm">
+                    <Badge variant="outline" className="font-medium">
                         {alerts.length} cảnh báo cần xử lý
                     </Badge>
                 )}

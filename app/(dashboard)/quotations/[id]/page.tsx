@@ -264,10 +264,10 @@ export default function QuotationDetailPage() {
                     <div className="grid gap-8 lg:grid-cols-3">
                         <div className="lg:col-span-2 space-y-6">
                             {/* Customer Info Card */}
-                            <Card className="rounded-2xl border-zinc-200/60 shadow-sm overflow-hidden bg-white">
-                                <div className="bg-zinc-50/50 px-8 py-4 border-b border-zinc-200/60">
-                                    <CardTitle className="text-[11px] font-bold flex items-center gap-2.5  text-zinc-400">
-                                        <Building2 className="h-3.5 w-3.5" />
+                            <Card className="overflow-hidden">
+                                <div className="bg-muted/50 px-6 py-4 border-b">
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <Building2 className="h-4 w-4" />
                                         Thông tin khách hàng
                                     </CardTitle>
                                 </div>
@@ -275,22 +275,22 @@ export default function QuotationDetailPage() {
                                     <div className="grid gap-10 sm:grid-cols-2">
                                         <div className="space-y-6">
                                             <div>
-                                                <p className="text-[11px] font-bold text-zinc-400  mb-2">Đơn vị</p>
-                                                <p className="font-bold text-2xl text-zinc-950 tracking-tight leading-tight">{quotation.customer?.company_name}</p>
+                                                <p className="text-xs font-medium text-muted-foreground mb-2">Đơn vị</p>
+                                                <p className="font-bold text-2xl tracking-tight leading-tight">{quotation.customer?.company_name}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[11px] font-bold text-zinc-400  mb-2">Địa chỉ</p>
-                                                <p className="text-sm font-medium text-zinc-600 leading-relaxed max-w-sm">{quotation.customer?.address || 'N/A'}</p>
+                                                <p className="text-xs font-medium text-muted-foreground mb-2">Địa chỉ</p>
+                                                <p className="text-sm font-medium leading-relaxed max-w-sm">{quotation.customer?.address || 'N/A'}</p>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-2">
-                                            <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                                                <span className="text-[11px] font-bold text-zinc-400 ">Email tiếp nhận</span>
-                                                <span className="text-sm font-bold text-zinc-900">{quotation.customer?.email || 'N/A'}</span>
+                                            <div className="flex justify-between items-center py-3 border-b">
+                                                <span className="text-xs font-medium text-muted-foreground">Email tiếp nhận</span>
+                                                <span className="text-sm font-bold">{quotation.customer?.email || 'N/A'}</span>
                                             </div>
-                                            <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                                                <span className="text-[11px] font-bold text-zinc-400 ">Hotline liên hệ</span>
-                                                <span className="text-sm font-bold text-zinc-900">{quotation.customer?.phone || 'N/A'}</span>
+                                            <div className="flex justify-between items-center py-3 border-b">
+                                                <span className="text-xs font-medium text-muted-foreground">Hotline liên hệ</span>
+                                                <span className="text-sm font-bold">{quotation.customer?.phone || 'N/A'}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -299,15 +299,15 @@ export default function QuotationDetailPage() {
 
                             {/* Proposal Content */}
                             {hasProposal && proposalSections.length > 0 && (
-                                <Card className="rounded-2xl border-zinc-200/60 shadow-sm overflow-hidden bg-white">
+                                <Card className="overflow-hidden">
                                     <div className="bg-zinc-950 px-8 py-5 relative">
                                         <div className="absolute inset-0 opacity-[0.08] pointer-events-none"
                                             style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23fff'/%3E%3C/svg%3E\")" }}>
                                         </div>
                                         <div className="relative z-10 flex items-center justify-between">
                                             <div>
-                                                <CardTitle className="text-[11px] font-bold text-white  mb-1">Đề xuất giải pháp</CardTitle>
-                                                <p className="text-[11px] text-zinc-500 font-medium tracking-tight">Proposal — {proposalSections.length} Stages</p>
+                                                <CardTitle className="text-zinc-50 mb-1">Đề xuất giải pháp</CardTitle>
+                                                <CardDescription className="text-zinc-400">Proposal — {proposalSections.length} Stages</CardDescription>
                                             </div>
                                             <Target className="h-6 w-6 text-zinc-600" />
                                         </div>
@@ -340,29 +340,29 @@ export default function QuotationDetailPage() {
                             )}
 
                             {/* Items Table */}
-                            <Card className="rounded-2xl border-zinc-200/60 shadow-sm overflow-hidden bg-white">
+                            <Card className="overflow-hidden">
                                 <div className="bg-zinc-950 px-8 py-5 relative">
                                     <div className="absolute inset-0 opacity-[0.08] pointer-events-none"
                                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23fff'/%3E%3C/svg%3E\")" }}>
                                     </div>
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div>
-                                            <CardTitle className="text-[11px] font-bold text-white  mb-1">Chi tiết hạng mục</CardTitle>
-                                            <p className="text-[11px] text-zinc-500 font-medium tracking-tight">Investment Plan & Pricing Framework</p>
+                                            <CardTitle className="text-zinc-50 mb-1">Chi tiết hạng mục</CardTitle>
+                                            <CardDescription className="text-zinc-400">Investment Plan & Pricing Framework</CardDescription>
                                         </div>
                                         <Receipt className="h-6 w-6 text-zinc-600" />
                                     </div>
                                 </div>
                                 <CardContent className="p-0">
                                     <Table>
-                                        <TableHeader className="bg-zinc-50/70 border-zinc-100">
-                                            <TableRow className="hover:bg-transparent border-none">
-                                                <TableHead className="w-14 text-center font-bold text-[11px]  text-zinc-400 py-3">#</TableHead>
-                                                <TableHead className="font-bold text-[11px]  text-zinc-400">Hạng mục & Mô tả</TableHead>
-                                                <TableHead className="text-center font-bold text-[11px]  text-zinc-400">ĐVT</TableHead>
-                                                <TableHead className="text-center font-bold text-[11px]  text-zinc-400">SL</TableHead>
-                                                <TableHead className="text-right font-bold text-[11px]  text-zinc-400">Đơn giá</TableHead>
-                                                <TableHead className="text-right pr-8 font-bold text-[11px]  text-zinc-400">Thành tiền</TableHead>
+                                        <TableHeader className="bg-muted">
+                                            <TableRow>
+                                                <TableHead className="w-14 text-center">#</TableHead>
+                                                <TableHead>Hạng mục & Mô tả</TableHead>
+                                                <TableHead className="text-center">ĐVT</TableHead>
+                                                <TableHead className="text-center">SL</TableHead>
+                                                <TableHead className="text-right">Đơn giá</TableHead>
+                                                <TableHead className="text-right pr-8">Thành tiền</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -381,19 +381,19 @@ export default function QuotationDetailPage() {
                                             ))}
                                         </TableBody>
                                     </Table>
-                                    <div className="bg-zinc-50 border-t border-zinc-100 p-8 flex justify-end">
-                                        <div className="w-full max-sm space-y-4">
-                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400  italic">
+                                    <div className="bg-muted/50 border-t px-8 py-6 flex justify-end">
+                                        <div className="w-full max-w-sm space-y-4">
+                                            <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
                                                 <span>Tạm tính (Subtotal):</span>
-                                                <span className="text-zinc-950 not-italic text-sm">{formatCurrency(quotation.subtotal || 0)}</span>
+                                                <span className="text-foreground text-sm font-bold">{formatCurrency(quotation.subtotal || 0)}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400  italic">
+                                            <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
                                                 <span>Thuế VAT ({quotation.vat_percent || 0}%):</span>
-                                                <span className="text-zinc-950 not-italic text-sm">{formatCurrency(quotation.vat_amount || 0)}</span>
+                                                <span className="text-foreground text-sm font-bold">{formatCurrency(quotation.vat_amount || 0)}</span>
                                             </div>
-                                            <div className="pt-5 border-t border-zinc-200 flex justify-between items-center">
-                                                <span className="font-bold text-xs uppercase tracking-tight text-zinc-500">Tổng thanh toán:</span>
-                                                <span className="font-bold text-3xl text-zinc-950 tabular-nums tracking-tight">{formatCurrency(quotation.total_amount || 0)}</span>
+                                            <div className="pt-4 border-t flex justify-between items-center">
+                                                <span className="text-sm font-medium text-muted-foreground">Tổng thanh toán:</span>
+                                                <span className="text-3xl font-bold tabular-nums tracking-tight text-foreground">{formatCurrency(quotation.total_amount || 0)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -403,34 +403,34 @@ export default function QuotationDetailPage() {
 
                         <div className="space-y-6">
                             {/* Combined Status Card */}
-                            <Card className="p-8 rounded-2xl border-zinc-200/60 shadow-sm space-y-8 bg-white overflow-hidden">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-zinc-50/70 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
-                                        <p className="text-4xl font-bold text-zinc-950 tabular-nums leading-none tracking-tight">{quotation.view_count || 0}</p>
-                                        <p className="text-[11px] font-bold text-zinc-400  border-t border-zinc-200/40 pt-3 mx-2">Lượt xem</p>
+                            <Card className="p-6 overflow-hidden">
+                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                    <div className="bg-muted/50 p-6 rounded-xl border text-center space-y-1 flex flex-col justify-center min-h-[100px]">
+                                        <p className="text-4xl font-bold tabular-nums leading-none tracking-tight">{quotation.view_count || 0}</p>
+                                        <p className="text-xs font-medium text-muted-foreground border-t pt-3 mt-3 mx-2">Lượt xem</p>
                                     </div>
-                                    <div className="bg-zinc-50/70 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
-                                        <p className="text-xs font-bold text-zinc-950 leading-tight tracking-tight">
+                                    <div className="bg-muted/50 p-6 rounded-xl border text-center space-y-1 flex flex-col justify-center min-h-[100px]">
+                                        <p className="text-xs font-bold leading-tight tracking-tight mt-1">
                                             {quotation.valid_until ? formatDate(quotation.valid_until) : 'N/A'}
                                         </p>
-                                        <p className="text-[11px] font-bold text-zinc-400  border-t border-zinc-200/40 pt-3 mx-2">Ngày hết hạn</p>
+                                        <p className="text-xs font-medium text-muted-foreground border-t pt-3 mt-3 mx-2">Ngày hết hạn</p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-4 relative pl-3 border-l border-zinc-100 py-1">
+                                <div className="space-y-4 relative pl-3 border-l pb-1">
                                     <div className="flex items-start gap-3">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-900 mt-1.5" />
+                                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5" />
                                         <div className="space-y-0.5">
-                                            <p className="text-[11px] font-bold uppercase text-zinc-900">Khởi tạo báo giá</p>
-                                            <p className="text-[11px] font-medium text-zinc-400">{formatDate(quotation.created_at)}</p>
+                                            <p className="text-xs font-medium">Khởi tạo báo giá</p>
+                                            <p className="text-xs text-muted-foreground">{formatDate(quotation.created_at)}</p>
                                         </div>
                                     </div>
                                     {quotation.updated_at !== quotation.created_at && (
                                         <div className="flex items-start gap-3">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-300 mt-1.5" />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground mt-1.5" />
                                             <div className="space-y-0.5">
-                                                <p className="text-[11px] font-bold uppercase text-zinc-500">Cập nhật cuối</p>
-                                                <p className="text-[11px] font-medium text-zinc-400">{formatDate(quotation.updated_at)}</p>
+                                                <p className="text-xs font-medium text-muted-foreground">Cập nhật cuối</p>
+                                                <p className="text-xs text-muted-foreground">{formatDate(quotation.updated_at)}</p>
                                             </div>
                                         </div>
                                     )}
@@ -438,12 +438,12 @@ export default function QuotationDetailPage() {
                             </Card>
 
                             {/* Payment Details Card */}
-                            <Card className="p-8 rounded-2xl border-zinc-950/20 shadow-lg bg-zinc-950 text-white relative overflow-hidden group">
+                            <Card className="p-6 bg-zinc-950 text-zinc-50 relative overflow-hidden group">
                                 <div className="absolute inset-0 opacity-[0.06] pointer-events-none group-hover:opacity-[0.09] transition-opacity duration-500"
                                     style={{ backgroundImage: "radial-gradient(#fff 0.8px, transparent 0.8px)", backgroundSize: "12px 12px" }}>
                                 </div>
-                                <h4 className="text-[11px] font-bold text-zinc-500  mb-8 border-b border-zinc-800/60 pb-4 flex items-center justify-between">
-                                    <span className="flex items-center gap-2.5">
+                                <h4 className="text-sm font-medium text-zinc-400 mb-6 border-b border-zinc-800 pb-4 flex items-center justify-between">
+                                    <span className="flex items-center gap-2">
                                         <CreditCard className="h-4 w-4" />
                                         Thông tin thanh toán
                                     </span>
@@ -451,22 +451,22 @@ export default function QuotationDetailPage() {
                                 </h4>
                                 <div className="space-y-7 relative z-10">
                                     <div className="space-y-1">
-                                        <p className="text-[11px] font-bold text-zinc-600 ">Đơn vị thụ hưởng</p>
+                                        <p className="text-xs font-medium text-zinc-400">Đơn vị thụ hưởng</p>
                                         <p className="font-bold text-sm tracking-tight">{quotation.bank_account_name || brandConfig?.bank_account_name || "CÔNG TY TNHH TULIE"}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[11px] font-bold text-zinc-600 ">Số tài khoản chính</p>
-                                        <p className="font-bold text-3xl tracking-tighter text-white/95 font-mono select-all">
+                                        <p className="text-xs font-medium text-zinc-400">Số tài khoản chính</p>
+                                        <p className="font-bold text-3xl tracking-tighter text-white font-mono select-all">
                                             {quotation.bank_account_no || brandConfig?.bank_account_no || "0110163102"}
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-6 pt-2">
                                         <div className="space-y-1">
-                                            <p className="text-[11px] font-bold text-zinc-600 ">Ngân hàng</p>
+                                            <p className="text-xs font-medium text-zinc-400">Ngân hàng</p>
                                             <p className="font-bold text-xs text-zinc-300">{quotation.bank_name || brandConfig?.bank_name || "MB BANK"}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[11px] font-bold text-zinc-600 ">Chi nhánh</p>
+                                            <p className="text-xs font-medium text-zinc-400">Chi nhánh</p>
                                             <p className="font-bold text-xs text-zinc-300">{quotation.bank_branch || brandConfig?.bank_branch || "VIỆT NAM"}</p>
                                         </div>
                                     </div>

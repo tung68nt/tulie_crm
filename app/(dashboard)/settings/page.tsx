@@ -987,10 +987,10 @@ export default function SettingsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-8 pt-6">
-                                <div className="flex items-center justify-between p-5 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                <div className="flex items-center justify-between p-5 bg-muted/50 rounded-xl border">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base font-bold text-zinc-900 dark:text-zinc-50">Kích hoạt thông báo</Label>
-                                        <p className="text-xs text-muted-foreground uppercase tracking-tight font-medium">Bật/tắt toàn bộ thông báo gửi đến Telegram.</p>
+                                        <Label className="text-base font-medium">Kích hoạt thông báo</Label>
+                                        <p className="text-sm text-muted-foreground">Bật/tắt toàn bộ thông báo gửi đến Telegram.</p>
                                     </div>
                                     <Switch
                                         checked={telegramConfig.is_enabled}
@@ -1000,7 +1000,7 @@ export default function SettingsPage() {
 
                                 <div className="grid gap-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="bot_token" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">Bot Token (Từ @BotFather)</Label>
+                                        <Label htmlFor="bot_token">Bot Token (Từ @BotFather)</Label>
                                         <Input
                                             id="bot_token"
                                             placeholder="1234567890:ABCDE..."
@@ -1011,7 +1011,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="chat_id" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">Chat ID (Group hoặc Cá nhân)</Label>
+                                        <Label htmlFor="chat_id">Chat ID (Group hoặc Cá nhân)</Label>
                                         <Input
                                             id="chat_id"
                                             placeholder="-100123456789"
@@ -1022,7 +1022,7 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="sepay_api_key" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">SePay API Key</Label>
+                                            <Label htmlFor="sepay_api_key">SePay API Key</Label>
                                             <Input
                                                 id="sepay_api_key"
                                                 type="password"
@@ -1033,7 +1033,7 @@ export default function SettingsPage() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label htmlFor="sepay_secret_key" className="font-bold text-[10px] uppercase tracking-wider text-muted-foreground">SePay Webhook Secret</Label>
+                                            <Label htmlFor="sepay_secret_key">SePay Webhook Secret</Label>
                                             <Input
                                                 id="sepay_secret_key"
                                                 type="password"
@@ -1046,10 +1046,10 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
 
-                                <div className="p-5 bg-muted/20 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4">
+                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-[10px] uppercase font-black tracking-widest text-zinc-500">SePay Webhook URL</h4>
-                                        <Badge variant="outline" className="text-[9px] font-bold bg-zinc-900 text-white border-none py-0.5 rounded-md">Realtime Sync</Badge>
+                                        <h4 className="text-sm font-medium">SePay Webhook URL</h4>
+                                        <Badge variant="secondary">Realtime Sync</Badge>
                                     </div>
                                     <div className="flex gap-2">
                                         <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
@@ -1064,10 +1064,10 @@ export default function SettingsPage() {
                                     <p className="text-[10px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
                                 </div>
 
-                                <div className="p-5 bg-muted/20 rounded-2xl border border-zinc-100 dark:border-zinc-800 space-y-4">
+                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Academy Webhook URL</h4>
-                                        <Badge variant="outline" className="text-[9px] font-bold bg-white text-zinc-900 border-zinc-900 py-0.5 rounded-md">Academy Integration</Badge>
+                                        <h4 className="text-sm font-medium">Academy Webhook URL</h4>
+                                        <Badge variant="outline">Academy Integration</Badge>
                                     </div>
                                     <div className="flex gap-2 items-end">
                                         <div className="flex-1 space-y-3">
@@ -1075,7 +1075,7 @@ export default function SettingsPage() {
                                                 {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
                                             </div>
                                             <div className="space-y-1.5">
-                                                <Label htmlFor="academy_webhook_key" className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Webhook API Key</Label>
+                                                <Label htmlFor="academy_webhook_key">Webhook API Key</Label>
                                                 <Input
                                                     id="academy_webhook_key"
                                                     placeholder="Nhập khóa để Academy xác thực"
@@ -1094,8 +1094,8 @@ export default function SettingsPage() {
                                     <p className="text-[10px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
                                 </div>
 
-                                <div className="p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 mb-4">Cấu hình loại thông báo:</h4>
+                                <div className="p-5 bg-card rounded-xl border shadow-sm">
+                                    <h4 className="text-sm font-medium mb-4">Cấu hình loại thông báo:</h4>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         {[
                                             { key: 'notify_new_retail_order', templateKey: 'template_new_retail_order', label: 'Đơn hàng B2C mới', placeholder: 'Dùng biến: {order_number}, {customer_name}, {customer_phone}, {total_amount}, {payment_status}, {order_status}' },
@@ -1116,8 +1116,8 @@ export default function SettingsPage() {
                                                         onCheckedChange={(val) => setTelegramConfig({ ...telegramConfig, [item.key]: val })}
                                                     />
                                                 </div>
-                                                <div className="pt-2 border-t border-dashed border-zinc-200 dark:border-zinc-800">
-                                                    <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2 block">Nội dung mẫu (Telegram HTML)</Label>
+                                                <div className="pt-2 border-t">
+                                                    <Label className="text-sm font-medium mb-2 block">Nội dung mẫu (Telegram HTML)</Label>
                                                     <Textarea
                                                         value={(telegramConfig as any)[item.templateKey] || ''}
                                                         onChange={(e) => setTelegramConfig({ ...telegramConfig, [item.templateKey]: e.target.value })}
@@ -1131,9 +1131,9 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
 
-                                <div className="p-5 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                                    <h4 className="text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-50 mb-3">Hướng dẫn nhanh:</h4>
-                                    <ol className="text-xs space-y-2 text-zinc-600 dark:text-zinc-400 list-decimal pl-4 font-medium">
+                                <div className="p-5 bg-card rounded-xl border shadow-sm">
+                                    <h4 className="text-sm font-medium mb-3">Hướng dẫn nhanh:</h4>
+                                    <ol className="text-sm space-y-2 text-muted-foreground list-decimal pl-4">
                                         <li>Tạo bot qua <span className="text-zinc-900 dark:text-zinc-50 font-bold">@BotFather</span> để lấy Token.</li>
                                         <li>Thêm bot vào nhóm và lấy <span className="text-zinc-900 dark:text-zinc-50 font-bold">Chat ID</span> (Dùng bot @userinfobot hoặc @getidsbot).</li>
                                         <li>Nhấn <span className="text-zinc-900 dark:text-zinc-50 font-bold">Lưu cấu hình</span> để bắt đầu nhận thông báo.</li>
@@ -1176,7 +1176,7 @@ export default function SettingsPage() {
                             <CardContent className="p-6 space-y-6">
                                 <div className="grid gap-6 sm:grid-cols-2">
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">SMTP Host</Label>
+                                        <Label className="text-sm font-medium">SMTP Host</Label>
                                         <Input
                                             placeholder="smtp.gmail.com"
                                             value={smtpConfig.host}
@@ -1185,7 +1185,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">SMTP Port</Label>
+                                        <Label className="text-sm font-medium">SMTP Port</Label>
                                         <Input
                                             placeholder="587"
                                             value={smtpConfig.port}
@@ -1194,7 +1194,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">User / Email</Label>
+                                        <Label className="text-sm font-medium">User / Email</Label>
                                         <Input
                                             placeholder="email@example.com"
                                             value={smtpConfig.user}
@@ -1203,7 +1203,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Password / App Password</Label>
+                                        <Label className="text-sm font-medium">Password / App Password</Label>
                                         <Input
                                             type="password"
                                             placeholder="****************"
@@ -1213,7 +1213,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Tên người gửi (From Name)</Label>
+                                        <Label className="text-sm font-medium">Tên người gửi (From Name)</Label>
                                         <Input
                                             placeholder="Tulie CRM"
                                             value={smtpConfig.from_name}
@@ -1222,7 +1222,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-wider opacity-70">Email hiển thị (From Email)</Label>
+                                        <Label className="text-sm font-medium">Email hiển thị (From Email)</Label>
                                         <Input
                                             placeholder="info@tulie.vn"
                                             value={smtpConfig.from_email}
@@ -1431,8 +1431,8 @@ export default function SettingsPage() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                <div className="space-y-4 p-4 border rounded-2xl bg-zinc-50/50">
-                                    <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Tạo bộ mới</h4>
+                                <div className="space-y-4 p-4 border rounded-xl bg-muted/50">
+                                    <h4 className="text-sm font-medium">Tạo bộ mới</h4>
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="space-y-2">
                                             <Label>Tên bộ chứng từ</Label>
@@ -1478,14 +1478,14 @@ export default function SettingsPage() {
                                             ))}
                                         </div>
                                     </div>
-                                    <Button onClick={handleCreateBundle} disabled={isSavingBundle} className="w-full h-11 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all font-bold">
+                                    <Button onClick={handleCreateBundle} disabled={isSavingBundle} className="w-full">
                                         {isSavingBundle ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
                                         Tạo bộ mẫu
                                     </Button>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Danh sách hiện có</h4>
+                                    <h4 className="text-sm font-medium">Danh sách hiện có</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {bundles.map(bundle => (
                                             <Card key={bundle.id} className="overflow-hidden border-zinc-200 shadow-sm rounded-2xl group hover:border-zinc-400 transition-all">

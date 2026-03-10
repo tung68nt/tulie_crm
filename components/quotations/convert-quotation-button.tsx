@@ -38,7 +38,7 @@ export function ConvertQuotationButton({ quotationId }: { quotationId: string })
         <DropdownMenu>
             <DropdownMenuTrigger asChild disabled={isLoading}>
                 <Button
-                    className="h-11 px-6 bg-zinc-950 hover:bg-zinc-800 text-white border-zinc-950 font-bold flex items-center gap-2.5 rounded-2xl shadow-lg transition-all active:scale-[0.98] uppercase text-[11px] tracking-widest"
+                    className="h-9 px-4 font-medium flex items-center gap-2"
                 >
                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
                     Chuyển thành Đơn hàng / Hợp đồng
