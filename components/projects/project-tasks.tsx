@@ -92,16 +92,16 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold border-zinc-900'
-            case 'in_progress': return 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
-            case 'blocked': return 'bg-red-50 text-red-700 border-red-200'
-            default: return 'bg-zinc-100 text-zinc-600 border-zinc-200'
+            case 'completed': return 'bg-primary text-primary-foreground font-semibold'
+            case 'in_progress': return 'bg-blue-50 text-blue-700 border-blue-200 font-semibold'
+            case 'blocked': return 'bg-destructive/10 text-destructive border-destructive/20 font-semibold'
+            default: return 'bg-muted text-muted-foreground'
         }
     }
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
-            <CardHeader className="flex flex-row items-center justify-between py-6 px-6">
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
                         <ListTodo className="h-5 w-5 text-zinc-900" />
@@ -164,14 +164,14 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
 
                             <div className="md:col-span-2">
                                 <Select value={task.status} onValueChange={(v) => updateTask(task.id, 'status', v)}>
-                                    <SelectTrigger className={cn("h-8 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider", getStatusColor(task.status))}>
+                                    <SelectTrigger className={cn("h-8 text-[11px] font-semibold", getStatusColor(task.status))}>
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                        <SelectItem value="todo" className="text-[11px] font-medium">Chưa làm</SelectItem>
-                                        <SelectItem value="in_progress" className="text-[11px] font-medium">Đang tiến hành</SelectItem>
-                                        <SelectItem value="completed" className="text-[11px] font-medium">Hoàn thành</SelectItem>
-                                        <SelectItem value="blocked" className="text-[11px] font-medium">Vướng mắc</SelectItem>
+                                    <SelectContent>
+                                        <SelectItem value="todo" className="text-xs">Chưa làm</SelectItem>
+                                        <SelectItem value="in_progress" className="text-xs">Đang tiến hành</SelectItem>
+                                        <SelectItem value="completed" className="text-xs">Hoàn thành</SelectItem>
+                                        <SelectItem value="blocked" className="text-xs">Vướng mắc</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -204,17 +204,17 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
                             <div className="md:col-span-2 flex justify-end gap-1">
                                 <Select value={task.priority} onValueChange={(v) => updateTask(task.id, 'priority', v)}>
                                     <SelectTrigger className={cn(
-                                        "h-8 w-24 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider",
-                                        task.priority === 'high' ? "bg-red-50 text-red-700" :
-                                            task.priority === 'medium' ? "bg-amber-50 text-amber-700" :
-                                                "bg-zinc-100 text-zinc-600"
+                                        "h-8 w-24 text-[11px] font-semibold",
+                                        task.priority === 'high' ? "bg-destructive/10 text-destructive border-destructive/20" :
+                                            task.priority === 'medium' ? "bg-amber-50 text-amber-700 border-amber-100" :
+                                                "bg-muted text-muted-foreground"
                                     )}>
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                        <SelectItem value="low" className="text-[11px] font-medium">Thấp</SelectItem>
-                                        <SelectItem value="medium" className="text-[11px] font-medium">Vừa</SelectItem>
-                                        <SelectItem value="high" className="text-[11px] font-medium">Cao</SelectItem>
+                                    <SelectContent>
+                                        <SelectItem value="low" className="text-xs">Thấp</SelectItem>
+                                        <SelectItem value="medium" className="text-xs">Vừa</SelectItem>
+                                        <SelectItem value="high" className="text-xs">Cao</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <Button variant="ghost" size="icon" onClick={() => removeTask(task.id)} className="h-8 w-8 text-destructive/60 hover:text-destructive hover:bg-destructive/10 rounded-lg">

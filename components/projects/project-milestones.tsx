@@ -74,8 +74,8 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
     }
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
-            <CardHeader className="flex flex-row items-center justify-between py-6 px-6">
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
                         <FileText className="h-5 w-5 text-zinc-900" />
@@ -116,32 +116,32 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
                                 <div className="flex items-center gap-2">
                                     <Select value={m.type} onValueChange={(val) => updateMilestone(m.id, 'type', val)}>
                                         <SelectTrigger className={cn(
-                                            "h-9 w-32 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider",
-                                            m.type === 'payment' ? "bg-emerald-50 text-emerald-700" :
-                                                m.type === 'delivery' ? "bg-blue-50 text-blue-700" :
-                                                    "bg-zinc-100 text-zinc-600"
+                                            "h-9 w-32 text-[11px] font-semibold",
+                                            m.type === 'payment' ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                                m.type === 'delivery' ? "bg-blue-50 text-blue-700 border-blue-100" :
+                                                    "bg-muted text-muted-foreground"
                                         )}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                            <SelectItem value="work" className="text-[11px] font-medium">Công việc</SelectItem>
-                                            <SelectItem value="payment" className="text-[11px] font-medium">Thanh toán</SelectItem>
-                                            <SelectItem value="delivery" className="text-[11px] font-medium">Bàn giao</SelectItem>
+                                        <SelectContent>
+                                            <SelectItem value="work" className="text-xs">Công việc</SelectItem>
+                                            <SelectItem value="payment" className="text-xs">Thanh toán</SelectItem>
+                                            <SelectItem value="delivery" className="text-xs">Bàn giao</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <Select value={m.status} onValueChange={(val) => updateMilestone(m.id, 'status', val)}>
                                         <SelectTrigger className={cn(
-                                            "h-9 w-32 text-[11px] font-bold rounded-full border-none shadow-sm transition-all hover:scale-105 active:scale-95 uppercase tracking-wider",
-                                            m.status === 'completed' ? "bg-zinc-900 text-white" :
-                                                m.status === 'overdue' ? "bg-red-50 text-red-700" :
-                                                    "bg-zinc-50 text-zinc-500 border border-zinc-100"
+                                            "h-9 w-32 text-[11px] font-semibold",
+                                            m.status === 'completed' ? "bg-primary text-primary-foreground" :
+                                                m.status === 'overdue' ? "bg-destructive/10 text-destructive border-destructive/20" :
+                                                    "bg-muted text-muted-foreground"
                                         )}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="rounded-xl border-zinc-100 shadow-xl">
-                                            <SelectItem value="pending" className="text-[11px] font-medium">Chờ xử lý</SelectItem>
-                                            <SelectItem value="completed" className="text-[11px] font-medium">Hoàn thành</SelectItem>
-                                            <SelectItem value="overdue" className="text-[11px] font-medium">Trễ hạn</SelectItem>
+                                        <SelectContent>
+                                            <SelectItem value="pending" className="text-xs">Chờ xử lý</SelectItem>
+                                            <SelectItem value="completed" className="text-xs">Hoàn thành</SelectItem>
+                                            <SelectItem value="overdue" className="text-xs">Trễ hạn</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <Button variant="ghost" size="icon" onClick={() => removeMilestone(m.id)} className="h-9 w-9 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">

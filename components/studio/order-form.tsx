@@ -153,13 +153,13 @@ export function RetailOrderForm() {
             <div className="grid gap-6 lg:grid-cols-12 items-start">
                 <div className="lg:col-span-8 space-y-6">
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                        <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 Thông tin khách hàng
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="space-y-6">
                             <div className="grid gap-6 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="customer_name" className="text-sm font-medium">Họ tên / Đơn vị *</Label>
@@ -213,14 +213,14 @@ export function RetailOrderForm() {
                     </Card>
 
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6 flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center justify-between">
                             <CardTitle className="text-base flex items-center gap-2">
                                 <Package className="h-4 w-4" />
                                 Sản phẩm & Dịch vụ
                             </CardTitle>
                             <Badge variant="secondary">{selectedItems.length} mục</Badge>
                         </CardHeader>
-                        <CardContent className="p-6 space-y-6">
+                        <CardContent className="space-y-6">
                             <ProductCombobox
                                 products={products}
                                 value=""
@@ -279,7 +279,7 @@ export function RetailOrderForm() {
                                         </tbody>
                                         <tfoot className="bg-zinc-50/30 dark:bg-zinc-900/30 font-bold border-t border-zinc-100 dark:border-zinc-800">
                                             <tr>
-                                                <td colSpan={3} className="px-6 py-4 text-zinc-500 uppercase text-[10px] tracking-widest font-bold">Tổng cộng tạm tính</td>
+                                                <td colSpan={3} className="px-6 py-4 text-muted-foreground text-xs font-medium">Tổng cộng tạm tính</td>
                                                 <td className="px-6 py-4 text-right text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
                                                     {formatCurrency(formData.total_amount)}
                                                 </td>
@@ -353,15 +353,15 @@ export function RetailOrderForm() {
 
                 <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-6">
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                        <CardHeader>
                             <CardTitle className="text-base flex items-center gap-2">
                                 <CircleDollarSign className="h-4 w-4" /> Thanh toán
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="px-6 py-8 space-y-6">
+                        <CardContent className="space-y-6">
                             <div className="space-y-1">
                                 <span className="text-xs font-medium text-muted-foreground">Tổng giá trị đơn hàng</span>
-                                <div className="text-4xl font-bold tracking-tighter tabular-nums">{formatCurrency(formData.total_amount)}</div>
+                                <div className="text-4xl font-bold tabular-nums">{formatCurrency(formData.total_amount)}</div>
                             </div>
 
                             <div className="space-y-4 bg-muted/50 p-5 rounded-lg border">
@@ -431,12 +431,12 @@ export function RetailOrderForm() {
 
                     <div className="space-y-4">
                         <Card className="overflow-hidden">
-                            <CardHeader className="py-3 px-5 border-b bg-muted/50">
+                            <CardHeader>
                                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                                     <CreditCard className="h-4 w-4" /> Trạng thái hiện tại
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="p-4">
+                            <CardContent>
                                 <Select
                                     value={formData.payment_status}
                                     onValueChange={(val) => setFormData({ ...formData, payment_status: val })}

@@ -139,7 +139,7 @@ export default async function DashboardPage() {
                     <RecentActivities data={recentActivities} />
 
                     {/* Business Health Card */}
-                    <Card className="rounded-xl border shadow-sm">
+                    <Card>
                         <CardHeader className="pb-3">
                             <CardTitle className="text-base font-semibold">Sức khỏe doanh nghiệp</CardTitle>
                         </CardHeader>

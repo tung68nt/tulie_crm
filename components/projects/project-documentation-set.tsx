@@ -36,8 +36,8 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
     }, [workItems])
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
-            <CardHeader className="py-6 px-6 border-b border-zinc-50 flex flex-row items-center justify-between">
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center">
@@ -49,7 +49,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                         </div>
                     </div>
                 </div>
-                <Badge variant="secondary" className="bg-zinc-100 text-zinc-900 border-none font-bold text-[10px] rounded-full px-4 h-8 uppercase tracking-widest flex items-center">
+                <Badge variant="secondary" className="font-semibold">
                     Full Documents
                 </Badge>
             </CardHeader>
@@ -70,8 +70,8 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                         {doc.status === 'signed' ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
                                     </div>
                                     <div className="min-w-0">
-                                        <p className="font-bold text-sm text-zinc-900 truncate">{doc.title}</p>
-                                        <p className="text-[10px] text-zinc-400 font-bold truncate uppercase tracking-widest mt-0.5">
+                                        <p className="font-semibold text-sm truncate">{doc.title}</p>
+                                        <p className="text-[10px] text-muted-foreground truncate font-medium mt-0.5">
                                             {doc.workItemTitle}
                                         </p>
                                     </div>
@@ -80,12 +80,12 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                 <div className="hidden md:flex items-center gap-8 text-right shrink-0">
                                     {doc.date && (
                                         <div className="space-y-0.5">
-                                            <p className="text-[11px] font-bold text-zinc-600">{formatDate(doc.date)}</p>
-                                            <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">HẠN HOÀN THÀNH</p>
+                                            <p className="text-[11px] font-semibold text-muted-foreground">{formatDate(doc.date)}</p>
+                                            <p className="text-[9px] font-medium text-muted-foreground">HẠN HOÀN THÀNH</p>
                                         </div>
                                     )}
                                     <Badge variant="secondary" className={cn(
-                                        "h-8 rounded-full px-4 text-[10px] font-bold border-none uppercase tracking-widest flex items-center",
+                                        "font-medium",
                                         doc.status === 'signed' ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
                                     )}>
                                         <span className="w-1.5 h-1.5 rounded-full mr-2 bg-current" />

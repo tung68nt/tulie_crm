@@ -61,11 +61,11 @@ interface WorkItemsManagerProps {
 }
 
 const STATUS_OPTIONS = [
-    { value: 'pending', label: 'Chờ xử lý', color: 'bg-zinc-100 text-zinc-600 border-zinc-200' },
-    { value: 'in_progress', label: 'Đang thực hiện', color: 'bg-blue-50 text-blue-700 border-blue-200 font-bold' },
-    { value: 'delivered', label: 'Đã bàn giao', color: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold border-zinc-900' },
-    { value: 'accepted', label: 'Đã nghiệm thu', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold' },
-    { value: 'rejected', label: 'Từ chối', color: 'bg-red-50 text-red-700 border-red-200' },
+    { value: 'pending', label: 'Chờ xử lý', color: 'bg-muted text-muted-foreground' },
+    { value: 'in_progress', label: 'Đang thực hiện', color: 'bg-blue-50 text-blue-700 border-blue-200 font-semibold' },
+    { value: 'delivered', label: 'Đã bàn giao', color: 'bg-primary text-primary-foreground font-semibold' },
+    { value: 'accepted', label: 'Đã nghiệm thu', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold' },
+    { value: 'rejected', label: 'Từ chối', color: 'bg-destructive/10 text-destructive border-destructive/20' },
 ]
 
 const DEFAULT_DOCUMENTS = [
@@ -413,7 +413,7 @@ function WorkItemRow({
     const statusOption = STATUS_OPTIONS.find(s => s.value === item.status)
 
     return (
-        <div className="border rounded-xl overflow-hidden">
+        <div className="border rounded-lg overflow-hidden">
             {/* Collapsed header */}
             <div
                 className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/30 transition-colors"
@@ -533,7 +533,7 @@ function WorkItemRow({
                                             <ExternalLink className="w-4 h-4" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <a href={link.url} target="_blank" className="text-xs font-bold text-zinc-900 block truncate hover:underline underline-offset-2">
+                                            <a href={link.url} target="_blank" className="text-xs font-semibold block truncate hover:underline underline-offset-2">
                                                 {link.label}
                                             </a>
                                             {link.date && <p className="text-[10px] text-zinc-400 mt-0.5">{formatDate(link.date)}</p>}
@@ -554,13 +554,13 @@ function WorkItemRow({
                                         value={newLinkLabel}
                                         onChange={e => setNewLinkLabel(e.target.value)}
                                         placeholder="Tên link..."
-                                        className="h-9 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50 rounded-xl"
+                                        className="h-9 text-xs"
                                     />
                                     <Input
                                         value={newLinkUrl}
                                         onChange={e => setNewLinkUrl(e.target.value)}
                                         placeholder="URL bàn giao..."
-                                        className="h-9 text-xs hover:border-zinc-300 focus:border-zinc-400 transition-all bg-zinc-50/50 rounded-xl"
+                                        className="h-9 text-xs"
                                         onKeyDown={e => e.key === 'Enter' && handleAddLink()}
                                     />
                                 </div>
@@ -631,7 +631,7 @@ function WorkItemRow({
                                                         <Clock className="w-3.5 h-3.5" />
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 border-zinc-100 rounded-xl shadow-xl" align="end">
+                                                <PopoverContent className="w-auto p-0" align="end">
                                                     <Calendar
                                                         mode="single"
                                                         selected={doc.date ? new Date(doc.date) : undefined}

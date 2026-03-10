@@ -132,7 +132,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
 
                 <div className="py-4">
                     <div className="space-y-3">
-                        <Label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Chọn bộ mẫu phù hợp</Label>
+                        <Label className="text-xs font-medium text-muted-foreground">Chọn bộ mẫu phù hợp</Label>
                         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center py-12 gap-3">
@@ -148,25 +148,24 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                     <div
                                         key={b.id}
                                         className={cn(
-                                            "relative p-4 rounded-xl border transition-all cursor-pointer group",
+                                            "relative p-4 rounded-lg border transition-all cursor-pointer group",
                                             selectedBundleId === b.id
-                                                ? "bg-zinc-900 border-zinc-900 text-white shadow-lg shadow-zinc-200"
-                                                : "bg-white border-zinc-100 hover:border-zinc-300"
+                                                ? "bg-primary border-primary text-primary-foreground shadow-sm"
+                                                : "bg-card border-border hover:border-ring"
                                         )}
                                         onClick={() => setSelectedBundleId(b.id)}
                                     >
                                         <div className="flex items-center justify-between mb-2">
-                                            <h6 className="font-bold text-sm">{b.name}</h6>
+                                            <h6 className="font-semibold text-sm">{b.name}</h6>
                                             <div className={cn(
                                                 "w-4 h-4 rounded-full border flex items-center justify-center",
-                                                selectedBundleId === b.id ? "border-white bg-white" : "border-zinc-200 group-hover:border-zinc-400"
-                                            )}>
-                                                {selectedBundleId === b.id && <CheckCircle2 className="w-3 h-3 text-zinc-900" />}
+                                                selectedBundleId === b.id ? "border-primary-foreground bg-primary-foreground" : "border-muted-foreground/30 group-hover:border-muted-foreground"
+                                            )}>                                                {selectedBundleId === b.id && <CheckCircle2 className="w-3 h-3 text-primary" />}
                                             </div>
                                         </div>
                                         <p className={cn(
                                             "text-[10px] mb-3 leading-relaxed",
-                                            selectedBundleId === b.id ? "text-zinc-400" : "text-zinc-500"
+                                            selectedBundleId === b.id ? "text-primary-foreground/70" : "text-muted-foreground"
                                         )}>
                                             {b.description || `Gồm ${b.templates.length} loại giấy tờ chuẩn cho dự án.`}
                                         </p>
@@ -174,12 +173,12 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                             {b.templates.map((_, i) => (
                                                 <div key={i} className={cn(
                                                     "w-1.5 h-1.5 rounded-full",
-                                                    selectedBundleId === b.id ? "bg-white/40" : "bg-zinc-200"
+                                                    selectedBundleId === b.id ? "bg-primary-foreground/40" : "bg-muted-foreground/30"
                                                 )} />
                                             ))}
                                             <span className={cn(
-                                                "text-[9px] font-bold ml-1 tracking-widest uppercase",
-                                                selectedBundleId === b.id ? "text-white/60" : "text-zinc-400"
+                                                "text-[9px] font-medium ml-1",
+                                                selectedBundleId === b.id ? "text-primary-foreground/60" : "text-muted-foreground"
                                             )}>
                                                 {b.templates.length} FILES
                                             </span>
@@ -196,7 +195,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                     <Button
                         onClick={handleApplyBundle}
                         disabled={isSaving || !selectedBundleId}
-                        className="bg-zinc-900 text-white hover:bg-zinc-800"
+                        className=""
                     >
                         {isSaving ? (
                             <>

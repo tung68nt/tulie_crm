@@ -123,14 +123,14 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             <Button
                                 variant="ghost"
                                 className={cn(
-                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 rounded-xl',
-                                    pathname === '/dashboard' ? 'bg-zinc-950 text-white font-bold' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
+                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200',
+                                    pathname === '/dashboard' ? 'bg-secondary text-secondary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
                                 <LayoutGrid className={cn(
                                     "h-4 w-4 shrink-0 transition-colors",
-                                    pathname === '/dashboard' ? "text-white" : "text-zinc-400 group-hover:text-zinc-900"
+                                    pathname === '/dashboard' ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                                 )} />
                                 {!isCollapsed && <span className="truncate font-medium">Dashboard</span>}
                             </Button>
@@ -140,7 +140,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-1.5 mt-4 text-sm font-bold uppercase tracking-widest text-black dark:text-white">
+                                <h4 className="px-3 py-1.5 mt-4 text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-tight">
                                     {group.title}
                                 </h4>
                             )}
@@ -163,14 +163,14 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                             <Button
                                                 variant="ghost"
                                                 className={cn(
-                                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 rounded-xl',
-                                                    isActive ? 'bg-zinc-950 text-white font-bold' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
+                                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200',
+                                                    isActive ? 'bg-secondary text-secondary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
                                                     isCollapsed && 'justify-center px-0'
                                                 )}
                                             >
                                                 <Icon className={cn(
                                                     "h-4 w-4 shrink-0 transition-colors",
-                                                    isActive ? "text-white" : "text-zinc-400 group-hover:text-zinc-900"
+                                                    isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                                                 )} />
                                                 {!isCollapsed && (
                                                     <span className="truncate font-medium">

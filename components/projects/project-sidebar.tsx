@@ -21,6 +21,7 @@ import { formatDate } from '@/lib/utils/format'
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/status'
 import { AcceptancePDFButton } from '@/components/projects/acceptance-pdf-button'
 import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
 
 interface ProjectSidebarProps {
     project: any
@@ -164,21 +165,21 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                     {/* Timeline Setup */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="text-xs text-muted-foreground mb-1.5 block uppercase tracking-tighter font-bold">Ngày Khởi tạo</label>
+                            <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Ngày Khởi tạo</label>
                             <Input
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="text-sm rounded-lg border-zinc-100 bg-zinc-50/50"
+                                className="text-sm"
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-muted-foreground mb-1.5 block uppercase tracking-tighter font-bold text-red-500">Ngày Đóng Dự án</label>
+                            <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Ngày Đóng Dự án</label>
                             <Input
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="text-sm rounded-lg border-red-100 bg-red-50/20 text-red-600 font-bold"
+                                className="text-sm"
                             />
                         </div>
                     </div>
@@ -198,17 +199,17 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                     {deadline && (
                         <>
                             <Separator />
-                            <div className={`flex justify-between items-center p-2.5 rounded-lg border ${isOverdue
-                                ? 'bg-red-50 border-red-100'
-                                : 'bg-amber-50 border-amber-100'
-                                }`}>
+                            <div className={cn(
+                                "flex justify-between items-center p-3 rounded-lg border",
+                                isOverdue ? "bg-destructive/10 border-destructive/20" : "bg-muted border-border"
+                            )}>
                                 <div className="flex items-center gap-2">
-                                    <AlertCircle className={`h-4 w-4 ${isOverdue ? 'text-red-500' : 'text-zinc-500'}`} />
-                                    <span className={`text-[10px] font-bold uppercase tracking-wider ${isOverdue ? 'text-red-600' : 'text-zinc-600'}`}>
-                                        {isOverdue ? 'PROJECT OVERDUE' : 'FINISH LINE'}
+                                    <AlertCircle className={cn("h-4 w-4", isOverdue ? "text-destructive" : "text-muted-foreground")} />
+                                    <span className={cn("text-[10px] font-semibold", isOverdue ? "text-destructive" : "text-muted-foreground")}>
+                                        {isOverdue ? 'TRỄ HẠN DỰ KIẾN' : 'HẠN HOÀN THÀNH'}
                                     </span>
                                 </div>
-                                <span className={`text-xs font-bold ${isOverdue ? 'text-red-700' : 'text-zinc-900'}`}>
+                                <span className={cn("text-xs font-semibold", isOverdue ? "text-destructive" : "text-foreground")}>
                                     {formatDate(deadline)}
                                 </span>
                             </div>
