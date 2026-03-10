@@ -4,22 +4,15 @@ import { RetailOrder } from '@/types'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import {
     CheckCircle2,
-    Clock,
     Camera,
-    Truck,
     Package,
     CreditCard,
     Calendar,
     User,
-    QrCode,
-    Share2,
-    CheckCircle,
-    ExternalLink,
     RefreshCw,
-    Link as LinkIcon,
+    ExternalLink,
     FileText,
     CircleDot,
-    ArrowRight,
     Copy
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -79,7 +72,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
             if (updatedOrder) {
                 setOrder(updatedOrder)
                 if (updatedOrder.paid_amount > order.paid_amount) {
-                    toast.success('Đã cập nhận thanh toán mới.')
+                    toast.success('Đã cập nhật thanh toán mới.')
                 } else {
                     toast.info('Chưa ghi nhận giao dịch mới. Vui lòng đợi 1-3 phút.')
                 }
@@ -106,65 +99,61 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
     const paymentStatusText = isPaid ? 'Đã thanh toán' : isPartial ? 'Đã cọc một phần' : 'Chưa thanh toán'
 
     return (
-        <div className="min-h-screen bg-zinc-50">
+        <div className="min-h-screen bg-background">
             {/* Top Bar */}
-            <header className="bg-white border-b border-zinc-200 sticky top-0 z-50">
-                <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+            <header className="border-b sticky top-0 z-50 bg-background">
+                <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg bg-zinc-900 flex items-center justify-center">
-                            <Camera className="h-4 w-4 text-white" />
+                        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                            <Camera className="h-4 w-4 text-primary-foreground" />
                         </div>
-                        <span className="font-bold text-sm text-zinc-900 tracking-tight">
+                        <span className="font-semibold text-sm tracking-tight">
                             {brandConfig?.brand_name || 'Tulie Studio'}
                         </span>
                     </div>
                     <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 gap-1.5 text-xs font-semibold border-zinc-200"
                         onClick={() => {
                             navigator.clipboard.writeText(window.location.href)
                             toast.success('Đã sao chép link')
                         }}
                     >
-                        <Copy className="h-3 w-3" /> Sao chép link
+                        <Copy className="mr-1.5 h-3.5 w-3.5" /> Sao chép link
                     </Button>
                 </div>
             </header>
 
-            <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+            <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
                 {/* Hero */}
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                        <Badge className="bg-zinc-900 text-white text-[10px] font-bold px-2.5 py-0.5 border-none">{order.order_number}</Badge>
-                        <Badge variant="outline" className={cn(
-                            "text-[10px] font-bold",
-                            isPaid ? "border-zinc-900 text-zinc-900" : "border-zinc-300 text-zinc-500"
-                        )}>
+                        <Badge variant="secondary" className="font-mono text-xs">{order.order_number}</Badge>
+                        <Badge variant={isPaid ? 'default' : 'outline'}>
                             {paymentStatusText}
                         </Badge>
                     </div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">
+                    <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
                         Đơn hàng của {order.customer_name}
                     </h1>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-muted-foreground">
                         Ngày tạo: {formatDate(order.created_at)} — Cảm ơn bạn đã sử dụng dịch vụ.
                     </p>
                 </div>
 
                 {/* Timeline */}
-                <Card className="border-zinc-200 shadow-sm">
-                    <CardHeader className="pb-3 border-b border-zinc-100 px-5">
-                        <CardTitle className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
                             <CircleDot className="h-4 w-4" /> Tiến độ đơn hàng
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="px-5 py-6">
+                    <CardContent>
                         <div className="relative">
                             {/* Progress line */}
-                            <div className="absolute top-5 left-0 right-0 h-0.5 bg-zinc-200" />
+                            <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted" />
                             <div
-                                className="absolute top-5 left-0 h-0.5 bg-zinc-900 transition-all duration-700"
+                                className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-700"
                                 style={{ width: `${Math.max(0, (currentStepIndex / (steps.length - 1)) * 100)}%` }}
                             />
 
@@ -177,8 +166,8 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                     return (
                                         <div key={step.key} className="flex flex-col items-center text-center" style={{ width: `${100 / steps.length}%` }}>
                                             <div className={cn(
-                                                "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all z-10 bg-white",
-                                                isActive ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-300 text-zinc-300"
+                                                "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all z-10 bg-background",
+                                                isActive ? "border-primary bg-primary text-primary-foreground" : "border-muted text-muted-foreground"
                                             )}>
                                                 {isActive && idx < currentStepIndex ? (
                                                     <CheckCircle2 className="h-5 w-5" />
@@ -187,12 +176,12 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                                 )}
                                             </div>
                                             <span className={cn(
-                                                "mt-2.5 text-[10px] sm:text-xs font-bold uppercase tracking-tight",
-                                                isActive ? "text-zinc-900" : "text-zinc-400"
+                                                "mt-2.5 text-xs font-medium",
+                                                isActive ? "text-foreground" : "text-muted-foreground"
                                             )}>
                                                 {step.label}
                                             </span>
-                                            <span className="text-[9px] text-zinc-400 mt-0.5 hidden sm:block">
+                                            <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">
                                                 {step.desc}
                                             </span>
                                         </div>
@@ -207,18 +196,18 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                     <div className="lg:col-span-3 space-y-6">
                         {/* Drive Link */}
                         {order.resource_link && (
-                            <Card className="border-zinc-900 bg-zinc-900 text-white shadow-md">
+                            <Card className="bg-primary text-primary-foreground">
                                 <CardContent className="p-5 flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                                            <LinkIcon className="h-5 w-5" />
+                                        <div className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center">
+                                            <ExternalLink className="h-5 w-5" />
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-sm">File bàn giao (Google Drive)</h3>
-                                            <p className="text-[11px] text-zinc-400">Tải ảnh gốc chất lượng cao</p>
+                                            <h3 className="font-medium text-sm">File bàn giao (Google Drive)</h3>
+                                            <p className="text-xs opacity-70">Tải ảnh gốc chất lượng cao</p>
                                         </div>
                                     </div>
-                                    <Button asChild className="bg-white text-zinc-900 hover:bg-zinc-100 font-bold text-xs h-9 px-4">
+                                    <Button asChild variant="secondary" size="sm">
                                         <a href={order.resource_link} target="_blank" rel="noopener noreferrer">
                                             <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Mở Drive
                                         </a>
@@ -228,46 +217,46 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                         )}
 
                         {/* Items List */}
-                        <Card className="border-zinc-200 shadow-sm">
-                            <CardHeader className="pb-3 border-b border-zinc-100 px-5">
-                                <CardTitle className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                        <Card>
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium flex items-center gap-2">
                                     <Package className="h-4 w-4" /> Sản phẩm & Dịch vụ
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-0">
-                                <div className="divide-y divide-zinc-100">
+                                <div className="divide-y">
                                     {order.items?.map((item: any, idx: number) => (
                                         <div key={idx} className="px-5 py-4 flex items-center justify-between">
                                             <div>
-                                                <h4 className="font-bold text-sm text-zinc-900">{item.product_name}</h4>
-                                                <div className="flex items-center gap-2 text-[11px] text-zinc-500 mt-0.5">
+                                                <h4 className="font-medium text-sm">{item.product_name}</h4>
+                                                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                                                     <span>SL: {item.quantity}</span>
-                                                    <span className="w-1 h-1 bg-zinc-300 rounded-full" />
+                                                    <span className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
                                                     <span>{formatCurrency(item.unit_price)} / sp</span>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-base font-bold text-zinc-900 tabular-nums">{formatCurrency(item.total_price)}</div>
+                                                <div className="text-sm font-medium tabular-nums">{formatCurrency(item.total_price)}</div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="px-5 py-4 bg-zinc-50 space-y-2 border-t border-zinc-200">
-                                    <div className="flex justify-between text-xs text-zinc-500">
+                                <div className="px-5 py-4 bg-muted/30 space-y-2 border-t">
+                                    <div className="flex justify-between text-xs text-muted-foreground">
                                         <span>Tạm tính</span>
                                         <span>{formatCurrency((order.total_amount || 0) - (order.shipping_fee || 0))}</span>
                                     </div>
                                     {(order.shipping_fee || 0) > 0 && (
-                                        <div className="flex justify-between text-xs text-zinc-500">
+                                        <div className="flex justify-between text-xs text-muted-foreground">
                                             <span>Phí vận chuyển</span>
                                             <span>+ {formatCurrency(order.shipping_fee)}</span>
                                         </div>
                                     )}
-                                    <Separator className="bg-zinc-200" />
+                                    <Separator />
                                     <div className="flex justify-between items-center pt-1">
-                                        <span className="text-sm font-bold text-zinc-900">TỔNG CỘNG</span>
-                                        <span className="text-xl font-bold text-zinc-900 tabular-nums">{formatCurrency(order.total_amount)}</span>
+                                        <span className="text-sm font-medium">Tổng cộng</span>
+                                        <span className="text-lg font-semibold tabular-nums">{formatCurrency(order.total_amount)}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -275,27 +264,27 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
 
                         {/* Info Grid */}
                         <div className="grid grid-cols-2 gap-4">
-                            <Card className="border-zinc-200 shadow-sm">
+                            <Card>
                                 <CardContent className="p-4 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                        <Calendar className="h-5 w-5 text-zinc-600" />
+                                    <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                                        <Calendar className="h-4 w-4 text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-zinc-400">Hẹn trả file</p>
-                                        <p className="text-sm font-bold text-zinc-900">
+                                        <p className="text-xs text-muted-foreground">Hẹn trả file</p>
+                                        <p className="text-sm font-medium">
                                             {order.delivery_date ? formatDate(order.delivery_date) : 'Đang cập nhật'}
                                         </p>
                                     </div>
                                 </CardContent>
                             </Card>
-                            <Card className="border-zinc-200 shadow-sm">
+                            <Card>
                                 <CardContent className="p-4 flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                        <User className="h-5 w-5 text-zinc-600" />
+                                    <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                                        <User className="h-4 w-4 text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-zinc-400">Người phụ trách</p>
-                                        <p className="text-sm font-bold text-zinc-900">
+                                        <p className="text-xs text-muted-foreground">Người phụ trách</p>
+                                        <p className="text-sm font-medium">
                                             {order.creator?.full_name || 'Tulie Studio'}
                                         </p>
                                     </div>
@@ -305,53 +294,31 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
 
                         {/* Demo Link */}
                         {(order as any).demo_link && (
-                            <Card className="border-zinc-200 shadow-sm">
+                            <Card>
                                 <CardContent className="p-4 flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                            <ExternalLink className="h-5 w-5 text-zinc-600" />
+                                        <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                                            <ExternalLink className="h-4 w-4 text-muted-foreground" />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] uppercase font-bold text-zinc-400">Link demo / xem trước</p>
-                                            <p className="text-sm font-bold text-zinc-900">Xem ảnh demo trước khi nhận file gốc</p>
+                                            <p className="text-xs text-muted-foreground">Link demo / xem trước</p>
+                                            <p className="text-sm font-medium">Xem ảnh demo trước khi nhận file gốc</p>
                                         </div>
                                     </div>
-                                    <Button asChild variant="outline" size="sm" className="font-bold text-xs">
+                                    <Button asChild variant="outline" size="sm">
                                         <a href={(order as any).demo_link} target="_blank" rel="noopener noreferrer">Xem demo</a>
                                     </Button>
                                 </CardContent>
                             </Card>
                         )}
 
-                        {/* Tracking / Shipping */}
-                        {(order as any).metadata?.tracking_number && (
-                            <Card className="border-zinc-200 shadow-sm">
-                                <CardContent className="p-4 flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                            <Truck className="h-5 w-5 text-zinc-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] uppercase font-bold text-zinc-400">Mã vận đơn</p>
-                                            <p className="text-sm font-bold text-zinc-900 font-mono">{(order as any).metadata.tracking_number}</p>
-                                        </div>
-                                    </div>
-                                    {(order as any).metadata?.tracking_url && (
-                                        <Button asChild variant="outline" size="sm" className="font-bold text-xs">
-                                            <a href={(order as any).metadata.tracking_url} target="_blank" rel="noopener noreferrer">Theo dõi</a>
-                                        </Button>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        )}
-
                         {order.notes && (
-                            <Card className="border-zinc-200 shadow-sm">
+                            <Card>
                                 <CardContent className="p-4 flex gap-3">
-                                    <FileText className="h-4 w-4 text-zinc-400 shrink-0 mt-0.5" />
+                                    <FileText className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                                     <div>
-                                        <p className="text-[10px] uppercase font-bold text-zinc-400 mb-1">Ghi chú</p>
-                                        <p className="text-sm text-zinc-600 leading-relaxed">{order.notes}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">Ghi chú</p>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{order.notes}</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -360,90 +327,93 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
 
                     <div className="lg:col-span-2 space-y-6">
                         {/* QR Payment */}
-                        <Card className="bg-zinc-900 text-white border-none shadow-lg overflow-hidden">
-                            <CardHeader className="pb-3 px-5">
-                                <CardTitle className="text-xs font-bold text-zinc-400 flex items-center justify-between uppercase tracking-wider">
-                                    <span className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> Thanh toán</span>
-                                    {isChecking && <RefreshCw className="h-3 w-3 animate-spin" />}
+                        <Card>
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium flex items-center justify-between">
+                                    <span className="flex items-center gap-1.5"><CreditCard className="h-4 w-4" /> Thanh toán</span>
+                                    {isChecking && <RefreshCw className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="px-5 pb-5 space-y-5 text-center">
+                            <CardContent className="space-y-5 text-center">
                                 {isPaid ? (
                                     <div className="py-6 space-y-3">
-                                        <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mx-auto">
-                                            <CheckCircle className="h-8 w-8 text-zinc-900" />
+                                        <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                                            <CheckCircle2 className="h-8 w-8 text-green-600" />
                                         </div>
-                                        <p className="text-base font-bold text-white">Đã thanh toán 100%</p>
-                                        <p className="text-[11px] text-zinc-400">Cảm ơn bạn đã thanh toán.</p>
+                                        <p className="text-base font-semibold">Đã thanh toán 100%</p>
+                                        <p className="text-xs text-muted-foreground">Cảm ơn bạn đã thanh toán.</p>
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="bg-white p-5 rounded-xl inline-block shadow-md">
+                                        <div className="bg-muted/30 p-4 rounded-xl inline-block border">
                                             <img
                                                 src={qrUrl}
                                                 alt="Payment QR"
-                                                className="w-72 h-72 object-contain"
+                                                className="w-56 h-56 object-contain"
                                             />
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[11px] text-zinc-400">Quét mã VietQR để thanh toán</p>
-                                            <div className="text-2xl font-bold text-white tabular-nums">{formatCurrency(balance)}</div>
-                                            <p className="text-[10px] text-zinc-500 font-mono bg-white/5 py-1.5 px-3 rounded-md inline-block mt-1">
+                                            <p className="text-xs text-muted-foreground">Quét mã VietQR để thanh toán</p>
+                                            <div className="text-2xl font-semibold tabular-nums">{formatCurrency(balance)}</div>
+                                            <p className="text-xs text-muted-foreground font-mono bg-muted py-1.5 px-3 rounded-md inline-block mt-1">
                                                 Nội dung: {order.order_number}
                                             </p>
                                         </div>
 
-                                        <div className="text-left space-y-2 text-[11px] bg-white/5 rounded-lg p-3 border border-white/10">
+                                        <div className="text-left space-y-2 text-xs bg-muted/30 rounded-lg p-3 border">
                                             <div className="flex justify-between">
-                                                <span className="text-zinc-500">Ngân hàng</span>
-                                                <span className="font-bold text-white">{BANK_ID}</span>
+                                                <span className="text-muted-foreground">Ngân hàng</span>
+                                                <span className="font-medium">{BANK_ID}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-zinc-500">Số tài khoản</span>
-                                                <span className="font-bold text-white font-mono">{ACCOUNT_NO}</span>
+                                                <span className="text-muted-foreground">Số tài khoản</span>
+                                                <span className="font-medium font-mono">{ACCOUNT_NO}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-zinc-500">Chủ TK</span>
-                                                <span className="font-bold text-white">{ACCOUNT_NAME}</span>
+                                                <span className="text-muted-foreground">Chủ TK</span>
+                                                <span className="font-medium">{ACCOUNT_NAME}</span>
                                             </div>
                                         </div>
 
                                         <Button
                                             onClick={manualCheck}
                                             disabled={isChecking}
-                                            className="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold h-9 gap-1.5 border border-white/10"
+                                            variant="outline"
+                                            className="w-full"
+                                            size="sm"
                                         >
-                                            {isChecking ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                                            {isChecking ? <RefreshCw className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
                                             Kiểm tra thanh toán
                                         </Button>
 
-                                        <p className="text-[9px] text-zinc-600 italic">
+                                        <p className="text-[10px] text-muted-foreground">
                                             Hệ thống tự động xác nhận sau 1-3 phút nhận tiền.
                                         </p>
                                     </>
                                 )}
 
-                                <div className="pt-3 border-t border-white/10 space-y-2">
+                                <Separator />
+                                <div className="space-y-2">
                                     <div className="flex justify-between items-center text-xs">
-                                        <span className="text-zinc-500">Đã trả:</span>
-                                        <span className="font-bold">{formatCurrency(order.paid_amount || 0)}</span>
+                                        <span className="text-muted-foreground">Đã trả:</span>
+                                        <span className="font-medium">{formatCurrency(order.paid_amount || 0)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm font-bold">
-                                        <span className="text-zinc-400">Còn lại:</span>
-                                        <span className="text-white">{formatCurrency(balance)}</span>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-muted-foreground">Còn lại:</span>
+                                        <span className="font-semibold">{formatCurrency(balance)}</span>
                                     </div>
                                 </div>
                             </CardContent>
                         </Card>
 
                         {/* Contact */}
-                        <Card className="border-zinc-200 shadow-sm">
-                            <CardContent className="p-5 space-y-3 text-center">
-                                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Hỗ trợ & Liên hệ</p>
-                                <p className="text-lg font-bold text-zinc-900">
+                        <Card>
+                            <CardContent className="p-5 space-y-2 text-center">
+                                <p className="text-xs text-muted-foreground">Hỗ trợ & Liên hệ</p>
+                                <p className="text-lg font-semibold">
                                     {brandConfig?.phone || '0826.98.2222'}
                                 </p>
-                                <p className="text-[11px] text-zinc-400">
+                                <p className="text-xs text-muted-foreground">
                                     Liên hệ hotline nếu bạn cần hỗ trợ về đơn hàng
                                 </p>
                             </CardContent>
@@ -452,8 +422,8 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                 </div>
             </main>
 
-            <footer className="border-t border-zinc-200 mt-12 bg-white">
-                <div className="max-w-5xl mx-auto px-4 py-6 text-center text-[10px] text-zinc-400">
+            <footer className="border-t mt-12 bg-background">
+                <div className="max-w-4xl mx-auto px-4 py-6 text-center text-xs text-muted-foreground">
                     <p>&copy; {new Date().getFullYear()} {brandConfig?.brand_name || 'Tulie Studio'}. All rights reserved.</p>
                 </div>
             </footer>

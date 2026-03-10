@@ -163,6 +163,7 @@ export function ContactForm({ customerId, contact, open, onOpenChange, onSuccess
                             <PopoverContent className="w-auto p-0" align="start">
                                 <Calendar
                                     mode="single"
+                                    captionLayout="dropdown"
                                     locale={vi}
                                     selected={formData.birthday ? new Date(formData.birthday) : undefined}
                                     onSelect={(date) => setFormData(prev => ({ ...prev, birthday: date ? format(date, "yyyy-MM-dd") : "" }))}

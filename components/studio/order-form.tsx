@@ -232,6 +232,7 @@ export function RetailOrderForm() {
                                         <PopoverContent className="w-auto p-0" align="start">
                                             <Calendar
                                                 mode="single"
+                                                captionLayout="dropdown"
                                                 locale={vi}
                                                 selected={formData.order_date ? new Date(formData.order_date) : undefined}
                                                 onSelect={(date) => {
@@ -362,6 +363,7 @@ export function RetailOrderForm() {
                                         <PopoverContent className="w-auto p-0" align="start">
                                             <Calendar
                                                 mode="single"
+                                                captionLayout="dropdown"
                                                 locale={vi}
                                                 selected={formData.delivery_date ? new Date(formData.delivery_date) : undefined}
                                                 onSelect={(date) => {

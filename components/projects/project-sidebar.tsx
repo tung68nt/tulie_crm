@@ -185,6 +185,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                                 <PopoverContent className="w-auto p-0" align="start">
                                     <ShadcnCalendar
                                         mode="single"
+                                        captionLayout="dropdown"
                                         locale={vi}
                                         selected={startDate ? new Date(startDate) : undefined}
                                         onSelect={(date) => setStartDate(date ? format(date, "yyyy-MM-dd") : "")}
@@ -210,6 +211,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                                 <PopoverContent className="w-auto p-0" align="start">
                                     <ShadcnCalendar
                                         mode="single"
+                                        captionLayout="dropdown"
                                         locale={vi}
                                         selected={endDate ? new Date(endDate) : undefined}
                                         onSelect={(date) => setEndDate(date ? format(date, "yyyy-MM-dd") : "")}
