@@ -112,28 +112,28 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
+                    <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-zinc-100 h-10 w-10">
                         <Link href="/quotations">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
                     <div>
-                        <h1 className="text-3xl font-semibold">Tạo báo giá mới</h1>
-                        <p className="text-muted-foreground">
-                            Tạo báo giá đa dịch vụ (Thiết kế, In ấn, Website...)
+                        <h1 className="text-3xl font-bold tracking-tight text-zinc-950">Tạo báo giá mới</h1>
+                        <p className="text-[14px] text-muted-foreground">
+                            Khởi tạo hồ sơ báo giá mới đa dịch vụ
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => setShowPreview(true)} disabled={isLoading}>
+                    <Button variant="outline" onClick={() => setShowPreview(true)} disabled={isLoading} className="rounded-xl font-bold h-10">
                         <Eye className="mr-2 h-4 w-4" />
                         Xem trước PDF
                     </Button>
-                    <Button variant="outline" onClick={() => handleSave(false)} disabled={isLoading}>
+                    <Button variant="outline" onClick={() => handleSave(false)} disabled={isLoading} className="rounded-xl font-bold h-10">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                         Lưu nháp
                     </Button>
-                    <Button onClick={() => handleSave(true)} disabled={isLoading}>
+                    <Button onClick={() => handleSave(true)} disabled={isLoading} className="px-6 h-10 font-bold rounded-xl">
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                         Lưu & Gửi
                     </Button>

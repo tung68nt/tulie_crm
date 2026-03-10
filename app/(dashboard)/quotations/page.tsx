@@ -20,17 +20,17 @@ export default async function QuotationsPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <FileText className="h-6 w-6 text-primary" />
+                    <div className="h-10 w-10 rounded-xl bg-zinc-100 flex items-center justify-center">
+                        <FileText className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-semibold">Báo giá</h1>
-                        <p className="text-muted-foreground font-normal">
+                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight">Báo giá</h1>
+                        <p className="text-[14px] text-muted-foreground">
                             Quản lý và theo dõi các báo giá gửi cho khách hàng
                         </p>
                     </div>
                 </div>
-                <Button asChild>
+                <Button asChild className="px-6 h-10 font-bold">
                     <Link href="/quotations/new">
                         <Plus className="mr-2 h-4 w-4" />
                         Tạo báo giá
