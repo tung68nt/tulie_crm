@@ -30,22 +30,22 @@ export default async function CustomersPage() {
                         <Users className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-black text-zinc-950 tracking-tighter">Khách hàng Agency</h1>
-                        <p className="text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-60">
+                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight">Khách hàng Agency</h1>
+                        <p className="text-[14px] text-muted-foreground">
                             Quản lý danh sách khách hàng và thông tin liên hệ cho Agency
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-200">
+                    <Button variant="outline" size="sm">
                         <Upload className="mr-2 h-4 w-4" />
                         Import
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-xl border-zinc-200">
+                    <Button variant="outline" size="sm">
                         <Download className="mr-2 h-4 w-4" />
                         Export
                     </Button>
-                    <Button asChild className="rounded-xl bg-zinc-950 hover:bg-zinc-800 transition-all font-black uppercase text-[11px] tracking-widest px-6 h-10">
+                    <Button asChild className="px-6 h-10 font-bold">
                         <Link href="/customers/new">
                             <Plus className="mr-2 h-4 w-4" />
                             Thêm khách hàng

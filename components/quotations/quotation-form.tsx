@@ -1152,80 +1152,74 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-20 mt-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border-zinc-200 bg-white/95 backdrop-blur-sm rounded-[32px] overflow-hidden group border-2">
-                    <div className="p-6 border-b border-zinc-100/80 bg-zinc-50/50">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-2xl bg-white border border-zinc-200 shadow-sm flex items-center justify-center">
-                                <Wallet className="w-5 h-5 text-zinc-900" />
-                            </div>
-                            <div className="space-y-0.5">
-                                <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Tổng kết & Hoàn tất báo giá</h3>
-                                <p className="text-[11px] font-medium text-zinc-400">Quotation Summary & Confirmation</p>
-                            </div>
-                        </div>
-                    </div>
-                    <CardContent className="px-8 py-8">
-                        <div className="flex flex-col lg:flex-row justify-between items-center gap-12">
-                            {/* Detailed Stats */}
-                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-12 w-full">
-                                {/* Subtotal */}
-                                <div className="space-y-1.5 group/stat">
-                                    <p className="text-[10px] font-bold text-zinc-400">Tạm tính</p>
-                                    <div className="flex items-baseline gap-1.5">
-                                        <span className="text-2xl font-bold text-zinc-950 tracking-tight">{formatNumber(subtotal)}</span>
-                                        <span className="text-sm font-bold text-zinc-900">đ</span>
+                <Card className="sticky bottom-6 z-10 mt-12 shadow-xl border-zinc-200 bg-white rounded-xl overflow-hidden">
+                    <CardHeader className="py-4 px-6 border-b border-zinc-50">
+                        <CardTitle className="text-sm font-bold text-zinc-950">Tổng kết & Hoàn tất</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
+                                <div className="space-y-1">
+                                    <p className="text-[11px] text-zinc-400">Tạm tính</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-lg font-bold text-zinc-950">{formatNumber(subtotal)}</span>
+                                        <span className="text-xs font-bold text-zinc-950">đ</span>
                                     </div>
                                 </div>
 
-                                {/* VAT */}
-                                <div className="space-y-1.5 group/stat">
-                                    <p className="text-[10px] font-bold text-zinc-400">Thuế VAT</p>
-                                    <div className="flex items-center gap-4">
+                                <div className="space-y-1">
+                                    <p className="text-[11px] text-zinc-400">Thuế VAT</p>
+                                    <div className="flex items-center gap-3">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-20 h-9 font-bold border-zinc-200 rounded-xl bg-white hover:bg-zinc-50 transition-colors">
+                                            <SelectTrigger className="w-16 h-8 text-[11px] font-bold border-zinc-200">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-xl border-zinc-200 shadow-xl">
-                                                <SelectItem value="0" className="text-xs font-semibold">0%</SelectItem>
-                                                <SelectItem value="8" className="text-xs font-semibold">8%</SelectItem>
-                                                <SelectItem value="10" className="text-xs font-semibold">10%</SelectItem>
+                                            <SelectContent>
+                                                <SelectItem value="0">0%</SelectItem>
+                                                <SelectItem value="8">8%</SelectItem>
+                                                <SelectItem value="10">10%</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <div className="flex items-baseline gap-1.5">
-                                            <span className="text-xl font-bold text-zinc-900 tracking-tight">{formatNumber(vatAmount)}</span>
-                                            <span className="text-xs font-bold text-zinc-600">đ</span>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-sm font-bold text-zinc-950">{formatNumber(vatAmount)}</span>
+                                            <span className="text-[10px] font-bold text-zinc-950">đ</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Total Amount */}
-                                <div className="space-y-1 sm:pl-10 sm:border-l border-zinc-100">
-                                    <p className="text-[10px] font-bold text-zinc-500">Tổng đầu tư (Đã bao gồm VAT)</p>
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-4xl font-bold text-zinc-950 tracking-tighter">{formatNumber(totalAmount)}</span>
-                                        <span className="text-xl font-bold text-zinc-900">đ</span>
+                                <div className="space-y-1">
+                                    <p className="text-[11px] text-zinc-400">Tổng cộng</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-bold text-zinc-950">{formatNumber(totalAmount)}</span>
+                                        <span className="text-sm font-bold text-zinc-950 underline decoration-2">đ</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0">
+                            <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
                                 <Button
-                                    variant="outline"
-                                    onClick={() => handleSave(false)}
-                                    disabled={isLoading}
-                                    className="h-14 px-8 rounded-2xl font-bold border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300 transition-all active:scale-[0.98] text-zinc-600"
+                                    variant="ghost"
+                                    onClick={() => router.back()}
+                                    className="text-zinc-500 hover:text-zinc-900"
                                 >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
-                                    Lưu Dự thảo
+                                    Hủy
                                 </Button>
                                 <Button
+                                    variant="outline"
                                     onClick={() => handleSave(true)}
                                     disabled={isLoading}
-                                    className="h-14 px-12 rounded-2xl font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-2xl shadow-zinc-950/20 transition-all active:scale-[0.98] group"
+                                    className="border-zinc-200 font-bold"
                                 >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
-                                    {quotation?.status === 'sent' || quotation?.status === 'accepted' ? 'Cập nhật & Gửi lại' : 'Lưu & Gửi báo giá'}
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                                    Lưu & Gửi
+                                </Button>
+                                <Button
+                                    onClick={() => handleSave(false)}
+                                    disabled={isLoading}
+                                    className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold"
+                                >
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                                    Lưu thay đổi
                                 </Button>
                             </div>
                         </div>
@@ -1268,91 +1262,57 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             autoFocus
                         />
                     </div>
-                    <DialogFooter className="flex sm:justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => setIsAddSectionOpen(false)}
-                        >
-                            Hủy
-                        </Button>
-                        <Button
-                            type="button"
-                            onClick={handleConfirmAddSection}
-                        >
-                            Thêm ngay
-                        </Button>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsAddSectionOpen(false)}>Hủy</Button>
+                        <Button onClick={handleConfirmAddSection}>Thêm mới</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
+            {/* Dialog Nhập Proposal JSON */}
             <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
-                <DialogContent className="max-w-2xl sm:max-w-3xl">
+                <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2">
-                            <FileJson className="h-5 w-5 text-primary" />
-                            Nội dung hồ sơ đề xuất (JSON)
-                        </DialogTitle>
+                        <DialogTitle>Nhập nội dung Proposal</DialogTitle>
                         <DialogDescription>
-                            Dán mã JSON để nhập nhanh hoặc copy nội dung phía dưới để lưu trữ/sử dụng cho báo giá khác.
+                            Dán nội dung JSON đã copy để nhập nhanh các phần thông tin proposal.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium">Mã JSON nội dung:</label>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(importText)
-                                        toast.success('Đã copy nội dung')
-                                    }}
-                                >
-                                    <Copy className="h-3 w-3 mr-1" /> Copy
-                                </Button>
-                            </div>
-                            <Textarea
-                                placeholder='{ "introduction": "...", "scope_of_work": "...", ... }'
-                                value={importText}
-                                onChange={(e) => setImportText(e.target.value)}
-                                className="min-h-[300px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
-                            />
-                        </div>
-                        <div className="bg-zinc-50 border border-zinc-200 p-3 rounded-lg text-[12px] text-zinc-700">
-                            <p className="font-bold mb-1">Ví dụ định dạng:</p>
-                            <code className="block whitespace-pre opacity-80">
-                                {'{\n  "introduction": "Nội dung giới thiệu...",\n  "scope_of_work": "Chi tiết phạm vi...",\n  ...\n}'}
-                            </code>
-                        </div>
+                    <div className="py-4">
+                        <Textarea
+                            placeholder="Dán mã JSON tại đây..."
+                            value={importText}
+                            onChange={(e) => setImportText(e.target.value)}
+                            className="min-h-[300px] font-mono text-xs"
+                        />
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
-                        <Button onClick={handleImportProposal} disabled={!importText.trim()}>Xác nhận nhập</Button>
+                        <Button onClick={handleImportProposal}>Nhập nội dung</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
+            {/* Dialog Nhập toàn bộ Quotation JSON */}
             <Dialog open={isImportJsonOpen} onOpenChange={setIsImportJsonOpen}>
-                <DialogContent className="max-w-2xl sm:max-w-3xl">
+                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <FileJson className="h-5 w-5 text-primary" />
-                            Toàn bộ báo giá (JSON)
+                            <FileJson className="h-5 w-5 text-blue-500" />
+                            Nhập toàn bộ Báo giá từ JSON
                         </DialogTitle>
                         <DialogDescription>
-                            Chỉnh sửa JSON phía dưới và bấm "Đồng bộ" để cập nhật form, hoặc copy để lưu trữ.
+                            Đồng bộ nhanh khách hàng, hạng mục, các điều khoản và thông tin ngân hàng.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto py-4">
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <label className="text-sm font-medium">Dữ liệu JSON:</label>
+                                <Label className="text-xs font-bold">Dữ liệu JSON</Label>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-7 text-xs"
+                                    className="h-7 text-[10px] uppercase tracking-wider font-bold"
                                     onClick={() => {
                                         navigator.clipboard.writeText(importJsonText)
                                         toast.success('Đã copy JSON')
@@ -1384,6 +1344,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div >
+        </div>
     )
 }

@@ -123,16 +123,16 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             <Button
                                 variant="ghost"
                                 className={cn(
-                                    'w-full justify-start gap-3 h-10 text-[13px] transition-all duration-200 rounded-xl',
+                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 rounded-xl',
                                     pathname === '/dashboard' ? 'bg-zinc-950 text-white font-black' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
                                 <LayoutGrid className={cn(
-                                    "h-5 w-5 shrink-0 transition-colors",
+                                    "h-4 w-4 shrink-0 transition-colors",
                                     pathname === '/dashboard' ? "text-white" : "text-zinc-400 group-hover:text-zinc-900"
                                 )} />
-                                {!isCollapsed && <span className="truncate uppercase tracking-widest font-black text-[10px]">Dashboard</span>}
+                                {!isCollapsed && <span className="truncate font-medium">Dashboard</span>}
                             </Button>
                         </Link>
                     </div>
