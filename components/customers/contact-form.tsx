@@ -17,6 +17,11 @@ import { Contact } from '@/types'
 import { createContact, updateContact } from '@/lib/supabase/services/contact-service'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import { cn } from '@/lib/utils'
 
 interface ContactFormProps {
     customerId: string
@@ -143,13 +148,28 @@ export function ContactForm({ customerId, contact, open, onOpenChange, onSuccess
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="birthday">Ngày sinh</Label>
-                        <Input
-                            id="birthday"
-                            name="birthday"
-                            type="date"
-                            value={formData.birthday}
-                            onChange={handleChange}
-                        />
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !formData.birthday && "text-muted-foreground"
+                                    )}
+                                >
+                                    {formData.birthday ? format(new Date(formData.birthday), "dd/MM/yyyy") : <span>Chọn ngày sinh</span>}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    mode="single"
+                                    locale={vi}
+                                    selected={formData.birthday ? new Date(formData.birthday) : undefined}
+                                    onSelect={(date) => setFormData(prev => ({ ...prev, birthday: date ? format(date, "yyyy-MM-dd") : "" }))}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
                     </div>
                     <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                         <Checkbox

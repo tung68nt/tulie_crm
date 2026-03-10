@@ -633,18 +633,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <CardTitle>Nội dung Proposal</CardTitle>
                                     <CardDescription className="mt-1">Mô tả chi tiết giải pháp, phạm vi, đội ngũ cho khách hàng</CardDescription>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setImportText(JSON.stringify(proposalContent, null, 2))
-                                        setIsImportProposalOpen(true)
-                                    }}
-                                    className="gap-2"
-                                >
-                                    <FileJson className="h-4 w-4" /> JSON Nội dung
-                                </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Proposal Contents: 8 items in a 2x4 grid */}
@@ -805,7 +793,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         </Button>
                                     </div>
                                     {(proposalContent?.custom_sections || []).map((section: any, idx: number) => (
-                                        <div key={idx} className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                                        <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3 bg-white">
                                             <div className="flex items-center gap-2">
                                                 <Input
                                                     placeholder="Tên mục (VD: Phụ lục A, Tài liệu tham khảo...)"
@@ -899,7 +887,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-0 overflow-x-auto p-4 space-y-8 bg-slate-50/50">
+                        <CardContent className="p-0 overflow-x-auto p-4 space-y-8 bg-white">
                             {sectionGroups.length === 0 ? (
                                 <div className="text-center py-12 border-2 border-dashed rounded-xl bg-white">
                                     <p className="text-muted-foreground mb-4">Chưa có hạng mục nào cho báo giá này</p>
@@ -938,7 +926,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                                         <div className="w-full overflow-x-auto pb-4">
                                             <Table className="min-w-[900px]">
-                                                <TableHeader className="bg-zinc-50">
+                                                <TableHeader className="bg-white">
                                                     <TableRow className="hover:bg-transparent">
                                                         <TableHead className="w-[50px]"></TableHead>
                                                         <TableHead className="pl-0 min-w-[250px]">Sản phẩm / Dịch vụ</TableHead>
@@ -1103,7 +1091,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             </Table>
                                         </div>
 
-                                        <div className="bg-zinc-50/50 p-2 border-t">
+                                        <div className="bg-white p-4 border-t border-slate-200">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
@@ -1332,7 +1320,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <FileJson className="h-5 w-5 text-blue-500" />
+                            <FileJson className="h-5 w-5 text-zinc-900" />
                             Nhập toàn bộ Báo giá từ JSON
                         </DialogTitle>
                         <DialogDescription>
@@ -1359,10 +1347,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 placeholder='{ "title": "...", "items": [...], ... }'
                                 value={importJsonText}
                                 onChange={(e) => setImportJsonText(e.target.value)}
-                                className="min-h-[350px] font-mono text-xs p-4 bg-muted/50 focus:bg-white transition-colors"
+                                className="min-h-[350px] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors"
                             />
                         </div>
-                        <div className="bg-zinc-50 border border-zinc-200 p-3 rounded-lg text-[12px] text-zinc-700">
+                        <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
                                 {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ],\n  "proposal_content": { ... }\n}'}

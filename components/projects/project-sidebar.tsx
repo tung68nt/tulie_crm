@@ -7,6 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar as ShadcnCalendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
+import { cn } from '@/lib/utils'
 import {
     Select,
     SelectContent,
@@ -21,7 +26,6 @@ import { formatDate } from '@/lib/utils/format'
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/status'
 import { AcceptancePDFButton } from '@/components/projects/acceptance-pdf-button'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 
 interface ProjectSidebarProps {
     project: any
@@ -166,21 +170,53 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                     <div className="grid grid-cols-2 gap-3">
                         <div>
                             <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Ngày Khởi tạo</label>
-                            <Input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="text-sm"
-                            />
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal text-sm h-9",
+                                            !startDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        {startDate ? format(new Date(startDate), "dd/MM/yyyy") : <span>Chọn ngày</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <ShadcnCalendar
+                                        mode="single"
+                                        locale={vi}
+                                        selected={startDate ? new Date(startDate) : undefined}
+                                        onSelect={(date) => setStartDate(date ? format(date, "yyyy-MM-dd") : "")}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </div>
                         <div>
                             <label className="text-xs text-muted-foreground mb-1.5 block font-medium">Ngày Đóng Dự án</label>
-                            <Input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="text-sm"
-                            />
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className={cn(
+                                            "w-full justify-start text-left font-normal text-sm h-9",
+                                            !endDate && "text-muted-foreground"
+                                        )}
+                                    >
+                                        {endDate ? format(new Date(endDate), "dd/MM/yyyy") : <span>Chọn ngày</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <ShadcnCalendar
+                                        mode="single"
+                                        locale={vi}
+                                        selected={endDate ? new Date(endDate) : undefined}
+                                        onSelect={(date) => setEndDate(date ? format(date, "yyyy-MM-dd") : "")}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </div>
 

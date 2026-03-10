@@ -40,6 +40,19 @@ export async function generateRetailOrderId(amount: number, orderDate?: string):
     }
 }
 
+// Get the next STT number for order ID preview
+export async function getNextStt(): Promise<number> {
+    const supabase = await createClient()
+    const { data: maxSttData } = await supabase
+        .from('retail_orders')
+        .select('stt')
+        .order('stt', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+    return maxSttData?.stt ? maxSttData.stt + 1 : 810
+}
+
 
 export async function getRetailOrders() {
     try {

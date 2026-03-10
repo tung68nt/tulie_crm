@@ -39,8 +39,11 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!formData.customer_id || !formData.title) {
-            toast.error('Vui lòng nhập đầy đủ thông tin bắt buộc')
+        const missing: string[] = []
+        if (!formData.title) missing.push('Tên cơ hội')
+        if (!formData.customer_id) missing.push('Khách hàng')
+        if (missing.length > 0) {
+            toast.error(`Vui lòng điền các trường bắt buộc: ${missing.join(', ')}`)
             return
         }
 
@@ -57,8 +60,8 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
             toast.success('Đã tạo cơ hội mới thành công')
             router.push('/deals')
             router.refresh()
-        } catch (error) {
-            toast.error('Có lỗi xảy ra khi tạo cơ hội')
+        } catch (error: any) {
+            toast.error(error.message || 'Có lỗi xảy ra khi tạo cơ hội')
         } finally {
             setIsLoading(false)
         }

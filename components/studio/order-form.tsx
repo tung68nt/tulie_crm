@@ -8,11 +8,15 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
+import { createRetailOrder, getNextStt } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
-import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus } from 'lucide-react'
+import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { getProducts } from '@/lib/supabase/services/product-service'
@@ -100,6 +104,11 @@ export function RetailOrderForm() {
     }
 
     const [orderIdPreview, setOrderIdPreview] = useState('DH_YY_MMDD_STT_Value')
+    const [nextStt, setNextStt] = useState<number | null>(null)
+
+    useEffect(() => {
+        getNextStt().then(stt => setNextStt(stt))
+    }, [])
 
     useEffect(() => {
         const dateStr = formData.order_date || today
@@ -108,33 +117,41 @@ export function RetailOrderForm() {
         const mm = (d.getMonth() + 1).toString().padStart(2, '0')
         const dd = d.getDate().toString().padStart(2, '0')
         const priceK = Math.floor((formData.total_amount || 0) / 1000)
-        setOrderIdPreview(`DH_${yy}_${mm}${dd}_XXX_${priceK}`)
-    }, [formData.total_amount, formData.order_date, today])
+        const sttStr = nextStt !== null ? String(nextStt) : 'XXX'
+        setOrderIdPreview(`DH_${yy}_${mm}${dd}_${sttStr}_${priceK}`)
+    }, [formData.total_amount, formData.order_date, today, nextStt])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!formData.customer_name) {
-            toast.error('Vui lòng nhập tên khách hàng')
+            toast.error('Vui lòng nhập họ tên / đơn vị khách hàng')
+            return
+        }
+        if (!formData.order_date) {
+            toast.error('Vui lòng chọn ngày lên đơn')
             return
         }
         if (selectedItems.length === 0) {
-            toast.error('Vui lòng chọn ít nhất một sản phẩm')
+            toast.error('Vui lòng chọn ít nhất một sản phẩm hoặc dịch vụ')
             return
         }
 
         setIsLoading(true)
         try {
+            // Strip non-DB fields before sending
+            const { use_deposit, needs_vat, ...submitData } = formData
             await createRetailOrder({
-                ...formData,
+                ...submitData,
+                needs_vat: needs_vat || false,
                 paid_amount: 0,
                 items: selectedItems
             } as any)
             toast.success('Đã tạo đơn hàng mới thành công')
             router.push('/studio')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error('Create order error:', error)
-            toast.error('Có lỗi xảy ra khi tạo đơn hàng')
+            toast.error(error.message || 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng kiểm tra lại quá trình nhập dữ liệu.')
         } finally {
             setIsLoading(false)
         }
@@ -198,15 +215,32 @@ export function RetailOrderForm() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="order_date" className="flex items-center gap-2 text-sm font-medium">
-                                        <CalendarIcon className="h-4 w-4" /> Ngày lên đơn
+                                        <CalendarIcon className="h-4 w-4" /> Ngày lên đơn *
                                     </Label>
-                                    <Input
-                                        id="order_date"
-                                        type="date"
-                                        value={formData.order_date}
-                                        onChange={(e) => setFormData({ ...formData, order_date: e.target.value })}
-                                        className="h-9"
-                                    />
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal h-9",
+                                                    !formData.order_date && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {formData.order_date ? format(new Date(formData.order_date), "dd/MM/yyyy") : <span>Chọn ngày</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                locale={vi}
+                                                selected={formData.order_date ? new Date(formData.order_date) : undefined}
+                                                onSelect={(date) => {
+                                                    setFormData({ ...formData, order_date: date ? format(date, "yyyy-MM-dd") : "" })
+                                                }}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
                         </CardContent>
@@ -313,13 +347,30 @@ export function RetailOrderForm() {
                                     <Label htmlFor="delivery_date" className="text-sm font-medium flex items-center gap-2">
                                         <Clock className="h-4 w-4" /> Hẹn trả file
                                     </Label>
-                                    <Input
-                                        id="delivery_date"
-                                        type="date"
-                                        value={formData.delivery_date}
-                                        onChange={(e) => setFormData({ ...formData, delivery_date: e.target.value })}
-                                        className="h-9"
-                                    />
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn(
+                                                    "w-full justify-start text-left font-normal h-9",
+                                                    !formData.delivery_date && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {formData.delivery_date ? format(new Date(formData.delivery_date), "dd/MM/yyyy") : <span>Chọn ngày</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                locale={vi}
+                                                selected={formData.delivery_date ? new Date(formData.delivery_date) : undefined}
+                                                onSelect={(date) => {
+                                                    setFormData({ ...formData, delivery_date: date ? format(date, "yyyy-MM-dd") : "" })
+                                                }}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                             </div>
 
@@ -391,7 +442,21 @@ export function RetailOrderForm() {
                                 </div>
                                 <div className="text-right">
                                     <span className="text-muted-foreground text-xs font-medium">Mã đơn</span>
-                                    <p className="font-mono text-sm font-bold tracking-tight">{orderIdPreview}</p>
+                                    <div className="flex items-center gap-1.5 justify-end">
+                                        <p className="font-mono text-sm font-bold tracking-tight">{orderIdPreview}</p>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(orderIdPreview)
+                                                toast.success('Đã copy mã đơn: ' + orderIdPreview)
+                                            }}
+                                        >
+                                            <Copy className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
