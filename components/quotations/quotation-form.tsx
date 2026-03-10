@@ -31,7 +31,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
-import { formatCurrency } from '@/lib/utils/format'
+import { formatCurrency, formatNumber } from '@/lib/utils/format'
 import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload } from 'lucide-react'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
@@ -1154,21 +1154,21 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 {/* Summary - Moved to bottom */}
                 <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.2)] border-zinc-200 bg-white shadow-xl rounded-2xl overflow-hidden group">
                     <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5">
-                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
+                        <CardTitle className="text-[10px] font-bold text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 px-8 pb-8 pt-6">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-10">
                             <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
                                 <div className="space-y-1.5">
-                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tạm tính</p>
+                                    <p className="text-[9px] font-bold">Tạm tính</p>
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-xl font-bold text-zinc-950 tracking-tighter">{formatNumber(subtotal)}</span>
-                                        <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
+                                        <span className="text-[10px] font-bold text-zinc-950">đ</span>
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Thuế VAT</p>
+                                    <p className="text-[9px] font-bold text-zinc-400">Thuế VAT</p>
                                     <div className="flex items-center gap-4">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
                                             <SelectTrigger className="w-20 h-9 font-bold border-zinc-200 rounded-xl bg-zinc-50/50">
@@ -1182,16 +1182,16 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         </Select>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-[15px] font-bold text-zinc-950 tracking-tight">{formatNumber(vatAmount)}</span>
-                                            <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
+                                            <span className="text-[10px] font-bold text-zinc-950">đ</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-1 min-w-[200px] border-l border-zinc-100 pl-10">
-                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tổng đầu tư</p>
+                                    <p className="text-[9px] font-bold text-zinc-400">Tổng đầu tư</p>
                                     <div className="flex items-baseline gap-1.5">
                                         <span className="text-4xl font-black text-zinc-950 tracking-tighter">{formatNumber(totalAmount)}</span>
-                                        <span className="text-lg font-bold text-zinc-950 uppercase">đ</span>
+                                        <span className="text-lg font-bold text-zinc-950">đ</span>
                                     </div>
                                 </div>
                             </div>
@@ -1201,7 +1201,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     variant="outline"
                                     onClick={() => handleSave(false)}
                                     disabled={isLoading}
-                                    className="h-14 px-8 rounded-xl font-bold uppercase text-[10px] tracking-widest border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
+                                    className="h-14 px-8 rounded-xl font-bold border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                                     Lưu Dự thảo
@@ -1209,7 +1209,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <Button
                                     onClick={() => handleSave(true)}
                                     disabled={isLoading}
-                                    className="h-14 px-10 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-zinc-950/20 transition-all active:scale-[0.98] group"
+                                    className="h-14 px-10 rounded-xl font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-zinc-950/20 transition-all active:scale-[0.98] group"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
                                     {quotation?.status === 'sent' || quotation?.status === 'accepted' ? 'Cập nhật & Gửi lại' : 'Lưu & Gửi báo giá'}

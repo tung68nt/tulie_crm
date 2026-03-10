@@ -84,7 +84,7 @@ const STATUS_MAP: Record<string, { label: string; color: string }> = {
 
 function StatusBadge({ status }: { status: string }) {
     const s = STATUS_MAP[status] || { label: status, color: 'bg-zinc-100 text-zinc-500 border-zinc-200' }
-    return <Badge className={cn("text-[10px] font-bold uppercase tracking-widest border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
+    return <Badge className={cn("text-[10px] font-bold border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
@@ -161,7 +161,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200 mt-2">
                             <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-emerald-500" : "bg-amber-500")} />
-                            <span className="text-[10px] font-bold text-zinc-600 tracking-widest uppercase">{projectStatusLabel}</span>
+                            <span className="text-[10px] font-bold text-zinc-600">{projectStatusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -181,7 +181,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-bold rounded-2xl px-10 h-12 shadow-2xl transition-all text-[11px] tracking-widest uppercase">
+                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-bold rounded-2xl px-10 h-12 shadow-2xl transition-all text-[11px]">
                                 Cập nhật hồ sơ
                             </Button>
                         </DialogTrigger>
@@ -217,7 +217,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     ].map((stat, i) => (
                         <div key={i} className="bg-white p-6 rounded-[24px] border border-zinc-200 shadow-sm transition-all hover:shadow-md">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">{stat.label}</span>
+                                <span className="text-[10px] font-bold text-zinc-500">{stat.label}</span>
                                 <div className={cn("p-1.5 rounded-lg border border-zinc-100", stat.bgColor)}>
                                     <stat.icon className={cn("w-4 h-4", stat.color)} />
                                 </div>
@@ -227,10 +227,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(' đ', '') : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
-                                    <div className="text-sm font-bold text-zinc-950 uppercase">đ</div>
+                                    <div className="text-sm font-bold text-zinc-950">đ</div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-bold text-zinc-400 mt-1 uppercase tracking-widest">{stat.sub}</div>
+                            <div className="text-[10px] font-bold text-zinc-400 mt-1">{stat.sub}</div>
                         </div>
                     ))}
                 </div>
@@ -253,10 +253,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 </div>
                                 <div className="space-y-0.5">
                                     <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Lịch trình triển khai & Thanh toán</h3>
-                                    <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Project Milestones & Billing</p>
+                                    <p className="text-[11px] font-medium text-zinc-400">Project Milestones & Billing</p>
                                 </div>
                             </div>
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Timeline</Badge>
+                            <Badge variant="outline" className="text-[10px] font-bold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Timeline</Badge>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -286,15 +286,15 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         )}
                                         <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                                             <div className="flex flex-col">
-                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Hạn hoàn thành</span>
+                                                <span className="text-[9px] font-bold text-zinc-400 mb-0.5">Hạn hoàn thành</span>
                                                 <span className="text-[12px] font-bold text-zinc-950">{formatDate(milestone.date)}</span>
                                             </div>
                                             {milestone.amount > 0 && (
                                                 <div className="text-right">
-                                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Giá trị mốc</span>
+                                                    <span className="text-[9px] font-bold text-zinc-400 mb-0.5">Giá trị mốc</span>
                                                     <div className="flex items-baseline justify-end gap-1">
                                                         <span className="text-[13px] font-bold text-zinc-950 tracking-tight">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
-                                                        <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
+                                                        <span className="text-[10px] font-bold text-zinc-950">đ</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -314,10 +314,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </div>
                             <div className="space-y-0.5">
                                 <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Hạng mục & Lộ trình thực hiện</h3>
-                                <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Deliverables & Progress</p>
+                                <p className="text-[11px] font-medium text-zinc-400">Deliverables & Progress</p>
                             </div>
                         </div>
-                        <p className="text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">
+                        <p className="text-[10px] font-bold text-zinc-500 mt-2">
                             {displayItems.length} hạng mục · {completedItems} đã nghiệm thu
                         </p>
                     </div>
@@ -402,7 +402,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-4 h-4 text-zinc-400" />
                                     <div>
-                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Báo giá</p>
+                                        <p className="text-[10px] font-bold text-zinc-500">Báo giá</p>
                                         <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{quotation.quotation_number}</p>
                                     </div>
                                 </div>
@@ -417,7 +417,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                                 <div className="flex items-center gap-3">
                                     <FileSignature className="w-4 h-4 text-zinc-400" />
                                     <div>
-                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hợp đồng</p>
+                                        <p className="text-[10px] font-bold text-zinc-500">Hợp đồng</p>
                                         <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{contract.contract_number}</p>
                                     </div>
                                 </div>
@@ -428,10 +428,10 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
 
                     {/* Amount */}
                     <div className="pt-4 border-t border-zinc-100">
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
+                        <p className="text-[10px] font-bold text-zinc-400 mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-bold text-zinc-950 tracking-tighter">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
-                            <span className="text-sm font-bold text-zinc-950 uppercase">đ</span>
+                            <span className="text-sm font-bold text-zinc-950">đ</span>
                         </div>
                     </div>
 
@@ -461,12 +461,12 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                 {/* Right: Tasks (Todo List) */}
                 <div className="lg:w-3/5 p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                        <p className="text-[10px] font-bold text-zinc-400 flex items-center gap-2">
                             <ListTodo className="w-3.5 h-3.5" />
                             Danh sách công việc
                         </p>
                         {totalTasks > 0 && (
-                            <span className="text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                            <span className="text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
                                 {completedTasks}/{totalTasks}
                             </span>
                         )}
@@ -563,12 +563,12 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                         </div>
                         <div className="space-y-0.5">
                             <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Bộ chứng từ & Hồ sơ dự án</h3>
-                            <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Project Procedures & Docs</p>
+                            <p className="text-[11px] font-medium text-zinc-400">Project Procedures & Docs</p>
                         </div>
                     </div>
                 </div>
                 <div className="hidden sm:block">
-                    <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Full Docs</Badge>
+                    <Badge variant="outline" className="text-[10px] font-bold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Full Docs</Badge>
                 </div>
             </div>
             <div className="p-6">
@@ -652,7 +652,7 @@ function TimelineSection({ timeline }: { timeline: any[] }) {
                     </div>
                     <div className="space-y-0.5">
                         <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Tiến độ triển khai chi tiết</h3>
-                        <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Live Updates & Timeline</p>
+                        <p className="text-[11px] font-medium text-zinc-400">Live Updates & Timeline</p>
                     </div>
                 </div>
             </div>

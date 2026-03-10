@@ -57,36 +57,36 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
 
     return (
         <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
-            <CardHeader className="py-6 px-6 border-b border-zinc-50 flex flex-row items-center justify-between">
+            <div className="p-6 border-b border-zinc-100 flex flex-row items-center justify-between bg-white">
                 <div>
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                            <LayoutGrid className="w-4 h-4 text-zinc-900" />
+                        <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                            <LayoutGrid className="w-5 h-5 text-zinc-900" />
                         </div>
-                        <div>
-                            <CardTitle className="text-[13px] font-bold uppercase tracking-widest text-zinc-950">Lộ trình triển khai (Gantt View)</CardTitle>
-                            <CardDescription className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Visual Project Timeline</CardDescription>
+                        <div className="space-y-0.5">
+                            <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Lộ trình triển khai (Gantt View)</h3>
+                            <p className="text-[11px] font-medium text-zinc-400">Visual Project Timeline</p>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-lg" onClick={() => setViewDate(addDays(viewDate, -7))}>
                         <ChevronLeft className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-[11px] font-bold" onClick={() => setViewDate(today)}>
-                        HÔM NAY
+                    <Button variant="outline" size="sm" className="h-8 px-3 rounded-lg text-xs font-bold" onClick={() => setViewDate(today)}>
+                        Hôm nay
                     </Button>
                     <Button variant="outline" size="sm" className="h-8 w-8 p-0 rounded-lg" onClick={() => setViewDate(addDays(viewDate, 7))}>
                         <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
-            </CardHeader>
+            </div>
             <CardContent className="p-0 overflow-x-auto custom-scrollbar">
                 <div className="min-w-[800px] relative">
                     {/* Gantt Header - Days */}
                     <div className="flex border-b border-zinc-50 bg-zinc-50/50">
-                        <div className="w-[200px] shrink-0 p-3 border-r border-zinc-100 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                            ĐẦU VIỆC
+                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-bold text-zinc-400">
+                            Đầu việc
                         </div>
                         <div className="flex-1 flex">
                             {timelineDates.map((date, i) => (
@@ -97,7 +97,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                         isSameDay(date, today) && "bg-zinc-100/50"
                                     )}
                                 >
-                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">{format(date, 'EEE', { locale: vi })}</p>
+                                    <p className="text-[10px] font-bold text-zinc-400 tracking-tight">{format(date, 'EEE', { locale: vi })}</p>
                                     <p className={cn(
                                         "text-[11px] font-bold",
                                         isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
@@ -129,8 +129,8 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                             const style = getTaskStyle(task)
                             return (
                                 <div key={task.id} className="flex group hover:bg-zinc-50/30 transition-colors">
-                                    <div className="w-[200px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white z-10">
-                                        <p className="text-[11px] font-bold text-zinc-950 uppercase tracking-tight truncate">{task.title}</p>
+                                    <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white z-10">
+                                        <p className="text-[11px] font-bold text-zinc-900 leading-tight">{task.title}</p>
                                     </div>
                                     <div className="flex-1 relative h-12 flex items-center px-0.5">
                                         {/* Grid Background */}
@@ -150,7 +150,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                                 style={style}
                                             >
                                                 <p className={cn(
-                                                    "text-[9px] font-bold truncate uppercase tracking-widest",
+                                                    "text-[9px] font-bold truncate tracking-tight",
                                                     task.status === 'completed' || task.status === 'active' || task.status === 'in_progress' ? "text-white" : "text-zinc-100"
                                                 )}>
                                                     {task.title}
@@ -167,19 +167,19 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
             <div className="p-5 bg-zinc-50/30 border-t border-zinc-100 flex items-center gap-8 justify-center">
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Hoàn thành</span>
+                    <span className="text-[11px] font-bold text-zinc-500">Hoàn thành</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Đang triển khai</span>
+                    <span className="text-[11px] font-bold text-zinc-500">Đang triển khai</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Đang vướng</span>
+                    <span className="text-[11px] font-bold text-zinc-500">Đang vướng</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-zinc-400" />
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Chưa làm</span>
+                    <span className="text-[11px] font-bold text-zinc-500">Chưa làm</span>
                 </div>
             </div>
         </Card>
