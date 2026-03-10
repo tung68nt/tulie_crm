@@ -552,7 +552,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 <div className="space-y-6">
                     {/* Basic Info */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                        <CardHeader className="py-6 px-6">
                             <CardTitle>Thông tin cơ bản</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -628,7 +628,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {type === 'proposal' && (
                         <Card>
-                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 border-b bg-muted/50 py-4">
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 py-6">
                                 <div>
                                     <CardTitle>Nội dung Proposal</CardTitle>
                                     <CardDescription className="mt-1">Mô tả chi tiết giải pháp, phạm vi, đội ngũ cho khách hàng</CardDescription>
@@ -849,7 +849,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {/* Items */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 gap-4 bg-muted/50 py-4 border-b">
+                        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 gap-4 py-6">
                             <div>
                                 <CardTitle>Sản phẩm / Dịch vụ</CardTitle>
                                 <CardDescription className="mt-1">Danh sách hạng mục báo giá được phân loại</CardDescription>
@@ -1124,7 +1124,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Terms & Notes */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                        <CardHeader className="py-6 px-6">
                             <CardTitle>Điều khoản & Ghi chú</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -1141,7 +1141,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {/* Bank Transfer Info */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="bg-muted/50 border-b py-4 px-6">
+                        <CardHeader className="py-6 px-6">
                             <CardTitle>Thông tin chuyển khoản</CardTitle>
                         </CardHeader>
                         <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -1187,7 +1187,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                 {/* Summary - Moved to bottom */}
                 <Card className="sticky bottom-6 z-10 mt-12 shadow-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 overflow-hidden">
-                    <CardHeader className="py-4 px-6 border-b bg-muted/50">
+                    <CardHeader className="py-6 px-6">
                         <CardTitle>Tổng kết & Hoàn tất</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
@@ -1205,7 +1205,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <p className="text-[11px] text-zinc-400">Thuế VAT</p>
                                     <div className="flex items-center gap-3">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-16 h-8 text-[11px] font-bold border-zinc-200">
+                                            <SelectTrigger className="w-24 h-9 text-xs font-bold border-zinc-200">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
