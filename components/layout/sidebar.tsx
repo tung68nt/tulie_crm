@@ -124,7 +124,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                 variant="ghost"
                                 className={cn(
                                     'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 rounded-xl',
-                                    pathname === '/dashboard' ? 'bg-zinc-950 text-white font-black' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
+                                    pathname === '/dashboard' ? 'bg-zinc-950 text-white font-bold' : 'text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100/50',
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
