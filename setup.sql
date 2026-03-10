@@ -80,6 +80,10 @@ CREATE TABLE IF NOT EXISTS public.quotation_items (
     unit_price DECIMAL(15,2) DEFAULT 0,
     discount DECIMAL(15,2) DEFAULT 0,
     total_price DECIMAL(15,2) NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    section_name TEXT,
+    is_optional BOOLEAN DEFAULT false,
+    alternative_group TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 

@@ -181,7 +181,10 @@ export async function createQuotation(quotation: Partial<Quotation>, items: Part
             discount: Number(item.discount) || 0,
             vat_percent: Number(item.vat_percent) || 0,
             total_price: Number(item.total_price) || 0,
-            sort_order: Number(item.sort_order) || 0
+            sort_order: Number(item.sort_order) || 0,
+            section_name: item.section_name || null,
+            is_optional: item.is_optional || false,
+            alternative_group: item.alternative_group || null
         }))
 
         const { error: itemsError } = await supabase
@@ -273,7 +276,10 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
             discount: Number(item.discount) || 0,
             vat_percent: Number(item.vat_percent) || 0,
             total_price: Number(item.total_price) || 0,
-            sort_order: Number(item.sort_order) || 0
+            sort_order: Number(item.sort_order) || 0,
+            section_name: item.section_name || null,
+            is_optional: item.is_optional || false,
+            alternative_group: item.alternative_group || null
         }))
 
         const { error: itemsError } = await supabase

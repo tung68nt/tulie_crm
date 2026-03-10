@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -296,7 +297,17 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         group.items.push({ ...item, actualIndex: index })
     })
 
-    const subtotal = items.reduce((sum, item) => sum + (Number(item.total_price) || 0), 0)
+    // Calculate default subtotal (excludes optional items, and only sums the first item of any alternative group)
+    const seenGroups = new Set<string>();
+    const subtotal = items.reduce((sum, item) => {
+        if (item.is_optional) return sum;
+        if (item.alternative_group && item.alternative_group.trim() !== '') {
+            const groupKey = item.alternative_group.trim().toLowerCase();
+            if (seenGroups.has(groupKey)) return sum;
+            seenGroups.add(groupKey);
+        }
+        return sum + (Number(item.total_price) || 0)
+    }, 0)
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
 
@@ -866,7 +877,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                             unit: item.unit || '',
                                             unit_price: item.unit_price || 0,
                                             discount: item.discount || 0,
-                                            sort_order: idx
+                                            sort_order: idx,
+                                            is_optional: item.is_optional || false,
+                                            alternative_group: item.alternative_group || ''
                                         }))
                                     }
                                     setImportJsonText(JSON.stringify(exportData, null, 2))
@@ -1012,6 +1025,27 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                             className="h-16 text-[12px] min-h-[40px] resize-y"
                                                                             rows={1}
                                                                         />
+
+                                                                        <div className="flex flex-wrap items-center gap-4 mt-2 mb-1 p-2 rounded-md bg-stone-50 border border-stone-100">
+                                                                            <div className="flex items-center space-x-2">
+                                                                                <Checkbox
+                                                                                    id={`optional-${item.id}`}
+                                                                                    checked={!!item.is_optional}
+                                                                                    onCheckedChange={(c) => updateItem(item.id!, { is_optional: c === true })}
+                                                                                />
+                                                                                <Label htmlFor={`optional-${item.id}`} className="text-[11px] font-medium leading-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors">Tùy chọn (Option / Không bắt buộc)</Label>
+                                                                            </div>
+
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="text-[10px] font-bold text-muted-foreground mr-1">Thuộc phương án:</span>
+                                                                                <Input
+                                                                                    value={item.alternative_group || ''}
+                                                                                    onChange={(e) => updateItem(item.id!, { alternative_group: e.target.value })}
+                                                                                    placeholder="VD: PA 1 / Gói Cao Cấp"
+                                                                                    className="h-6 w-32 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </TableCell>
                                                                 <TableCell className="align-top py-4">
@@ -1312,7 +1346,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-7 text-[10px] uppercase tracking-wider font-bold"
+                                    className="h-7 text-[10px] tracking-tight font-bold"
                                     onClick={() => {
                                         navigator.clipboard.writeText(importJsonText)
                                         toast.success('Đã copy JSON')

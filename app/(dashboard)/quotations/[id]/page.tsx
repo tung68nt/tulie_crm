@@ -138,13 +138,13 @@ export default function QuotationDetailPage() {
                 {/* Header Actions */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div className="flex items-center gap-5">
-                        <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-zinc-100 h-11 w-11 transition-all">
+                        <Button variant="ghost" size="icon" asChild className="rounded-full">
                             <Link href="/quotations">
                                 <ArrowLeft className="h-5 w-5" />
                             </Link>
                         </Button>
                         <div className="flex items-center gap-5">
-                            <div className="h-14 w-14 rounded-[20px] bg-zinc-950 flex items-center justify-center shadow-lg">
+                            <div className="h-14 w-14 rounded-xl bg-zinc-950 flex items-center justify-center shadow-lg">
                                 <FileText className="h-7 w-7 text-white" />
                             </div>
                             <div className="space-y-1">
@@ -169,7 +169,7 @@ export default function QuotationDetailPage() {
                     <div className="flex flex-wrap items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="gap-2 h-10 px-4 font-semibold">
+                                <Button variant="outline" size="default" className="gap-2 font-medium">
                                     <Share2 className="h-4 w-4" />
                                     Gửi & Chia sẻ
                                 </Button>
@@ -179,12 +179,12 @@ export default function QuotationDetailPage() {
                                 <DropdownMenuSeparator className="my-1.5 opacity-50" />
 
                                 {!quotation.public_token ? (
-                                    <div className="p-4 text-xs text-destructive bg-destructive/5 border border-destructive/20 rounded-2xl mx-1 mb-1 font-bold">
+                                    <div className="p-4 text-xs text-destructive bg-destructive/5 border border-destructive/20 rounded-xl mx-1 mb-1 font-bold">
                                         Vui lòng nhấn Sửa và Lưu để kích hoạt link chia sẻ.
                                     </div>
                                 ) : (
                                     <>
-                                        <DropdownMenuItem asChild className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
+                                        <DropdownMenuItem asChild className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 cursor-pointer">
                                             <Link href={portalUrl || '#'} target="_blank">
                                                 <Layout className="h-4 w-4 mr-3 opacity-50" />
                                                 Mở Portal khách hàng
@@ -197,14 +197,14 @@ export default function QuotationDetailPage() {
                                                     toast.success('Đã sao chép link portal')
                                                 }
                                             }}
-                                            className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer"
+                                            className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 cursor-pointer"
                                         >
                                             <Copy className="h-4 w-4 mr-3 opacity-50" />
                                             Sao chép link portal
                                         </DropdownMenuItem>
 
                                         <DropdownMenuSeparator className="my-2 opacity-50" />
-                                        <DropdownMenuItem asChild className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
+                                        <DropdownMenuItem asChild className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 cursor-pointer">
                                             <Link href={publicUrl || '#'} target="_blank">
                                                 <ExternalLink className="h-4 w-4 mr-3 opacity-50" />
                                                 Mở Link báo giá
@@ -218,9 +218,9 @@ export default function QuotationDetailPage() {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Button variant="outline" asChild className="h-10 px-4 font-semibold">
-                            <Link href={`/quotations/${quotation.id}/edit`} className="flex items-center gap-2.5">
-                                <Edit className="h-4 w-4 text-zinc-400" />
+                        <Button variant="outline" size="default" asChild className="font-medium">
+                            <Link href={`/quotations/${quotation.id}/edit`} className="flex items-center gap-2">
+                                <Edit className="h-4 w-4 text-muted-foreground" />
                                 Sửa
                             </Link>
                         </Button>
@@ -232,32 +232,18 @@ export default function QuotationDetailPage() {
                 </div>
 
                 <div className="pt-2">
-                    <div className="bg-zinc-100/60 p-1 rounded-2xl h-12 flex items-center gap-1 border border-zinc-200/40 w-full max-w-[380px] shadow-sm">
-                        <button
-                            onClick={() => setActiveTab('data')}
-                            className={cn(
-                                "flex-1 flex items-center justify-center gap-2.5 rounded-xl px-4 py-2 text-xs font-bold transition-all h-full",
-                                activeTab === 'data'
-                                    ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
-                                    : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
-                            )}
-                        >
-                            <Info className="h-4 w-4" />
-                            CHI TIẾT DỮ LIỆU
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('preview')}
-                            className={cn(
-                                "flex-1 flex items-center justify-center gap-2.5 rounded-xl px-4 py-2 text-xs font-bold transition-all h-full",
-                                activeTab === 'preview'
-                                    ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
-                                    : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
-                            )}
-                        >
-                            <Eye className="h-4 w-4" />
-                            XEM TRƯỚC BẢN IN
-                        </button>
-                    </div>
+                    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'data' | 'preview')} className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 max-w-[400px]">
+                            <TabsTrigger value="data" className="gap-2">
+                                <Info className="h-4 w-4" />
+                                Chi tiết dữ liệu
+                            </TabsTrigger>
+                            <TabsTrigger value="preview" className="gap-2">
+                                <Eye className="h-4 w-4" />
+                                Xem trước bản in
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
 
                 {activeTab === 'data' && (
@@ -265,12 +251,10 @@ export default function QuotationDetailPage() {
                         <div className="lg:col-span-2 space-y-6">
                             {/* Customer Info Card */}
                             <Card className="overflow-hidden">
-                                <div className="bg-muted/50 px-6 py-4 border-b">
-                                    <CardTitle className="text-base flex items-center gap-2">
-                                        <Building2 className="h-4 w-4" />
-                                        Thông tin khách hàng
-                                    </CardTitle>
-                                </div>
+                                <CardHeader className="flex flex-row items-center gap-2 space-y-0">
+                                    <Building2 className="h-4 w-4" />
+                                    <CardTitle className="text-base">Thông tin khách hàng</CardTitle>
+                                </CardHeader>
                                 <CardContent className="p-8">
                                     <div className="grid gap-10 sm:grid-cols-2">
                                         <div className="space-y-6">
@@ -300,18 +284,13 @@ export default function QuotationDetailPage() {
                             {/* Proposal Content */}
                             {hasProposal && proposalSections.length > 0 && (
                                 <Card className="overflow-hidden">
-                                    <div className="bg-zinc-950 px-8 py-5 relative">
-                                        <div className="absolute inset-0 opacity-[0.08] pointer-events-none"
-                                            style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23fff'/%3E%3C/svg%3E\")" }}>
+                                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0 flex-wrap">
+                                        <div className="space-y-1">
+                                            <CardTitle>Đề xuất giải pháp</CardTitle>
+                                            <CardDescription>Proposal — {proposalSections.length} Stages</CardDescription>
                                         </div>
-                                        <div className="relative z-10 flex items-center justify-between">
-                                            <div>
-                                                <CardTitle className="text-zinc-50 mb-1">Đề xuất giải pháp</CardTitle>
-                                                <CardDescription className="text-zinc-400">Proposal — {proposalSections.length} Stages</CardDescription>
-                                            </div>
-                                            <Target className="h-6 w-6 text-zinc-600" />
-                                        </div>
-                                    </div>
+                                        <Target className="h-5 w-5 text-muted-foreground" />
+                                    </CardHeader>
                                     <CardContent className="p-8">
                                         <div className="relative pl-12 before:absolute before:left-[17px] before:top-[32px] before:bottom-8 before:w-[2px] before:bg-zinc-100 before:rounded-full">
                                             {proposalSections.map((section, idx) => (
@@ -341,18 +320,13 @@ export default function QuotationDetailPage() {
 
                             {/* Items Table */}
                             <Card className="overflow-hidden">
-                                <div className="bg-zinc-950 px-8 py-5 relative">
-                                    <div className="absolute inset-0 opacity-[0.08] pointer-events-none"
-                                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23fff'/%3E%3C/svg%3E\")" }}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0 flex-wrap">
+                                    <div className="space-y-1">
+                                        <CardTitle>Chi tiết hạng mục</CardTitle>
+                                        <CardDescription>Investment Plan & Pricing Framework</CardDescription>
                                     </div>
-                                    <div className="relative z-10 flex items-center justify-between">
-                                        <div>
-                                            <CardTitle className="text-zinc-50 mb-1">Chi tiết hạng mục</CardTitle>
-                                            <CardDescription className="text-zinc-400">Investment Plan & Pricing Framework</CardDescription>
-                                        </div>
-                                        <Receipt className="h-6 w-6 text-zinc-600" />
-                                    </div>
-                                </div>
+                                    <Receipt className="h-5 w-5 text-muted-foreground" />
+                                </CardHeader>
                                 <CardContent className="p-0">
                                     <Table>
                                         <TableHeader className="bg-muted">
@@ -438,39 +412,38 @@ export default function QuotationDetailPage() {
                             </Card>
 
                             {/* Payment Details Card */}
-                            <Card className="p-6 bg-zinc-950 text-zinc-50 relative overflow-hidden group">
-                                <div className="absolute inset-0 opacity-[0.06] pointer-events-none group-hover:opacity-[0.09] transition-opacity duration-500"
-                                    style={{ backgroundImage: "radial-gradient(#fff 0.8px, transparent 0.8px)", backgroundSize: "12px 12px" }}>
-                                </div>
-                                <h4 className="text-sm font-medium text-zinc-400 mb-6 border-b border-zinc-800 pb-4 flex items-center justify-between">
-                                    <span className="flex items-center gap-2">
-                                        <CreditCard className="h-4 w-4" />
-                                        Thông tin thanh toán
-                                    </span>
-                                    <Globe className="h-4 w-4 opacity-50" />
-                                </h4>
-                                <div className="space-y-7 relative z-10">
+                            <Card className="overflow-hidden">
+                                <CardHeader className="pb-4">
+                                    <CardTitle className="text-base flex items-center justify-between">
+                                        <span className="flex items-center gap-2">
+                                            <CreditCard className="h-4 w-4" />
+                                            Thông tin thanh toán
+                                        </span>
+                                        <Globe className="h-4 w-4 text-muted-foreground" />
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
                                     <div className="space-y-1">
-                                        <p className="text-xs font-medium text-zinc-400">Đơn vị thụ hưởng</p>
+                                        <p className="text-xs font-medium text-muted-foreground">Đơn vị thụ hưởng</p>
                                         <p className="font-bold text-sm tracking-tight">{quotation.bank_account_name || brandConfig?.bank_account_name || "CÔNG TY TNHH TULIE"}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-xs font-medium text-zinc-400">Số tài khoản chính</p>
-                                        <p className="font-bold text-3xl tracking-tighter text-white font-mono select-all">
+                                        <p className="text-xs font-medium text-muted-foreground">Số tài khoản chính</p>
+                                        <p className="font-bold text-2xl tracking-tighter text-foreground font-mono select-all">
                                             {quotation.bank_account_no || brandConfig?.bank_account_no || "0110163102"}
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-6 pt-2">
                                         <div className="space-y-1">
-                                            <p className="text-xs font-medium text-zinc-400">Ngân hàng</p>
-                                            <p className="font-bold text-xs text-zinc-300">{quotation.bank_name || brandConfig?.bank_name || "MB BANK"}</p>
+                                            <p className="text-xs font-medium text-muted-foreground">Ngân hàng</p>
+                                            <p className="font-bold text-sm tracking-tight">{quotation.bank_name || brandConfig?.bank_name || "MB BANK"}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-xs font-medium text-zinc-400">Chi nhánh</p>
-                                            <p className="font-bold text-xs text-zinc-300">{quotation.bank_branch || brandConfig?.bank_branch || "VIỆT NAM"}</p>
+                                            <p className="text-xs font-medium text-muted-foreground">Chi nhánh</p>
+                                            <p className="font-bold text-sm tracking-tight">{quotation.bank_branch || brandConfig?.bank_branch || "VIỆT NAM"}</p>
                                         </div>
                                     </div>
-                                </div>
+                                </CardContent>
                             </Card>
                         </div>
                     </div>
@@ -480,37 +453,24 @@ export default function QuotationDetailPage() {
                     <div className="space-y-8">
                         <div className="flex flex-col xl:flex-row items-center justify-between gap-6">
                             {/* Layout Toggle - Segmented Control */}
-                            <div className="bg-zinc-100/60 p-1.5 rounded-[20px] h-14 flex items-center gap-1.5 border border-zinc-200/40 w-full max-w-[380px] shadow-sm">
-                                <button
-                                    onClick={() => setLayout('modern')}
-                                    className={cn(
-                                        "flex-1 flex items-center justify-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-bold transition-all h-full",
-                                        layout === 'modern'
-                                            ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
-                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
-                                    )}
-                                >
-                                    <Layout className="h-4 w-4" />
-                                    Hiện đại
-                                </button>
-                                <button
-                                    onClick={() => setLayout('basic')}
-                                    className={cn(
-                                        "flex-1 flex items-center justify-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-bold transition-all h-full",
-                                        layout === 'basic'
-                                            ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
-                                            : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
-                                    )}
-                                >
-                                    <FileSignature className="h-4 w-4" />
-                                    Cơ bản
-                                </button>
-                            </div>
+                            <Tabs value={layout} onValueChange={(v) => setLayout(v as 'modern' | 'basic')} className="w-full max-w-[400px]">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="modern" className="gap-2">
+                                        <Layout className="h-4 w-4" />
+                                        Hiện đại
+                                    </TabsTrigger>
+                                    <TabsTrigger value="basic" className="gap-2">
+                                        <FileSignature className="h-4 w-4" />
+                                        Cơ bản
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
 
                             <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-end">
                                 <Button
                                     variant="outline"
-                                    className="h-11 px-6 font-bold rounded-xl gap-2.5 border-zinc-300 text-zinc-900 bg-white hover:bg-zinc-50 transition-all shadow-sm text-sm"
+                                    size="lg"
+                                    className="gap-2 font-medium"
                                     onClick={() => window.print()}
                                 >
                                     <Printer className="h-4 w-4" />
@@ -519,7 +479,8 @@ export default function QuotationDetailPage() {
 
                                 {layout === 'modern' ? (
                                     <Button
-                                        className="h-11 px-8 font-bold rounded-xl gap-3 bg-zinc-950 text-white hover:bg-zinc-800 transition-all shadow-md text-sm"
+                                        size="lg"
+                                        className="gap-2 font-medium bg-zinc-950 text-white hover:bg-zinc-900"
                                         onClick={() => window.print()}
                                     >
                                         <FileDown className="h-4 w-4" />
@@ -531,8 +492,8 @@ export default function QuotationDetailPage() {
                                         documentId={quotation.id}
                                         customerId={quotation.customer_id}
                                         variant="default"
-                                        size="default"
-                                        className="h-11 px-8 font-bold rounded-xl gap-3 bg-zinc-950 text-white hover:bg-zinc-800 transition-all shadow-md text-sm"
+                                        size="lg"
+                                        className="gap-2 font-medium bg-zinc-950 text-white hover:bg-zinc-900"
                                         label="Tải Mẫu Cơ bản"
                                         initialData={quotation}
                                     />
@@ -540,7 +501,7 @@ export default function QuotationDetailPage() {
                             </div>
                         </div>
 
-                        <div className="flex justify-center bg-zinc-100 rounded-[40px] p-8 md:p-16 border border-zinc-200/60 min-h-[900px] shadow-inner relative group">
+                        <div className="flex justify-center bg-zinc-100 rounded-xl p-8 md:p-12 border border-zinc-200/60 min-h-[900px] shadow-sm relative group">
                             <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
                                 style={{ backgroundImage: "linear-gradient(#000 1.5px, transparent 1.5px), linear-gradient(90deg, #000 1.5px, transparent 1.5px)", backgroundSize: "40px 40px" }}>
                             </div>
@@ -553,11 +514,12 @@ export default function QuotationDetailPage() {
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
+                )
+                }
+            </div >
 
             {/* Print specific container - ensures multi-page support */}
-            <div className="hidden print:block !m-0 !p-0">
+            < div className="hidden print:block !m-0 !p-0" >
                 <style dangerouslySetInnerHTML={{
                     __html: `
                         @media print {
@@ -582,7 +544,7 @@ export default function QuotationDetailPage() {
                         <QuotationDocumentPaper quotation={quotation} brandConfig={brandConfig} />
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

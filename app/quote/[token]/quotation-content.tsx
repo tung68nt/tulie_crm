@@ -19,7 +19,8 @@ import { toast } from 'sonner'
 import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Check } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
 
 // Add missing types for PDF libs
 declare global {
@@ -90,9 +91,66 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         }
     }
 
-    // Use items from quotation data
     const items = quotation.items || []
     const hasDiscount = items.some((item: any) => item.discount > 0)
+
+    const [selectedItemIds, setSelectedItemIds] = useState<string[]>(() => {
+        const initialSelected: string[] = [];
+        const seenGroups = new Set<string>();
+        items.forEach((item: any) => {
+            if (!item.is_optional) {
+                if (item.alternative_group && item.alternative_group.trim() !== '') {
+                    const groupKey = item.alternative_group.trim().toLowerCase();
+                    if (!seenGroups.has(groupKey)) {
+                        seenGroups.add(groupKey);
+                        initialSelected.push(item.id);
+                    }
+                } else {
+                    initialSelected.push(item.id);
+                }
+            }
+        });
+        return initialSelected;
+    });
+
+    const toggleItem = (itemId: string, alternativeGroup?: string) => {
+        setSelectedItemIds(prev => {
+            const isSelected = prev.includes(itemId);
+
+            // If it's part of an alternative group, we switch to it
+            if (alternativeGroup && alternativeGroup.trim() !== '') {
+                const groupKey = alternativeGroup.trim().toLowerCase();
+                // Get all other items in the same group
+                const otherInGroup = items
+                    .filter((i: any) => i.alternative_group?.trim().toLowerCase() === groupKey && i.id !== itemId)
+                    .map((i: any) => i.id);
+
+                // Remove others, add this one
+                const filtered = prev.filter(id => !otherInGroup.includes(id));
+                if (isSelected) {
+                    return filtered.filter(id => id !== itemId);
+                } else {
+                    return [...filtered, itemId];
+                }
+            }
+
+            // Normal toggle
+            if (isSelected) {
+                return prev.filter(id => id !== itemId);
+            } else {
+                return [...prev, itemId];
+            }
+        });
+    }
+
+    // Calculations based on current selection
+    const selectedItems = items.filter((item: any) => selectedItemIds.includes(item.id));
+    const subtotalRaw = selectedItems.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
+    const subtotalNet = selectedItems.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
+    const totalDiscount = subtotalRaw - subtotalNet
+    const vatPercent = quotation.vat_percent || 0
+    const vatAmount = subtotalNet * (vatPercent / 100)
+    const finalAmount = subtotalNet + vatAmount
 
     // Helper: Group items by section_name
     const sections: Record<string, any[]> = items.reduce((acc: any, item: any) => {
@@ -121,13 +179,6 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         'Vì sao chọn chúng tôi?': <Award className="w-4 h-4" />,
         'Case Studies & Portfolio': <BookOpen className="w-4 h-4" />,
     };
-
-    // Calculations based on real data
-    const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
-    const subtotalNet = items.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
-    const totalDiscount = subtotalRaw - subtotalNet
-    const vatAmount = quotation.vat_amount || 0
-    const finalAmount = quotation.total_amount || (subtotalNet + vatAmount)
 
     // Proposal content helpers
     const pc = quotation.proposal_content || {}
@@ -529,6 +580,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
                                     <thead>
                                         <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
+                                            <th className="py-2.5 px-3 font-semibold w-10 text-center normal-case print:hidden">Xác nhận</th>
                                             <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case">#</th>
                                             <th className="py-2.5 px-3 font-semibold normal-case">
                                                 Hạng mục & Mô tả <br />
@@ -558,7 +610,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                             <React.Fragment key={sectionIndex}>
                                                 {sectionName && (
                                                     <tr className="bg-slate-100 border-b border-slate-200">
-                                                        <td colSpan={hasDiscount ? 7 : 6} className="px-3 py-2.5 font-bold text-slate-900 text-[13px] normal-case">
+                                                        <td colSpan={hasDiscount ? 8 : 7} className="px-3 py-2.5 font-bold text-slate-900 text-[13px] normal-case">
                                                             <div className="flex items-center gap-3">
                                                                 <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold"
                                                                     style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -570,24 +622,56 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                     </tr>
                                                 )}
 
-                                                {sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any, index: number) => (
-                                                    <tr key={`${sectionIndex}-${index}`} className="quotation-item-row hover:bg-slate-50/50 transition-colors">
-                                                        <td className="px-3 text-slate-500 align-top text-center py-2">{index + 1}</td>
-                                                        <td className="px-3 align-top py-2">
-                                                            <p className="font-semibold text-slate-900 leading-tight">{item.product_name}</p>
-                                                            {item.description && (
-                                                                <p className="text-slate-500 text-[10px] mt-0.5 leading-snug whitespace-pre-line border-l-2 border-slate-100 pl-2 py-0.5 mt-1">{item.description}</p>
+                                                {sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any, index: number) => {
+                                                    const isSelected = selectedItemIds.includes(item.id);
+                                                    const isAlternative = item.alternative_group && item.alternative_group.trim() !== '';
+
+                                                    return (
+                                                        <tr key={`${sectionIndex}-${index}`} className={cn(
+                                                            "quotation-item-row transition-all duration-200",
+                                                            !isSelected && "bg-slate-50 opacity-40 grayscale-[0.5] print:hidden",
+                                                            isSelected && "hover:bg-slate-50/50"
+                                                        )}>
+                                                            <td className="px-3 text-center py-2 print:hidden">
+                                                                <div className="flex items-center justify-center">
+                                                                    <Checkbox
+                                                                        checked={isSelected}
+                                                                        onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
+                                                                        className="h-5 w-5 data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-3 text-slate-500 align-top text-center py-2">{index + 1}</td>
+                                                            <td className="px-3 align-top py-2">
+                                                                <div className="flex flex-col gap-1">
+                                                                    <div className="flex flex-wrap items-center gap-2">
+                                                                        <p className="font-semibold text-slate-900 leading-tight">{item.product_name}</p>
+                                                                        {item.is_optional && (
+                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-amber-200 bg-amber-50 text-amber-700 font-bold">Tùy chọn</Badge>
+                                                                        )}
+                                                                        {isAlternative && (
+                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-blue-200 bg-blue-50 text-blue-700 font-bold">
+                                                                                {item.alternative_group}
+                                                                            </Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    {item.description && (
+                                                                        <p className="text-slate-500 text-[10px] leading-snug whitespace-pre-line border-l-2 border-slate-100 pl-2 py-0.5 mt-0.5">{item.description}</p>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-3 text-center text-slate-600 align-top py-2">{item.unit}</td>
+                                                            <td className="px-3 text-center text-slate-600 align-top py-2">{item.quantity}</td>
+                                                            <td className="px-3 text-right text-slate-600 align-top py-2">{formatCurrency(item.unit_price)}</td>
+                                                            {hasDiscount && (
+                                                                <td className="px-3 text-center text-slate-500 align-top py-2">{item.discount || 0}%</td>
                                                             )}
-                                                        </td>
-                                                        <td className="px-3 text-center text-slate-600 align-top py-2">{item.unit}</td>
-                                                        <td className="px-3 text-center text-slate-600 align-top py-2">{item.quantity}</td>
-                                                        <td className="px-3 text-right text-slate-600 align-top py-2">{formatCurrency(item.unit_price)}</td>
-                                                        {hasDiscount && (
-                                                            <td className="px-3 text-center text-slate-500 align-top py-2">{item.discount || 0}%</td>
-                                                        )}
-                                                        <td className="px-3 text-right font-bold text-slate-900 align-top py-2">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
-                                                    </tr>
-                                                ))}
+                                                            <td className="px-3 text-right font-bold text-slate-900 align-top py-2">
+                                                                {formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
                                             </React.Fragment>
                                         ))}
                                     </tbody>
@@ -696,7 +780,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             </div>
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:p-4 shadow-2xl z-50 print:hidden overflow-hidden">
+            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 sm:p-4 shadow-md z-50 print:hidden overflow-hidden">
                 <div className="container max-w-4xl mx-auto">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div className="text-sm text-slate-700 hidden sm:block font-medium">
@@ -705,25 +789,34 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                             <Button
                                 variant="outline"
-                                className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-2 sm:order-1"
+                                size="default"
+                                className="font-medium order-2 sm:order-1"
                                 onClick={() => window.print()}
                             >
                                 <Printer className="mr-1.5 h-3.5 w-3.5" />
                                 In báo giá
                             </Button>
-                            <Button variant="outline" className="h-9 sm:h-10 text-[12px] sm:text-sm border-slate-300 hover:bg-slate-50 text-slate-700 order-3 sm:order-2" onClick={handleDownloadPDF} disabled={isDownloading}>
+                            <Button
+                                variant="outline"
+                                size="default"
+                                className="font-medium order-3 sm:order-2"
+                                onClick={handleDownloadPDF}
+                                disabled={isDownloading}
+                            >
                                 <Download className="mr-1.5 h-3.5 w-3.5" />
                                 {isDownloading ? 'Đang tạo...' : 'Tải báo giá'}
                             </Button>
                             <Button
                                 variant="ghost"
-                                className="h-9 sm:h-10 text-[12px] sm:text-sm text-slate-600 hover:text-red-600 order-4 sm:order-3"
+                                size="default"
+                                className="font-medium text-muted-foreground hover:text-destructive order-4 sm:order-3"
                                 onClick={() => setShowReject(true)}
                             >
                                 Từ chối
                             </Button>
                             <Button
-                                className="h-9 sm:h-10 col-span-2 sm:col-span-1 bg-black text-white hover:bg-zinc-900 shadow-md font-semibold text-[13px] sm:text-sm px-6 order-1 sm:order-4"
+                                size="default"
+                                className="col-span-2 sm:col-span-1 bg-zinc-950 text-white hover:bg-zinc-900 font-bold order-1 sm:order-4"
                                 onClick={() => setShowConfirm(true)}
                                 disabled={isSubmitting || quotation.status === 'accepted'}
                             >
@@ -929,17 +1022,17 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             {/* Confirmation Dialog */}
             <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
+                <DialogContent className="sm:max-w-[500px] rounded-lg p-0 overflow-hidden shadow-lg">
                     <div className="bg-zinc-900 text-white p-8">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-bold tracking-tight">Xác nhận chấp nhận báo giá</DialogTitle>
-                            <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest mt-1">Quotation Approval & Confirmation</p>
+                            <p className="text-zinc-400 text-[10px] font-bold mt-1">Quotation Approval & Confirmation</p>
                         </DialogHeader>
                     </div>
                     <div className="p-8 space-y-6">
                         <div className="grid gap-4">
                             <div className="grid gap-2">
-                                <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Họ và tên <span className="text-red-500">*</span></Label>
+                                <Label htmlFor="name" className="text-[11px] font-bold text-zinc-500">Họ và tên <span className="text-red-500">*</span></Label>
                                 <Input
                                     id="name"
                                     value={confirmer.name}
@@ -950,7 +1043,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="phone" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Số điện thoại <span className="text-red-500">*</span></Label>
+                                    <Label htmlFor="phone" className="text-[11px] font-bold text-zinc-500">Số điện thoại <span className="text-red-500">*</span></Label>
                                     <Input
                                         id="phone"
                                         value={confirmer.phone}
@@ -960,7 +1053,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="position" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Chức vụ</Label>
+                                    <Label htmlFor="position" className="text-[11px] font-bold text-zinc-500">Chức vụ</Label>
                                     <Input
                                         id="position"
                                         value={confirmer.position}
@@ -971,7 +1064,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Email</Label>
+                                <Label htmlFor="email" className="text-[11px] font-bold text-zinc-500">Email</Label>
                                 <Input
                                     id="email"
                                     value={confirmer.email}
@@ -1006,16 +1099,16 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             {/* Reject Dialog */}
             <Dialog open={showReject} onOpenChange={setShowReject}>
-                <DialogContent className="sm:max-w-[500px] rounded-2xl p-0 overflow-hidden border-none shadow-2xl [&_[data-slot=dialog-close]_svg]:text-white">
+                <DialogContent className="sm:max-w-[500px] rounded-lg p-0 overflow-hidden shadow-lg">
                     <div className="bg-red-600 text-white p-8">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-bold tracking-tight text-white">Từ chối báo giá</DialogTitle>
-                            <p className="text-red-200 text-xs font-bold uppercase tracking-widest mt-1">Rejection Reason & Feedback</p>
+                            <p className="text-red-200 text-[10px] font-bold mt-1">Rejection Reason & Feedback</p>
                         </DialogHeader>
                     </div>
                     <div className="p-8 space-y-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="reason" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Lý do từ chối <span className="text-red-500">*</span></Label>
+                            <Label htmlFor="reason" className="text-[11px] font-bold text-zinc-500">Lý do từ chối <span className="text-red-500">*</span></Label>
                             <textarea
                                 id="reason"
                                 value={rejectReason}

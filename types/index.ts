@@ -183,6 +183,8 @@ export interface QuotationItem {
   total_price: number
   sort_order: number // To order items within a section
   section_name?: string | null // To group items (e.g., "Design", "Printing")
+  is_optional?: boolean
+  alternative_group?: string | null
 }
 
 // Contract Types
