@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatNumber } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet } from 'lucide-react'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
@@ -1152,56 +1152,69 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.2)] border-zinc-200 bg-white shadow-xl rounded-2xl overflow-hidden group">
-                    <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5">
-                        <CardTitle className="text-[10px] font-bold text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4 px-8 pb-8 pt-6">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-10">
-                            <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
-                                <div className="space-y-1.5">
-                                    <p className="text-[9px] font-bold">Tạm tính</p>
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-xl font-bold text-zinc-950 tracking-tighter">{formatNumber(subtotal)}</span>
-                                        <span className="text-[10px] font-bold text-zinc-950">đ</span>
+                <Card className="sticky bottom-6 z-20 mt-12 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] border-zinc-200 bg-white/95 backdrop-blur-sm rounded-[32px] overflow-hidden group border-2">
+                    <div className="p-6 border-b border-zinc-100/80 bg-zinc-50/50">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-2xl bg-white border border-zinc-200 shadow-sm flex items-center justify-center">
+                                <Wallet className="w-5 h-5 text-zinc-900" />
+                            </div>
+                            <div className="space-y-0.5">
+                                <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Tổng kết & Hoàn tất báo giá</h3>
+                                <p className="text-[11px] font-medium text-zinc-400">Quotation Summary & Confirmation</p>
+                            </div>
+                        </div>
+                    </div>
+                    <CardContent className="px-8 py-8">
+                        <div className="flex flex-col lg:flex-row justify-between items-center gap-12">
+                            {/* Detailed Stats */}
+                            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-12 w-full">
+                                {/* Subtotal */}
+                                <div className="space-y-1.5 group/stat">
+                                    <p className="text-[10px] font-bold text-zinc-400">Tạm tính</p>
+                                    <div className="flex items-baseline gap-1.5">
+                                        <span className="text-2xl font-bold text-zinc-950 tracking-tight">{formatNumber(subtotal)}</span>
+                                        <span className="text-sm font-bold text-zinc-900">đ</span>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <p className="text-[9px] font-bold text-zinc-400">Thuế VAT</p>
+                                {/* VAT */}
+                                <div className="space-y-1.5 group/stat">
+                                    <p className="text-[10px] font-bold text-zinc-400">Thuế VAT</p>
                                     <div className="flex items-center gap-4">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-20 h-9 font-bold border-zinc-200 rounded-xl bg-zinc-50/50">
+                                            <SelectTrigger className="w-20 h-9 font-bold border-zinc-200 rounded-xl bg-white hover:bg-zinc-50 transition-colors">
                                                 <SelectValue />
                                             </SelectTrigger>
-                                            <SelectContent className="rounded-xl border-zinc-200">
+                                            <SelectContent className="rounded-xl border-zinc-200 shadow-xl">
                                                 <SelectItem value="0" className="text-xs font-semibold">0%</SelectItem>
                                                 <SelectItem value="8" className="text-xs font-semibold">8%</SelectItem>
                                                 <SelectItem value="10" className="text-xs font-semibold">10%</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-[15px] font-bold text-zinc-950 tracking-tight">{formatNumber(vatAmount)}</span>
-                                            <span className="text-[10px] font-bold text-zinc-950">đ</span>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-xl font-bold text-zinc-900 tracking-tight">{formatNumber(vatAmount)}</span>
+                                            <span className="text-xs font-bold text-zinc-600">đ</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-1 min-w-[200px] border-l border-zinc-100 pl-10">
-                                    <p className="text-[9px] font-bold text-zinc-400">Tổng đầu tư</p>
-                                    <div className="flex items-baseline gap-1.5">
-                                        <span className="text-4xl font-black text-zinc-950 tracking-tighter">{formatNumber(totalAmount)}</span>
-                                        <span className="text-lg font-bold text-zinc-950">đ</span>
+                                {/* Total Amount */}
+                                <div className="space-y-1 sm:pl-10 sm:border-l border-zinc-100">
+                                    <p className="text-[10px] font-bold text-zinc-500">Tổng đầu tư (Đã bao gồm VAT)</p>
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-4xl font-bold text-zinc-950 tracking-tighter">{formatNumber(totalAmount)}</span>
+                                        <span className="text-xl font-bold text-zinc-900">đ</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            {/* Actions */}
+                            <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto shrink-0">
                                 <Button
                                     variant="outline"
                                     onClick={() => handleSave(false)}
                                     disabled={isLoading}
-                                    className="h-14 px-8 rounded-xl font-bold border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
+                                    className="h-14 px-8 rounded-2xl font-bold border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300 transition-all active:scale-[0.98] text-zinc-600"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                                     Lưu Dự thảo
@@ -1209,7 +1222,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <Button
                                     onClick={() => handleSave(true)}
                                     disabled={isLoading}
-                                    className="h-14 px-10 rounded-xl font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-zinc-950/20 transition-all active:scale-[0.98] group"
+                                    className="h-14 px-12 rounded-2xl font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-2xl shadow-zinc-950/20 transition-all active:scale-[0.98] group"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
                                     {quotation?.status === 'sent' || quotation?.status === 'accepted' ? 'Cập nhật & Gửi lại' : 'Lưu & Gửi báo giá'}
