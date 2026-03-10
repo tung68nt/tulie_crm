@@ -637,7 +637,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                                     <Checkbox
                                                                         checked={isSelected}
                                                                         onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
-                                                                        className="h-5 w-5 data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                                                        className="h-5 w-5 rounded-full transition-all data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 ring-offset-background"
                                                                     />
                                                                 </div>
                                                             </td>

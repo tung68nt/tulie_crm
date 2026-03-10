@@ -123,14 +123,14 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                             <Button
                                 variant="ghost"
                                 className={cn(
-                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200',
+                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 group',
                                     pathname === '/dashboard' ? 'bg-secondary text-secondary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
                                 <LayoutGrid className={cn(
                                     "h-4 w-4 shrink-0 transition-colors",
-                                    pathname === '/dashboard' ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                                    !pathname.includes('/dashboard') && "opacity-70 group-hover:opacity-100"
                                 )} />
                                 {!isCollapsed && <span className="truncate font-medium">Dashboard</span>}
                             </Button>
@@ -163,14 +163,14 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                             <Button
                                                 variant="ghost"
                                                 className={cn(
-                                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200',
+                                                    'w-full justify-start gap-3 h-9 text-[13px] transition-all duration-200 group',
                                                     isActive ? 'bg-secondary text-secondary-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
                                                     isCollapsed && 'justify-center px-0'
                                                 )}
                                             >
                                                 <Icon className={cn(
                                                     "h-4 w-4 shrink-0 transition-colors",
-                                                    isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
+                                                    !isActive && "opacity-70 group-hover:opacity-100"
                                                 )} />
                                                 {!isCollapsed && (
                                                     <span className="truncate font-medium">
