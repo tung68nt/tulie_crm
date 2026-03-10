@@ -2,13 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { format, differenceInDays, startOfDay, addDays, isSameDay, isWithinInterval } from 'date-fns'
+import { format, differenceInDays, startOfDay, addDays, isSameDay, isWithinInterval, differenceInMilliseconds } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { LayoutGrid, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useMemo, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { differenceInMilliseconds } from 'date-fns'
 
 interface ProjectGanttChartProps {
     tasks: any[]
@@ -90,44 +89,50 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                 </div>
             </div>
             <CardContent className="p-0 overflow-x-auto custom-scrollbar">
-                <div className="min-w-[800px] relative">
+                <div className="min-w-[1200px] relative">
                     {/* Gantt Header - Days */}
-                    <div className="flex border-b border-zinc-50 bg-zinc-50/50">
-                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center">
+                    <div className="flex border-b border-zinc-50 bg-zinc-50/50 relative">
+                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center bg-zinc-50/50 z-10">
                             Đầu việc
                         </div>
-                        <div className="flex-1 flex">
-                            {timelineDates.map((date, i) => (
+                        <div className="flex-1 flex relative">
+                            {/* Today Line - Moved inside the flex-1 date container to fix alignment */}
+                            {timelineDates.some(d => isSameDay(d, today)) && (
                                 <div
-                                    key={i}
-                                    className={cn(
-                                        "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0 flex flex-col items-center justify-center min-h-[50px]",
-                                        isSameDay(date, today) && "bg-zinc-100/30"
-                                    )}
+                                    className="absolute top-0 bottom-[-1000px] w-[1px] bg-red-400 z-20 pointer-events-none"
+                                    style={{
+                                        left: `${(differenceInMilliseconds(now, startOfDay(timelineDates[0])) / (24 * 60 * 60 * 1000)) * (100 / daysInView)}%`,
+                                    }}
                                 >
-                                    <p className="text-[10px] font-semibold text-muted-foreground tracking-tight h-4 flex items-center">
-                                        {format(date, 'i') === '7' ? 'CN' : `Thứ ${Number(format(date, 'i')) + 1}`}
-                                    </p>
-                                    <p className={cn(
-                                        "text-[11px] font-bold h-4 flex items-center",
-                                        isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
-                                    )}>{format(date, 'dd')}</p>
+                                    <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" />
                                 </div>
-                            ))}
+                            )}
+
+                            {timelineDates.map((date, i) => {
+                                const dayOfWeek = format(date, 'i');
+                                return (
+                                    <div
+                                        key={i}
+                                        className={cn(
+                                            "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0 flex flex-col items-center justify-center min-h-[55px] min-w-[45px] gap-0.5",
+                                            isSameDay(date, today) && "bg-zinc-100/30"
+                                        )}
+                                    >
+                                        <p className="text-[10px] font-semibold text-muted-foreground tracking-tight whitespace-nowrap">
+                                            {dayOfWeek === '7' ? 'CN' : `Thứ ${Number(dayOfWeek) + 1}`}
+                                        </p>
+                                        <p className={cn(
+                                            "text-[12px] font-bold leading-none",
+                                            isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
+                                        )}>
+                                            {format(date, 'dd')}
+                                        </p>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
-                    {/* Today Line */}
-                    {timelineDates.some(d => isSameDay(d, today)) && (
-                        <div
-                            className="absolute top-0 bottom-0 w-[1px] bg-red-400 z-20 pointer-events-none"
-                            style={{
-                                left: `calc(240px + ${(differenceInMilliseconds(now, startOfDay(timelineDates[0])) / (24 * 60 * 60 * 1000)) * (100 / daysInView)}%)`,
-                            }}
-                        >
-                            <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" />
-                        </div>
-                    )}
 
                     {/* Gantt Rows */}
                     <div className="divide-y divide-zinc-50">
@@ -146,7 +151,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                         {/* Grid Background */}
                                         <div className="absolute inset-0 flex">
                                             {Array.from({ length: daysInView }).map((_, i) => (
-                                                <div key={i} className="flex-1 border-r border-zinc-100/30 last:border-r-0" />
+                                                <div key={i} className="flex-1 border-r border-zinc-100/30 last:border-r-0 min-w-[45px]" />
                                             ))}
                                         </div>
 
