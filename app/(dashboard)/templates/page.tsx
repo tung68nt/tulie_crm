@@ -4,6 +4,14 @@ import { FileText, Plus, Eye, Edit, FileSignature, Receipt, Wallet, FileCheck, F
 import Link from 'next/link'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
 import { DocumentTemplate } from '@/types'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
 
 const getTypeIcon = (type: DocumentTemplate['type']) => {
     switch (type) {
@@ -62,55 +70,58 @@ export default async function TemplatesPage() {
             </div>
 
             {/* Templates List */}
-            <div className="rounded-lg border">
-                <div className="grid grid-cols-[1fr_120px_80px_140px] gap-4 px-4 py-3 border-b bg-muted/50 text-xs font-medium text-muted-foreground">
-                    <span>Tên mẫu</span>
-                    <span>Loại</span>
-                    <span className="text-center">Số biến</span>
-                    <span className="text-right">Thao tác</span>
-                </div>
-                {templates.map((template) => (
-                    <div
-                        key={template.id}
-                        className="grid grid-cols-[1fr_120px_80px_140px] gap-4 items-center px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors"
-                    >
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground shrink-0">
-                                {getTypeIcon(template.type)}
-                            </div>
-                            <div className="min-w-0">
-                                <Link
-                                    href={`/templates/${template.id}`}
-                                    className="text-sm font-medium hover:underline truncate block"
-                                >
-                                    {template.name}
-                                </Link>
-                            </div>
-                        </div>
-                        <div>
-                            <Badge variant="secondary" className="text-xs font-normal">
-                                {getTypeLabel(template.type)}
-                            </Badge>
-                        </div>
-                        <div className="text-center">
-                            <span className="text-sm text-muted-foreground">{template.variables.length}</span>
-                        </div>
-                        <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                <Link href={`/templates/${template.id}`}>
-                                    <Eye className="mr-1 h-3 w-3" />
-                                    Xem
-                                </Link>
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                                <Link href={`/templates/${template.id}/edit`}>
-                                    <Edit className="mr-1 h-3 w-3" />
-                                    Sửa
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
-                ))}
+            <div className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+                <Table>
+                    <TableHeader className="bg-zinc-50/50">
+                        <TableRow className="hover:bg-transparent">
+                            <TableHead>Tên mẫu</TableHead>
+                            <TableHead className="w-[150px]">Loại</TableHead>
+                            <TableHead className="w-[100px] text-center">Số biến</TableHead>
+                            <TableHead className="w-[140px] text-right">Thao tác</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {templates.map((template) => (
+                            <TableRow key={template.id} className="hover:bg-zinc-50/50">
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-9 w-9 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-500 shrink-0 border border-zinc-200/50">
+                                            {getTypeIcon(template.type)}
+                                        </div>
+                                        <Link
+                                            href={`/templates/${template.id}`}
+                                            className="text-sm font-semibold text-zinc-900 hover:text-primary hover:underline"
+                                        >
+                                            {template.name}
+                                        </Link>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary" className="font-medium bg-zinc-100 text-zinc-700 hover:bg-zinc-200/80">
+                                        {getTypeLabel(template.type)}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <span className="text-sm font-medium tabular-nums text-zinc-600">{template.variables.length}</span>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex items-center justify-end gap-1">
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+                                            <Link href={`/templates/${template.id}`} title="Xem">
+                                                <Eye className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" asChild>
+                                            <Link href={`/templates/${template.id}/edit`} title="Sửa">
+                                                <Edit className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </div>
 
             {templates.length === 0 && (

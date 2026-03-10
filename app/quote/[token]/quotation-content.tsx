@@ -557,8 +557,13 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                         </h4>
                                                     </div>
                                                     {/* Card Body */}
-                                                    <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed whitespace-pre-line">
-                                                        {section.content}
+                                                    <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed space-y-1.5">
+                                                        {section.content.split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
+                                                            <div key={i} className="flex gap-2 text-[11px]">
+                                                                <span className="shrink-0 text-slate-400 mt-1">•</span>
+                                                                <span className="flex-1">{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>
@@ -656,7 +661,14 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <p className="text-slate-500 text-[10px] leading-snug whitespace-pre-line border-l-2 border-slate-100 pl-2 py-0.5 mt-0.5">{item.description}</p>
+                                                                        <div className="text-slate-500 text-[10px] leading-snug border-l-2 border-slate-100 pl-2 py-0.5 mt-1 space-y-1">
+                                                                            {item.description.split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
+                                                                                <div key={i} className="flex gap-1.5">
+                                                                                    <span className="shrink-0 text-slate-300 mt-0.5">•</span>
+                                                                                    <span className="flex-1 italic">{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
                                                                     )}
                                                                 </div>
                                                             </td>

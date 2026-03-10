@@ -102,6 +102,7 @@ export async function getQuotationById(id: string) {
             .from('quotations')
             .select('*, customer:customers!customer_id(*), creator:users!created_by(*), items:quotation_items(*)')
             .eq('id', id)
+            .order('sort_order', { foreignTable: 'quotation_items', ascending: true })
             .single()
 
         if (error) {
@@ -123,6 +124,7 @@ export async function getQuotationByToken(token: string) {
             .from('quotations')
             .select('*, customer:customers!customer_id(*), creator:users!created_by(*), items:quotation_items(*)')
             .eq('public_token', token)
+            .order('sort_order', { foreignTable: 'quotation_items', ascending: true })
             .single()
 
         if (error) {

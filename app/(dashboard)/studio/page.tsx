@@ -13,15 +13,15 @@ export default async function StudioPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Camera className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 rounded-xl bg-zinc-100 flex items-center justify-center shadow-sm border border-border/50">
+                        <Camera className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-semibold">Đơn hàng Studio</h1>
-                        <p className="text-muted-foreground font-normal">Quản lý đơn hàng chụp ảnh cá nhân & Studio.</p>
+                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight italic">Đơn hàng Studio</h1>
+                        <p className="text-sm font-medium text-muted-foreground mt-1">Quản lý đơn hàng chụp ảnh cá nhân & Studio.</p>
                     </div>
                 </div>
-                <Button asChild>
+                <Button asChild className="rounded-xl font-bold shadow-md shadow-zinc-200">
                     <Link href="/studio/new">
                         <Plus className="mr-2 h-4 w-4" /> Tạo đơn mới
                     </Link>
@@ -45,37 +45,37 @@ async function OrderListWrapper() {
         <div className="space-y-6">
             {/* Stats */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
+                <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
                             Đang thực hiện
                         </CardTitle>
                         <Clock className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-semibold">{activeOrders}</div>
+                        <div className="text-2xl font-bold text-zinc-900">{activeOrders}</div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
                             Đã hoàn thành
                         </CardTitle>
                         <CheckCircle className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-semibold">{completedOrders}</div>
+                        <div className="text-2xl font-bold text-zinc-900">{completedOrders}</div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
                             Tổng giá trị
                         </CardTitle>
                         <ShoppingCart className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-semibold">{formatCurrency(totalValue)}</div>
+                        <div className="text-2xl font-bold text-zinc-900">{formatCurrency(totalValue)}</div>
                     </CardContent>
                 </Card>
             </div>

@@ -12,9 +12,8 @@ import {
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils/format'
 import { ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
-import { BRAND_LABELS, BRAND_COLORS, BRAND_BADGE_CLASS } from '@/lib/constants/brand'
-import { cn } from '@/lib/utils'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { QuotationCellAction } from './quotation-cell-action'
 
 export const quotationColumns: ColumnDef<Quotation>[] = [
@@ -57,7 +56,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
                 <div>
                     <Link
                         href={`/quotations/${quotation.id}`}
-                        className="font-medium hover:underline"
+                        className="font-bold text-zinc-950 hover:underline tracking-tight italic"
                     >
                         {quotation.quotation_number}
                     </Link>
@@ -75,16 +74,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
         ),
         cell: ({ row }) => {
             const brand = row.original.brand || 'agency'
-            return (
-                <Badge
-                    className={cn(
-                        BRAND_BADGE_CLASS,
-                        BRAND_COLORS[brand] || 'bg-gray-500'
-                    )}
-                >
-                    {BRAND_LABELS[brand] || brand}
-                </Badge>
-            )
+            return <StatusBadge entityType="brand" status={brand} />
         },
     },
     {
@@ -126,11 +116,7 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
         header: 'Trạng thái',
         cell: ({ row }) => {
             const status = row.getValue('status') as Quotation['status']
-            return (
-                <Badge className={QUOTATION_STATUS_COLORS[status]}>
-                    {QUOTATION_STATUS_LABELS[status]}
-                </Badge>
-            )
+            return <StatusBadge entityType="quotation" status={status} />
         },
     },
     {

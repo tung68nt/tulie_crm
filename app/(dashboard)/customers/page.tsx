@@ -26,26 +26,26 @@ export default async function CustomersPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-zinc-100 flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-xl bg-zinc-100 flex items-center justify-center shadow-sm border border-border/50">
                         <Users className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight">Khách hàng Agency</h1>
-                        <p className="text-[14px] text-muted-foreground">
+                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight italic">Khách hàng Agency</h1>
+                        <p className="text-sm font-medium text-muted-foreground mt-1">
                             Quản lý danh sách khách hàng và thông tin liên hệ cho Agency
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="default">
+                    <Button variant="outline" size="default" className="rounded-xl font-bold shadow-sm border-border/50">
                         <Upload className="mr-2 h-4 w-4" />
                         Import
                     </Button>
-                    <Button variant="outline" size="default">
+                    <Button variant="outline" size="default" className="rounded-xl font-bold shadow-sm border-border/50">
                         <Download className="mr-2 h-4 w-4" />
                         Export
                     </Button>
-                    <Button asChild size="default">
+                    <Button asChild size="default" className="rounded-xl font-bold shadow-md shadow-zinc-200">
                         <Link href="/customers/new">
                             <Plus className="mr-2 h-4 w-4" />
                             Thêm khách hàng

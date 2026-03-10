@@ -2,17 +2,13 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Customer } from '@/types'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-    CUSTOMER_STATUS_LABELS,
-    CUSTOMER_STATUS_COLORS
-} from '@/lib/constants/status'
 import { formatRelativeTime } from '@/lib/utils/format'
 import { ArrowUpDown, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { CellAction } from './cell-action'
 
 export const customerColumns: ColumnDef<Customer>[] = [
@@ -58,7 +54,7 @@ export const customerColumns: ColumnDef<Customer>[] = [
                 <div className="py-1">
                     <Link
                         href={`/customers/${customer.id}`}
-                        className="text-sm font-medium hover:underline"
+                        className="text-sm font-bold text-zinc-950 hover:underline tracking-tight italic"
                     >
                         {customer.customer_type === 'individual'
                             ? (customer.representative || 'Chưa đặt tên')
@@ -101,15 +97,8 @@ export const customerColumns: ColumnDef<Customer>[] = [
         accessorKey: 'status',
         header: 'Trạng thái',
         cell: ({ row }) => {
-            const status = row.getValue('status') as Customer['status']
-            return (
-                <Badge className={cn(
-                    "font-medium px-2.5 py-0.5",
-                    CUSTOMER_STATUS_COLORS[status] || "bg-muted text-muted-foreground"
-                )}>
-                    {CUSTOMER_STATUS_LABELS[status]}
-                </Badge>
-            )
+            const status = row.getValue('status') as string
+            return <StatusBadge entityType="customer" status={status} />
         },
         filterFn: (row, id, value) => {
             return value.includes(row.getValue(id))

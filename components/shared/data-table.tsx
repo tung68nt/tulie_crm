@@ -167,7 +167,7 @@ export function DataTable<TData, TValue>({
                                 onChange={(event) =>
                                     table.getColumn(searchKey)?.setFilterValue(event.target.value)
                                 }
-                                className="pl-9 w-[250px] lg:w-[350px] bg-muted/30 border-transparent focus-visible:bg-background focus-visible:border-border transition-all"
+                                className="pl-9 w-[250px] lg:w-[350px] bg-muted/30 border-transparent h-10 rounded-xl focus-visible:bg-background focus-visible:border-border transition-all"
                             />
                         </div>
                     )}
@@ -182,9 +182,9 @@ export function DataTable<TData, TValue>({
                             <div key={filter.columnId} className="flex items-center gap-2">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-9 border-dashed bg-background hover:bg-muted/50 transition-colors">
+                                        <Button variant="outline" size="sm" className="h-10 border-dashed bg-background hover:bg-muted/50 transition-colors rounded-xl">
                                             <Plus className="mr-2 h-3.5 w-3.5" />
-                                            <span className="text-xs font-semibold">{filter.title}</span>
+                                            <span className="text-xs font-bold">{filter.title}</span>
                                             {filterValue.length > 0 && (
                                                 <>
                                                     <Separator orientation="vertical" className="mx-2 h-4" />
@@ -266,7 +266,7 @@ export function DataTable<TData, TValue>({
                                     variant="destructive"
                                     size="sm"
                                     onClick={() => setOpen(true)}
-                                    className="h-10"
+                                    className="h-10 rounded-xl font-bold shadow-sm"
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Xóa ({selectedRows.length})
@@ -276,7 +276,7 @@ export function DataTable<TData, TValue>({
                             {bulkActions.length > 0 && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-10">
+                                        <Button variant="outline" size="sm" className="h-10 rounded-xl font-bold shadow-sm">
                                             Thao tác hàng loạt
                                             <ChevronDown className="ml-2 h-4 w-4" />
                                         </Button>
@@ -305,7 +305,7 @@ export function DataTable<TData, TValue>({
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-9 font-medium">
+                            <Button variant="outline" size="sm" className="h-10 rounded-xl font-bold shadow-sm">
                                 <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
                                 Hiển thị
                             </Button>
@@ -336,7 +336,7 @@ export function DataTable<TData, TValue>({
             </div>
 
             {/* Table */}
-            <div className="rounded-md border">
+            <div className="rounded-xl border border-border/50 shadow-sm overflow-hidden bg-card">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -406,7 +406,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -415,7 +415,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -424,7 +424,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
                         >
@@ -433,7 +433,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-8 w-8 rounded-md bg-background hover:bg-muted/50 transition-colors"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                             disabled={!table.getCanNextPage()}
                         >

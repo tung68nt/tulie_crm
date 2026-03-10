@@ -50,6 +50,8 @@ import { getQuotationById } from '@/lib/supabase/services/quotation-service'
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { useParams } from 'next/navigation'
 
+import { StatusBadge } from '@/components/shared/status-badge'
+
 export default function QuotationDetailPage() {
     const params = useParams()
     const id = params.id as string
@@ -129,6 +131,22 @@ export default function QuotationDetailPage() {
         { label: 'Vì sao chọn chúng tôi?', key: 'why_us' },
     ].filter(s => !!pc[s.key]);
 
+    // Group items for display
+    const items = quotation.items || []
+    const groupedItems: Record<string, any[]> = items.reduce((acc: any, item: any) => {
+        const sectionName = item.section_name || '';
+        if (!acc[sectionName]) acc[sectionName] = [];
+        acc[sectionName].push(item);
+        return acc;
+    }, {});
+
+    const sectionEntries = Object.entries(groupedItems).sort((a, b) => {
+        if (a[0] === '') return 1;
+        if (b[0] === '') return -1;
+        // Find first item of each section to compare their sort_order
+        return (a[1][0]?.sort_order || 0) - (b[1][0]?.sort_order || 0);
+    });
+
     const publicUrl = quotation.public_token ? `${baseUrl}/quote/${quotation.public_token}` : null
     const portalUrl = quotation.public_token ? `${baseUrl}/portal/${quotation.public_token}` : null
 
@@ -144,22 +162,15 @@ export default function QuotationDetailPage() {
                             </Link>
                         </Button>
                         <div className="flex items-center gap-5">
-                            <div className="h-14 w-14 rounded-xl bg-zinc-950 flex items-center justify-center shadow-lg">
+                            <div className="h-14 w-14 rounded-xl bg-zinc-950 flex items-center justify-center shadow-lg transition-transform hover:scale-105 duration-300">
                                 <FileText className="h-7 w-7 text-white" />
                             </div>
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <div className="px-3 h-6 rounded-full border border-zinc-200 bg-white text-zinc-900 font-bold text-[11px] flex items-center tracking-tight shadow-sm">
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <div className="px-3 h-6 rounded-full border border-zinc-200 bg-white text-zinc-900 font-bold text-[11px] flex items-center tracking-tight shadow-sm hover:bg-zinc-50 transition-colors">
                                         {quotation.quotation_number}
                                     </div>
-                                    <Badge variant="secondary" className={cn("px-3 h-6 flex items-center rounded-full text-[11px] font-bold tracking-tight border-none whitespace-nowrap",
-                                        quotation.status === 'draft' ? "bg-zinc-100 text-zinc-600" :
-                                            quotation.status === 'sent' ? "bg-blue-50 text-blue-600" :
-                                                quotation.status === 'accepted' ? "bg-emerald-50 text-emerald-600" :
-                                                    "bg-zinc-100 text-zinc-600"
-                                    )}>
-                                        {QUOTATION_STATUS_LABELS[quotation.status as QuotationStatus] || quotation.status}
-                                    </Badge>
+                                    <StatusBadge entityType="quotation" status={quotation.status} />
                                 </div>
                                 <h1 className="text-3xl font-bold leading-none tracking-tight text-zinc-950">{quotation.customer?.company_name}</h1>
                             </div>
@@ -209,6 +220,18 @@ export default function QuotationDetailPage() {
                                                 <ExternalLink className="h-4 w-4 mr-3 opacity-50" />
                                                 Mở Link báo giá
                                             </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                if (publicUrl) {
+                                                    navigator.clipboard.writeText(publicUrl)
+                                                    toast.success('Đã sao chép link báo giá')
+                                                }
+                                            }}
+                                            className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 cursor-pointer"
+                                        >
+                                            <Copy className="h-4 w-4 mr-3 opacity-50" />
+                                            Sao chép link báo giá
                                         </DropdownMenuItem>
                                     </>
                                 )}
@@ -339,19 +362,53 @@ export default function QuotationDetailPage() {
                                                 <TableHead className="text-right pr-8">Thành tiền</TableHead>
                                             </TableRow>
                                         </TableHeader>
-                                        <TableBody>
-                                            {(quotation.items || []).map((item: any, idx: number) => (
-                                                <TableRow key={item.id} className="hover:bg-zinc-50/40 group border-zinc-100">
-                                                    <TableCell className="text-center font-medium text-zinc-400 text-xs tabular-nums py-5">{idx + 1}</TableCell>
-                                                    <TableCell className="py-5">
-                                                        <p className="font-bold text-zinc-950 text-sm leading-tight mb-1">{item.product_name}</p>
-                                                        {item.description && <p className="text-[11px] text-zinc-500 font-medium leading-relaxed italic border-l-2 border-zinc-200 pl-3 py-0.5">{item.description}</p>}
-                                                    </TableCell>
-                                                    <TableCell className="text-center font-medium text-zinc-600 text-sm whitespace-nowrap">{item.unit}</TableCell>
-                                                    <TableCell className="text-center font-bold text-zinc-950 text-sm">{item.quantity}</TableCell>
-                                                    <TableCell className="text-right font-medium text-zinc-700 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.unit_price)}</TableCell>
-                                                    <TableCell className="text-right pr-8 font-bold text-zinc-950 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.total_price)}</TableCell>
-                                                </TableRow>
+                                        <TableBody className="bg-white">
+                                            {sectionEntries.map(([sectionName, sectionItems], sectionIdx) => (
+                                                <React.Fragment key={sectionIdx}>
+                                                    {sectionName && (
+                                                        <TableRow className="bg-zinc-50/80 border-y border-zinc-100">
+                                                            <TableCell colSpan={6} className="py-2.5 px-3">
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="w-5 h-5 rounded bg-zinc-950 text-white text-[9px] font-bold flex items-center justify-center">
+                                                                        {sectionIdx + 1}
+                                                                    </div>
+                                                                    <span className="text-[12px] font-bold text-zinc-900 uppercase tracking-tight">{sectionName}</span>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                    {sectionItems.map((item: any, idx: number) => (
+                                                        <TableRow key={item.id} className="hover:bg-zinc-50/40 group border-zinc-100 last:border-0">
+                                                            <TableCell className="text-center font-medium text-zinc-400 text-[10px] tabular-nums py-5 w-14">
+                                                                {sectionName ? `${sectionIdx + 1}.${idx + 1}` : idx + 1}
+                                                            </TableCell>
+                                                            <TableCell className="py-5">
+                                                                <div className="space-y-1">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <p className="font-bold text-zinc-950 text-sm leading-tight">{item.product_name}</p>
+                                                                        {item.is_optional && (
+                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-bold border-amber-200 bg-amber-50 text-amber-700">Tùy chọn</Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    {item.description && (
+                                                                        <div className="text-[11px] text-zinc-500 font-medium leading-relaxed italic border-l-2 border-zinc-200 pl-3 py-0.5 space-y-0.5">
+                                                                            {item.description.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+                                                                                <div key={i} className="flex gap-1.5">
+                                                                                    <span className="shrink-0">•</span>
+                                                                                    <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-center font-medium text-zinc-600 text-sm whitespace-nowrap">{item.unit}</TableCell>
+                                                            <TableCell className="text-center font-bold text-zinc-950 text-sm">{item.quantity}</TableCell>
+                                                            <TableCell className="text-right font-medium text-zinc-700 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.unit_price)}</TableCell>
+                                                            <TableCell className="text-right pr-8 font-bold text-zinc-950 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.total_price)}</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </React.Fragment>
                                             ))}
                                         </TableBody>
                                     </Table>

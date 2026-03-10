@@ -51,3 +51,4 @@ gcp-sa-key.json
 AGENTS.md
 CLAUDE.md
 GEMINI.md
+.env*.local

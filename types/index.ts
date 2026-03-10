@@ -10,6 +10,7 @@ export interface User {
   id: string
   email: string
   full_name: string
+  phone?: string
   avatar_url?: string
   role: UserRole
   team_id?: string
@@ -111,6 +112,7 @@ export interface Product {
   price: number
   cost_price?: number
   is_active: boolean
+  default_templates?: string[]
   created_at: string
   updated_at: string
 }

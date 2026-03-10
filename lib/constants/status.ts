@@ -113,3 +113,27 @@ export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
     review: 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900',
     completed: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950 font-bold',
 }
+
+// Product Status (Boolean mapping)
+export const PRODUCT_STATUS_LABELS = {
+    active: 'Đang bán',
+    inactive: 'Ngừng bán',
+}
+
+export const PRODUCT_STATUS_COLORS = {
+    active: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950 font-bold',
+    inactive: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
+}
+
+// Brand Labels
+export const BRAND_LABELS = {
+    agency: 'Tulie Agency',
+    studio: 'Tulie Studio',
+    academy: 'Tulie Academy',
+}
+
+export const BRAND_COLORS = {
+    agency: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold',
+    studio: 'bg-zinc-500 text-white dark:bg-zinc-400 dark:text-zinc-900',
+    academy: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-medium',
+}

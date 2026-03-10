@@ -12,9 +12,8 @@ import {
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { ArrowUpDown } from 'lucide-react'
 import Link from 'next/link'
-import { BRAND_LABELS, BRAND_COLORS, BRAND_BADGE_CLASS } from '@/lib/constants/brand'
-import { cn } from '@/lib/utils'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { ContractCellAction } from './contract-cell-action'
 
 export const contractColumns: ColumnDef<Contract>[] = [
@@ -59,7 +58,7 @@ export const contractColumns: ColumnDef<Contract>[] = [
             return (
                 <Link
                     href={`/contracts/${contract.id}`}
-                    className="font-medium hover:underline"
+                    className="font-bold text-zinc-950 hover:underline tracking-tight italic"
                 >
                     {contract.contract_number}
                 </Link>
@@ -73,16 +72,7 @@ export const contractColumns: ColumnDef<Contract>[] = [
         ),
         cell: ({ row }) => {
             const brand = row.original.brand || 'agency'
-            return (
-                <Badge
-                    className={cn(
-                        BRAND_BADGE_CLASS,
-                        BRAND_COLORS[brand] || 'bg-gray-500'
-                    )}
-                >
-                    {BRAND_LABELS[brand] || brand}
-                </Badge>
-            )
+            return <StatusBadge entityType="brand" status={brand} />
         },
     },
     {
@@ -144,11 +134,7 @@ export const contractColumns: ColumnDef<Contract>[] = [
         header: 'Trạng thái',
         cell: ({ row }) => {
             const status = row.getValue('status') as Contract['status']
-            return (
-                <Badge className={CONTRACT_STATUS_COLORS[status]}>
-                    {CONTRACT_STATUS_LABELS[status]}
-                </Badge>
-            )
+            return <StatusBadge entityType="contract" status={status} />
         },
     },
     {

@@ -16,6 +16,7 @@ import {
 import { formatCurrency } from '@/lib/utils/format'
 import { ArrowUpDown, MoreHorizontal, Eye, Edit, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { StatusBadge } from '@/components/shared/status-badge'
 
 export const productColumns: ColumnDef<Product>[] = [
     {
@@ -76,16 +77,7 @@ export const productColumns: ColumnDef<Product>[] = [
         header: 'Thương hiệu',
         cell: ({ row }) => {
             const brand = row.getValue('brand') as string
-            const labels: any = {
-                agency: 'Tulie Agency',
-                studio: 'Tulie Studio',
-                academy: 'Tulie Academy'
-            }
-            return (
-                <Badge variant="outline" className="font-bold border-zinc-900">
-                    {labels[brand] || brand}
-                </Badge>
-            )
+            return <StatusBadge entityType="brand" status={brand} />
         },
     },
     {
@@ -94,7 +86,7 @@ export const productColumns: ColumnDef<Product>[] = [
         cell: ({ row }) => {
             const category = row.getValue('category') as string | undefined
             return category ? (
-                <Badge variant="secondary">{category}</Badge>
+                <StatusBadge status={category} className="bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400" />
             ) : (
                 <span className="text-muted-foreground">-</span>
             )
@@ -149,11 +141,7 @@ export const productColumns: ColumnDef<Product>[] = [
         header: 'Trạng thái',
         cell: ({ row }) => {
             const isActive = row.getValue('is_active') as boolean
-            return (
-                <Badge variant={isActive ? 'default' : 'secondary'}>
-                    {isActive ? 'Đang bán' : 'Ngừng bán'}
-                </Badge>
-            )
+            return <StatusBadge entityType="product" status={isActive ? 'active' : 'inactive'} />
         },
     },
     {

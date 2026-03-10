@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu } from 'lucide-react'
+import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -128,10 +128,10 @@ export function Header() {
 
                 {/* Search - Responsive */}
                 <div className="relative group hidden sm:block">
-                    <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-zinc-950 transition-colors" />
                     <Input
-                        placeholder="Tìm kiếm..."
-                        className="w-[200px] md:w-[280px] pl-9 h-9 bg-muted/40 border-transparent focus-visible:bg-background focus-visible:border-border transition-all text-sm"
+                        placeholder="Tìm kiếm thông tin..."
+                        className="w-[200px] md:w-[320px] pl-10 h-10 bg-zinc-100/50 border-transparent rounded-xl focus-visible:bg-white focus-visible:border-border focus-visible:ring-0 transition-all text-sm font-medium"
                     />
                 </div>
                 <Button variant="ghost" size="icon" className="sm:hidden">
@@ -147,11 +147,12 @@ export function Header() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        className="rounded-xl h-10 w-10 hover:bg-zinc-100 transition-colors"
                     >
                         {theme === 'dark' ? (
-                            <Sun className="h-5 w-5" />
+                            <Sun className="h-5 w-5 text-zinc-400 group-hover:text-zinc-950" />
                         ) : (
-                            <Moon className="h-5 w-5" />
+                            <Moon className="h-5 w-5 text-zinc-500 group-hover:text-zinc-950" />
                         )}
                     </Button>
                 )}
@@ -159,12 +160,12 @@ export function Header() {
                 {/* Notifications */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative">
-                            <Bell className="h-5 w-5" />
+                        <Button variant="ghost" size="icon" className="relative rounded-xl h-10 w-10 hover:bg-zinc-100 transition-colors">
+                            <Bell className="h-5 w-5 text-zinc-500" />
                             {unreadCount > 0 && (
                                 <Badge
                                     variant="destructive"
-                                    className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                                    className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full p-0 text-[10px] flex items-center justify-center font-bold border-2 border-background"
                                 >
                                     {unreadCount}
                                 </Badge>
@@ -212,17 +213,18 @@ export function Header() {
                 {/* User Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-2 px-1 sm:px-2">
-                            <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
+                        <Button variant="ghost" className="flex items-center gap-3 px-2 h-11 rounded-xl hover:bg-zinc-100 transition-all border border-transparent hover:border-border/50">
+                            <Avatar className="h-8 w-8 ring-2 ring-background shadow-sm">
                                 <AvatarImage src={user?.avatar} />
-                                <AvatarFallback className="bg-foreground text-background text-[10px] sm:text-xs">
+                                <AvatarFallback className="bg-zinc-950 text-white text-[10px] font-bold">
                                     {user?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'TL'}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="hidden xs:flex flex-col items-start text-left">
-                                <span className="text-sm font-medium">{user?.name || 'Đang tải...'}</span>
-                                <span className="text-[10px] text-muted-foreground capitalize leading-tight">{user?.role || 'Admin'}</span>
+                                <span className="text-sm font-bold text-zinc-950 tracking-tight leading-none">{user?.name || 'Đang tải...'}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 leading-none">{user?.role || 'Admin'}</span>
                             </div>
+                            <ChevronDown className="h-4 w-4 text-zinc-400" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
