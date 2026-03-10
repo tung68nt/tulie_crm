@@ -898,7 +898,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         {/* Section Header */}
                                         <div className="bg-zinc-900 px-5 py-3 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                             <div className="flex items-center gap-3 flex-1 w-full">
-                                                <div className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center text-[11px] font-black text-white/80">
+                                                <div className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center text-[11px] font-bold text-white/80">
                                                     {groupIdx + 1}
                                                 </div>
                                                 <div className="relative flex-1 group/input">
@@ -906,7 +906,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                         value={group.name}
                                                         onChange={(e) => updateSectionName(group.id, e.target.value)}
                                                         placeholder="Nhập tên phần (vd: Thiết kế, Media...)"
-                                                        className="bg-transparent border-none text-white font-black text-sm h-8 focus-visible:ring-0 px-0 placeholder:text-white/30 truncate"
+                                                        className="bg-transparent border-none text-white font-bold text-sm h-8 focus-visible:ring-0 px-0 placeholder:text-white/30 truncate"
                                                     />
                                                     <div className="absolute bottom-0 left-0 w-full h-px bg-white/10 group-focus-within/input:bg-white/40 transition-colors" />
                                                 </div>
@@ -916,10 +916,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => removeSection(group.id)}
-                                                className="text-white/40 hover:text-red-400 hover:bg-white/5 h-8 px-3 rounded-xl transition-all font-black uppercase text-[10px] tracking-widest"
+                                                className="text-white/40 hover:text-red-400 hover:bg-white/5 h-8 px-3 rounded-xl transition-all font-bold uppercase text-[10px] tracking-widest border-none shadow-none"
                                             >
                                                 <Trash2 className="h-3.5 w-3.5 mr-2" />
-                                                Xoá phần này
+                                                Xoá phần
                                             </Button>
                                         </div>
 
@@ -1074,7 +1074,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => addItemToSection(group.name, group.id)}
-                                                className="w-full h-9 border border-dashed border-zinc-200 hover:border-zinc-400 hover:bg-white text-zinc-500 font-black uppercase text-[9px] tracking-widest transition-all rounded-xl"
+                                                className="w-full h-9 border border-dashed border-zinc-200 hover:border-zinc-400 hover:bg-white text-zinc-500 font-bold uppercase text-[9px] tracking-widest transition-all rounded-xl"
                                             >
                                                 <Plus className="h-3 w-3 mr-2" />
                                                 Thêm sản phẩm vào phần "{group.name || 'này'}"
@@ -1152,46 +1152,46 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.2)] border-zinc-200 bg-white/95 backdrop-blur-md rounded-[32px] overflow-hidden group">
-                    <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5 flex flex-row items-center justify-between">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
+                <Card className="sticky bottom-6 z-10 mt-12 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.2)] border-zinc-200 bg-white shadow-xl rounded-2xl overflow-hidden group">
+                    <CardHeader className="pb-3 border-b border-zinc-50 px-8 py-5">
+                        <CardTitle className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Tổng kết & Hoàn tất hồ sơ</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4 px-8 pb-8 pt-6">
                         <div className="flex flex-col md:flex-row justify-between items-center gap-10">
                             <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
                                 <div className="space-y-1.5">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Tạm tính</p>
+                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tạm tính</p>
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-xl font-black text-zinc-950 tracking-tighter">{formatCurrency(subtotal).replace(' đ', '')}</span>
-                                        <span className="text-xs font-black text-zinc-950 uppercase">đ</span>
+                                        <span className="text-xl font-bold text-zinc-950 tracking-tighter">{formatNumber(subtotal)}</span>
+                                        <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Thuế VAT</p>
+                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Thuế VAT</p>
                                     <div className="flex items-center gap-4">
                                         <Select value={vatPercent.toString()} onValueChange={(v) => setVatPercent(parseInt(v))}>
-                                            <SelectTrigger className="w-20 h-9 font-black border-zinc-200 rounded-xl bg-zinc-50/50">
+                                            <SelectTrigger className="w-20 h-9 font-bold border-zinc-200 rounded-xl bg-zinc-50/50">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-xl border-zinc-200">
-                                                <SelectItem value="0" className="text-xs font-bold">0%</SelectItem>
-                                                <SelectItem value="8" className="text-xs font-bold">8%</SelectItem>
-                                                <SelectItem value="10" className="text-xs font-bold">10%</SelectItem>
+                                                <SelectItem value="0" className="text-xs font-semibold">0%</SelectItem>
+                                                <SelectItem value="8" className="text-xs font-semibold">8%</SelectItem>
+                                                <SelectItem value="10" className="text-xs font-semibold">10%</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <div className="flex items-baseline gap-1">
-                                            <span className="text-[15px] font-black text-zinc-950 tracking-tight">{formatCurrency(vatAmount).replace(' đ', '')}</span>
-                                            <span className="text-[10px] font-black text-zinc-950 uppercase">đ</span>
+                                            <span className="text-[15px] font-bold text-zinc-950 tracking-tight">{formatNumber(vatAmount)}</span>
+                                            <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="space-y-1 min-w-[200px] border-l border-zinc-100 pl-10">
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest opacity-60">Tổng đầu tư</p>
+                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Tổng đầu tư</p>
                                     <div className="flex items-baseline gap-1.5">
-                                        <span className="text-4xl font-black text-zinc-950 tracking-tighter">{formatCurrency(totalAmount).replace(' đ', '')}</span>
-                                        <span className="text-lg font-black text-zinc-950 uppercase">đ</span>
+                                        <span className="text-4xl font-black text-zinc-950 tracking-tighter">{formatNumber(totalAmount)}</span>
+                                        <span className="text-lg font-bold text-zinc-950 uppercase">đ</span>
                                     </div>
                                 </div>
                             </div>
@@ -1201,7 +1201,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     variant="outline"
                                     onClick={() => handleSave(false)}
                                     disabled={isLoading}
-                                    className="h-14 px-8 rounded-2.5xl font-black uppercase text-[10px] tracking-widest border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
+                                    className="h-14 px-8 rounded-xl font-bold uppercase text-[10px] tracking-widest border-zinc-200 hover:bg-zinc-50 transition-all active:scale-[0.98]"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                                     Lưu Dự thảo
@@ -1209,7 +1209,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <Button
                                     onClick={() => handleSave(true)}
                                     disabled={isLoading}
-                                    className="h-14 px-10 rounded-2.5xl font-black uppercase text-[10px] tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-2xl shadow-zinc-950/20 transition-all active:scale-[0.98] group"
+                                    className="h-14 px-10 rounded-xl font-bold uppercase text-[10px] tracking-widest bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-zinc-950/20 transition-all active:scale-[0.98] group"
                                 >
                                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />}
                                     {quotation?.status === 'sent' || quotation?.status === 'accepted' ? 'Cập nhật & Gửi lại' : 'Lưu & Gửi báo giá'}

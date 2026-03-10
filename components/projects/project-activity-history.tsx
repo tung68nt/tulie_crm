@@ -49,12 +49,12 @@ export function ProjectActivityHistory({ projectId, activities: initialActivitie
         <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
             <CardHeader className="py-6 px-6 border-b border-zinc-50">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                        <Activity className="w-4 h-4 text-zinc-900" />
+                    <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                        <Activity className="w-5 h-5 text-zinc-900" />
                     </div>
-                    <div>
-                        <CardTitle className="text-lg font-bold">Lịch sử hoạt động</CardTitle>
-                        <CardDescription className="text-xs font-normal">Các thay đổi và cập nhật gần đây trong dự án.</CardDescription>
+                    <div className="space-y-0.5">
+                        <CardTitle className="text-base font-bold text-zinc-900">Lịch sử hoạt động</CardTitle>
+                        <CardDescription className="text-[11px] font-medium text-zinc-400">Các thay đổi và cập nhật gần đây trong dự án.</CardDescription>
                     </div>
                 </div>
             </CardHeader>

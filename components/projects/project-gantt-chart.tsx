@@ -48,10 +48,10 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-zinc-900'
-            case 'in_progress': return 'bg-zinc-400'
-            case 'blocked': return 'bg-zinc-200 border border-zinc-300'
-            default: return 'bg-zinc-100 border border-zinc-200'
+            case 'completed': return 'bg-emerald-500'
+            case 'in_progress': return 'bg-blue-500'
+            case 'blocked': return 'bg-red-500'
+            default: return 'bg-zinc-400'
         }
     }
 
@@ -64,8 +64,8 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                             <LayoutGrid className="w-4 h-4 text-zinc-900" />
                         </div>
                         <div>
-                            <CardTitle className="text-[13px] font-black uppercase tracking-widest text-zinc-950">Lộ trình triển khai (Gantt View)</CardTitle>
-                            <CardDescription className="text-[10px] uppercase font-black tracking-widest text-zinc-400 opacity-60">Visual Project Timeline</CardDescription>
+                            <CardTitle className="text-[13px] font-bold uppercase tracking-widest text-zinc-950">Lộ trình triển khai (Gantt View)</CardTitle>
+                            <CardDescription className="text-[10px] uppercase font-bold tracking-widest text-zinc-400">Visual Project Timeline</CardDescription>
                         </div>
                     </div>
                 </div>
@@ -97,9 +97,9 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                         isSameDay(date, today) && "bg-zinc-100/50"
                                     )}
                                 >
-                                    <p className="text-[9px] font-black text-zinc-400 uppercase tracking-tighter">{format(date, 'EEE', { locale: vi })}</p>
+                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">{format(date, 'EEE', { locale: vi })}</p>
                                     <p className={cn(
-                                        "text-[11px] font-black",
+                                        "text-[11px] font-bold",
                                         isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
                                     )}>{format(date, 'dd')}</p>
                                 </div>
@@ -130,7 +130,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                             return (
                                 <div key={task.id} className="flex group hover:bg-zinc-50/30 transition-colors">
                                     <div className="w-[200px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white z-10">
-                                        <p className="text-[11px] font-black text-zinc-950 uppercase tracking-tight truncate">{task.title}</p>
+                                        <p className="text-[11px] font-bold text-zinc-950 uppercase tracking-tight truncate">{task.title}</p>
                                     </div>
                                     <div className="flex-1 relative h-12 flex items-center px-0.5">
                                         {/* Grid Background */}
@@ -150,8 +150,8 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                                 style={style}
                                             >
                                                 <p className={cn(
-                                                    "text-[9px] font-black truncate uppercase tracking-widest",
-                                                    task.status === 'completed' || task.status === 'active' || task.status === 'in_progress' ? "text-zinc-100" : "text-zinc-600"
+                                                    "text-[9px] font-bold truncate uppercase tracking-widest",
+                                                    task.status === 'completed' || task.status === 'active' || task.status === 'in_progress' ? "text-white" : "text-zinc-100"
                                                 )}>
                                                     {task.title}
                                                 </p>
@@ -166,20 +166,20 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
             </CardContent>
             <div className="p-5 bg-zinc-50/30 border-t border-zinc-100 flex items-center gap-8 justify-center">
                 <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-900" />
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Hoàn thành</span>
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Hoàn thành</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Đang triển khai</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Đang vướng</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-zinc-400" />
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Đang triển khai</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-200 border border-zinc-300" />
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Đang vướng</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-50 border border-zinc-100" />
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Chưa làm</span>
+                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Chưa làm</span>
                 </div>
             </div>
         </Card>

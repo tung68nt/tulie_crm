@@ -65,26 +65,26 @@ interface PortalContentProps {
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
     'pending': { label: 'Chờ xử lý', color: 'bg-zinc-100 text-zinc-600' },
-    'in_progress': { label: 'Đang thực hiện', color: 'bg-zinc-900 text-white' },
+    'in_progress': { label: 'Đang thực hiện', color: 'bg-blue-50 text-blue-700' },
     'delivered': { label: 'Đã bàn giao', color: 'bg-emerald-50 text-emerald-700' },
-    'accepted': { label: 'Đã nghiệm thu', color: 'bg-zinc-900 text-white' },
+    'accepted': { label: 'Đã nghiệm thu', color: 'bg-emerald-50 text-emerald-700' },
     'rejected': { label: 'Từ chối', color: 'bg-red-50 text-red-700' },
     'draft': { label: 'Nháp', color: 'bg-zinc-100 text-zinc-500' },
     'sent': { label: 'Đã gửi', color: 'bg-zinc-100 text-zinc-600' },
-    'viewed': { label: 'Đã xem', color: 'bg-zinc-50 text-zinc-500' },
-    'active': { label: 'Đang triển khai', color: 'bg-zinc-900 text-white' },
-    'completed': { label: 'Hoàn thành', color: 'bg-zinc-900 text-white' },
-    'signed': { label: 'Đã ký', color: 'bg-zinc-900 text-white' },
-    'paid': { label: 'Đã thanh toán', color: 'bg-zinc-900 text-white' },
+    'viewed': { label: 'Đã xem', color: 'bg-zinc-100 text-zinc-500' },
+    'active': { label: 'Đang triển khai', color: 'bg-blue-50 text-blue-700' },
+    'completed': { label: 'Hoàn thành', color: 'bg-emerald-50 text-emerald-700' },
+    'signed': { label: 'Đã ký', color: 'bg-zinc-100 text-zinc-600' },
+    'paid': { label: 'Đã thanh toán', color: 'bg-emerald-50 text-emerald-700' },
     'todo': { label: 'Cần làm', color: 'bg-zinc-100 text-zinc-600' },
     'blocked': { label: 'Bị chặn', color: 'bg-red-50 text-red-600' },
-    'upcoming': { label: 'Sắp tới', color: 'bg-zinc-50 text-zinc-400 border border-zinc-100' },
+    'upcoming': { label: 'Sắp tới', color: 'bg-zinc-100 text-zinc-500' },
     'overdue': { label: 'Trễ hạn', color: 'bg-red-50 text-red-700' },
 }
 
 function StatusBadge({ status }: { status: string }) {
     const s = STATUS_MAP[status] || { label: status, color: 'bg-zinc-100 text-zinc-500 border-zinc-200' }
-    return <Badge className={cn("text-[9px] font-black uppercase tracking-widest border-none px-2.5 py-1 rounded-full", s.color)}>{s.label}</Badge>
+    return <Badge className={cn("text-[10px] font-bold uppercase tracking-widest border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
@@ -158,10 +158,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </div>
 
                     <div className="flex flex-col items-center md:items-end">
-                        <h2 className="text-2xl font-black text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
+                        <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200 mt-2">
                             <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-emerald-500" : "bg-amber-500")} />
-                            <span className="text-[10px] font-black text-zinc-600 tracking-widest uppercase">{projectStatusLabel}</span>
+                            <span className="text-[10px] font-bold text-zinc-600 tracking-widest uppercase">{projectStatusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -181,7 +181,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-black rounded-2xl px-10 h-12 shadow-2xl transition-all text-[11px] tracking-widest uppercase">
+                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-bold rounded-2xl px-10 h-12 shadow-2xl transition-all text-[11px] tracking-widest uppercase">
                                 Cập nhật hồ sơ
                             </Button>
                         </DialogTrigger>
@@ -211,26 +211,26 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
                         { label: 'Tổng đầu tư', value: totalInvestment, sub: 'Project Investment', icon: Wallet, color: 'text-zinc-600', bgColor: 'bg-zinc-100' },
-                        { label: 'Đã thanh toán', value: totalPaid, sub: 'Total Paid', icon: CreditCard, color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-                        { label: 'Còn lại', value: balanceDue, sub: 'Balance Due', icon: Banknote, color: 'text-amber-600', bgColor: 'bg-amber-50' },
-                        { label: 'Tiến độ', value: `${projectProgress}%`, sub: 'Project Progress', icon: Activity, color: 'text-blue-600', bgColor: 'bg-blue-50' },
+                        { label: 'Đã thanh toán', value: totalPaid, sub: 'Total Paid', icon: CreditCard, color: 'text-zinc-950', bgColor: 'bg-zinc-100' },
+                        { label: 'Còn lại', value: balanceDue, sub: 'Balance Due', icon: Banknote, color: 'text-zinc-950', bgColor: 'bg-zinc-100' },
+                        { label: 'Tiến độ', value: `${projectProgress}%`, sub: 'Project Progress', icon: Activity, color: 'text-zinc-950', bgColor: 'bg-zinc-100' },
                     ].map((stat, i) => (
                         <div key={i} className="bg-white p-6 rounded-[24px] border border-zinc-200 shadow-sm transition-all hover:shadow-md">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[11px] font-black text-zinc-400 tracking-widest uppercase">{stat.label}</span>
-                                <div className={cn("p-1.5 rounded-lg", stat.bgColor)}>
-                                    <stat.icon className={cn("w-3.5 h-3.5", stat.color)} />
+                                <span className="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">{stat.label}</span>
+                                <div className={cn("p-1.5 rounded-lg border border-zinc-100", stat.bgColor)}>
+                                    <stat.icon className={cn("w-4 h-4", stat.color)} />
                                 </div>
                             </div>
                             <div className="flex items-baseline gap-1">
-                                <div className="text-2xl font-black text-zinc-950 tracking-tighter">
+                                <div className="text-2xl font-bold text-zinc-950 tracking-tighter">
                                     {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(' đ', '') : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
-                                    <div className="text-sm font-black text-zinc-950 uppercase">đ</div>
+                                    <div className="text-sm font-bold text-zinc-950 uppercase">đ</div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-bold text-zinc-400 mt-1 uppercase tracking-widest opacity-60">{stat.sub}</div>
+                            <div className="text-[10px] font-bold text-zinc-400 mt-1 uppercase tracking-widest">{stat.sub}</div>
                         </div>
                     ))}
                 </div>
@@ -247,13 +247,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {timeline.filter(t => t.type === 'work' || t.type === 'payment').length > 0 && (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-[13px] font-black text-zinc-950 flex items-center gap-2.5 tracking-widest uppercase">
-                                <div className="h-8 w-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                    <Clock className="w-4 h-4 text-zinc-400" />
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                                    <Clock className="w-5 h-5 text-zinc-900" />
                                 </div>
-                                Lịch trình triển khai & Thanh toán
-                            </h3>
-                            <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1 rounded-lg">Timeline</Badge>
+                                <div className="space-y-0.5">
+                                    <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Lịch trình triển khai & Thanh toán</h3>
+                                    <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Project Milestones & Billing</p>
+                                </div>
+                            </div>
+                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Timeline</Badge>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -264,7 +267,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center gap-2.5">
                                                 <div className={cn(
-                                                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-black transition-all group-hover:scale-105",
+                                                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all group-hover:scale-105",
                                                     milestone.status === 'completed' ? "bg-zinc-950 text-white shadow-lg shadow-black/10" : "bg-zinc-100 text-zinc-400 border border-zinc-200"
                                                 )}>
                                                     #{mIdx + 1}
@@ -277,21 +280,21 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 </div>
                                             )}
                                         </div>
-                                        <h4 className="text-[15px] font-black text-zinc-950 mb-1.5 tracking-tight leading-tight">{milestone.title}</h4>
+                                        <h4 className="text-[15px] font-bold text-zinc-950 mb-1.5 tracking-tight leading-tight">{milestone.title}</h4>
                                         {milestone.description && (
                                             <p className="text-[11px] text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
                                         )}
                                         <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                                             <div className="flex flex-col">
-                                                <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Hạn hoàn thành</span>
-                                                <span className="text-[12px] font-black text-zinc-950">{formatDate(milestone.date)}</span>
+                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Hạn hoàn thành</span>
+                                                <span className="text-[12px] font-bold text-zinc-950">{formatDate(milestone.date)}</span>
                                             </div>
                                             {milestone.amount > 0 && (
                                                 <div className="text-right">
-                                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-0.5 opacity-60">Giá trị mốc</span>
+                                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Giá trị mốc</span>
                                                     <div className="flex items-baseline justify-end gap-1">
-                                                        <span className="text-[13px] font-black text-zinc-950 tracking-tight">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
-                                                        <span className="text-[10px] font-black text-zinc-950 uppercase">đ</span>
+                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tight">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
+                                                        <span className="text-[10px] font-bold text-zinc-950 uppercase">đ</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -305,13 +308,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Hạng mục dự án */}
                 <div className="space-y-6">
                     <div>
-                        <h3 className="text-[13px] font-black text-zinc-950 flex items-center gap-2.5 tracking-widest uppercase">
-                            <div className="h-8 w-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                                <Package className="w-4 h-4 text-zinc-400" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                                <Package className="w-5 h-5 text-zinc-900" />
                             </div>
-                            Hạng mục & Lộ trình thực hiện
-                        </h3>
-                        <p className="text-[10px] font-black text-zinc-400 mt-2 uppercase tracking-widest opacity-60">
+                            <div className="space-y-0.5">
+                                <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Hạng mục & Lộ trình thực hiện</h3>
+                                <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Deliverables & Progress</p>
+                            </div>
+                        </div>
+                        <p className="text-[10px] font-bold text-zinc-500 mt-2 uppercase tracking-widest">
                             {displayItems.length} hạng mục · {completedItems} đã nghiệm thu
                         </p>
                     </div>
@@ -378,7 +384,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                         {idx + 1}
                     </div>
                     <div>
-                        <h4 className="text-[15px] font-black text-zinc-950 tracking-tight leading-tight">{item.title}</h4>
+                        <h4 className="text-[15px] font-bold text-zinc-950 tracking-tight leading-tight">{item.title}</h4>
                         {item.description && <p className="text-[11px] font-medium text-zinc-500 mt-1 line-clamp-1">{item.description}</p>}
                     </div>
                 </div>
@@ -396,8 +402,8 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-4 h-4 text-zinc-400" />
                                     <div>
-                                        <p className="text-[10px] font-black text-zinc-950 uppercase tracking-widest">Báo giá</p>
-                                        <p className="text-[11px] font-black text-zinc-400 mt-0.5">#{quotation.quotation_number}</p>
+                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Báo giá</p>
+                                        <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{quotation.quotation_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -411,8 +417,8 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                                 <div className="flex items-center gap-3">
                                     <FileSignature className="w-4 h-4 text-zinc-400" />
                                     <div>
-                                        <p className="text-[10px] font-black text-zinc-950 uppercase tracking-widest">Hợp đồng</p>
-                                        <p className="text-[11px] font-black text-zinc-400 mt-0.5">#{contract.contract_number}</p>
+                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hợp đồng</p>
+                                        <p className="text-[11px] font-bold text-zinc-400 mt-0.5">#{contract.contract_number}</p>
                                     </div>
                                 </div>
                                 <StatusBadge status={contract.status} />
@@ -422,10 +428,10 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
 
                     {/* Amount */}
                     <div className="pt-4 border-t border-zinc-100">
-                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1.5 opacity-60">Giá trị hạng mục</p>
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-black text-zinc-950 tracking-tighter">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
-                            <span className="text-sm font-black text-zinc-950 uppercase">đ</span>
+                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
+                            <span className="text-sm font-bold text-zinc-950 uppercase">đ</span>
                         </div>
                     </div>
 
@@ -455,12 +461,12 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                 {/* Right: Tasks (Todo List) */}
                 <div className="lg:w-3/5 p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2 opacity-60">
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                             <ListTodo className="w-3.5 h-3.5" />
                             Danh sách công việc
                         </p>
                         {totalTasks > 0 && (
-                            <span className="text-[10px] font-black text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
+                            <span className="text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full uppercase tracking-widest">
                                 {completedTasks}/{totalTasks}
                             </span>
                         )}
@@ -551,16 +557,18 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
         <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm">
             <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
                 <div>
-                    <h3 className="text-sm font-black text-zinc-950 flex items-center gap-2.5 uppercase tracking-widest">
-                        <div className="h-8 w-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                            <FileCheck className="w-4 h-4 text-zinc-400" />
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                            <FileCheck className="w-5 h-5 text-zinc-900" />
                         </div>
-                        Bộ chứng từ & Hồ sơ dự án
-                    </h3>
-                    <p className="text-[10px] font-black text-zinc-400 mt-2 uppercase tracking-widest opacity-60">Lộ trình hoàn thiện pháp lý</p>
+                        <div className="space-y-0.5">
+                            <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Bộ chứng từ & Hồ sơ dự án</h3>
+                            <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Project Procedures & Docs</p>
+                        </div>
+                    </div>
                 </div>
                 <div className="hidden sm:block">
-                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1 rounded-lg">Full Docs</Badge>
+                    <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg">Full Docs</Badge>
                 </div>
             </div>
             <div className="p-6">
@@ -638,13 +646,15 @@ function TimelineSection({ timeline }: { timeline: any[] }) {
     return (
         <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden">
             <div className="p-6 border-b border-zinc-100">
-                <h3 className="text-sm font-black text-zinc-950 flex items-center gap-2.5 uppercase tracking-widest">
-                    <div className="h-8 w-8 rounded-lg bg-zinc-100 flex items-center justify-center">
-                        <Clock className="w-4 h-4 text-zinc-400" />
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-zinc-900" />
                     </div>
-                    Tiến độ triển khai chi tiết
-                </h3>
-                <p className="text-[10px] font-black text-zinc-400 mt-2 uppercase tracking-widest opacity-60">Cập nhật theo thời gian thực</p>
+                    <div className="space-y-0.5">
+                        <h3 className="text-base font-bold text-zinc-950 tracking-tight leading-none">Tiến độ triển khai chi tiết</h3>
+                        <p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">Live Updates & Timeline</p>
+                    </div>
+                </div>
             </div>
             <div className="p-5">
                 <div className="relative pl-6 border-l-2 border-zinc-100 ml-2 space-y-6">
