@@ -89,6 +89,13 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
             orderData.stt = stt
         }
 
+        if (orderData.delivery_date === '') {
+            orderData.delivery_date = null
+        }
+        if (orderData.order_date === '') {
+            orderData.order_date = null
+        }
+
         const { data: insertedOrder, error: orderError } = await supabase
             .from('retail_orders')
             .insert([{
@@ -133,9 +140,18 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
 export async function updateRetailOrder(id: string, order: Partial<RetailOrder>) {
     try {
         const supabase = await createClient()
+
+        const updateData = { ...order } as any
+        if (updateData.delivery_date === '') {
+            updateData.delivery_date = null
+        }
+        if (updateData.order_date === '') {
+            updateData.order_date = null
+        }
+
         const { error } = await supabase
             .from('retail_orders')
-            .update(order)
+            .update(updateData)
             .eq('id', id)
 
         if (error) throw error
