@@ -260,7 +260,7 @@ export function RetailOrderForm() {
                                                             className="h-8 w-28 text-right bg-transparent border-none focus-visible:ring-0 p-0 font-bold ml-auto"
                                                         />
                                                     </td>
-                                                    <td className="px-6 py-4 text-right font-black tabular-nums text-zinc-900 dark:text-zinc-100">
+                                                    <td className="px-6 py-4 text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
                                                         {formatCurrency(item.total_price)}
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
@@ -279,8 +279,8 @@ export function RetailOrderForm() {
                                         </tbody>
                                         <tfoot className="bg-zinc-50/30 dark:bg-zinc-900/30 font-bold border-t border-zinc-100 dark:border-zinc-800">
                                             <tr>
-                                                <td colSpan={3} className="px-6 py-4 text-zinc-500 uppercase text-[10px] tracking-widest">Tổng cộng tạm tính</td>
-                                                <td className="px-6 py-4 text-right text-lg font-black text-zinc-900 dark:text-zinc-100 tabular-nums">
+                                                <td colSpan={3} className="px-6 py-4 text-zinc-500 uppercase text-[10px] tracking-widest font-bold">Tổng cộng tạm tính</td>
+                                                <td className="px-6 py-4 text-right text-lg font-bold text-zinc-900 dark:text-zinc-100 tabular-nums">
                                                     {formatCurrency(formData.total_amount)}
                                                 </td>
                                                 <td></td>
@@ -289,7 +289,7 @@ export function RetailOrderForm() {
                                     </table>
                                 </div>
                             ) : (
-                                <div className="text-center py-12 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-2xl">
+                                <div className="text-center py-12 border-2 border-dashed border-zinc-100 dark:border-zinc-800 rounded-xl">
                                     <div className="bg-zinc-50 dark:bg-zinc-900 h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <Plus className="h-6 w-6 text-zinc-300" />
                                     </div>

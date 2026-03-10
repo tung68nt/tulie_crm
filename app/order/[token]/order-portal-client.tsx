@@ -144,7 +144,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                             {paymentStatusText}
                         </Badge>
                     </div>
-                    <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight">
+                    <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 tracking-tight">
                         Đơn hàng của {order.customer_name}
                     </h1>
                     <p className="text-sm text-zinc-500">
@@ -247,7 +247,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-base font-black text-zinc-900">{formatCurrency(item.total_price)}</div>
+                                                <div className="text-base font-bold text-zinc-900 tabular-nums">{formatCurrency(item.total_price)}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -267,7 +267,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                     <Separator className="bg-zinc-200" />
                                     <div className="flex justify-between items-center pt-1">
                                         <span className="text-sm font-bold text-zinc-900">TỔNG CỘNG</span>
-                                        <span className="text-xl font-black text-zinc-900">{formatCurrency(order.total_amount)}</span>
+                                        <span className="text-xl font-bold text-zinc-900 tabular-nums">{formatCurrency(order.total_amount)}</span>
                                     </div>
                                 </div>
                             </CardContent>
@@ -373,12 +373,12 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                         <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mx-auto">
                                             <CheckCircle className="h-8 w-8 text-zinc-900" />
                                         </div>
-                                        <p className="text-base font-black text-white">Đã thanh toán 100%</p>
+                                        <p className="text-base font-bold text-white">Đã thanh toán 100%</p>
                                         <p className="text-[11px] text-zinc-400">Cảm ơn bạn đã thanh toán.</p>
                                     </div>
                                 ) : (
                                     <>
-                                        <div className="bg-white p-5 rounded-2xl inline-block shadow-md">
+                                        <div className="bg-white p-5 rounded-xl inline-block shadow-md">
                                             <img
                                                 src={qrUrl}
                                                 alt="Payment QR"
@@ -387,7 +387,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                         </div>
                                         <div className="space-y-1">
                                             <p className="text-[11px] text-zinc-400">Quét mã VietQR để thanh toán</p>
-                                            <div className="text-2xl font-black text-white">{formatCurrency(balance)}</div>
+                                            <div className="text-2xl font-bold text-white tabular-nums">{formatCurrency(balance)}</div>
                                             <p className="text-[10px] text-zinc-500 font-mono bg-white/5 py-1.5 px-3 rounded-md inline-block mt-1">
                                                 Nội dung: {order.order_number}
                                             </p>
@@ -440,7 +440,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                         <Card className="border-zinc-200 shadow-sm">
                             <CardContent className="p-5 space-y-3 text-center">
                                 <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Hỗ trợ & Liên hệ</p>
-                                <p className="text-lg font-black text-zinc-900">
+                                <p className="text-lg font-bold text-zinc-900">
                                     {brandConfig?.phone || '0826.98.2222'}
                                 </p>
                                 <p className="text-[11px] text-zinc-400">

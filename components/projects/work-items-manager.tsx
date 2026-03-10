@@ -548,7 +548,7 @@ function WorkItemRow({
                                     </div>
                                 ))}
                             </div>
-                            <div className="space-y-2 p-2 bg-white border border-zinc-100 rounded-2xl shadow-sm">
+                            <div className="space-y-2 p-2 bg-white border border-zinc-100 rounded-xl shadow-sm">
                                 <div className="flex gap-2">
                                     <Input
                                         value={newLinkLabel}
@@ -631,7 +631,7 @@ function WorkItemRow({
                                                         <Clock className="w-3.5 h-3.5" />
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 border-zinc-100 rounded-2xl shadow-xl" align="end">
+                                                <PopoverContent className="w-auto p-0 border-zinc-100 rounded-xl shadow-xl" align="end">
                                                     <Calendar
                                                         mode="single"
                                                         selected={doc.date ? new Date(doc.date) : undefined}

@@ -79,11 +79,11 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                 <div className="flex flex-col gap-1">
                     <Link
                         href={`/studio/${order.id}`}
-                        className="font-black text-sm text-primary hover:underline hover:text-primary/80 transition-all font-mono"
+                        className="font-bold text-sm text-primary hover:underline hover:text-primary/80 transition-all font-mono"
                     >
                         {order.order_number}
                     </Link>
-                    <span className="text-[10px] text-muted-foreground  font-black">STT: #{order.stt}</span>
+                    <span className="text-[10px] text-muted-foreground  font-bold">STT: #{order.stt}</span>
                 </div>
             )
         },
@@ -98,7 +98,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
             return (
                 <Badge
                     className={cn(
-                        "text-[9px] px-1.5 py-0 h-4 font-black   border-none rounded-sm",
+                        "text-[9px] px-1.5 py-0 h-4 font-bold   border-none rounded-sm",
                         BRAND_COLORS[brand] || 'bg-gray-500 text-white'
                     )}
                 >
@@ -140,7 +140,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Giá trị đơn" />
         ),
-        cell: ({ row }) => <span className="font-black text-sm">{formatCurrency(row.original.total_amount)}</span>,
+        cell: ({ row }) => <span className="font-bold text-sm tabular-nums">{formatCurrency(row.original.total_amount)}</span>,
     },
     {
         accessorKey: 'payment_status',
@@ -157,7 +157,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                     <Badge
                         variant="secondary"
                         className={cn(
-                            "text-[10px] px-2 py-0 h-5 font-black  ",
+                            "text-[10px] px-2 py-0 h-5 font-bold  ",
                             status === 'paid' ? "bg-zinc-900 text-zinc-100" : status === 'partial' ? "bg-zinc-500 text-zinc-100" : "bg-zinc-100 text-zinc-500"
                         )}
                     >
@@ -201,7 +201,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuLabel className="text-xs  font-black text-muted-foreground">Thao tác đơn hàng</DropdownMenuLabel>
+                        <DropdownMenuLabel className="text-xs  font-bold text-muted-foreground">Thao tác đơn hàng</DropdownMenuLabel>
                         <DropdownMenuItem asChild>
                             <Link href={`/studio/${order.id}`}>
                                 <Camera className="mr-2 h-4 w-4" /> Chi tiết & Xử lý ảnh

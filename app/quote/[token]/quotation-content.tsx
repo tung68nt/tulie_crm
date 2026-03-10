@@ -465,7 +465,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             <div className="text-left sm:text-right w-full sm:w-auto">
                                 {/* Title Section - Height matches Logo for alignment */}
                                 <div className="h-auto sm:h-24 flex flex-col justify-end mb-4">
-                                    <h2 className="text-4xl sm:text-5xl font-black text-black leading-none" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Báo giá</h2>
+                                    <h2 className="text-4xl sm:text-5xl font-bold text-black leading-none" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Báo giá</h2>
                                     <p className="text-xl sm:text-2xl text-black font-medium mt-1" style={{ fontFamily: "'DFVN Neue Kaine', sans-serif" }}>Quotation</p>
                                 </div>
 

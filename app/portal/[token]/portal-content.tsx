@@ -169,7 +169,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
             <main className="max-w-6xl mx-auto px-6 mt-10 space-y-10">
                 {/* Update Info CTA — dot pattern + gradient like quotation */}
-                <div className="relative rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden text-white"
+                <div className="relative rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden text-white"
                     style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}>
                     <div className="absolute inset-0 opacity-20 pointer-events-none"
                         style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
@@ -223,7 +223,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 </div>
                             </div>
                             <div className="flex items-baseline gap-1">
-                                <div className="text-2xl font-bold text-zinc-950 tracking-tighter">
+                                <div className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">
                                     {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(' đ', '') : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
@@ -286,15 +286,15 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         )}
                                         <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                                             <div className="flex flex-col">
-                                                <span className="text-[9px] font-bold text-zinc-400 mb-0.5">Hạn hoàn thành</span>
-                                                <span className="text-[12px] font-bold text-zinc-950">{formatDate(milestone.date)}</span>
+                                                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
+                                                <span className="text-[12px] font-semibold text-zinc-950">{formatDate(milestone.date)}</span>
                                             </div>
                                             {milestone.amount > 0 && (
                                                 <div className="text-right">
-                                                    <span className="text-[9px] font-bold text-zinc-400 mb-0.5">Giá trị mốc</span>
+                                                    <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
                                                     <div className="flex items-baseline justify-end gap-1">
-                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tight">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
-                                                        <span className="text-[10px] font-bold text-zinc-950">đ</span>
+                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
+                                                        <span className="text-[10px] font-semibold text-zinc-900">đ</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -328,9 +328,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         ))}
 
                         {displayItems.length === 0 && (
-                            <div className="bg-white rounded-2xl border border-zinc-200 p-10 text-center">
+                            <div className="bg-white rounded-xl border border-zinc-200 p-10 text-center">
                                 <Package className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
-                                <p className="text-sm text-zinc-500">Chưa có hạng mục nào được tạo cho dự án này.</p>
+                                <p className="text-sm text-muted-foreground font-medium">Chưa có hạng mục nào được tạo cho dự án này.</p>
                             </div>
                         )}
                     </div>
@@ -376,7 +376,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
     const totalTasks = itemTasks.length
 
     return (
-        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-zinc-100">
                 <div className="flex items-center gap-3">
@@ -430,7 +430,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                     <div className="pt-4 border-t border-zinc-100">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
+                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
                             <span className="text-sm font-semibold text-zinc-900">đ</span>
                         </div>
                     </div>
@@ -644,7 +644,7 @@ function TimelineSection({ timeline }: { timeline: any[] }) {
     if (timeline.length === 0) return null
 
     return (
-        <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
             <div className="p-6 border-b border-zinc-100">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">

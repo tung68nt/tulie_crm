@@ -38,8 +38,8 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                 </Button>
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <h1 className="text-3xl font-black italic   font-mono">{order.order_number}</h1>
-                        <Badge variant="outline" className={cn("text-[10px] font-black  ", STATUS_COLORS[order.order_status])}>
+                        <h1 className="text-3xl font-bold italic   font-mono">{order.order_number}</h1>
+                        <Badge variant="outline" className={cn("text-[10px] font-bold  ", STATUS_COLORS[order.order_status])}>
                             {STATUS_LABELS[order.order_status]}
                         </Badge>
                     </div>

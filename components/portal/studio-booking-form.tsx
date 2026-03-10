@@ -72,7 +72,7 @@ export function StudioBookingForm() {
     return (
         <div className="max-w-3xl mx-auto py-8 px-4">
             <div className="mb-8 text-center">
-                <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-4">
+                <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
                     <Camera className="h-8 w-8" />
                 </div>
                 <h1 className="text-3xl font-bold mb-2">Đặt in ảnh thẻ online</h1>
@@ -100,7 +100,7 @@ export function StudioBookingForm() {
                 ))}
             </div>
 
-            <div className="bg-card rounded-2xl shadow-sm border p-6 md:p-8">
+            <div className="bg-card rounded-xl shadow-sm border p-6 md:p-8">
                 {/* STEP 1: Chọn gói */}
                 {step === 1 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

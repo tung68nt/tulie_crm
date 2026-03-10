@@ -140,7 +140,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                     <p className="text-xs text-zinc-400">Đang tải danh sách...</p>
                                 </div>
                             ) : bundles.length === 0 ? (
-                                <div className="text-center py-8 border-2 border-dashed border-zinc-100 rounded-2xl">
+                                <div className="text-center py-8 border-2 border-dashed border-zinc-100 rounded-xl">
                                     <p className="text-xs text-zinc-400">Chưa có bộ mẫu nào. Vui lòng tạo trong Cài đặt.</p>
                                 </div>
                             ) : (
@@ -148,7 +148,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                     <div
                                         key={b.id}
                                         className={cn(
-                                            "relative p-4 rounded-2xl border transition-all cursor-pointer group",
+                                            "relative p-4 rounded-xl border transition-all cursor-pointer group",
                                             selectedBundleId === b.id
                                                 ? "bg-zinc-900 border-zinc-900 text-white shadow-lg shadow-zinc-200"
                                                 : "bg-white border-zinc-100 hover:border-zinc-300"

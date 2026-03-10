@@ -36,7 +36,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
     }, [workItems])
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
             <CardHeader className="py-6 px-6 border-b border-zinc-50 flex flex-row items-center justify-between">
                 <div>
                     <div className="flex items-center gap-3">

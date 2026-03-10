@@ -100,7 +100,7 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
     }
 
     return (
-        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-2xl">
+        <Card className="border-zinc-200 shadow-sm overflow-hidden rounded-xl">
             <CardHeader className="flex flex-row items-center justify-between py-6 px-6">
                 <div>
                     <CardTitle className="text-lg font-bold flex items-center gap-2">

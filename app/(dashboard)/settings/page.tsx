@@ -1513,7 +1513,7 @@ export default function SettingsPage() {
                                             </Card>
                                         ))}
                                         {bundles.length === 0 && (
-                                            <div className="col-span-full py-12 text-center text-zinc-400 border-2 border-dashed border-zinc-100 rounded-2xl">
+                                            <div className="col-span-full py-12 text-center text-zinc-400 border-2 border-dashed border-zinc-100 rounded-xl">
                                                 <BookOpen className="h-8 w-8 mx-auto mb-3 opacity-20" />
                                                 <p className="text-sm">Chưa có bộ mẫu nào</p>
                                             </div>

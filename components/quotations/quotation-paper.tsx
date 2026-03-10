@@ -40,7 +40,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
     const hasProposal = proposalSections.length > 0
 
     return (
-        <div className="bg-white text-zinc-950 font-sans p-10 sm:p-14 min-h-[297mm] shadow-2xl relative overflow-hidden flex flex-col print:shadow-none print:p-8" id="quotation-print">
+        <div className="bg-white text-zinc-950 font-sans p-10 sm:p-14 min-h-[297mm] shadow-lg relative overflow-hidden flex flex-col print:shadow-none print:p-8" id="quotation-print">
             {/* Background pattern */}
             <div className="absolute top-0 right-0 w-1/3 h-1 bg-zinc-950 opacity-100" />
 
@@ -56,7 +56,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                 {/* Right Side: Large 'Báo giá' Header */}
                 <div className="text-right flex flex-col justify-start">
                     <div className="h-20 sm:h-24 flex flex-col justify-start items-end mb-10">
-                        <h2 className="text-[58px] font-black text-black leading-[0.8] uppercase tracking-tighter" style={{ fontFamily: "'Kaine', 'Inter', sans-serif" }}>Báo giá</h2>
+                        <h2 className="text-[58px] font-bold text-black leading-[0.8] uppercase tracking-tighter" style={{ fontFamily: "'Kaine', 'Inter', sans-serif" }}>Báo giá</h2>
                         <p className="text-[24px] text-zinc-950 font-bold mt-1 tracking-tight" style={{ fontFamily: "'Kaine', 'Inter', sans-serif" }}>Quotation</p>
                     </div>
                 </div>
@@ -106,11 +106,11 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
             </div>
 
             {/* Client Section */}
-            <div className="mt-12 bg-zinc-950 p-8 rounded-[32px] text-white flex items-center justify-between relative overflow-hidden print:bg-black" style={{ backgroundImage: 'radial-gradient(circle at top right, #27272a, #09090b)', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+            <div className="mt-12 bg-zinc-950 p-8 rounded-xl text-white flex items-center justify-between relative overflow-hidden print:bg-black" style={{ backgroundImage: 'radial-gradient(circle at top right, #27272a, #09090b)', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
                 <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
                     <div>
-                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-3">Người nhận — <span className="text-white">Customer Information</span></p>
-                        <h3 className="text-2xl font-black mb-4 uppercase tracking-tight">{quotation.customers?.company_name || quotation.customers?.full_name}</h3>
+                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] mb-3">Người nhận — <span className="text-white font-semibold">Customer Information</span></p>
+                        <h3 className="text-2xl font-bold mb-4 uppercase tracking-tight">{quotation.customers?.company_name || quotation.customers?.full_name}</h3>
                         <div className="flex flex-wrap gap-x-8 gap-y-2 text-[11px] font-medium text-zinc-300">
                             <div className="flex items-center gap-2">
                                 <Users className="h-3.5 w-3.5 text-zinc-500" />
@@ -132,7 +132,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
             {/* Proposal Section */}
             {hasProposal && (
                 <div className="mt-12">
-                    <div className="flex items-center gap-4 mb-10 group bg-zinc-950 p-6 rounded-[24px] relative overflow-hidden print:bg-black" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+                    <div className="flex items-center gap-4 mb-10 group bg-zinc-950 p-6 rounded-xl relative overflow-hidden print:bg-black" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
                         <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" style={{
                             backgroundImage: 'radial-gradient(circle at 70% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)'
                         }} />
@@ -170,7 +170,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                                 <h4 className="text-[13px] font-bold text-zinc-900 uppercase">Báo giá & Đề xuất</h4>
                                             </div>
                                         </div>
-                                        <div className="rounded-2xl border border-slate-100 bg-white overflow-hidden shadow-sm group hover:border-zinc-300 transition-all p-4">
+                                        <div className="rounded-xl border border-slate-100 bg-white overflow-hidden shadow-sm group hover:border-zinc-300 transition-all p-4">
                                             <div className="text-[12px] text-zinc-600 leading-relaxed font-medium">
                                                 {section.content}
                                             </div>
@@ -188,7 +188,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                                 <h4 className="text-[12px] font-bold text-zinc-900 uppercase">Hợp đồng kinh tế</h4>
                                             </div>
                                         </div>
-                                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4 h-[100px] flex items-center justify-center text-center">
+                                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 h-[100px] flex items-center justify-center text-center">
                                             <p className="text-[10px] italic text-slate-400">Dự thảo sau khi báo giá được phê duyệt</p>
                                         </div>
                                     </div>
@@ -204,7 +204,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                                 <h4 className="text-[12px] font-bold text-zinc-900 uppercase">Bàn giao</h4>
                                             </div>
                                         </div>
-                                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4 h-[100px] flex items-center justify-center text-center">
+                                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 h-[100px] flex items-center justify-center text-center">
                                             <p className="text-[10px] italic text-slate-400">Biên bản xác nhận hoàn tất dịch vụ</p>
                                         </div>
                                     </div>
@@ -273,7 +273,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
 
             {/* Totals Section */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-[1fr_360px] gap-12 items-start">
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 italic">
+                <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 italic">
                     <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <Info className="h-3 w-3" />
                         Bằng chữ / Amount in words
@@ -299,15 +299,15 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                         <span className="text-zinc-950 font-bold">{formatCurrency(vatAmount)}</span>
                     </div>
                     <div className="pt-3 mt-3 border-t-2 border-zinc-950 flex justify-between items-center bg-zinc-950 text-white p-4 rounded-xl shadow-lg print:bg-black" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
-                        <span className="text-[12px] font-black uppercase tracking-widest">Tổng cộng / Total</span>
-                        <span className="text-xl font-black">{formatCurrency(finalAmount)}</span>
+                        <span className="text-[12px] font-bold uppercase tracking-widest">Tổng cộng / Total</span>
+                        <span className="text-xl font-bold">{formatCurrency(finalAmount)}</span>
                     </div>
                 </div>
             </div>
 
             {/* Bank Accounts */}
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="p-6 rounded-3xl border border-slate-100 bg-slate-50/30 group hover:border-zinc-300 transition-all">
+                <div className="p-6 rounded-xl border border-slate-100 bg-slate-50/30 group hover:border-zinc-300 transition-all">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-8 w-8 rounded-full bg-zinc-950 text-white flex items-center justify-center print:bg-black">
                             <CheckCircle2 size={16} />
@@ -316,13 +316,13 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                     </div>
                     <div className="space-y-1.5 text-[10px] font-medium">
                         <p className="text-slate-500 uppercase tracking-tight">Chủ TK: <span className="text-zinc-950 font-bold">{brandConfig?.bank_account_name}</span></p>
-                        <p className="text-slate-500 uppercase tracking-tight">Số TK: <span className="text-zinc-950 font-black text-[12px]">{brandConfig?.bank_account_no}</span></p>
+                        <p className="text-slate-500 uppercase tracking-tight">Số TK: <span className="text-zinc-950 font-semibold text-[12px]">{brandConfig?.bank_account_no}</span></p>
                         <p className="text-slate-500 uppercase tracking-tight">Ngân hàng: <span className="text-zinc-950 font-bold">{brandConfig?.bank_name}</span></p>
                         {brandConfig?.bank_branch && <p className="text-slate-500 uppercase tracking-tight font-italic">CN: {brandConfig.bank_branch}</p>}
                     </div>
                 </div>
 
-                <div className="p-6 rounded-3xl border border-slate-100 bg-slate-50/30 group hover:border-zinc-300 transition-all">
+                <div className="p-6 rounded-xl border border-slate-100 bg-slate-50/30 group hover:border-zinc-300 transition-all">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="h-8 w-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
                             <CheckCircle2 size={16} />
@@ -331,7 +331,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                     </div>
                     <div className="space-y-1.5 text-[10px] font-medium">
                         <p className="text-slate-500 uppercase tracking-tight">Chủ TK: <span className="text-zinc-950 font-bold">{brandConfig?.studio_bank_account_name}</span></p>
-                        <p className="text-slate-500 uppercase tracking-tight">Số TK: <span className="text-zinc-950 font-black text-[12px]">{brandConfig?.studio_bank_account_no}</span></p>
+                        <p className="text-slate-500 uppercase tracking-tight">Số TK: <span className="text-zinc-950 font-semibold text-[12px]">{brandConfig?.studio_bank_account_no}</span></p>
                         <p className="text-slate-500 uppercase tracking-tight">Ngân hàng: <span className="text-zinc-950 font-bold">{brandConfig?.studio_bank_name}</span></p>
                         {brandConfig?.studio_bank_branch && <p className="text-slate-500 uppercase tracking-tight font-italic">CN: {brandConfig.studio_bank_branch}</p>}
                     </div>
@@ -367,7 +367,7 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
 
                 <div className="text-center space-y-20 pb-10">
                     <div>
-                        <p className="text-[11px] font-black uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-950">Đại diện Tulie Agency</p>
                         <p className="text-[9px] text-slate-400 uppercase tracking-tight font-bold">Authorized Signature</p>
                     </div>
                     <div className="space-y-1">
