@@ -144,15 +144,15 @@ export default function QuotationDetailPage() {
                             </Link>
                         </Button>
                         <div className="flex items-center gap-5">
-                            <div className="h-14 w-14 rounded-2xl bg-zinc-950 flex items-center justify-center shadow-md">
+                            <div className="h-14 w-14 rounded-[20px] bg-zinc-950 flex items-center justify-center shadow-lg">
                                 <FileText className="h-7 w-7 text-white" />
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                    <div className="px-3 h-6 rounded-lg border border-zinc-200 bg-white text-zinc-900 font-bold text-[10px] flex items-center tracking-tight uppercase shadow-sm">
+                                    <div className="px-3 h-6 rounded-full border border-zinc-200 bg-white text-zinc-900 font-bold text-[11px] flex items-center tracking-tight shadow-sm">
                                         {quotation.quotation_number}
                                     </div>
-                                    <Badge variant="secondary" className={cn("px-3 h-6 flex items-center rounded-lg text-[10px] font-bold tracking-tight border-none whitespace-nowrap",
+                                    <Badge variant="secondary" className={cn("px-3 h-6 flex items-center rounded-full text-[11px] font-bold tracking-tight border-none whitespace-nowrap",
                                         quotation.status === 'draft' ? "bg-zinc-100 text-zinc-600" :
                                             quotation.status === 'sent' ? "bg-blue-50 text-blue-600" :
                                                 quotation.status === 'accepted' ? "bg-emerald-50 text-emerald-600" :
@@ -169,13 +169,13 @@ export default function QuotationDetailPage() {
                     <div className="flex flex-wrap items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="gap-2.5 h-11 px-6 font-bold rounded-xl border-zinc-200 shadow-sm bg-white hover:bg-zinc-50 transition-all text-sm">
+                                <Button variant="outline" className="gap-2 h-10 px-4 font-semibold">
                                     <Share2 className="h-4 w-4" />
                                     Gửi & Chia sẻ
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-68 rounded-[16px] p-2.5 shadow-2xl border-zinc-100">
-                                <DropdownMenuLabel className="px-4 py-3 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Link & Portal công khai</DropdownMenuLabel>
+                            <DropdownMenuContent align="end" className="w-64">
+                                <DropdownMenuLabel>Link & Portal công khai</DropdownMenuLabel>
                                 <DropdownMenuSeparator className="my-1.5 opacity-50" />
 
                                 {!quotation.public_token ? (
@@ -184,7 +184,7 @@ export default function QuotationDetailPage() {
                                     </div>
                                 ) : (
                                     <>
-                                        <DropdownMenuItem asChild className="rounded-xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
+                                        <DropdownMenuItem asChild className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
                                             <Link href={portalUrl || '#'} target="_blank">
                                                 <Layout className="h-4 w-4 mr-3 opacity-50" />
                                                 Mở Portal khách hàng
@@ -197,14 +197,14 @@ export default function QuotationDetailPage() {
                                                     toast.success('Đã sao chép link portal')
                                                 }
                                             }}
-                                            className="rounded-xl px-4 py-3 font-bold text-zinc-700 cursor-pointer"
+                                            className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer"
                                         >
                                             <Copy className="h-4 w-4 mr-3 opacity-50" />
                                             Sao chép link portal
                                         </DropdownMenuItem>
 
                                         <DropdownMenuSeparator className="my-2 opacity-50" />
-                                        <DropdownMenuItem asChild className="rounded-xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
+                                        <DropdownMenuItem asChild className="rounded-2xl px-4 py-3 font-bold text-zinc-700 cursor-pointer">
                                             <Link href={publicUrl || '#'} target="_blank">
                                                 <ExternalLink className="h-4 w-4 mr-3 opacity-50" />
                                                 Mở Link báo giá
@@ -218,7 +218,7 @@ export default function QuotationDetailPage() {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
-                        <Button variant="outline" asChild className="h-11 px-6 font-bold rounded-xl border-zinc-200 shadow-sm bg-white hover:bg-zinc-50 transition-all text-sm">
+                        <Button variant="outline" asChild className="h-10 px-4 font-semibold">
                             <Link href={`/quotations/${quotation.id}/edit`} className="flex items-center gap-2.5">
                                 <Edit className="h-4 w-4 text-zinc-400" />
                                 Sửa
@@ -266,7 +266,7 @@ export default function QuotationDetailPage() {
                             {/* Customer Info Card */}
                             <Card className="rounded-2xl border-zinc-200/60 shadow-sm overflow-hidden bg-white">
                                 <div className="bg-zinc-50/50 px-8 py-4 border-b border-zinc-200/60">
-                                    <CardTitle className="text-[11px] font-bold flex items-center gap-2.5 uppercase tracking-wider text-zinc-400">
+                                    <CardTitle className="text-[11px] font-bold flex items-center gap-2.5  text-zinc-400">
                                         <Building2 className="h-3.5 w-3.5" />
                                         Thông tin khách hàng
                                     </CardTitle>
@@ -275,21 +275,21 @@ export default function QuotationDetailPage() {
                                     <div className="grid gap-10 sm:grid-cols-2">
                                         <div className="space-y-6">
                                             <div>
-                                                <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Đơn vị</p>
+                                                <p className="text-[11px] font-bold text-zinc-400  mb-2">Đơn vị</p>
                                                 <p className="font-bold text-2xl text-zinc-950 tracking-tight leading-tight">{quotation.customer?.company_name}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">Địa chỉ</p>
+                                                <p className="text-[11px] font-bold text-zinc-400  mb-2">Địa chỉ</p>
                                                 <p className="text-sm font-medium text-zinc-600 leading-relaxed max-w-sm">{quotation.customer?.address || 'N/A'}</p>
                                             </div>
                                         </div>
                                         <div className="space-y-4 pt-2">
                                             <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                                                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Email tiếp nhận</span>
+                                                <span className="text-[11px] font-bold text-zinc-400 ">Email tiếp nhận</span>
                                                 <span className="text-sm font-bold text-zinc-900">{quotation.customer?.email || 'N/A'}</span>
                                             </div>
                                             <div className="flex justify-between items-center py-3 border-b border-zinc-100">
-                                                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">Hotline liên hệ</span>
+                                                <span className="text-[11px] font-bold text-zinc-400 ">Hotline liên hệ</span>
                                                 <span className="text-sm font-bold text-zinc-900">{quotation.customer?.phone || 'N/A'}</span>
                                             </div>
                                         </div>
@@ -306,7 +306,7 @@ export default function QuotationDetailPage() {
                                         </div>
                                         <div className="relative z-10 flex items-center justify-between">
                                             <div>
-                                                <CardTitle className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">Đề xuất giải pháp</CardTitle>
+                                                <CardTitle className="text-[11px] font-bold text-white  mb-1">Đề xuất giải pháp</CardTitle>
                                                 <p className="text-[11px] text-zinc-500 font-medium tracking-tight">Proposal — {proposalSections.length} Stages</p>
                                             </div>
                                             <Target className="h-6 w-6 text-zinc-600" />
@@ -347,7 +347,7 @@ export default function QuotationDetailPage() {
                                     </div>
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div>
-                                            <CardTitle className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">Chi tiết hạng mục</CardTitle>
+                                            <CardTitle className="text-[11px] font-bold text-white  mb-1">Chi tiết hạng mục</CardTitle>
                                             <p className="text-[11px] text-zinc-500 font-medium tracking-tight">Investment Plan & Pricing Framework</p>
                                         </div>
                                         <Receipt className="h-6 w-6 text-zinc-600" />
@@ -357,12 +357,12 @@ export default function QuotationDetailPage() {
                                     <Table>
                                         <TableHeader className="bg-zinc-50/70 border-zinc-100">
                                             <TableRow className="hover:bg-transparent border-none">
-                                                <TableHead className="w-14 text-center font-bold text-[10px] uppercase tracking-wider text-zinc-400 py-4">#</TableHead>
-                                                <TableHead className="font-bold text-[10px] uppercase tracking-wider text-zinc-400">Hạng mục & Mô tả</TableHead>
-                                                <TableHead className="text-center font-bold text-[10px] uppercase tracking-wider text-zinc-400">ĐVT</TableHead>
-                                                <TableHead className="text-center font-bold text-[10px] uppercase tracking-wider text-zinc-400">SL</TableHead>
-                                                <TableHead className="text-right font-bold text-[10px] uppercase tracking-wider text-zinc-400">Đơn giá</TableHead>
-                                                <TableHead className="text-right pr-8 font-bold text-[10px] uppercase tracking-wider text-zinc-400">Thành tiền</TableHead>
+                                                <TableHead className="w-14 text-center font-bold text-[11px]  text-zinc-400 py-3">#</TableHead>
+                                                <TableHead className="font-bold text-[11px]  text-zinc-400">Hạng mục & Mô tả</TableHead>
+                                                <TableHead className="text-center font-bold text-[11px]  text-zinc-400">ĐVT</TableHead>
+                                                <TableHead className="text-center font-bold text-[11px]  text-zinc-400">SL</TableHead>
+                                                <TableHead className="text-right font-bold text-[11px]  text-zinc-400">Đơn giá</TableHead>
+                                                <TableHead className="text-right pr-8 font-bold text-[11px]  text-zinc-400">Thành tiền</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -383,11 +383,11 @@ export default function QuotationDetailPage() {
                                     </Table>
                                     <div className="bg-zinc-50 border-t border-zinc-100 p-8 flex justify-end">
                                         <div className="w-full max-sm space-y-4">
-                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400 uppercase tracking-wider italic">
+                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400  italic">
                                                 <span>Tạm tính (Subtotal):</span>
                                                 <span className="text-zinc-950 not-italic text-sm">{formatCurrency(quotation.subtotal || 0)}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400 uppercase tracking-wider italic">
+                                            <div className="flex justify-between items-center text-[11px] font-bold text-zinc-400  italic">
                                                 <span>Thuế VAT ({quotation.vat_percent || 0}%):</span>
                                                 <span className="text-zinc-950 not-italic text-sm">{formatCurrency(quotation.vat_amount || 0)}</span>
                                             </div>
@@ -407,13 +407,13 @@ export default function QuotationDetailPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-zinc-50/70 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
                                         <p className="text-4xl font-bold text-zinc-950 tabular-nums leading-none tracking-tight">{quotation.view_count || 0}</p>
-                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-t border-zinc-200/40 pt-3 mx-2">Lượt xem</p>
+                                        <p className="text-[11px] font-bold text-zinc-400  border-t border-zinc-200/40 pt-3 mx-2">Lượt xem</p>
                                     </div>
                                     <div className="bg-zinc-50/70 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
                                         <p className="text-xs font-bold text-zinc-950 leading-tight tracking-tight">
                                             {quotation.valid_until ? formatDate(quotation.valid_until) : 'N/A'}
                                         </p>
-                                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-t border-zinc-200/40 pt-3 mx-2">Ngày hết hạn</p>
+                                        <p className="text-[11px] font-bold text-zinc-400  border-t border-zinc-200/40 pt-3 mx-2">Ngày hết hạn</p>
                                     </div>
                                 </div>
 
@@ -442,7 +442,7 @@ export default function QuotationDetailPage() {
                                 <div className="absolute inset-0 opacity-[0.06] pointer-events-none group-hover:opacity-[0.09] transition-opacity duration-500"
                                     style={{ backgroundImage: "radial-gradient(#fff 0.8px, transparent 0.8px)", backgroundSize: "12px 12px" }}>
                                 </div>
-                                <h4 className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-8 border-b border-zinc-800/60 pb-4 flex items-center justify-between">
+                                <h4 className="text-[11px] font-bold text-zinc-500  mb-8 border-b border-zinc-800/60 pb-4 flex items-center justify-between">
                                     <span className="flex items-center gap-2.5">
                                         <CreditCard className="h-4 w-4" />
                                         Thông tin thanh toán
@@ -451,22 +451,22 @@ export default function QuotationDetailPage() {
                                 </h4>
                                 <div className="space-y-7 relative z-10">
                                     <div className="space-y-1">
-                                        <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">Đơn vị thụ hưởng</p>
+                                        <p className="text-[11px] font-bold text-zinc-600 ">Đơn vị thụ hưởng</p>
                                         <p className="font-bold text-sm tracking-tight">{quotation.bank_account_name || brandConfig?.bank_account_name || "CÔNG TY TNHH TULIE"}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">Số tài khoản chính</p>
+                                        <p className="text-[11px] font-bold text-zinc-600 ">Số tài khoản chính</p>
                                         <p className="font-bold text-3xl tracking-tighter text-white/95 font-mono select-all">
                                             {quotation.bank_account_no || brandConfig?.bank_account_no || "0110163102"}
                                         </p>
                                     </div>
                                     <div className="grid grid-cols-2 gap-6 pt-2">
                                         <div className="space-y-1">
-                                            <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">Ngân hàng</p>
+                                            <p className="text-[11px] font-bold text-zinc-600 ">Ngân hàng</p>
                                             <p className="font-bold text-xs text-zinc-300">{quotation.bank_name || brandConfig?.bank_name || "MB BANK"}</p>
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-[11px] font-bold text-zinc-600 uppercase tracking-wider">Chi nhánh</p>
+                                            <p className="text-[11px] font-bold text-zinc-600 ">Chi nhánh</p>
                                             <p className="font-bold text-xs text-zinc-300">{quotation.bank_branch || brandConfig?.bank_branch || "VIỆT NAM"}</p>
                                         </div>
                                     </div>
@@ -480,11 +480,11 @@ export default function QuotationDetailPage() {
                     <div className="space-y-8">
                         <div className="flex flex-col xl:flex-row items-center justify-between gap-6">
                             {/* Layout Toggle - Segmented Control */}
-                            <div className="bg-zinc-100/60 p-1 rounded-2xl h-12 flex items-center gap-1 border border-zinc-200/40 w-full max-w-[340px] shadow-sm">
+                            <div className="bg-zinc-100/60 p-1.5 rounded-[20px] h-14 flex items-center gap-1.5 border border-zinc-200/40 w-full max-w-[380px] shadow-sm">
                                 <button
                                     onClick={() => setLayout('modern')}
                                     className={cn(
-                                        "flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all h-full",
+                                        "flex-1 flex items-center justify-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-bold transition-all h-full",
                                         layout === 'modern'
                                             ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
                                             : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
@@ -496,7 +496,7 @@ export default function QuotationDetailPage() {
                                 <button
                                     onClick={() => setLayout('basic')}
                                     className={cn(
-                                        "flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all h-full",
+                                        "flex-1 flex items-center justify-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-bold transition-all h-full",
                                         layout === 'basic'
                                             ? "bg-white text-zinc-950 shadow-sm border border-zinc-200/50"
                                             : "text-zinc-500 hover:text-zinc-900 hover:bg-white/40"
