@@ -14,9 +14,23 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
             passwordHash = await bcrypt.hash(password, 10)
         }
 
+        // Save hash + plaintext (for admin view). Use metadata JSON to avoid schema changes.
+        const updateData: any = { password_hash: passwordHash }
+        
+        // Try to update metadata with plaintext (for tables that support metadata column)
+        try {
+            const { data: existing } = await supabase.from(tableName).select('metadata').eq('id', entityId).single()
+            updateData.metadata = {
+                ...(existing?.metadata || {}),
+                password_plain: password || null
+            }
+        } catch {
+            // Table may not have metadata column — ignore
+        }
+
         const { error } = await supabase
             .from(tableName)
-            .update({ password_hash: passwordHash })
+            .update(updateData)
             .eq('id', entityId)
 
         if (error) {
@@ -28,6 +42,23 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
     } catch (err: any) {
         console.error('Error setting password:', err)
         return { success: false, error: err.message || 'Lỗi hệ thống' }
+    }
+}
+
+export async function getEntityPasswordPlain(tableName: string, entityId: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from(tableName)
+            .select('metadata')
+            .eq('id', entityId)
+            .single()
+
+        if (error) throw error
+        return { password: data?.metadata?.password_plain || null }
+    } catch (err: any) {
+        console.error('Error getting password plain:', err)
+        return { password: null }
     }
 }
 

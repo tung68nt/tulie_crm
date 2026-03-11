@@ -144,15 +144,13 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     }, [])
 
     // Find quotation alternatives for each work item
-    // If a work item has a quotation, check if there are sibling quotations in the same project
+    // Each work item has its own quotation — only return that specific quotation
     const getQuotationOptionsForItem = useCallback((item: any): any[] => {
         if (!item.quotation_id && !item.quotation) return []
-        // All project quotations that could be alternatives
-        const activeQuotations = quotations.filter((q: any) =>
-            ['draft', 'sent', 'viewed', 'accepted'].includes(q.status)
-        )
-        if (activeQuotations.length <= 1) return activeQuotations
-        return activeQuotations
+        // Return only the quotation linked to this specific work item
+        const itemQuotation = item.quotation || quotations.find((q: any) => q.id === item.quotation_id)
+        if (!itemQuotation) return []
+        return [itemQuotation]
     }, [quotations])
 
     // Aggregate Calculations — based on selected quotation per item

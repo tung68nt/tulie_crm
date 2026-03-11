@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Download, ExternalLink, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getBankBin } from '@/lib/utils/vietqr'
 
 interface VietQRProps {
     bankId: string
@@ -33,7 +34,7 @@ export function VietQR({
         // VietQR template format: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<DESCRIPTION>&accountName=<ACCOUNT_NAME>
         const encodedDesc = encodeURIComponent(description)
         const encodedName = encodeURIComponent(accountName)
-        const url = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodedDesc}&accountName=${encodedName}`
+        const url = `https://img.vietqr.io/image/${getBankBin(bankId)}-${accountNo}-compact2.png?amount=${amount}&addInfo=${encodedDesc}&accountName=${encodedName}`
 
         setQrUrl(url)
 

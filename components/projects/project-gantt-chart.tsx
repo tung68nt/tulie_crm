@@ -175,7 +175,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                                 {dayOfWeek === '7' ? 'CN' : `T${Number(dayOfWeek) + 1}`}
                                             </p>
                                             <p className={cn(
-                                                "text-[13px] font-black tabular-nums tracking-tight",
+                                                "text-[13px] font-bold tabular-nums tracking-tight",
                                                 isSameDay(date, today) ? "text-red-600" : isWeekend ? "text-zinc-500" : "text-zinc-900"
                                             )}>
                                                 {format(date, 'dd')}

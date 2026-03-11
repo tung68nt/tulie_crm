@@ -14,9 +14,9 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { Lock, Loader2, Eye, EyeOff } from 'lucide-react'
+import { Lock, Loader2, Eye, EyeOff, RefreshCw, Copy, Check } from 'lucide-react'
 import { toast } from 'sonner'
-import { setEntityPassword } from '@/lib/supabase/services/portal-actions'
+import { setEntityPassword, getEntityPasswordPlain } from '@/lib/supabase/services/portal-actions'
 
 interface SetPasswordDialogProps {
     entityId: string
@@ -39,6 +39,51 @@ export function SetPasswordDialog({
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [currentPassword, setCurrentPassword] = useState<string | null>(null)
+    const [loadingCurrent, setLoadingCurrent] = useState(false)
+    const [copied, setCopied] = useState(false)
+
+    // Load current plaintext password when dialog opens
+    const handleOpenChange = async (open: boolean) => {
+        setIsOpen(open)
+        if (open && hasPassword) {
+            setLoadingCurrent(true)
+            try {
+                const result = await getEntityPasswordPlain(tableName, entityId)
+                if (result.password) {
+                    setCurrentPassword(result.password)
+                }
+            } catch {
+                // ignore — plaintext may not be stored
+            } finally {
+                setLoadingCurrent(false)
+            }
+        } else if (!open) {
+            setCurrentPassword(null)
+            setPassword('')
+            setCopied(false)
+        }
+    }
+
+    const generatePassword = () => {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+        let result = ''
+        for (let i = 0; i < 8; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length))
+        }
+        setPassword(result)
+        setShowPassword(true)
+    }
+
+    const handleCopy = () => {
+        const textToCopy = password || currentPassword
+        if (textToCopy) {
+            navigator.clipboard.writeText(textToCopy)
+            setCopied(true)
+            toast.success('Đã copy mật khẩu')
+            setTimeout(() => setCopied(false), 2000)
+        }
+    }
 
     const handleSave = async () => {
         setIsLoading(true)
@@ -59,7 +104,7 @@ export function SetPasswordDialog({
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 {triggerType === 'menuitem' ? (
                     <DropdownMenuItem
@@ -116,7 +161,34 @@ export function SetPasswordDialog({
                                 )}
                             </Button>
                         </div>
+                        <div className="flex gap-2">
+                            <Button type="button" variant="outline" size="sm" className="text-xs h-7" onClick={generatePassword}>
+                                <RefreshCw className="h-3 w-3 mr-1" />
+                                Tạo ngẫu nhiên
+                            </Button>
+                            {(password || currentPassword) && (
+                                <Button type="button" variant="outline" size="sm" className="text-xs h-7" onClick={handleCopy}>
+                                    {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
+                                    {copied ? 'Đã copy' : 'Copy'}
+                                </Button>
+                            )}
+                        </div>
                     </div>
+                    {hasPassword && (
+                        <div className="space-y-1.5 p-3 bg-muted/50 rounded-lg border">
+                            <Label className="text-xs text-muted-foreground">Mật khẩu hiện tại</Label>
+                            {loadingCurrent ? (
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                    Đang tải...
+                                </div>
+                            ) : currentPassword ? (
+                                <p className="text-sm font-mono font-medium bg-background px-2 py-1 rounded border select-all">{currentPassword}</p>
+                            ) : (
+                                <p className="text-xs text-muted-foreground italic">Không thể xem (mật khẩu đã mã hoá)</p>
+                            )}
+                        </div>
+                    )}
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isLoading}>

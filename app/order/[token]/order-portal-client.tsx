@@ -24,6 +24,7 @@ import { useEffect, useState } from 'react'
 import { getRetailOrderByToken } from '@/lib/supabase/services/retail-order-service'
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
+import { buildVietQrUrl } from '@/lib/utils/vietqr'
 
 interface OrderPortalClientProps {
     order: RetailOrder
@@ -85,7 +86,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
     const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
     const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
     const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'TULIE'
-    const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${order.order_number}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
+    const qrUrl = buildVietQrUrl({ bankName: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME, amount: balance, addInfo: order.order_number || '' })
 
     // Timeline steps
     const steps = [

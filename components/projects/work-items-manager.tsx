@@ -45,6 +45,7 @@ import {
     CheckCircle,
     Clock,
     AlertCircle,
+    Undo2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
@@ -69,7 +70,7 @@ const STATUS_OPTIONS = [
 ]
 
 const DEFAULT_DOCUMENTS = [
-    'Báo giá',
+    'Báo giá (đã gửi)',
     'Hợp đồng',
     'Biên bản bàn giao',
     'Yêu cầu thanh toán',
@@ -334,10 +335,28 @@ function WorkItemRow({
     }
 
     const handleDeleteTask = async (taskId: string) => {
+        const task = tasks.find((t: any) => t.id === taskId)
+        const taskTitle = task?.title || 'công việc'
+
         startTransition(async () => {
             try {
                 await deleteTask(taskId)
                 router.refresh()
+                toast('Đã xoá: ' + taskTitle, {
+                    action: {
+                        label: 'Hoàn tác',
+                        onClick: async () => {
+                            try {
+                                await addTaskToWorkItem(item.id, project.id, { title: taskTitle })
+                                router.refresh()
+                                toast.success('Đã hoàn tác')
+                            } catch {
+                                toast.error('Không thể hoàn tác')
+                            }
+                        }
+                    },
+                    duration: 5000,
+                })
             } catch {
                 toast.error('Lỗi khi xóa')
             }
@@ -360,11 +379,27 @@ function WorkItemRow({
     }
 
     const handleRemoveLink = async (idx: number) => {
+        const removedLink = deliveryLinks[idx]
         const updated = deliveryLinks.filter((_: any, i: number) => i !== idx)
         startTransition(async () => {
             try {
                 await updateWorkItem(item.id, { delivery_links: updated })
                 router.refresh()
+                toast('Đã xoá link: ' + (removedLink?.label || 'link'), {
+                    action: {
+                        label: 'Hoàn tác',
+                        onClick: async () => {
+                            try {
+                                await updateWorkItem(item.id, { delivery_links: deliveryLinks })
+                                router.refresh()
+                                toast.success('Đã hoàn tác')
+                            } catch {
+                                toast.error('Không thể hoàn tác')
+                            }
+                        }
+                    },
+                    duration: 5000,
+                })
             } catch {
                 toast.error('Lỗi')
             }
@@ -461,7 +496,7 @@ function WorkItemRow({
             {/* Expanded content */}
             {isExpanded && (
                 <div className="border-t border-zinc-50 p-6 bg-zinc-50/20 space-y-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
                             <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">

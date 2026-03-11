@@ -14,6 +14,7 @@ import { getBankAccounts, getNoteTemplates } from '@/lib/supabase/services/setti
 import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
+import { buildVietQrUrl } from '@/lib/utils/vietqr'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { format } from 'date-fns'
@@ -218,7 +219,6 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                 toast.success('Đã tạo đơn hàng mới thành công')
             }
             router.push('/studio')
-            router.refresh()
         } catch (error: any) {
             console.error('Create order error:', error)
             toast.error(error.message || 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng kiểm tra lại quá trình nhập dữ liệu.')
@@ -242,8 +242,8 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
     const ACCOUNT_NAME = currentBank.account_name
     const balance = formData.total_amount - (formData.use_deposit ? formData.deposit_amount : 0)
 
-    const depositQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${formData.deposit_amount}&addInfo=${encodeURIComponent('COC ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
-    const balanceQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${balance}&addInfo=${encodeURIComponent('CK ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
+    const depositQrUrl = buildVietQrUrl({ bankName: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME, amount: formData.deposit_amount, addInfo: 'COC ' + orderIdPreview })
+    const balanceQrUrl = buildVietQrUrl({ bankName: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME, amount: balance, addInfo: 'CK ' + orderIdPreview })
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">

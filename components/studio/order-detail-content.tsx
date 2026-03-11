@@ -28,6 +28,7 @@ import { getBankAccounts } from '@/lib/supabase/services/settings-service'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
+import { buildVietQrUrl } from '@/lib/utils/vietqr'
 
 interface OrderDetailContentProps {
     order: RetailOrder
@@ -63,7 +64,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         account_name: 'CONG TY TNHH TULIE'
     })
 
-    const qrUrl = `https://img.vietqr.io/image/${bankInfo.bank_name}-${bankInfo.account_no}-compact2.png?amount=${remainingAmount}&addInfo=${encodeURIComponent('THANH TOAN ' + order.order_number)}&accountName=${encodeURIComponent(bankInfo.account_name)}`
+    const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: 'THANH TOAN ' + order.order_number })
 
     const handleSaveLinks = async () => {
         if (links.demo_link === order.demo_link && links.resource_link === order.resource_link) {
@@ -316,67 +317,60 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
             </div>
 
             <div className="space-y-6">
-                {/* Premium Payment Card */}
-                <Card className="rounded-2xl border-none bg-zinc-950 text-white shadow-2xl relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent opacity-50" />
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <CreditCard className="h-24 w-24 rotate-12" />
-                    </div>
-
-                    <CardHeader className="relative pb-2">
-                        <Badge variant="outline" className="w-fit mb-4 text-[10px] font-bold uppercase tracking-widest text-primary border-primary/30 bg-primary/5 px-3 py-1">
-                            Thanh toán sòng phẳng
+                {/* Payment Card */}
+                <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
+                    <CardHeader className="bg-zinc-50/50 border-b pb-3">
+                        <Badge variant="outline" className="w-fit mb-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                            Thanh toán
                         </Badge>
-                        <CardTitle className="text-3xl font-bold tracking-tighter tabular-nums drop-shadow-sm">
+                        <CardTitle className="text-3xl font-bold tracking-tighter tabular-nums">
                             {formatCurrency(remainingAmount)}
                         </CardTitle>
-                        <CardDescription className="text-zinc-400 font-normal">Công nợ còn phải thu</CardDescription>
+                        <CardDescription className="font-normal">Công nợ còn phải thu</CardDescription>
                     </CardHeader>
 
-                    <CardContent className="relative space-y-6 pt-4">
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm space-y-3">
+                    <CardContent className="space-y-5 pt-5">
+                        <div className="p-4 rounded-xl bg-muted/30 border space-y-3">
                             <div className="flex justify-between items-center text-sm font-medium">
-                                <span className="text-zinc-400">Tổng giá trị đơn</span>
-                                <span className="text-white">{formatCurrency(order.total_amount)}</span>
+                                <span className="text-muted-foreground">Tổng giá trị đơn</span>
+                                <span className="text-foreground">{formatCurrency(order.total_amount)}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm font-medium">
-                                <span className="text-emerald-400/80">Đã thu hồi tiền mặt</span>
-                                <span className="text-emerald-400">{formatCurrency(order.paid_amount || 0)}</span>
+                                <span className="text-emerald-600">Đã thu hồi</span>
+                                <span className="text-emerald-600">{formatCurrency(order.paid_amount || 0)}</span>
                             </div>
-                            <Separator className="bg-white/10" />
+                            <Separator />
                             <div className="flex justify-between items-center">
-                                <span className="text-xs text-zinc-500 font-semibold uppercase">Trạng thái thu hồi</span>
+                                <span className="text-xs text-muted-foreground font-semibold uppercase">Trạng thái</span>
                                 {remainingAmount <= 0 ? (
-                                    <Badge className="bg-emerald-500 text-white border-0 font-bold px-2">ĐÃ XONG</Badge>
+                                    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 font-bold px-2 hover:bg-emerald-100">ĐÃ XONG</Badge>
                                 ) : (
-                                    <Badge variant="outline" className="text-amber-400 border-amber-400/50 bg-amber-400/5 font-bold px-2">CHƯA ĐỦ</Badge>
+                                    <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50 font-bold px-2">CHƯA ĐỦ</Badge>
                                 )}
                             </div>
                         </div>
 
                         {remainingAmount > 0 && (
-                            <div className="space-y-4">
-                                <div className="bg-white p-4 rounded-2xl flex flex-col items-center gap-3 shadow-inner">
-                                    <div className="flex items-center gap-2 text-zinc-950 text-xs font-bold uppercase tracking-tight">
-                                        <QrCode className="h-4 w-4" />
-                                        Mã QR thanh toán nhanh
-                                    </div>
-                                    <div className="relative p-2 bg-zinc-50 rounded-xl border border-zinc-100">
-                                        <img src={qrUrl} alt="QR Code" className="w-44 h-44 mix-blend-multiply" />
-                                    </div>
-                                    <p className="text-[9px] text-zinc-500 text-center leading-relaxed font-medium">
-                                        Gửi mã này cho khách để họ quét bằng app Ngân hàng.<br />Tự động điền số tiền & nội dung.
-                                    </p>
+                            <div className="flex flex-col items-center gap-3 p-4 rounded-xl border bg-muted/20">
+                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-tight text-muted-foreground">
+                                    <QrCode className="h-4 w-4" />
+                                    Mã QR thanh toán nhanh
                                 </div>
+                                <div className="p-2 bg-white rounded-xl border">
+                                    <img src={qrUrl} alt="QR Code" className="w-44 h-44" />
+                                </div>
+                                <p className="text-[10px] text-muted-foreground text-center leading-relaxed font-medium">
+                                    Gửi mã này cho khách để quét bằng app Ngân hàng.
+                                </p>
                             </div>
                         )}
 
                         {remainingAmount <= 0 && (
-                            <div className="flex flex-col items-center justify-center py-4 space-y-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                                    <CheckCircle2 className="h-6 w-6 text-white" />
+                            <div className="flex flex-col items-center justify-center py-4 space-y-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <CheckCircle2 className="h-6 w-6 text-emerald-600" />
                                 </div>
-                                <p className="text-sm font-bold text-emerald-400 tracking-tight">CÔNG NỢ ĐÃ HOÀN TẤT</p>
+                                <p className="text-sm font-bold text-emerald-700 tracking-tight">CÔNG NỢ ĐÃ HOÀN TẤT</p>
                             </div>
                         )}
                     </CardContent>
