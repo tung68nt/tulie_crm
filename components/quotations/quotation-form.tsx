@@ -97,23 +97,24 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [bankAccountName, setBankAccountName] = useState(quotation?.bank_account_name || '')
     const [bankBranch, setBankBranch] = useState(quotation?.bank_branch || '')
 
-    // Use default values from brandConfig if it's a new quotation and form is still clean
+    // Initialize bank and notes from the first available template if it's a new quotation
     useEffect(() => {
-        if (!quotation && brandConfig) {
-            setNotes(prev => {
-                if (!prev || prev.trim() === '') return brandConfig.default_notes || ''
-                return prev
-            })
-            setTerms(prev => {
-                if (!prev || prev.trim() === '') return brandConfig.default_payment_terms || ''
-                return prev
-            })
-            setBankName(prev => prev === '' ? brandConfig.bank_name || '' : prev)
-            setBankAccountNo(prev => prev === '' ? brandConfig.bank_account_no || '' : prev)
-            setBankAccountName(prev => prev === '' ? brandConfig.bank_account_name || '' : prev)
-            setBankBranch(prev => prev === '' ? brandConfig.bank_branch || '' : prev)
+        if (!quotation && availableBanks.length > 0 && bankName === '') {
+            const b = availableBanks[0]
+            setBankName(b.bank_name || '')
+            setBankAccountNo(b.account_no || '')
+            setBankAccountName(b.account_name || '')
+            setBankBranch(b.bank_branch || '')
         }
-    }, [brandConfig, quotation])
+    }, [quotation, availableBanks, bankName])
+
+    useEffect(() => {
+        if (!quotation && availableNotes.length > 0 && (notes === '' || terms === '')) {
+            const t = availableNotes[0]
+            setTerms(t.payment_terms || '')
+            setNotes(t.notes || '')
+        }
+    }, [quotation, availableNotes, notes, terms])
 
     useEffect(() => {
         const loadResources = async () => {

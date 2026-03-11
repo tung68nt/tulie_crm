@@ -122,12 +122,6 @@ export async function getBrandConfig() {
         favicon_url: '/logo-icon.png',
         brand_name: 'Tulie Agency',
         email: 'info@tulie.vn',
-        bank_name: '',
-        bank_account_no: '',
-        bank_account_name: '',
-        bank_branch: '',
-        default_notes: '',
-        default_payment_terms: ''
     }
 }
 

@@ -24,8 +24,10 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
+import { getBankAccounts } from '@/lib/supabase/services/settings-service'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { useEffect } from 'react'
 
 interface OrderDetailContentProps {
     order: RetailOrder
@@ -35,12 +37,33 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const [isSavingLinks, setIsSavingLinks] = useState(false)
     const [isRecordingPayment, setIsRecordingPayment] = useState(false)
     const [paymentAmount, setPaymentAmount] = useState('')
+    const [availableBanks, setAvailableBanks] = useState<any[]>([])
     const [links, setLinks] = useState({
         demo_link: order.demo_link || '',
         resource_link: order.resource_link || ''
     })
 
+    useEffect(() => {
+        const fetchBanks = async () => {
+            const data = await getBankAccounts()
+            setAvailableBanks(data)
+        }
+        fetchBanks()
+    }, [])
+
     const remainingAmount = order.total_amount - (order.paid_amount || 0)
+
+    const bankInfo = (order as any).metadata?.bank_info || (availableBanks.length > 0 ? {
+        bank_name: availableBanks[0].bank_name,
+        account_no: availableBanks[0].account_no,
+        account_name: availableBanks[0].account_name
+    } : {
+        bank_name: 'MB',
+        account_no: '104002106705',
+        account_name: 'CONG TY TNHH TULIE'
+    })
+
+    const qrUrl = `https://img.vietqr.io/image/${bankInfo.bank_name}-${bankInfo.account_no}-compact2.png?amount=${remainingAmount}&addInfo=${encodeURIComponent('THANH TOAN ' + order.order_number)}&accountName=${encodeURIComponent(bankInfo.account_name)}`
 
     const handleSaveLinks = async () => {
         if (links.demo_link === order.demo_link && links.resource_link === order.resource_link) {
@@ -78,7 +101,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         }
     }
 
-    const qrUrl = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${remainingAmount}&des=THANH TOAN ${order.order_number}`
+
 
     return (
         <div className="grid gap-6 lg:grid-cols-3">
@@ -150,6 +173,71 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 </div>
                                 <p className="text-[10px] text-muted-foreground font-normal italic">Sẽ chỉ hiển thị trên Portal của khách sau khi họ hoàn tất 100% thanh toán.</p>
                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Product/Service List */}
+                <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
+                    <CardHeader className="bg-zinc-50/50 border-b py-4">
+                        <div className="space-y-1">
+                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-zinc-500" />
+                                Chi tiết sản phẩm & dịch vụ
+                            </CardTitle>
+                            <CardDescription className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider italic">Danh sách các hạng mục khách hàng đã đăng ký</CardDescription>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left">
+                                <thead className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-50/30 border-b border-zinc-100">
+                                    <tr>
+                                        <th className="px-6 py-3 font-bold">STT</th>
+                                        <th className="px-6 py-3 font-bold">Tên sản phẩm/dịch vụ</th>
+                                        <th className="px-6 py-3 font-bold text-center">SL</th>
+                                        <th className="px-6 py-3 font-bold text-right">Đơn giá</th>
+                                        <th className="px-6 py-3 font-bold text-right">Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-zinc-100">
+                                    {order.items && order.items.length > 0 ? (
+                                        order.items.map((item, index) => (
+                                            <tr key={item.id} className="hover:bg-zinc-50/50 transition-colors">
+                                                <td className="px-6 py-4 font-medium text-zinc-400 text-xs w-12">{index + 1}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="font-semibold text-zinc-900 group-hover:text-primary transition-colors">{item.product_name}</div>
+                                                    {item.product_id && (
+                                                        <div className="text-[10px] text-muted-foreground mt-0.5 font-medium">SKU: {item.product_id.split('-')[0].toUpperCase()}</div>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 text-center font-bold text-zinc-700 tabular-nums">{item.quantity}</td>
+                                                <td className="px-6 py-4 text-right font-medium text-zinc-600 tabular-nums">{formatCurrency(item.unit_price)}</td>
+                                                <td className="px-6 py-4 text-right font-bold text-zinc-900 tabular-nums">{formatCurrency(item.total_price)}</td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={5} className="px-6 py-12 text-center">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className="h-10 w-10 rounded-full bg-zinc-50 flex items-center justify-center">
+                                                        <FileText className="h-5 w-5 text-zinc-200" />
+                                                    </div>
+                                                    <p className="text-sm text-zinc-400 font-medium">Chưa có thông tin sản phẩm.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                                <tfoot className="bg-zinc-50/30 border-t border-zinc-100">
+                                    <tr>
+                                        <td colSpan={4} className="px-6 py-4 text-right text-[11px] font-bold uppercase tracking-wider text-zinc-500">Tổng cộng</td>
+                                        <td className="px-6 py-4 text-right text-base font-bold text-zinc-950 tabular-nums">
+                                            {formatCurrency(order.total_amount)}
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </CardContent>
                 </Card>

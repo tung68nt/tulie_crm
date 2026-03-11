@@ -6,8 +6,16 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { formatCurrency } from '@/lib/utils/format'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
-import { MoreHorizontal, ExternalLink, QrCode, Phone, Mail, Link as LinkIcon, Camera, Copy } from 'lucide-react'
+import { MoreHorizontal, ExternalLink, QrCode, Phone, Mail, Link as LinkIcon, Camera, Copy, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +27,9 @@ import {
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { cancelRetailOrder } from '@/lib/supabase/services/retail-order-service'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const STATUS_LABELS: Record<string, string> = {
     pending: 'Chờ xử lý',
@@ -171,56 +182,105 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
         id: 'actions',
         cell: ({ row }) => {
             const order = row.original
+            const router = useRouter()
+            const [showCancelDialog, setShowCancelDialog] = useState(false)
+            const [loading, setLoading] = useState(false)
+
+            const onCancel = async () => {
+                try {
+                    setLoading(true)
+                    await cancelRetailOrder(order.id)
+                    toast.success('Hủy đơn hàng thành công')
+                    router.refresh()
+                } catch (error) {
+                    toast.error('Có lỗi xảy ra khi hủy đơn')
+                } finally {
+                    setLoading(false)
+                    setShowCancelDialog(false)
+                }
+            }
 
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-52">
-                        <DropdownMenuLabel className="text-xs text-muted-foreground">Thao tác đơn hàng</DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/studio/${order.id}`}>
-                                <Camera className="mr-2 h-4 w-4" /> Chi tiết & Xử lý ảnh
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => {
-                            const url = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${order.total_amount}&des=STUDIO ${order.order_number}`
-                            window.open(url, '_blank')
-                        }}>
-                            <QrCode className="mr-2 h-4 w-4" /> QR Thanh toán
-                        </DropdownMenuItem>
-                        {order.resource_link && (
-                            <DropdownMenuItem asChild>
-                                <a href={order.resource_link} target="_blank" rel="noopener noreferrer">
-                                    <LinkIcon className="mr-2 h-4 w-4" /> Mở Drive ảnh gốc
-                                </a>
+                <>
+                    <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+                        <DialogContent className="rounded-2xl">
+                            <DialogHeader>
+                                <DialogTitle className="italic font-bold tracking-tight">Xác nhận hủy đơn hàng?</DialogTitle>
+                                <DialogDescription>
+                                    Hành động này sẽ chuyển trạng thái đơn hàng <strong>{order.order_number}</strong> thành "Đã hủy".
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="gap-2 sm:gap-0">
+                                <Button variant="outline" onClick={() => setShowCancelDialog(false)} className="rounded-xl font-bold">Quay lại</Button>
+                                <Button
+                                    onClick={onCancel}
+                                    variant="destructive"
+                                    className="rounded-xl font-bold"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Đang xử lý...' : 'Xác nhận hủy'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0" disabled={loading}>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-52 rounded-xl shadow-xl border-border/50">
+                            <DropdownMenuLabel className="text-xs text-muted-foreground">Thao tác đơn hàng</DropdownMenuLabel>
+                            <DropdownMenuItem asChild className="rounded-lg">
+                                <Link href={`/studio/${order.id}`}>
+                                    <Camera className="mr-2 h-4 w-4" /> Chi tiết & Xử lý ảnh
+                                </Link>
                             </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => {
-                            const portalUrl = `${window.location.origin}/portal/order/${order.id}`
-                            navigator.clipboard.writeText(portalUrl)
-                            toast.success('Đã copy link Portal gửi khách!')
-                        }}>
-                            <Copy className="mr-2 h-4 w-4" /> Copy Portal Link
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/portal/order/${order.id}`} target="_blank">
-                                <ExternalLink className="mr-2 h-4 w-4" /> Xem Portal (Khách)
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => toast.info('Tính năng xóa đang chờ phân quyền')}
-                        >
-                            Hủy đơn hàng
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    const url = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${order.total_amount}&des=STUDIO ${order.order_number}`
+                                    window.open(url, '_blank')
+                                }}
+                                className="rounded-lg"
+                            >
+                                <QrCode className="mr-2 h-4 w-4" /> QR Thanh toán
+                            </DropdownMenuItem>
+                            {order.resource_link && (
+                                <DropdownMenuItem asChild className="rounded-lg">
+                                    <a href={order.resource_link} target="_blank" rel="noopener noreferrer">
+                                        <LinkIcon className="mr-2 h-4 w-4" /> Mở Drive ảnh gốc
+                                    </a>
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    const portalUrl = `${window.location.origin}/portal/order/${order.id}`
+                                    navigator.clipboard.writeText(portalUrl)
+                                    toast.success('Đã copy link Portal gửi khách!')
+                                }}
+                                className="rounded-lg"
+                            >
+                                <Copy className="mr-2 h-4 w-4" /> Copy Portal Link
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild className="rounded-lg">
+                                <Link href={`/portal/order/${order.id}`} target="_blank">
+                                    <ExternalLink className="mr-2 h-4 w-4" /> Xem Portal (Khách)
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                className="text-destructive font-medium rounded-lg"
+                                onClick={() => setShowCancelDialog(true)}
+                                disabled={order.order_status === 'cancelled'}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Hủy đơn hàng
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
             )
         },
     },

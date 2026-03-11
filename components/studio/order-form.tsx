@@ -81,6 +81,35 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
         fetchResources()
     }, [])
 
+    // Auto-select first bank and first note template for new orders
+    useEffect(() => {
+        if (!isEdit && availableBanks.length > 0 && !formData.metadata?.bank_info) {
+            const b = availableBanks[0]
+            setFormData(prev => ({
+                ...prev,
+                metadata: {
+                    ...prev.metadata,
+                    bank_info: {
+                        bank_name: b.bank_name,
+                        account_no: b.account_no,
+                        account_name: b.account_name,
+                        bank_branch: b.bank_branch
+                    }
+                }
+            }))
+        }
+    }, [isEdit, availableBanks, formData.metadata?.bank_info])
+
+    useEffect(() => {
+        if (!isEdit && availableNotes.length > 0 && formData.notes === '') {
+            const n = availableNotes[0]
+            setFormData(prev => ({
+                ...prev,
+                notes: n.notes || n.payment_terms || ''
+            }))
+        }
+    }, [isEdit, availableNotes, formData.notes])
+
     useEffect(() => {
         const itemsTotal = selectedItems.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0)
         const total = itemsTotal + (formData.shipping_fee || 0)
@@ -198,9 +227,19 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
         }
     }
 
-    const BANK_ID = formData.metadata?.bank_info?.bank_name || brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
-    const ACCOUNT_NO = formData.metadata?.bank_info?.account_no || brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
-    const ACCOUNT_NAME = formData.metadata?.bank_info?.account_name || brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
+    const currentBank = formData.metadata?.bank_info || (availableBanks.length > 0 ? {
+        bank_name: availableBanks[0].bank_name,
+        account_no: availableBanks[0].account_no,
+        account_name: availableBanks[0].account_name
+    } : {
+        bank_name: 'MB',
+        account_no: '111222333',
+        account_name: 'CONG TY TNHH TULIE'
+    })
+
+    const BANK_ID = currentBank.bank_name
+    const ACCOUNT_NO = currentBank.account_no
+    const ACCOUNT_NAME = currentBank.account_name
     const balance = formData.total_amount - (formData.use_deposit ? formData.deposit_amount : 0)
 
     const depositQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${formData.deposit_amount}&addInfo=${encodeURIComponent('COC ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`

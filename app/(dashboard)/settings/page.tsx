@@ -56,16 +56,6 @@ export default function SettingsPage() {
         website: "tulie.vn",
         logo_url: "/file/tulie-agency-logo.png",
         favicon_url: "/logo-icon.png",
-        bank_name: "",
-        bank_account_no: "",
-        bank_account_name: "",
-        bank_branch: "",
-        studio_bank_name: "",
-        studio_bank_account_no: "",
-        studio_bank_account_name: "",
-        studio_bank_branch: "",
-        default_notes: "",
-        default_payment_terms: ""
     })
 
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([])
@@ -109,16 +99,7 @@ export default function SettingsPage() {
     const [brandConfig, setBrandConfig] = useState({
         brand_name: 'Tulie Agency',
         email: 'info@tulie.vn',
-        bank_name: '',
-        bank_account_no: '',
-        bank_account_name: '',
-        bank_branch: '',
-        studio_bank_name: '',
-        studio_bank_account_no: '',
-        studio_bank_account_name: '',
-        studio_bank_branch: '',
-        default_notes: '',
-        default_payment_terms: ''
+        favicon_url: "/logo-icon.png",
     })
     const [isSavingBrand, setIsSavingBrand] = useState(false)
 
@@ -211,16 +192,6 @@ export default function SettingsPage() {
             website: config.website || "tulie.vn",
             logo_url: config.logo_url || "/file/tulie-agency-logo.png",
             favicon_url: config.favicon_url || "/logo-icon.png",
-            bank_name: config.bank_name || "",
-            bank_account_no: config.bank_account_no || "",
-            bank_account_name: config.bank_account_name || "",
-            bank_branch: config.bank_branch || "",
-            studio_bank_name: config.studio_bank_name || "",
-            studio_bank_account_no: config.studio_bank_account_no || "",
-            studio_bank_account_name: config.studio_bank_account_name || "",
-            studio_bank_branch: config.studio_bank_branch || "",
-            default_notes: config.default_notes || "",
-            default_payment_terms: config.default_payment_terms || ""
         })
     }
 
@@ -295,16 +266,6 @@ export default function SettingsPage() {
                 website: companySettings.website,
                 logo_url: companySettings.logo_url,
                 favicon_url: companySettings.favicon_url,
-                bank_name: companySettings.bank_name,
-                bank_account_no: companySettings.bank_account_no,
-                bank_account_name: companySettings.bank_account_name,
-                bank_branch: companySettings.bank_branch,
-                studio_bank_name: companySettings.studio_bank_name,
-                studio_bank_account_no: companySettings.studio_bank_account_no,
-                studio_bank_account_name: companySettings.studio_bank_account_name,
-                studio_bank_branch: companySettings.studio_bank_branch,
-                default_notes: companySettings.default_notes,
-                default_payment_terms: companySettings.default_payment_terms
             })
             toast.success("Đã lưu thông tin thương hiệu thành công!")
         } catch (error: any) {
@@ -727,112 +688,6 @@ export default function SettingsPage() {
                                                 <img src={companySettings.favicon_url} alt="Favicon Preview" className="h-10 w-10 object-contain" />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <Separator />
-                                <div className="space-y-4">
-                                    <div className="space-y-4">
-                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Agency</h4>
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="bank_name">Ngân hàng (Agency)</Label>
-                                                <Input
-                                                    id="bank_name"
-                                                    value={companySettings.bank_name}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_name: e.target.value })}
-                                                    placeholder="Ví dụ: MB Bank"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="bank_account_no">Số tài khoản</Label>
-                                                <Input
-                                                    id="bank_account_no"
-                                                    value={companySettings.bank_account_no}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_account_no: e.target.value })}
-                                                    placeholder="Ví dụ: 0123456789"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="bank_account_name">Chủ tài khoản</Label>
-                                                <Input
-                                                    id="bank_account_name"
-                                                    value={companySettings.bank_account_name}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_account_name: e.target.value })}
-                                                    placeholder="Ví dụ: CONG TY TNHH ABC"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="bank_branch">Chi nhánh</Label>
-                                                <Input
-                                                    id="bank_branch"
-                                                    value={companySettings.bank_branch}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, bank_branch: e.target.value })}
-                                                    placeholder="Ví dụ: Thanh Xuân - Hà Nội"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4 pt-4 border-t border-dashed">
-                                        <h4 className="text-sm font-medium">Tài khoản ngân hàng Tulie Studio (Cá nhân)</h4>
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="studio_bank_name">Ngân hàng</Label>
-                                                <Input
-                                                    id="studio_bank_name"
-                                                    value={companySettings.studio_bank_name}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_name: e.target.value })}
-                                                    placeholder="Ví dụ: TPBank"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="studio_bank_account_no">Số tài khoản</Label>
-                                                <Input
-                                                    id="studio_bank_account_no"
-                                                    value={companySettings.studio_bank_account_no}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_account_no: e.target.value })}
-                                                    placeholder="Ví dụ: 0123456789"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="studio_bank_account_name">Chủ tài khoản</Label>
-                                                <Input
-                                                    id="studio_bank_account_name"
-                                                    value={companySettings.studio_bank_account_name}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_account_name: e.target.value })}
-                                                    placeholder="Ví dụ: NGUYEN VAN A"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="studio_bank_branch">Chi nhánh</Label>
-                                                <Input
-                                                    id="studio_bank_branch"
-                                                    value={companySettings.studio_bank_branch}
-                                                    onChange={(e) => setCompanySettings({ ...companySettings, studio_bank_branch: e.target.value })}
-                                                    placeholder="Ví dụ: Hà Nội"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="default_payment_terms">Điều khoản thanh toán mặc định</Label>
-                                        <Textarea
-                                            id="default_payment_terms"
-                                            value={companySettings.default_payment_terms}
-                                            onChange={(e) => setCompanySettings({ ...companySettings, default_payment_terms: e.target.value })}
-                                            placeholder="Ví dụ: Thanh toán trong vòng 7 ngày kể từ ngày nhận được hóa đơn..."
-                                            rows={2}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="default_notes">Ghi chú mặc định</Label>
-                                        <Textarea
-                                            id="default_notes"
-                                            value={companySettings.default_notes}
-                                            onChange={(e) => setCompanySettings({ ...companySettings, default_notes: e.target.value })}
-                                            placeholder="Ghi chú xuất hiện ở cuối báo giá/hóa đơn"
-                                            rows={2}
-                                        />
                                     </div>
                                 </div>
                                 <Separator className="bg-border/50" />
@@ -1633,19 +1488,22 @@ export default function SettingsPage() {
                             <CardContent className="space-y-6 pt-6">
                                 <div className="space-y-4">
                                     {bankAccounts.map((account, index) => (
-                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="absolute top-4 right-4 text-destructive hover:bg-destructive/5"
-                                                onClick={() => {
-                                                    const newAccounts = [...bankAccounts]
-                                                    newAccounts.splice(index, 1)
-                                                    setBankAccounts(newAccounts)
-                                                }}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50 group">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground italic">Tài khoản #{index + 1}</h4>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-destructive hover:bg-destructive/5 rounded-full"
+                                                    onClick={() => {
+                                                        const newAccounts = [...bankAccounts]
+                                                        newAccounts.splice(index, 1)
+                                                        setBankAccounts(newAccounts)
+                                                    }}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                 <div className="space-y-2">
                                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên ngân hàng</Label>
@@ -1731,19 +1589,22 @@ export default function SettingsPage() {
                             <CardContent className="space-y-6 pt-6">
                                 <div className="space-y-6">
                                     {noteTemplates.map((template, index) => (
-                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="absolute top-4 right-4 text-destructive hover:bg-destructive/5"
-                                                onClick={() => {
-                                                    const newTemplates = [...noteTemplates]
-                                                    newTemplates.splice(index, 1)
-                                                    setNoteTemplates(newTemplates)
-                                                }}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
+                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50 group">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground italic">Mẫu #{index + 1}</h4>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-destructive hover:bg-destructive/5 rounded-full"
+                                                    onClick={() => {
+                                                        const newTemplates = [...noteTemplates]
+                                                        newTemplates.splice(index, 1)
+                                                        setNoteTemplates(newTemplates)
+                                                    }}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                                 <div className="space-y-2">
                                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên mẫu</Label>

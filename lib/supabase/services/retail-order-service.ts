@@ -219,9 +219,47 @@ export async function getRetailOrderByToken(token: string) {
             .single()
 
         if (error) throw error
+        revalidatePath(`/portal/order/${token}`)
         return data as RetailOrder
     } catch (err) {
         console.error('Error fetching retail order by token:', err)
         return null
+    }
+}
+
+export async function cancelRetailOrder(id: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('retail_orders')
+            .update({ order_status: 'cancelled' })
+            .eq('id', id)
+
+        if (error) throw error
+
+        revalidatePath('/studio')
+        revalidatePath(`/studio/${id}`)
+        return true
+    } catch (err) {
+        console.error('Error cancelling retail order:', err)
+        throw err
+    }
+}
+
+export async function deleteRetailOrders(ids: string[]) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('retail_orders')
+            .delete()
+            .in('id', ids)
+
+        if (error) throw error
+
+        revalidatePath('/studio')
+        return true
+    } catch (err) {
+        console.error('Error deleting retail orders:', err)
+        throw err
     }
 }
