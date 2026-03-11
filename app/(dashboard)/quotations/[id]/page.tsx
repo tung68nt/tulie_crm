@@ -61,6 +61,8 @@ export default function QuotationDetailPage() {
     const [baseUrl, setBaseUrl] = useState('')
     const [layout, setLayout] = useState<'modern' | 'basic'>('modern')
     const [activeTab, setActiveTab] = useState<'data' | 'preview'>('data')
+    const [isDownloading, setIsDownloading] = useState(false)
+    const printRef = React.useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -149,6 +151,133 @@ export default function QuotationDetailPage() {
 
     const publicUrl = quotation.public_token ? `${baseUrl}/quote/${quotation.public_token}` : null
     const portalUrl = quotation.public_token ? `${baseUrl}/portal/${quotation.public_token}` : null
+
+    const handleDownloadPDF = async () => {
+        if (isDownloading) return;
+        const element = printRef.current;
+        if (!element) return;
+
+        setIsDownloading(true);
+        const toastId = toast.loading('Đang chuẩn bị bản in PDF...');
+
+        try {
+            // Load libraries with reliable checks
+            const loadScript = (src: string, globalCheck: string): Promise<any> => {
+                return new Promise((resolve, reject) => {
+                    if ((window as any)[globalCheck]) return resolve((window as any)[globalCheck]);
+                    
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.async = true;
+                    script.onload = () => {
+                        // Small delay to ensure global is bound
+                        setTimeout(() => resolve((window as any)[globalCheck]), 200);
+                    };
+                    script.onerror = () => reject(new Error(`Failed to load ${src}`));
+                    document.body.appendChild(script);
+                });
+            };
+
+            const html2canvas = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
+            const jspdfLib = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
+
+            if (!html2canvas || !jspdfLib) {
+                throw new Error('Hệ thống đang tải thư viện PDF, vui lòng thử lại sau giây lát.');
+            }
+
+            const jsPDFClass = jspdfLib.jsPDF || (window as any).jspdf?.jsPDF;
+            if (!jsPDFClass) {
+                throw new Error('Thư viện PDF không sẵn sàng.');
+            }
+
+            // Wait for images to settle
+            await new Promise(r => setTimeout(r, 800));
+
+            const canvas = await html2canvas(element, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                backgroundColor: '#ffffff',
+                windowWidth: 1000,
+                onclone: (doc: Document) => {
+                    const style = doc.createElement('style');
+                    style.innerHTML = `
+                        @page { size: A4; margin: 0; }
+                        body { background: white !important; }
+                        * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+                        
+                        /* Fix colors for html2canvas */
+                        :root, * {
+                            --background: #ffffff !important;
+                            --foreground: #09090b !important;
+                            --border: #e2e8f0 !important;
+                            --primary: #09090b !important;
+                            --primary-foreground: #ffffff !important;
+                        }
+
+                        .bg-zinc-950, .bg-slate-900 { background-color: #09090b !important; color: #ffffff !important; }
+                        .text-zinc-950, .text-slate-900 { color: #09090b !important; }
+                        .bg-slate-50, .bg-zinc-50 { background-color: #f8fafc !important; }
+                        .border-slate-200, .border-zinc-200 { border-color: #e2e8f0 !important; }
+                        .text-slate-600, .text-zinc-600 { color: #475569 !important; }
+                        .text-slate-500, .text-zinc-500 { color: #64748b !important; }
+
+                        .rounded-xl { border-radius: 0.75rem !important; }
+                        .rounded-2xl { border-radius: 1rem !important; }
+                        
+                        /* Force images to load with CORS */
+                        img { cross-origin: anonymous !important; }
+                    `;
+                    doc.head.appendChild(style);
+
+                    // Deeper cleanup for oklch which crashes html2canvas in some environments
+                    const allStyles = doc.querySelectorAll('style');
+                    allStyles.forEach(s => {
+                        let content = s.innerHTML;
+                        if (content.includes('oklch') || content.includes('color-mix')) {
+                            content = content.replace(/oklch\([^)]+\)/g, '#111111');
+                            content = content.replace(/color-mix\([^)]+\)/g, '#333333');
+                            s.innerHTML = content;
+                        }
+                    });
+                }
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDFClass({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                compress: true
+            });
+
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            
+            let heightLeft = pdfHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save(`Bao_gia_${quotation.quotation_number || 'draft'}.pdf`);
+            toast.success('Đã tải PDF thành công!', { id: toastId });
+        } catch (err: any) {
+            console.error('PDF Generation Error:', err);
+            toast.error(`Lỗi tạo PDF: ${err.message || 'Lỗi không xác định'}. Vui lòng thử dùng nút "In báo giá" và chọn "Lưu dưới dạng PDF".`, { id: toastId });
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     return (
         <div className="flex flex-col gap-6 pb-20">
@@ -569,9 +698,10 @@ export default function QuotationDetailPage() {
                                     <Button
                                         size="lg"
                                         className="gap-2 font-medium bg-zinc-950 text-white hover:bg-zinc-900"
-                                        onClick={() => window.print()}
+                                        onClick={handleDownloadPDF}
+                                        disabled={isDownloading}
                                     >
-                                        <FileDown className="h-4 w-4" />
+                                        {isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
                                         Tải Mẫu Hiện đại
                                     </Button>
                                 ) : (
@@ -593,7 +723,7 @@ export default function QuotationDetailPage() {
                             <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
                                 style={{ backgroundImage: "linear-gradient(#000 1.5px, transparent 1.5px), linear-gradient(90deg, #000 1.5px, transparent 1.5px)", backgroundSize: "40px 40px" }}>
                             </div>
-                            <div className="w-full max-w-[210mm] bg-white shadow-[0_50px_120px_-20px_rgba(0,0,0,0.18)] overflow-hidden rounded-sm transition-transform ring-1 ring-zinc-300/40 relative z-10 border border-zinc-100">
+                            <div className="w-full max-w-[210mm] bg-white shadow-[0_50px_120px_-20px_rgba(0,0,0,0.18)] overflow-hidden rounded-sm transition-transform ring-1 ring-zinc-300/40 relative z-10 border border-zinc-100" ref={printRef}>
                                 {layout === 'modern' ? (
                                     <QuotationModernPaper quotation={quotation} brandConfig={brandConfig} />
                                 ) : (
