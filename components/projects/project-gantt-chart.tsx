@@ -31,6 +31,18 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
 
     const today = startOfDay(now)
 
+    const todayLinePosition = useMemo(() => {
+        const index = timelineDates.findIndex(d => isSameDay(d, now))
+        if (index === -1) return null
+        
+        const h = now.getHours()
+        const m = now.getMinutes()
+        const s = now.getSeconds()
+        const fraction = (h * 3600 + m * 60 + s) / 86400
+        
+        return ((index + fraction) / daysInView) * 100
+    }, [now, timelineDates, daysInView])
+
     const getTaskStyle = (task: any) => {
         const start = task.start_date ? startOfDay(new Date(task.start_date)) : null
         const end = task.end_date ? startOfDay(new Date(task.end_date)) : null
@@ -97,14 +109,14 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                         </div>
                         <div className="flex-1 flex relative bg-zinc-50">
                             {/* Today Line - Moved inside the flex-1 date container to fix alignment */}
-                            {timelineDates.some(d => isSameDay(d, today)) && (
+                            {todayLinePosition !== null && (
                                 <div
-                                    className="absolute top-0 bottom-[-1000px] w-[1px] bg-red-400 z-20 pointer-events-none"
+                                    className="absolute top-0 bottom-[-1000px] w-[1px] bg-red-400 z-50 pointer-events-none"
                                     style={{
-                                        left: `${(differenceInMilliseconds(now, startOfDay(timelineDates[0])) / (24 * 60 * 60 * 1000)) * (100 / daysInView)}%`,
+                                        left: `${todayLinePosition}%`,
                                     }}
                                 >
-                                    <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm border border-white" />
+                                    <div className="absolute top-0 left-[-5px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-md border-[2px] border-white ring-2 ring-red-500/20" />
                                 </div>
                             )}
 
