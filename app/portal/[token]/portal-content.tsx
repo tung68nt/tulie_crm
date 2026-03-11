@@ -252,6 +252,48 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </Dialog>
                 </div>
 
+                {/* Lifecycle Status Banner */}
+                {(() => {
+                    const hasAcceptedQuote = quotations.some((q: any) => q.status === 'accepted')
+                    const hasSignedContract = contracts.some((c: any) => c.status === 'signed')
+                    const hasDraftContract = contracts.some((c: any) => c.status === 'draft')
+                    const hasPendingContract = contracts.some((c: any) => ['sent', 'viewed'].includes(c.status))
+                    const hasPaidDeposit = invoices.some((inv: any) => inv.status === 'paid')
+                    const isCompleted = project?.status === 'completed'
+                    const allAccepted = workItems.length > 0 && workItems.every((w: any) => w.status === 'accepted')
+
+                    type BannerConfig = { icon: string; title: string; desc: string; color: string; bg: string; border: string }
+                    let banner: BannerConfig | null = null
+
+                    if (isCompleted) {
+                        banner = { icon: '🎉', title: 'Dự án đã hoàn thành', desc: 'Cảm ơn bạn đã tin tưởng! Trang này là nhật ký dự án để tra cứu khi cần.', color: 'text-emerald-800', bg: 'bg-emerald-50', border: 'border-emerald-200' }
+                    } else if (allAccepted && workItems.length > 0) {
+                        banner = { icon: '📋', title: 'Đã nghiệm thu — Đang chờ quyết toán', desc: 'Tất cả hạng mục đã được nghiệm thu. Vui lòng hoàn tất thanh toán theo hợp đồng.', color: 'text-blue-800', bg: 'bg-blue-50', border: 'border-blue-200' }
+                    } else if (hasSignedContract && hasPaidDeposit) {
+                        banner = { icon: '🚀', title: 'Dự án đang triển khai', desc: 'Hợp đồng đã ký & đã nhận cọc. Theo dõi tiến độ bên dưới.', color: 'text-blue-800', bg: 'bg-blue-50', border: 'border-blue-200' }
+                    } else if (hasSignedContract) {
+                        banner = { icon: '✅', title: 'Hợp đồng đã ký — Chờ đặt cọc', desc: 'Vui lòng thanh toán đặt cọc theo thông tin chuyển khoản trong báo giá để bắt đầu triển khai.', color: 'text-amber-800', bg: 'bg-amber-50', border: 'border-amber-200' }
+                    } else if (hasPendingContract) {
+                        banner = { icon: '📄', title: 'Hợp đồng đang chờ review', desc: 'Vui lòng xem xét hợp đồng và xác nhận để tiến hành ký kết.', color: 'text-blue-800', bg: 'bg-blue-50', border: 'border-blue-200' }
+                    } else if (hasDraftContract) {
+                        banner = { icon: '✏️', title: 'Đang soạn hợp đồng', desc: 'Hợp đồng đang được soạn thảo dựa trên báo giá đã duyệt. Bạn sẽ nhận được bản review sớm.', color: 'text-zinc-700', bg: 'bg-zinc-50', border: 'border-zinc-200' }
+                    } else if (hasAcceptedQuote && !hasContracts) {
+                        banner = { icon: '✅', title: 'Báo giá đã duyệt — Đang chờ ký hợp đồng', desc: 'Cảm ơn bạn đã xác nhận! Chúng tôi đang chuẩn bị hợp đồng. Vui lòng cập nhật thông tin công ty nếu chưa đầy đủ.', color: 'text-emerald-800', bg: 'bg-emerald-50', border: 'border-emerald-200' }
+                    }
+
+                    if (!banner) return null
+
+                    return (
+                        <div className={cn("rounded-xl border p-5 flex items-start gap-4", banner.bg, banner.border)}>
+                            <span className="text-2xl shrink-0 mt-0.5">{banner.icon}</span>
+                            <div>
+                                <h3 className={cn("text-sm font-bold tracking-tight", banner.color)}>{banner.title}</h3>
+                                <p className={cn("text-xs mt-1 font-medium opacity-80", banner.color)}>{banner.desc}</p>
+                            </div>
+                        </div>
+                    )
+                })()}
+
                 {/* Stats Row — Clean, no uppercase, no letter-spacing */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[

@@ -662,6 +662,37 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                             </div>
                         </div>
 
+                        {/* Project Document Procedures Preview */}
+                        <div className="mb-8 mt-8 print:hidden">
+                            <h3 className="text-[13px] font-semibold text-black mb-4 border-l-4 border-black pl-3 leading-none h-3.5 flex items-center">
+                                Thủ tục dự án<span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Project Procedures</span>
+                            </h3>
+                            <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                <p className="text-[11px] text-slate-500 mb-4 font-medium">Các chứng từ sẽ được thực hiện tuần tự trong quá trình triển khai dự án:</p>
+                                <div className="relative pl-6">
+                                    <div className="absolute left-[7px] top-2 bottom-2 w-[2px] bg-slate-200 rounded-full" />
+                                    {[
+                                        { title: 'Báo giá dịch vụ', sub: 'Quotation' },
+                                        { title: 'Hợp đồng & Phụ lục', sub: 'Contract & Appendix' },
+                                        { title: 'Thanh toán đặt cọc', sub: 'Deposit Payment' },
+                                        { title: 'Biên bản bàn giao sản phẩm', sub: 'Delivery Report' },
+                                        { title: 'Quyết toán & Thanh lý', sub: 'Final Settlement' },
+                                        { title: 'Biên bản nghiệm thu', sub: 'Acceptance Report' },
+                                    ].map((doc, i) => (
+                                        <div key={i} className="relative mb-4 last:mb-0 flex items-center gap-3">
+                                            <div className="absolute -left-6 w-4 h-4 rounded-full bg-white border-2 border-slate-300 z-10 flex items-center justify-center">
+                                                <span className="text-[8px] font-bold text-slate-400">{i + 1}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-[12px] font-semibold text-slate-700">{doc.title}</span>
+                                                <span className="text-[10px] text-slate-400 ml-2 italic">{doc.sub}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Decorative Footer */}
                         <div className="pt-6 flex flex-col items-center">
                             <div className="w-full h-px bg-slate-200 mb-6"></div>

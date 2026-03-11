@@ -206,6 +206,23 @@ export async function updateQuotationStatus(quotationId: string, status: string,
                 .neq('id', acceptedClone.id)
                 .in('status', ['draft', 'sent', 'viewed'])
 
+            // 7. Auto-tick "Báo giá" in work item document procedures
+            if (original.project_id) {
+                const { data: workItems } = await supabase
+                    .from('work_items')
+                    .select('id, required_documents')
+                    .eq('project_id', original.project_id)
+
+                for (const wi of workItems || []) {
+                    const docs = (wi.required_documents || []).map((d: any) =>
+                        d.title?.includes('Báo giá')
+                            ? { ...d, status: 'signed', date: new Date().toISOString() }
+                            : d
+                    )
+                    await supabase.from('work_items').update({ required_documents: docs }).eq('id', wi.id)
+                }
+            }
+
             revalidatePath(`/quotations/${quotationId}`)
             revalidatePath(`/quotations/${acceptedClone.id}`)
             if (original.public_token) revalidatePath(`/quote/${original.public_token}`)
