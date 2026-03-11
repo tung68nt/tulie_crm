@@ -75,12 +75,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                 ...confirmer,
                 selectedItemIds: selectedItemIds
             })
-            if (res.success) {
+            if (res?.success) {
                 toast.success("Đã xác nhận chấp nhận báo giá thành công")
                 setShowConfirm(false)
                 window.location.reload()
             } else {
-                toast.error(res.error || "Lỗi khi xác nhận")
+                toast.error(res?.error || "Lỗi khi xác nhận")
             }
         } finally {
             setIsSubmitting(false)
@@ -96,12 +96,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
         setIsSubmitting(true)
         try {
             const res = await updateQuotationStatus(currentQuotation.id, 'rejected', { reason: rejectReason })
-            if (res.success) {
+            if (res?.success) {
                 toast.success("Đã gửi phản hồi từ chối báo giá")
                 setShowReject(false)
                 window.location.reload()
             } else {
-                toast.error(res.error || "Lỗi khi xử lý")
+                toast.error(res?.error || "Lỗi khi xử lý")
             }
         } finally {
             setIsSubmitting(false)
@@ -690,7 +690,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                     />
                                                                 </div>
                                                             </td>
-                                                            <td className="px-1 text-slate-500 align-top text-center py-2 font-bold text-[10px]">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</td>
+                                                            <td className="px-1 text-slate-500 align-top text-center pt-[11px] pb-2 font-bold text-[10px] leading-tight shrink-0">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
                                                                     <div className="flex flex-wrap items-center gap-2">
@@ -705,15 +705,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <div className="text-slate-800 text-[11px] leading-snug mt-2 space-y-2 pl-4 border-l-2 border-slate-100/50">
-                                                                            {item.description.split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
-                                                                                <div key={i} className="flex gap-3">
-                                                                                    <div className="shrink-0 mt-[6px]">
-                                                                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-                                                                                    </div>
-                                                                                    <span className="flex-1 font-semibold text-slate-900">{line.replace(/^[•\-\*]\s*/, '')}</span>
-                                                                                </div>
-                                                                            ))}
+                                                                        <div className="text-slate-600 text-[11px] leading-relaxed mt-1 whitespace-pre-line italic">
+                                                                            {item.description}
                                                                         </div>
                                                                     )}
                                                                 </div>

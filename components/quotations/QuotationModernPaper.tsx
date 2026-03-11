@@ -247,7 +247,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                         )}
                                         {sectionItems.map((item: any, iIdx: number) => (
                                             <tr key={iIdx} className="hover:bg-slate-50/50">
-                                                <td className="px-1 text-slate-500 align-top text-center py-4 font-bold text-[10px]">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
+                                                <td className="px-1 text-slate-500 align-top text-center pt-[19px] pb-4 font-bold text-[10px] leading-tight shrink-0">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
                                                 <td className="px-4 align-top py-4">
                                                     <p className="font-bold text-slate-900 text-[13px]">{item.product_name}</p>
                                                     {item.description && (
