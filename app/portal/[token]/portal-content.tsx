@@ -269,7 +269,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </div>
                             <div className="flex items-baseline gap-1">
                                 <div className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">
-                                    {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(' đ', '') : stat.value}
+                                    {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim() : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
                                     <div className="text-sm font-semibold text-muted-foreground">đ</div>
@@ -338,7 +338,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                                 <div className="text-right">
                                                     <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
                                                     <div className="flex items-baseline justify-end gap-1">
-                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(' đ', '')}</span>
+                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
                                                         <span className="text-[10px] font-semibold text-zinc-900">đ</span>
                                                     </div>
                                                 </div>
@@ -531,7 +531,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                     <div className="pt-4 border-t border-zinc-100">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(' đ', '')}</span>
+                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
                             <span className="text-sm font-semibold text-zinc-900">đ</span>
                         </div>
                     </div>
