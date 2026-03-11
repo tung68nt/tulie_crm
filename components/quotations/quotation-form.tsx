@@ -417,7 +417,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             if (data.proposal_content) { setProposalContent(data.proposal_content); count++ }
 
             if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-                const newItems = data.items.map((item: any, idx: number) => {
+                const rawItems = data.items.map((item: any, idx: number) => {
                     // Try to match product by name
                     const matchedProduct = products.find(p =>
                         p.name.toLowerCase().trim() === (item.product_name || '').toLowerCase().trim()
@@ -439,6 +439,18 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     ...item,
                     total_price: item.quantity * item.unit_price * (1 - item.discount / 100)
                 }))
+
+                // Assign section_id based on section_name transitions (same logic as initial state)
+                let currentSecId = 0
+                let lastSectionName: string | null = null
+                const newItems = rawItems.map((item: any, idx: number) => {
+                    if (idx === 0 || item.section_name !== lastSectionName) {
+                        currentSecId++
+                        lastSectionName = item.section_name || ''
+                    }
+                    return { ...item, section_id: `sec-${currentSecId}` }
+                })
+
                 setItems(newItems)
                 count += newItems.length
             }
