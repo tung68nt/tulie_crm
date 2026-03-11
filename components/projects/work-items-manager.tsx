@@ -496,7 +496,7 @@ function WorkItemRow({
             {/* Expanded content */}
             {isExpanded && (
                 <div className="border-t border-zinc-50 p-6 bg-zinc-50/20 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
+                    <div className="space-y-8">
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
                             <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
