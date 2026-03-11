@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -28,8 +28,12 @@ import {
     updateAppearanceConfig,
     updateSystemSetting,
     getSystemSetting,
-    getBrands, // Added
-    updateBrands // Added
+    getBrands,
+    updateBrands,
+    getBankAccounts,
+    updateBankAccounts,
+    getNoteTemplates,
+    updateNoteTemplates
 } from '@/lib/supabase/services/settings-service'
 import { testTelegramConnection } from '@/lib/supabase/services/telegram-service'
 import { testSmtpConnection, sendEmail } from '@/lib/supabase/services/email-service'
@@ -118,6 +122,12 @@ export default function SettingsPage() {
     })
     const [isSavingBrand, setIsSavingBrand] = useState(false)
 
+    // New states for Bank Accounts and Note Templates
+    const [bankAccounts, setBankAccounts] = useState<any[]>([])
+    const [isSavingBankAccounts, setIsSavingBankAccounts] = useState(false)
+    const [noteTemplates, setNoteTemplates] = useState<any[]>([])
+    const [isSavingNoteTemplates, setIsSavingNoteTemplates] = useState(false)
+
     useEffect(() => {
         loadCompanySettings()
         loadCategories()
@@ -128,6 +138,8 @@ export default function SettingsPage() {
         loadSmtp()
         loadBrand()
         loadBundles()
+        loadBankAccounts()
+        loadNoteTemplates()
     }, [])
 
     const [bundles, setBundles] = useState<DocumentBundle[]>([])
@@ -444,6 +456,42 @@ export default function SettingsPage() {
         }
     }
 
+    async function loadBankAccounts() {
+        const data = await getBankAccounts()
+        setBankAccounts(data)
+    }
+
+    async function loadNoteTemplates() {
+        const data = await getNoteTemplates()
+        setNoteTemplates(data)
+    }
+
+    const handleSaveBankAccounts = async (updatedAccounts: any[]) => {
+        setIsSavingBankAccounts(true)
+        try {
+            await updateBankAccounts(updatedAccounts)
+            setBankAccounts(updatedAccounts)
+            toast.success('Đã lưu danh sách tài khoản ngân hàng')
+        } catch {
+            toast.error('Lỗi khi lưu tài khoản ngân hàng')
+        } finally {
+            setIsSavingBankAccounts(false)
+        }
+    }
+
+    const handleSaveNoteTemplates = async (updatedTemplates: any[]) => {
+        setIsSavingNoteTemplates(true)
+        try {
+            await updateNoteTemplates(updatedTemplates)
+            setNoteTemplates(updatedTemplates)
+            toast.success('Đã lưu danh sách mẫu ghi chú')
+        } catch {
+            toast.error('Lỗi khi lưu mẫu ghi chú')
+        } finally {
+            setIsSavingNoteTemplates(false)
+        }
+    }
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
@@ -503,6 +551,20 @@ export default function SettingsPage() {
                         >
                             <BookOpen className="h-4 w-4" />
                             Bộ chứng từ (Bundle)
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="bank-accounts"
+                            className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
+                        >
+                            <CreditCard className="h-4 w-4" />
+                            Tài khoản ngân hàng
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="note-templates"
+                            className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
+                        >
+                            <FileText className="h-4 w-4" />
+                            Mẫu ghi chú / Điều khoản
                         </TabsTrigger>
 
                         <div className="py-2 px-3">
@@ -1557,6 +1619,202 @@ export default function SettingsPage() {
                                             </div>
                                         )}
                                     </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="bank-accounts">
+                        <Card className="rounded-xl shadow-sm border-border/50">
+                            <CardHeader className="bg-muted/30 border-b border-border/50">
+                                <CardTitle className="text-xl font-bold tracking-tight">Danh sách tài khoản ngân hàng</CardTitle>
+                                <CardDescription className="text-sm font-medium">Các tài khoản này sẽ được hiển thị để chọn khi tạo báo giá hoặc đơn hàng.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6 pt-6">
+                                <div className="space-y-4">
+                                    {bankAccounts.map((account, index) => (
+                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute top-4 right-4 text-destructive hover:bg-destructive/5"
+                                                onClick={() => {
+                                                    const newAccounts = [...bankAccounts]
+                                                    newAccounts.splice(index, 1)
+                                                    setBankAccounts(newAccounts)
+                                                }}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên ngân hàng</Label>
+                                                    <Input
+                                                        value={account.bank_name}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].bank_name = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: VietinBank"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Số tài khoản</Label>
+                                                    <Input
+                                                        value={account.account_no}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].account_no = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: 104002106705"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên chủ tài khoản</Label>
+                                                    <Input
+                                                        value={account.account_name}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].account_name = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: NGHIEM THI LIEN"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Chi nhánh</Label>
+                                                    <Input
+                                                        value={account.bank_branch}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].bank_branch = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: Hà Nội"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-dashed h-12 rounded-xl text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 border-zinc-200"
+                                        onClick={() => {
+                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '' }])
+                                        }}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" /> Thêm tài khoản ngân hàng
+                                    </Button>
+                                </div>
+                                <div className="flex justify-end pt-4">
+                                    <Button onClick={() => handleSaveBankAccounts(bankAccounts)} disabled={isSavingBankAccounts} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
+                                        {isSavingBankAccounts && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Lưu danh sách
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    <TabsContent value="note-templates">
+                        <Card className="rounded-xl shadow-sm border-border/50">
+                            <CardHeader className="bg-muted/30 border-b border-border/50">
+                                <CardTitle className="text-xl font-bold tracking-tight">Mẫu Ghi chú & Điều khoản</CardTitle>
+                                <CardDescription className="text-sm font-medium">Cấu hình các mẫu văn bản cho từng loại dịch vụ để chọn nhanh khi tạo báo giá.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6 pt-6">
+                                <div className="space-y-6">
+                                    {noteTemplates.map((template, index) => (
+                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute top-4 right-4 text-destructive hover:bg-destructive/5"
+                                                onClick={() => {
+                                                    const newTemplates = [...noteTemplates]
+                                                    newTemplates.splice(index, 1)
+                                                    setNoteTemplates(newTemplates)
+                                                }}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên mẫu</Label>
+                                                    <Input
+                                                        value={template.name}
+                                                        onChange={(e) => {
+                                                            const newTemplates = [...noteTemplates]
+                                                            newTemplates[index].name = e.target.value
+                                                            setNoteTemplates(newTemplates)
+                                                        }}
+                                                        placeholder="VD: Studio - Gói Basic"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Loại dịch vụ (Gợi ý: studio, agency)</Label>
+                                                    <Input
+                                                        value={template.service_type}
+                                                        onChange={(e) => {
+                                                            const newTemplates = [...noteTemplates]
+                                                            newTemplates[index].service_type = e.target.value
+                                                            setNoteTemplates(newTemplates)
+                                                        }}
+                                                        placeholder="VD: studio"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Điều khoản thanh toán</Label>
+                                                <Textarea
+                                                    value={template.payment_terms}
+                                                    onChange={(e) => {
+                                                        const newTemplates = [...noteTemplates]
+                                                        newTemplates[index].payment_terms = e.target.value
+                                                        setNoteTemplates(newTemplates)
+                                                    }}
+                                                    rows={3}
+                                                    className="rounded-xl resize-none"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Ghi chú</Label>
+                                                <Textarea
+                                                    value={template.notes}
+                                                    onChange={(e) => {
+                                                        const newTemplates = [...noteTemplates]
+                                                        newTemplates[index].notes = e.target.value
+                                                        setNoteTemplates(newTemplates)
+                                                    }}
+                                                    rows={3}
+                                                    className="rounded-xl resize-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-dashed h-12 rounded-xl text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 border-zinc-200"
+                                        onClick={() => {
+                                            setNoteTemplates([...noteTemplates, { name: '', service_type: '', payment_terms: '', notes: '' }])
+                                        }}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" /> Thêm mẫu văn bản
+                                    </Button>
+                                </div>
+                                <div className="flex justify-end pt-4">
+                                    <Button onClick={() => handleSaveNoteTemplates(noteTemplates)} disabled={isSavingNoteTemplates} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
+                                        {isSavingNoteTemplates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Lưu danh sách
+                                    </Button>
                                 </div>
                             </CardContent>
                         </Card>

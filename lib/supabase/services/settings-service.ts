@@ -197,3 +197,23 @@ export async function testSmtpConnection(config: any) {
         return { success: false, error: err.message || 'Lỗi không xác định khi kết nối SMTP' }
     }
 }
+
+// Bank account list
+export async function getBankAccounts() {
+    const accounts = await getSystemSetting('bank_accounts')
+    return Array.isArray(accounts) ? accounts : []
+}
+
+export async function updateBankAccounts(accounts: any[]) {
+    return updateSystemSetting('bank_accounts', accounts)
+}
+
+// Note templates
+export async function getNoteTemplates() {
+    const templates = await getSystemSetting('note_templates')
+    return Array.isArray(templates) ? templates : []
+}
+
+export async function updateNoteTemplates(templates: any[]) {
+    return updateSystemSetting('note_templates', templates)
+}

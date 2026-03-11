@@ -39,6 +39,7 @@ import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
 import { toast } from 'sonner'
+import { getBankAccounts, getNoteTemplates } from '@/lib/supabase/services/settings-service'
 import {
     Dialog,
     DialogContent,
@@ -86,6 +87,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [jsonError, setJsonError] = useState<string | null>(null)
     const [jsonPath, setJsonPath] = useState<string>('')
 
+    // Available resources for selection
+    const [availableBanks, setAvailableBanks] = useState<any[]>([])
+    const [availableNotes, setAvailableNotes] = useState<any[]>([])
+
     // Bank info state
     const [bankName, setBankName] = useState(quotation?.bank_name || '')
     const [bankAccountNo, setBankAccountNo] = useState(quotation?.bank_account_no || '')
@@ -109,6 +114,22 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             setBankBranch(prev => prev === '' ? brandConfig.bank_branch || '' : prev)
         }
     }, [brandConfig, quotation])
+
+    useEffect(() => {
+        const loadResources = async () => {
+            try {
+                const [banks, notes] = await Promise.all([
+                    getBankAccounts(),
+                    getNoteTemplates()
+                ])
+                setAvailableBanks(banks)
+                setAvailableNotes(notes)
+            } catch (error) {
+                console.error('Error loading selection resources:', error)
+            }
+        }
+        loadResources()
+    }, [])
 
     // Calculate valid_until to days for the input
     const [validityDays, setValidityDays] = useState(() => {
@@ -1169,8 +1190,28 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Terms & Notes */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="py-6 px-6">
+                        <CardHeader className="py-6 px-6 flex flex-row items-center justify-between space-y-0">
                             <CardTitle>Điều khoản & Ghi chú</CardTitle>
+                            {availableNotes.length > 0 && (
+                                <Select onValueChange={(val) => {
+                                    const t = availableNotes.find(x => x.name === val)
+                                    if (t) {
+                                        setTerms(t.payment_terms || '')
+                                        setNotes(t.notes || '')
+                                        toast.info(`Đã áp dụng mẫu: ${t.name}`)
+                                    }
+                                }}>
+                                    <SelectTrigger className="w-[220px] h-9 text-xs bg-muted/30">
+                                        <SelectValue placeholder="Chọn mẫu văn bản" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="_" disabled>Chọn mẫu có sẵn</SelectItem>
+                                        {availableNotes.map(t => (
+                                            <SelectItem key={t.name} value={t.name}>{t.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
@@ -1186,8 +1227,32 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                     {/* Bank Transfer Info */}
                     <Card className="overflow-hidden">
-                        <CardHeader className="py-6 px-6">
+                        <CardHeader className="py-6 px-6 flex flex-row items-center justify-between space-y-0">
                             <CardTitle>Thông tin chuyển khoản</CardTitle>
+                            {availableBanks.length > 0 && (
+                                <Select onValueChange={(val) => {
+                                    const b = availableBanks.find(x => x.account_no === val)
+                                    if (b) {
+                                        setBankName(b.bank_name || '')
+                                        setBankAccountNo(b.account_no || '')
+                                        setBankAccountName(b.account_name || '')
+                                        setBankBranch(b.bank_branch || '')
+                                        toast.info(`Đã chọn TK: ${b.bank_name}`)
+                                    }
+                                }}>
+                                    <SelectTrigger className="w-[220px] h-9 text-xs bg-muted/30">
+                                        <SelectValue placeholder="Chọn nhanh tài khoản" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="_" disabled>Chọn danh sách đã cấu hình</SelectItem>
+                                        {availableBanks.map(b => (
+                                            <SelectItem key={b.account_no} value={b.account_no}>
+                                                {b.bank_name} - {b.account_no}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                         </CardHeader>
                         <CardContent className="grid gap-4 sm:grid-cols-2">
                             <div className="space-y-2">

@@ -1,4 +1,5 @@
 import { getRetailOrderById } from '@/lib/supabase/services/retail-order-service'
+import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { notFound } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -13,8 +14,17 @@ export default async function RetailOrderPortalPage({ params }: any) {
 
     if (!order) notFound()
 
+    const brandConfig = await getBrandConfig()
+    const bankInfo = order.metadata?.bank_info || {
+        bank_name: brandConfig?.studio_bank_name || brandConfig?.bank_name || 'VietinBank',
+        account_no: brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '104002106705',
+        account_name: brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'Nghiem Thi Lien'
+    }
+
     const remainingAmount = order.total_amount - (order.paid_amount || 0)
-    const qrUrl = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${remainingAmount}&des=THANH TOAN ${order.order_number}`
+    // Map common bank names to SePay bank IDs if needed, but for now use VietinBank (ICB) as default
+    const sepayBankId = (bankInfo.bank_name.toLowerCase().includes('vietin')) ? 'ICB' : 'MB'
+    const qrUrl = `https://qr.sepay.vn/img?acc=${bankInfo.account_no}&bank=${sepayBankId}&amount=${remainingAmount}&des=THANH TOAN ${order.order_number}`
 
     const STATUS_LABELS: Record<string, string> = {
         pending: 'Chờ xử lý',
@@ -36,9 +46,20 @@ export default async function RetailOrderPortalPage({ params }: any) {
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4 selection:bg-primary/20">
             <div className="max-w-3xl mx-auto space-y-8">
                 {/* Brand Header */}
-                <div className="text-center space-y-2">
-                    <div className="inline-flex h-16 w-16 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/20 mb-4 animate-in zoom-in duration-500">
-                        <Camera className="h-8 w-8 text-white" />
+                <div className="text-center space-y-4">
+                    {brandConfig?.logo_url ? (
+                        <div className="flex justify-center animate-in fade-in zoom-in duration-700">
+                            <img src={brandConfig.logo_url} alt="Logo" className="h-16 object-contain" />
+                        </div>
+                    ) : (
+                        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-950 shadow-xl shadow-zinc-950/20 mb-4 animate-in zoom-in duration-500">
+                            <Camera className="h-8 w-8 text-white" />
+                        </div>
+                    )}
+                    <div className="space-y-1">
+                        <h1 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">
+                            {brandConfig?.name || 'Tulie Studio'}
+                        </h1>
                     </div>
                 </div>
 
@@ -142,24 +163,24 @@ export default async function RetailOrderPortalPage({ params }: any) {
                                             <p className="text-xs text-muted-foreground font-medium">Số tiền cần thanh toán:</p>
                                             <p className="text-3xl font-bold tracking-tighter text-primary">{formatCurrency(remainingAmount)}</p>
                                         </div>
-                                        <div className="space-y-4 p-5 rounded-xl border border-zinc-200 bg-white dark:bg-card shadow-sm">
-                                            <p className="text-[10px] font-semibold text-muted-foreground text-center uppercase tracking-widest">Thông tin chuyển khoản</p>
-                                            <div className="grid grid-cols-2 gap-4 text-xs">
+                                        <div className="space-y-4 p-5 rounded-2xl border border-zinc-200 bg-white dark:bg-card shadow-sm ring-1 ring-zinc-50">
+                                            <p className="text-[10px] font-bold text-zinc-400 text-center uppercase tracking-widest">Thông tin chuyển khoản</p>
+                                            <div className="grid grid-cols-2 gap-y-5 gap-x-4 text-xs">
                                                 <div>
-                                                    <p className="text-muted-foreground mb-0.5">Ngân hàng</p>
-                                                    <p className="font-semibold text-zinc-900">VietinBank</p>
+                                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter mb-1">Ngân hàng</p>
+                                                    <p className="font-bold text-zinc-900">{bankInfo.bank_name}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-muted-foreground mb-0.5">Chủ tài khoản</p>
-                                                    <p className="font-semibold text-zinc-900">Nghiem Thi Lien</p>
+                                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter mb-1">Chủ tài khoản</p>
+                                                    <p className="font-bold text-zinc-900">{bankInfo.account_name}</p>
                                                 </div>
                                                 <div className="col-span-2">
-                                                    <p className="text-muted-foreground mb-0.5">Số tài khoản</p>
-                                                    <p className="font-bold text-lg text-zinc-900 tracking-tight">104002106705</p>
+                                                    <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter mb-1">Số tài khoản</p>
+                                                    <p className="font-black text-2xl text-zinc-950 tracking-tighter leading-none">{bankInfo.account_no}</p>
                                                 </div>
-                                                <div className="col-span-2 p-3 bg-zinc-50 border border-zinc-100 rounded-lg text-[10px] flex justify-between items-center">
-                                                    <span className="text-zinc-500">Nội dung: <b className="text-zinc-900">SEVQR</b></span>
-                                                    <span className="text-primary font-semibold">Quét mã để tự điền</span>
+                                                <div className="col-span-2 p-3 bg-zinc-950 rounded-xl text-[10px] flex justify-between items-center shadow-lg shadow-zinc-950/10">
+                                                    <span className="text-zinc-500 font-medium">Nội dung: <b className="text-white font-black">{`THANH TOAN ${order.order_number}`}</b></span>
+                                                    <span className="text-zinc-400 font-bold uppercase tracking-widest text-[8px]">Auto detect</span>
                                                 </div>
                                             </div>
                                         </div>

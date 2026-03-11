@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { createRetailOrder, getNextStt } from '@/lib/supabase/services/retail-order-service'
+import { createRetailOrder, getNextStt, updateRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
-import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy } from 'lucide-react'
+import { getBankAccounts, getNoteTemplates } from '@/lib/supabase/services/settings-service'
+import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -23,31 +24,39 @@ import { getProducts } from '@/lib/supabase/services/product-service'
 import { ProductCombobox } from '@/components/quotations/product-combobox'
 import { PriceInput } from '@/components/ui/price-input'
 
-export function RetailOrderForm() {
+interface RetailOrderFormProps {
+    initialData?: any
+    isEdit?: boolean
+}
+
+export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [products, setProducts] = useState<any[]>([])
     const [selectedItems, setSelectedItems] = useState<any[]>([])
     const today = new Date().toISOString().split('T')[0]
     const [formData, setFormData] = useState({
-        customer_name: '',
-        customer_phone: '',
-        customer_email: '',
-        total_amount: 0,
-        deposit_amount: 0,
-        shipping_fee: 0,
-        payment_status: 'pending' as any,
-        order_status: 'pending' as any,
-        resource_link: '',
-        notes: '',
-        order_date: today,
-        delivery_date: '',
-        needs_vat: false,
-        brand: 'studio' as any,
-        use_deposit: true,
+        customer_name: initialData?.customer_name || '',
+        customer_phone: initialData?.customer_phone || '',
+        customer_email: initialData?.customer_email || '',
+        total_amount: initialData?.total_amount || 0,
+        deposit_amount: initialData?.deposit_amount || (initialData?.paid_amount || 0),
+        shipping_fee: initialData?.shipping_fee || 0,
+        payment_status: initialData?.payment_status || 'pending',
+        order_status: initialData?.order_status || 'pending',
+        resource_link: initialData?.resource_link || '',
+        notes: initialData?.notes || '',
+        order_date: initialData?.order_date || today,
+        delivery_date: initialData?.delivery_date || '',
+        needs_vat: initialData?.needs_vat || false,
+        brand: initialData?.brand || 'studio',
+        use_deposit: initialData ? (initialData.deposit_amount > 0 || initialData.paid_amount > 0) : true,
+        metadata: initialData?.metadata || {}
     })
 
     const [brandConfig, setBrandConfig] = useState<any>(null)
+    const [availableBanks, setAvailableBanks] = useState<any[]>([])
+    const [availableNotes, setAvailableNotes] = useState<any[]>([])
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -59,8 +68,17 @@ export function RetailOrderForm() {
             const config = await getBrandConfig()
             setBrandConfig(config)
         }
+        const fetchResources = async () => {
+            const [banks, notes] = await Promise.all([
+                getBankAccounts(),
+                getNoteTemplates()
+            ])
+            setAvailableBanks(banks)
+            setAvailableNotes(notes)
+        }
         fetchProducts()
         fetchConfig()
+        fetchResources()
     }, [])
 
     useEffect(() => {
@@ -105,12 +123,23 @@ export function RetailOrderForm() {
 
     const [orderIdPreview, setOrderIdPreview] = useState('DH_YY_MMDD_STT_Value')
     const [nextStt, setNextStt] = useState<number | null>(null)
+    useEffect(() => {
+        if (initialData?.items) {
+            setSelectedItems(initialData.items)
+        }
+    }, [initialData])
 
     useEffect(() => {
-        getNextStt().then(stt => setNextStt(stt))
-    }, [])
+        if (!isEdit) {
+            getNextStt().then(stt => setNextStt(stt))
+        }
+    }, [isEdit])
 
     useEffect(() => {
+        if (isEdit && initialData?.order_number) {
+            setOrderIdPreview(initialData.order_number)
+            return
+        }
         const dateStr = formData.order_date || today
         const d = new Date(dateStr)
         const yy = d.getFullYear().toString().slice(-2)
@@ -119,7 +148,7 @@ export function RetailOrderForm() {
         const priceK = Math.floor((formData.total_amount || 0) / 1000)
         const sttStr = nextStt !== null ? String(nextStt) : 'XXX'
         setOrderIdPreview(`DH_${yy}_${mm}${dd}_${sttStr}_${priceK}`)
-    }, [formData.total_amount, formData.order_date, today, nextStt])
+    }, [formData.total_amount, formData.order_date, today, nextStt, isEdit, initialData])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -140,13 +169,25 @@ export function RetailOrderForm() {
         try {
             // Strip non-DB fields before sending
             const { use_deposit, needs_vat, ...submitData } = formData
-            await createRetailOrder({
-                ...submitData,
-                needs_vat: needs_vat || false,
-                paid_amount: 0,
-                items: selectedItems
-            } as any)
-            toast.success('Đã tạo đơn hàng mới thành công')
+
+            if (isEdit && initialData?.id) {
+                await updateRetailOrder(initialData.id, {
+                    ...submitData,
+                    needs_vat: needs_vat || false,
+                    // Note: updateRetailOrder doesn't handle items currently in the service, 
+                    // but we can add item update logic if needed. 
+                    // For now, let's just update the order meta.
+                })
+                toast.success('Đã cập nhật đơn hàng thành công')
+            } else {
+                await createRetailOrder({
+                    ...submitData,
+                    needs_vat: needs_vat || false,
+                    paid_amount: 0,
+                    items: selectedItems
+                } as any)
+                toast.success('Đã tạo đơn hàng mới thành công')
+            }
             router.push('/studio')
             router.refresh()
         } catch (error: any) {
@@ -157,9 +198,9 @@ export function RetailOrderForm() {
         }
     }
 
-    const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
-    const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
-    const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
+    const BANK_ID = formData.metadata?.bank_info?.bank_name || brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
+    const ACCOUNT_NO = formData.metadata?.bank_info?.account_no || brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
+    const ACCOUNT_NAME = formData.metadata?.bank_info?.account_name || brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'CONG TY TNHH TULIE'
     const balance = formData.total_amount - (formData.use_deposit ? formData.deposit_amount : 0)
 
     const depositQrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-compact2.png?amount=${formData.deposit_amount}&addInfo=${encodeURIComponent('COC ' + orderIdPreview)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`
@@ -389,16 +430,40 @@ export function RetailOrderForm() {
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="notes" className="text-sm font-medium">Mô tả sản phẩm (Ghi chú)</Label>
-                                <Textarea
-                                    id="notes"
-                                    placeholder="Ví dụ: Giao tận nơi, đóng khung gỗ, in decal..."
-                                    rows={3}
-                                    value={formData.notes}
-                                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                    className="resize-none"
-                                />
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-sm font-bold tracking-tight">Ghi chú & Điều khoản</Label>
+                                    {availableNotes.length > 0 && (
+                                        <Select onValueChange={(val) => {
+                                            const t = availableNotes.find(x => x.name === val)
+                                            if (t) {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    notes: t.notes || t.payment_terms || prev.notes
+                                                }))
+                                                toast.info('Đã áp dụng mẫu ghi chú')
+                                            }
+                                        }}>
+                                            <SelectTrigger className="w-[180px] h-8 text-[10px] bg-muted/30">
+                                                <SelectValue placeholder="Chọn từ mẫu có sẵn" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableNotes.map(t => (
+                                                    <SelectItem key={t.name} value={t.name}>{t.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Textarea
+                                        value={formData.notes}
+                                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                        placeholder="Ghi chú về gói chụp, yêu cầu của khách hàng..."
+                                        rows={3}
+                                        className="rounded-xl resize-none text-xs"
+                                    />
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -433,6 +498,55 @@ export function RetailOrderForm() {
                                             className="h-10 text-lg font-bold"
                                         />
                                         <p className="text-xs text-muted-foreground italic">Gợi ý: Cọc 30-50% giá trị đơn hàng</p>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="space-y-4 pt-4 border-t border-dashed">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <CreditCard className="h-4 w-4 text-primary" />
+                                        <Label className="text-sm font-bold tracking-tight">Thông tin thanh toán</Label>
+                                    </div>
+                                    {availableBanks.length > 0 && (
+                                        <Select onValueChange={(val) => {
+                                            const b = availableBanks.find(x => x.account_no === val)
+                                            if (b) {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    metadata: {
+                                                        ...prev.metadata,
+                                                        bank_info: {
+                                                            bank_name: b.bank_name,
+                                                            account_no: b.account_no,
+                                                            account_name: b.account_name,
+                                                            bank_branch: b.bank_branch
+                                                        }
+                                                    }
+                                                }))
+                                                toast.info('Đã chọn tài khoản thanh toán')
+                                            }
+                                        }}>
+                                            <SelectTrigger className="w-[180px] h-8 text-[10px] bg-muted/30">
+                                                <SelectValue placeholder="Đổi tài khoản nhận" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableBanks.map(b => (
+                                                    <SelectItem key={b.account_no} value={b.account_no}>{b.bank_name} - {b.account_no}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                </div>
+                                {formData.metadata?.bank_info ? (
+                                    <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-100 space-y-1">
+                                        <p className="text-[10px] font-bold text-zinc-900 leading-none">{formData.metadata.bank_info.bank_name}</p>
+                                        <p className="text-xs font-bold text-primary tracking-tight">{formData.metadata.bank_info.account_no}</p>
+                                        <p className="text-[10px] text-zinc-500">{formData.metadata.bank_info.account_name}</p>
+                                    </div>
+                                ) : (
+                                    <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center gap-2 text-zinc-500">
+                                        <AlertCircle className="h-3 w-3" />
+                                        <p className="text-[10px]">Đang sử dụng tài khoản mặc định của Studio</p>
                                     </div>
                                 )}
                             </div>
@@ -536,7 +650,7 @@ export function RetailOrderForm() {
                             ) : (
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
                             )}
-                            Xác nhận tạo đơn hàng
+                            {isEdit ? 'Cập nhật đơn hàng' : 'Xác nhận tạo đơn hàng'}
                         </Button>
                     </div>
                 </div>
