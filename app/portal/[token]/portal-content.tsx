@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -110,8 +110,66 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     }
     const router = useRouter()
 
-    // Aggregate Calculations
-    const totalInvestment = quotations.reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+    // Fallback: if no work items yet, build from quotations (legacy mode)
+    const displayItems = useMemo(() => {
+        if (workItems.length > 0) return workItems
+        return quotations.map((q: any) => ({
+            id: q.id,
+            title: q.title || `Báo giá #${q.quotation_number}`,
+            status: q.status === 'accepted' ? 'in_progress' : 'pending',
+            quotation: q,
+            contract: contracts.find((c: any) => c.quotation_id === q.id) || null,
+            delivery_links: [],
+            required_documents: [],
+            tasks: tasks.filter((t: any) => !t.work_item_id),
+            total_amount: q.total_amount || 0,
+        }))
+    }, [workItems, quotations, contracts, tasks])
+
+    // Quotation selection state: map workItemId -> selected quotationId
+    // Initialize with the first (or accepted) quotation for each work item
+    const [selectedQuotationMap, setSelectedQuotationMap] = useState<Record<string, string>>(() => {
+        const map: Record<string, string> = {}
+        displayItems.forEach((item: any) => {
+            if (item.quotation) {
+                map[item.id] = item.quotation.id
+            }
+        })
+        return map
+    })
+
+    const handleSelectQuotation = useCallback((workItemId: string, quotationId: string) => {
+        setSelectedQuotationMap(prev => ({ ...prev, [workItemId]: quotationId }))
+    }, [])
+
+    // Find quotation alternatives for each work item
+    // If a work item has a quotation, check if there are sibling quotations in the same project
+    const getQuotationOptionsForItem = useCallback((item: any): any[] => {
+        if (!item.quotation_id && !item.quotation) return []
+        // All project quotations that could be alternatives
+        const activeQuotations = quotations.filter((q: any) =>
+            ['draft', 'sent', 'viewed', 'accepted'].includes(q.status)
+        )
+        if (activeQuotations.length <= 1) return activeQuotations
+        return activeQuotations
+    }, [quotations])
+
+    // Aggregate Calculations — based on selected quotation per item
+    const totalInvestment = useMemo(() => {
+        if (quotations.length <= 1) {
+            return quotations.reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+        }
+        // Sum only the selected quotation per work item (avoid double-counting)
+        const selectedIds = new Set(Object.values(selectedQuotationMap))
+        if (selectedIds.size === 0) {
+            // fallback: take first quotation only
+            return quotations.length > 0 ? (quotations[0].total_amount || 0) : 0
+        }
+        return quotations
+            .filter((q: any) => selectedIds.has(q.id))
+            .reduce((sum: number, q: any) => sum + (q.total_amount || 0), 0)
+    }, [quotations, selectedQuotationMap])
+
     const totalPaid = invoices
         .filter((inv: any) => inv.status === 'paid')
         .reduce((sum: any, inv: any) => sum + (inv.total_amount || 0), 0)
@@ -125,19 +183,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
     const hasContracts = contracts.length > 0
     const projectStatusLabel = hasContracts ? "Đang triển khai" : "Chờ triển khai"
-
-    // Fallback: if no work items yet, build from quotations (legacy mode)
-    const displayItems = workItems.length > 0 ? workItems : quotations.map((q: any) => ({
-        id: q.id,
-        title: q.title || `Báo giá #${q.quotation_number}`,
-        status: q.status === 'accepted' ? 'in_progress' : 'pending',
-        quotation: q,
-        contract: contracts.find((c: any) => c.quotation_id === q.id) || null,
-        delivery_links: [],
-        required_documents: [],
-        tasks: tasks.filter((t: any) => !t.work_item_id),
-        total_amount: q.total_amount || 0,
-    }))
+    const hasMultipleQuotations = quotations.filter((q: any) => ['draft','sent','viewed','accepted'].includes(q.status)).length > 1
 
     return (
         <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
@@ -324,7 +370,15 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <div className="grid gap-6">
                         {displayItems.map((item: any, idx: number) => (
-                            <WorkItemCard key={item.id} item={item} idx={idx} token={token} />
+                            <WorkItemCard
+                                key={item.id}
+                                item={item}
+                                idx={idx}
+                                token={token}
+                                quotationOptions={getQuotationOptionsForItem(item)}
+                                selectedQuotationId={selectedQuotationMap[item.id]}
+                                onSelectQuotation={(qId: string) => handleSelectQuotation(item.id, qId)}
+                            />
                         ))}
 
                         {displayItems.length === 0 && (
@@ -367,7 +421,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 }
 
 /* ===== Work Item Card ===== */
-function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: string }) {
+function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotationId, onSelectQuotation }: {
+    item: any; idx: number; token: string;
+    quotationOptions?: any[];
+    selectedQuotationId?: string;
+    onSelectQuotation?: (qId: string) => void;
+}) {
     const quotation = item.quotation
     const contract = item.contract
     const deliveryLinks = item.delivery_links || []
@@ -375,8 +434,51 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
     const completedTasks = itemTasks.filter((t: any) => t.status === 'completed').length
     const totalTasks = itemTasks.length
 
+    // Determine the active quotation (selected vs default)
+    const activeQuotation = quotationOptions.length > 1
+        ? quotationOptions.find((q: any) => q.id === selectedQuotationId) || quotation
+        : quotation
+
+    const activeAmount = activeQuotation?.total_amount || item.total_amount || 0
+
     return (
         <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
+            {/* Quotation Switcher — shown when multiple quotation options exist */}
+            {quotationOptions.length > 1 && (
+                <div className="bg-zinc-950 p-4 sm:p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1">
+                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Lựa chọn phương án báo giá</p>
+                            <p className="text-xs text-zinc-400 font-medium">Chọn phương án phù hợp để xem chi tiết và cập nhật tổng đầu tư.</p>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                            {quotationOptions.map((q: any, qIdx: number) => {
+                                const isActive = q.id === (selectedQuotationId || quotation?.id)
+                                return (
+                                    <button
+                                        key={q.id}
+                                        onClick={() => onSelectQuotation?.(q.id)}
+                                        className={cn(
+                                            "flex flex-col items-center gap-1 px-4 py-3 rounded-xl transition-all duration-300 text-center min-w-[100px]",
+                                            isActive
+                                                ? "bg-white text-zinc-950 shadow-lg scale-105"
+                                                : "bg-white/10 text-zinc-400 hover:bg-white/15 hover:text-zinc-300 border border-white/10"
+                                        )}
+                                    >
+                                        <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">
+                                            {q.status === 'accepted' ? '✓ Đã chọn' : `Phương án ${qIdx + 1}`}
+                                        </span>
+                                        <span className={cn("text-sm font-bold tabular-nums", isActive ? "text-zinc-950" : "text-zinc-300")}>
+                                            {formatCurrency(q.total_amount)}
+                                        </span>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-zinc-100">
                 <div className="flex items-center gap-3">
@@ -396,18 +498,18 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                 <div className="lg:w-2/5 p-5 border-b lg:border-b-0 lg:border-r border-zinc-100 space-y-5">
                     {/* Documents linked */}
                     <div className="space-y-2">
-                        {quotation && (
-                            <a href={`/quote/${quotation.public_token || token}`} target="_blank"
+                        {activeQuotation && (
+                            <a href={`/quote/${activeQuotation.public_token || token}`} target="_blank"
                                 className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-4 h-4 text-muted-foreground" />
                                     <div>
                                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Báo giá</p>
-                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{quotation.quotation_number}</p>
+                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{activeQuotation.quotation_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <StatusBadge status={quotation.status} />
+                                    <StatusBadge status={activeQuotation.status} />
                                     <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-900 transition-colors" />
                                 </div>
                             </a>
@@ -430,7 +532,7 @@ function WorkItemCard({ item, idx, token }: { item: any; idx: number; token: str
                     <div className="pt-4 border-t border-zinc-100">
                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(item.total_amount || quotation?.total_amount || 0).replace(' đ', '')}</span>
+                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(' đ', '')}</span>
                             <span className="text-sm font-semibold text-zinc-900">đ</span>
                         </div>
                     </div>

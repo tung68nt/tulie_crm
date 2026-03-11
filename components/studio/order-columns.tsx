@@ -184,6 +184,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
             const order = row.original
             const router = useRouter()
             const [showCancelDialog, setShowCancelDialog] = useState(false)
+            const [showDeleteDialog, setShowDeleteDialog] = useState(false)
             const [loading, setLoading] = useState(false)
 
             const onCancel = async () => {
@@ -200,25 +201,62 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                 }
             }
 
+            const onDelete = async () => {
+                try {
+                    setLoading(true)
+                    const { deleteRetailOrders } = await import('@/lib/supabase/services/retail-order-service')
+                    await deleteRetailOrders([order.id])
+                    toast.success('Xóa đơn hàng thành công')
+                    router.refresh()
+                } catch (error) {
+                    toast.error('Có lỗi xảy ra khi xóa đơn')
+                } finally {
+                    setLoading(false)
+                    setShowDeleteDialog(false)
+                }
+            }
+
             return (
                 <>
                     <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-                        <DialogContent className="rounded-2xl">
+                        <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
-                                <DialogTitle className="italic font-bold tracking-tight">Xác nhận hủy đơn hàng?</DialogTitle>
+                                <DialogTitle className="font-bold tracking-tight">Xác nhận hủy đơn hàng?</DialogTitle>
                                 <DialogDescription>
                                     Hành động này sẽ chuyển trạng thái đơn hàng <strong>{order.order_number}</strong> thành "Đã hủy".
                                 </DialogDescription>
                             </DialogHeader>
-                            <DialogFooter className="gap-2 sm:gap-0">
-                                <Button variant="outline" onClick={() => setShowCancelDialog(false)} className="rounded-xl font-bold">Quay lại</Button>
+                            <DialogFooter className="gap-3 mt-6">
+                                <Button variant="outline" onClick={() => setShowCancelDialog(false)} className="w-full sm:w-auto">Quay lại</Button>
                                 <Button
                                     onClick={onCancel}
                                     variant="destructive"
-                                    className="rounded-xl font-bold"
+                                    className="w-full sm:w-auto"
                                     disabled={loading}
                                 >
                                     {loading ? 'Đang xử lý...' : 'Xác nhận hủy'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle className="font-bold tracking-tight">Xóa đơn hàng vĩnh viễn?</DialogTitle>
+                                <DialogDescription>
+                                    Hành động này sẽ xóa đơn hàng <strong>{order.order_number}</strong> khỏi hệ thống và không thể khôi phục.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter className="gap-3 mt-6">
+                                <Button variant="outline" onClick={() => setShowDeleteDialog(false)} className="w-full sm:w-auto">Quay lại</Button>
+                                <Button
+                                    onClick={onDelete}
+                                    variant="destructive"
+                                    className="w-full sm:w-auto"
+                                    disabled={loading}
+                                >
+                                    {loading ? 'Đang xóa...' : 'Xác nhận xóa'}
                                 </Button>
                             </DialogFooter>
                         </DialogContent>
@@ -278,10 +316,18 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Hủy đơn hàng
                             </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-destructive font-medium rounded-lg"
+                                onClick={() => setShowDeleteDialog(true)}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Xóa đơn hàng
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </>
             )
+
         },
     },
 ]

@@ -46,6 +46,19 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
         return ((index + fraction) / daysInView) * 100
     }, [now, timelineDates, daysInView])
 
+    const monthSegments = useMemo(() => {
+        const segments: { label: string, count: number }[] = [];
+        timelineDates.forEach(date => {
+            const label = format(date, 'MMMM, yyyy', { locale: vi });
+            if (segments.length === 0 || segments[segments.length - 1].label !== label) {
+                segments.push({ label, count: 1 });
+            } else {
+                segments[segments.length - 1].count++;
+            }
+        });
+        return segments;
+    }, [timelineDates])
+
     const getTaskStyle = (task: any) => {
         const start = task.start_date ? startOfDay(new Date(task.start_date)) : null
         const end = task.end_date ? startOfDay(new Date(task.end_date)) : null
@@ -105,46 +118,72 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
             </div>
             <CardContent className="p-0 overflow-auto custom-scrollbar max-h-[650px]">
                 <div className="min-w-[1200px] relative">
-                    {/* Gantt Header - Days */}
-                    <div className="flex border-b border-zinc-100 bg-zinc-50 sticky top-0 z-40">
-                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center bg-zinc-50 sticky left-0 z-50">
-                            Đầu việc
-                        </div>
-                        <div className="flex-1 flex relative bg-zinc-50/50">
-                            {/* Today Line */}
-                            {todayLinePosition !== null && (
-                                <div
-                                    className="absolute top-0 bottom-[-5000px] w-[2px] bg-red-500/80 z-[60] pointer-events-none"
-                                    style={{
-                                        left: `${todayLinePosition}%`,
-                                    }}
-                                >
-                                    <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-600 shadow-lg border-[2px] border-white ring-2 ring-red-500/30" />
-                                </div>
-                            )}
-
-                            {timelineDates.map((date, i) => {
-                                const dayOfWeek = format(date, 'i');
-                                return (
-                                    <div
-                                        key={i}
-                                        className={cn(
-                                            "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0 flex flex-col items-center justify-center min-h-[55px] min-w-[45px] gap-0.5",
-                                            isSameDay(date, today) && "bg-zinc-100/30 font-bold"
-                                        )}
+                    {/* Gantt Header - Months & Days */}
+                    <div className="sticky top-0 z-40 bg-white border-b border-zinc-200">
+                        {/* Month Row */}
+                        <div className="flex border-b border-zinc-100/50">
+                            <div className="w-[240px] shrink-0 bg-zinc-50/80 border-r border-zinc-100 flex items-center px-4 sticky left-0 z-50">
+                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Lịch trình</span>
+                            </div>
+                            <div className="flex-1 flex overflow-hidden">
+                                {monthSegments.map((seg, i) => (
+                                    <div 
+                                        key={i} 
+                                        className="flex-none py-2 px-4 border-r border-zinc-100/30 text-[11px] font-bold text-zinc-700 bg-zinc-50/30"
+                                        style={{ width: `${(100 / daysInView) * seg.count}%` }}
                                     >
-                                        <p className="text-[10px] font-semibold text-muted-foreground tracking-tight whitespace-nowrap">
-                                            {dayOfWeek === '7' ? 'CN' : `Thứ ${Number(dayOfWeek) + 1}`}
-                                        </p>
-                                        <p className={cn(
-                                            "text-[12px] font-bold leading-none",
-                                            isSameDay(date, today) ? "text-red-500" : "text-zinc-600"
-                                        )}>
-                                            {format(date, 'dd')}
-                                        </p>
+                                        <span className="capitalize">{seg.label}</span>
                                     </div>
-                                );
-                            })}
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Days Row */}
+                        <div className="flex bg-white">
+                            <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-bold text-zinc-900 bg-white sticky left-0 z-50 flex items-center shadow-[1px_0_0_rgba(0,0,0,0.05)]">
+                                Đầu việc
+                            </div>
+                            <div className="flex-1 flex relative">
+                                {/* Today Line Header Marker */}
+                                {todayLinePosition !== null && (
+                                    <div
+                                        className="absolute top-0 bottom-[-5000px] w-[2px] bg-red-500 z-[60] pointer-events-none"
+                                        style={{
+                                            left: `${todayLinePosition}%`,
+                                        }}
+                                    >
+                                        {/* Adjusted dot position to avoid cropping */}
+                                        <div className="absolute top-[8px] left-[-5px] w-3 h-3 rounded-full bg-red-600 shadow-lg border-[3px] border-white ring-2 ring-red-500/20" />
+                                    </div>
+                                )}
+
+                                {timelineDates.map((date, i) => {
+                                    const dayOfWeek = format(date, 'i', { locale: vi });
+                                    const isWeekend = dayOfWeek === '6' || dayOfWeek === '7';
+                                    return (
+                                        <div
+                                            key={i}
+                                            className={cn(
+                                                "flex-1 p-2 text-center border-r border-zinc-100 last:border-r-0 flex flex-col items-center justify-center min-h-[60px] min-w-[45px] gap-1 transition-colors",
+                                                isSameDay(date, today) ? "bg-red-50/30" : isWeekend ? "bg-zinc-50/30" : "bg-white"
+                                            )}
+                                        >
+                                            <p className={cn(
+                                                "text-[9px] font-bold uppercase tracking-tight",
+                                                isSameDay(date, today) ? "text-red-500" : isWeekend ? "text-zinc-400" : "text-zinc-500"
+                                            )}>
+                                                {dayOfWeek === '7' ? 'CN' : `T${Number(dayOfWeek) + 1}`}
+                                            </p>
+                                            <p className={cn(
+                                                "text-[13px] font-black tabular-nums tracking-tight",
+                                                isSameDay(date, today) ? "text-red-600" : isWeekend ? "text-zinc-500" : "text-zinc-900"
+                                            )}>
+                                                {format(date, 'dd')}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 

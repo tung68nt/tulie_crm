@@ -151,9 +151,10 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                         <a href={order.resource_link} target="_blank">
                                             <Download className="mr-3 h-5 w-5 opacity-50" />
                                             <div className="text-left py-1">
-                                                <p className="text-[9px] font-bold text-white/50 mb-0.5 uppercase tracking-wider">Sản phẩm hoàn thiện</p>
-                                                <p className="text-xs font-bold uppercase">Tải ảnh gốc siêu nét</p>
+                                                <p className="text-[9px] font-bold text-white/50 mb-0.5 uppercase tracking-wider">Bàn giao</p>
+                                                <p className="text-xs font-bold uppercase">Link bàn giao sản phẩm</p>
                                             </div>
+                                            <ExternalLink className="ml-auto h-4 w-4 text-white/30 group-hover:text-white transition-colors" />
                                         </a>
                                     </Button>
                                 )}
@@ -243,7 +244,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                 <div className="lg:w-48 space-y-4 flex flex-col items-center">
                                     <div className="p-4 bg-white rounded-2xl border border-zinc-200 shadow-sm ring-4 ring-zinc-50 flex flex-col items-center gap-4 transition-transform hover:scale-[1.02] duration-300">
                                         <div className="relative group">
-                                            <img src={qrUrl} alt="SePay QR" className="w-40 h-40 sm:w-48 sm:h-48 grayscale hover:grayscale-0 transition-all duration-500" />
+                                            <img src={qrUrl} alt="SePay QR" className="w-40 h-auto aspect-square object-contain sm:w-48 grayscale hover:grayscale-0 transition-all duration-500" />
                                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                                 <QrCode className="h-8 w-8 text-black" />
                                             </div>
