@@ -300,22 +300,30 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                     `;
                     doc.head.appendChild(style);
 
-                    // Deeper oklch sanitization
-                    const allStyles = doc.querySelectorAll('style');
+                    // Extremely aggressive oklch/color-mix sanitization
+                    // This fixes html2canvas crashes on newer shadcn/tailwind oklch colors
+                    const allStyles = doc.querySelectorAll('style, [style]');
                     allStyles.forEach(s => {
-                        let content = s.innerHTML;
-                        if (content.includes('oklch') || content.includes('color-mix') || content.includes('--')) {
-                            content = content.replace(/oklch\([^)]+\)/g, '#111111');
-                            content = content.replace(/color-mix\([^)]+\)/g, '#333333');
-                            s.innerHTML = content;
+                        if (s instanceof HTMLStyleElement) {
+                            let content = s.innerHTML;
+                            if (content.includes('oklch') || content.includes('color-mix')) {
+                                content = content.replace(/oklch\([^)]+\)/g, '#111111');
+                                content = content.replace(/color-mix\([^)]+\)/g, '#333333');
+                                s.innerHTML = content;
+                            }
+                        } else if (s instanceof HTMLElement) {
+                            let styleAttr = s.getAttribute('style') || '';
+                            if (styleAttr.includes('oklch')) {
+                                s.setAttribute('style', styleAttr.replace(/oklch\([^)]+\)/g, '#111111'));
+                            }
                         }
                     });
 
                     // Set crossOrigin for all images
-                    const images = doc.getElementsByTagName('img');
-                    for (let n = 0; n < images.length; n++) {
-                        images[n].crossOrigin = 'anonymous';
-                    }
+                    const images = Array.from(doc.getElementsByTagName('img'));
+                    images.forEach(img => {
+                        img.crossOrigin = 'anonymous';
+                    });
                 }
             });
 

@@ -231,14 +231,22 @@ export default function QuotationDetailPage() {
                     `;
                     doc.head.appendChild(style);
 
-                    // Deeper cleanup for oklch which crashes html2canvas in some environments
-                    const allStyles = doc.querySelectorAll('style');
+                    // Extremely aggressive oklch/color-mix sanitization
+                    // This fixes html2canvas crashes on newer shadcn/tailwind oklch colors
+                    const allStyles = doc.querySelectorAll('style, [style]');
                     allStyles.forEach(s => {
-                        let content = s.innerHTML;
-                        if (content.includes('oklch') || content.includes('color-mix')) {
-                            content = content.replace(/oklch\([^)]+\)/g, '#111111');
-                            content = content.replace(/color-mix\([^)]+\)/g, '#333333');
-                            s.innerHTML = content;
+                        if (s instanceof HTMLStyleElement) {
+                            let content = s.innerHTML;
+                            if (content.includes('oklch') || content.includes('color-mix')) {
+                                content = content.replace(/oklch\([^)]+\)/g, '#111111');
+                                content = content.replace(/color-mix\([^)]+\)/g, '#333333');
+                                s.innerHTML = content;
+                            }
+                        } else if (s instanceof HTMLElement) {
+                            let styleAttr = s.getAttribute('style') || '';
+                            if (styleAttr.includes('oklch')) {
+                                s.setAttribute('style', styleAttr.replace(/oklch\([^)]+\)/g, '#111111'));
+                            }
                         }
                     });
                 }
