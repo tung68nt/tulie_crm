@@ -76,8 +76,8 @@ export function VietQR({
                             src={qrUrl}
                             alt="VietQR Payment"
                             width={size}
-                            height={size}
-                            className="rounded-lg transition-transform hover:scale-[1.02]"
+                            className="rounded-lg transition-transform hover:scale-[1.02] w-auto h-auto max-w-full"
+                            style={{ width: size }}
                         />
                     )}
                 </Card>
