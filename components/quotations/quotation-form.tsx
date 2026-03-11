@@ -75,7 +75,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [newSectionName, setNewSectionName] = useState('')
     const [terms, setTerms] = useState(quotation?.terms || '')
     const [notes, setNotes] = useState(quotation?.notes || '')
-    const [vatPercent, setVatPercent] = useState(quotation?.vat_percent || 10)
+    const [vatPercent, setVatPercent] = useState(quotation?.vat_percent ?? 10)
     const [type, setType] = useState<Quotation['type']>(quotation?.type || 'standard')
     const [proposalContent, setProposalContent] = useState<any>(quotation?.proposal_content || {})
     const [isImportProposalOpen, setIsImportProposalOpen] = useState(false)
@@ -191,6 +191,36 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         newItems[newIndex] = temp
 
         // Update sort_order
+        newItems.forEach((item, idx) => {
+            item.sort_order = idx
+        })
+
+        setItems(newItems)
+    }
+
+    const moveSection = (sectionId: string, direction: 'up' | 'down') => {
+        const groupIndex = sectionGroups.findIndex(g => g.id === sectionId)
+        if (groupIndex === -1) return
+
+        const newGroupIndex = direction === 'up' ? groupIndex - 1 : groupIndex + 1
+        if (newGroupIndex < 0 || newGroupIndex >= sectionGroups.length) return
+
+        // Create new sequence of section groups
+        const newSectionGroupsOrder = [...sectionGroups]
+        const [movedGroup] = newSectionGroupsOrder.splice(groupIndex, 1)
+        newSectionGroupsOrder.splice(newGroupIndex, 0, movedGroup)
+
+        // Flatten back to items array
+        const newItems: any[] = []
+        newSectionGroupsOrder.forEach(group => {
+            group.items.forEach(item => {
+                // Find original item by id to maintain references/state
+                const originalItem = items[item.actualIndex]
+                newItems.push({ ...originalItem })
+            })
+        })
+
+        // Re-calculate sort_orders
         newItems.forEach((item, idx) => {
             item.sort_order = idx
         })
@@ -899,6 +929,30 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         {/* Section Header */}
                                         <div className="bg-zinc-950 px-5 py-3 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                                             <div className="flex items-center gap-3 flex-1 w-full">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-5 w-5 text-white/40 hover:text-white hover:bg-white/10"
+                                                        onClick={() => moveSection(group.id, 'up')}
+                                                        disabled={groupIdx === 0}
+                                                        title="Di chuyển phần lên"
+                                                    >
+                                                        <ArrowUp className="h-3 w-3" />
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-5 w-5 text-white/40 hover:text-white hover:bg-white/10"
+                                                        onClick={() => moveSection(group.id, 'down')}
+                                                        disabled={groupIdx === sectionGroups.length - 1}
+                                                        title="Di chuyển phần xuống"
+                                                    >
+                                                        <ArrowDown className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
                                                 <div className="h-7 w-7 rounded-lg bg-white/10 flex items-center justify-center text-[12px] font-bold text-white/90">
                                                     {groupIdx + 1}
                                                 </div>

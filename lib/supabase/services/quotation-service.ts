@@ -127,12 +127,27 @@ export async function getQuotationByToken(token: string) {
             .order('sort_order', { foreignTable: 'quotation_items', ascending: true })
             .single()
 
-        if (error) {
+        if (error || !data) {
             console.error('Error fetching quotation by token:', error)
             return null
         }
 
-        return data as Quotation
+        const quotation = data as Quotation;
+
+        // Fetch sibling quotations for the same deal if deal_id exists
+        if (quotation.deal_id) {
+            const { data: siblings } = await supabase
+                .from('quotations')
+                .select('*, items:quotation_items(*)')
+                .eq('deal_id', quotation.deal_id)
+                .order('created_at', { ascending: false });
+            
+            if (siblings) {
+                (quotation as any).siblings = siblings;
+            }
+        }
+
+        return quotation;
     } catch (err) {
         console.error('Fatal error in getQuotationByToken:', err)
         return null

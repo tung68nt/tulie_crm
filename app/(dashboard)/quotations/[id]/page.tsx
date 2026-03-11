@@ -27,7 +27,7 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import { formatCurrency, formatDate } from '@/lib/utils/format'
+import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_COLORS } from '@/lib/constants/status'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
 import { QuotationDocumentPaper } from '@/components/quotations/quotation-document-paper'
@@ -391,10 +391,10 @@ export default function QuotationDetailPage() {
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <div className="text-[11px] text-zinc-500 font-medium leading-relaxed italic border-l-2 border-zinc-200 pl-3 py-0.5 space-y-0.5">
+                                                                        <div className="text-[12px] text-zinc-700 font-medium leading-relaxed italic mt-1.5 space-y-1.5">
                                                                             {item.description.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
-                                                                                <div key={i} className="flex gap-1.5">
-                                                                                    <span className="shrink-0">•</span>
+                                                                                <div key={i} className="flex gap-2">
+                                                                                    <span className="shrink-0 text-zinc-400 text-lg font-bold mt-[-2px]">•</span>
                                                                                     <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                                                 </div>
                                                                             ))}
@@ -425,6 +425,10 @@ export default function QuotationDetailPage() {
                                             <div className="pt-4 border-t border-zinc-200 flex justify-between items-center">
                                                 <span className="text-sm font-medium text-muted-foreground">Tổng thanh toán:</span>
                                                 <span className="text-3xl font-bold tabular-nums tracking-tight text-foreground">{formatCurrency(quotation.total_amount || 0)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-start pt-2 text-[11px] italic text-zinc-500 font-medium">
+                                                <span className="shrink-0">Bằng chữ:</span>
+                                                <span className="text-right ml-4">{readNumberToWords(quotation.total_amount || 0)}</span>
                                             </div>
                                         </div>
                                     </div>

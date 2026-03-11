@@ -88,14 +88,14 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                     </Button>
                 </div>
             </div>
-            <CardContent className="p-0 overflow-x-auto custom-scrollbar">
+            <CardContent className="p-0 overflow-auto custom-scrollbar max-h-[650px]">
                 <div className="min-w-[1200px] relative">
                     {/* Gantt Header - Days */}
-                    <div className="flex border-b border-zinc-50 bg-zinc-50/50 relative">
-                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center bg-zinc-50/50 z-10">
+                    <div className="flex border-b border-zinc-100 bg-zinc-50 sticky top-0 z-40">
+                        <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center bg-zinc-50 sticky left-0 z-50">
                             Đầu việc
                         </div>
-                        <div className="flex-1 flex relative">
+                        <div className="flex-1 flex relative bg-zinc-50">
                             {/* Today Line - Moved inside the flex-1 date container to fix alignment */}
                             {timelineDates.some(d => isSameDay(d, today)) && (
                                 <div
@@ -115,7 +115,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                         key={i}
                                         className={cn(
                                             "flex-1 p-2 text-center border-r border-zinc-100/50 last:border-r-0 flex flex-col items-center justify-center min-h-[55px] min-w-[45px] gap-0.5",
-                                            isSameDay(date, today) && "bg-zinc-100/30"
+                                            isSameDay(date, today) && "bg-zinc-100/30 font-bold"
                                         )}
                                     >
                                         <p className="text-[10px] font-semibold text-muted-foreground tracking-tight whitespace-nowrap">
@@ -123,7 +123,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                         </p>
                                         <p className={cn(
                                             "text-[12px] font-bold leading-none",
-                                            isSameDay(date, today) ? "text-zinc-950" : "text-zinc-600"
+                                            isSameDay(date, today) ? "text-red-500" : "text-zinc-600"
                                         )}>
                                             {format(date, 'dd')}
                                         </p>
@@ -135,7 +135,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
 
 
                     {/* Gantt Rows */}
-                    <div className="divide-y divide-zinc-50">
+                    <div className="divide-y divide-zinc-50 bg-white">
                         {tasks.length === 0 ? (
                             <div className="py-20 text-center text-zinc-400 text-sm italic">
                                 Chưa có dữ liệu lịch trình cho các task.
@@ -144,7 +144,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                             const style = getTaskStyle(task)
                             return (
                                 <div key={task.id} className="flex group hover:bg-zinc-50/30 transition-colors">
-                                    <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white z-10">
+                                    <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white sticky left-0 z-30 group-hover:bg-zinc-50/30 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                                         <p className="text-[11px] font-semibold text-zinc-900 leading-tight">{task.title}</p>
                                     </div>
                                     <div className="flex-1 relative h-12 flex items-center px-0.5">

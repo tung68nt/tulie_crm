@@ -99,38 +99,108 @@ export async function updateQuotationStatus(quotationId: string, status: string,
         }
 
         if (status === 'accepted') {
-            updateData.accepted_at = new Date().toISOString()
-            updateData.confirmer_info = {
-                name: metadata.name,
-                phone: metadata.phone,
-                email: metadata.email,
-                position: metadata.position
+            // 1. Get original quotation with items for cloning
+            const { data: original, error: fetchErr } = await supabase
+                .from('quotations')
+                .select('*, items:quotation_items(*)')
+                .eq('id', quotationId)
+                .single()
+            
+            if (fetchErr || !original) throw fetchErr || new Error('Không tìm thấy báo giá gốc')
+
+            // 2. Filter items to keep only selected ones (or all if not specified)
+            const selectedItemIds = metadata.selectedItemIds || []
+            const confirmedItems = original.items.filter((item: any) => 
+                !item.is_optional || selectedItemIds.includes(item.id)
+            )
+
+            // 3. Prepare the NEW record (The Accepted Version)
+            const newQuotation: any = {
+                ...original,
+                id: undefined, // New ID
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+                accepted_at: new Date().toISOString(),
+                status: 'accepted',
+                confirmer_info: {
+                    name: metadata.name,
+                    phone: metadata.phone,
+                    email: metadata.email,
+                    position: metadata.position
+                },
+                // Append (Xác nhận) to number or just same? User said "tạo version mới"
+                // Usually CRM shows version trail.
+                quotation_number: `${original.quotation_number}-ACCEPTED` // Or something similar
             }
+            
+            // Remove identity / relation fields for insert
+            delete newQuotation.id
+            delete newQuotation.items
+            delete newQuotation.public_token // Generate new token
+
+            // 4. Insert THE ACCEPTED CLONE
+            const { data: acceptedClone, error: cloneErr } = await supabase
+                .from('quotations')
+                .insert([newQuotation])
+                .select()
+                .single()
+            
+            if (cloneErr) throw cloneErr
+
+            // 5. Insert CLONED ITEMS
+            const clonedItems = confirmedItems.map((item: any) => ({
+                ...item,
+                id: undefined,
+                quotation_id: acceptedClone.id,
+                created_at: undefined,
+                updated_at: undefined
+            }))
+            
+            const { error: itemErr } = await supabase
+                .from('quotation_items')
+                .insert(clonedItems)
+            
+            if (itemErr) throw itemErr
+
+            // 6. Update ORIGINAL and SIBLINGS to 'expired' or 'sent'
+            // The original stays as record of proposal.
+            await supabase
+                .from('quotations')
+                .update({ 
+                    status: 'expired', 
+                    updated_at: new Date().toISOString(),
+                    notes: `Hết hạn do đã xác nhận phiên bản ${acceptedClone.quotation_number}`
+                })
+                .eq('deal_id', original.deal_id)
+                .neq('id', acceptedClone.id)
+                .in('status', ['draft', 'sent', 'viewed'])
+
+            revalidatePath(`/quotations/${quotationId}`)
+            revalidatePath(`/quotations/${acceptedClone.id}`)
+            if (original.public_token) revalidatePath(`/quote/${original.public_token}`)
+            if (acceptedClone.public_token) revalidatePath(`/quote/${acceptedClone.public_token}`)
+
+            return { success: true }
+
         } else if (status === 'rejected') {
-            updateData.rejected_at = new Date().toISOString()
-            // Some systems use rejection_reason column, others use status_notes or similar.
-            // Based on the user's need, we ensure it's recorded.
-            updateData.notes = metadata.reason ? `Lý do từ chối: ${metadata.reason}` : null
-            // If the column exists, we set it too (safe update)
-            updateData.rejection_reason = metadata.reason || null
+            const { error, data } = await supabase
+                .from('quotations')
+                .update({
+                    status: 'rejected',
+                    rejected_at: new Date().toISOString(),
+                    rejection_reason: metadata.reason || null,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', quotationId)
+                .select('deal_id, public_token')
+                .single()
+
+            if (error) throw error
+            
+            revalidatePath(`/quotations/${quotationId}`)
+            if (data?.public_token) revalidatePath(`/quote/${data.public_token}`)
+            return { success: true }
         }
-
-        const { error } = await supabase
-            .from('quotations')
-            .update(updateData)
-            .eq('id', quotationId)
-
-        if (error) {
-            throw error
-        }
-
-        // 2. Revalidate both the admin path and the public path
-        revalidatePath(`/quotations/${quotationId}`)
-        if (quote?.public_token) {
-            revalidatePath(`/quote/${quote.public_token}`)
-        }
-
-        return { success: true }
     } catch (err: any) {
         console.error('Error updating quotation status:', err)
         return { success: false, error: err.message || 'Lỗi hệ thống' }

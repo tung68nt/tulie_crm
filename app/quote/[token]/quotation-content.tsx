@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { CheckCircle, CheckCircle2, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
@@ -35,7 +35,8 @@ interface QuotationContentProps {
     brandConfig?: any
 }
 
-export function QuotationContent({ quotation, brandConfig }: QuotationContentProps) {
+export function QuotationContent({ quotation: initialQuotation, brandConfig }: QuotationContentProps) {
+    const [currentQuotation, setCurrentQuotation] = useState(initialQuotation)
     const [showConfirm, setShowConfirm] = useState(false)
     const [showReject, setShowReject] = useState(false)
     const [rejectReason, setRejectReason] = useState('')
@@ -49,6 +50,19 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         position: ''
     })
 
+    // Sibling-related helpers
+    const siblings = (initialQuotation as any).siblings || []
+    const activeOptions = siblings.filter((s: any) => ['draft', 'sent', 'viewed'].includes(s.status))
+    const historyItems = siblings.filter((s: any) => ['accepted', 'rejected', 'expired', 'converted'].includes(s.status))
+
+    // Automatically show accepted one if it exists among siblings
+    useEffect(() => {
+        const acceptedQuotation = siblings.find((s: any) => s.status === 'accepted')
+        if (acceptedQuotation && currentQuotation.status !== 'accepted') {
+            setCurrentQuotation(acceptedQuotation)
+        }
+    }, [initialQuotation, siblings, currentQuotation.status])
+
     const handleConfirm = async () => {
         if (!confirmer.name || !confirmer.phone) {
             toast.error("Vui lòng nhập tên và số điện thoại")
@@ -57,7 +71,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
         setIsSubmitting(true)
         try {
-            const res = await updateQuotationStatus(quotation.id, 'accepted', confirmer)
+            const res = await updateQuotationStatus(currentQuotation.id, 'accepted', {
+                ...confirmer,
+                selectedItemIds: selectedItemIds
+            })
             if (res.success) {
                 toast.success("Đã xác nhận chấp nhận báo giá thành công")
                 setShowConfirm(false)
@@ -78,7 +95,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
         setIsSubmitting(true)
         try {
-            const res = await updateQuotationStatus(quotation.id, 'rejected', { reason: rejectReason })
+            const res = await updateQuotationStatus(currentQuotation.id, 'rejected', { reason: rejectReason })
             if (res.success) {
                 toast.success("Đã gửi phản hồi từ chối báo giá")
                 setShowReject(false)
@@ -91,7 +108,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
         }
     }
 
-    const items = quotation.items || []
+    const items = currentQuotation.items || []
     const hasDiscount = items.some((item: any) => item.discount > 0)
 
     const [selectedItemIds, setSelectedItemIds] = useState<string[]>(() => {
@@ -148,7 +165,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     const subtotalRaw = selectedItems.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
     const subtotalNet = selectedItems.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
     const totalDiscount = subtotalRaw - subtotalNet
-    const vatPercent = quotation.vat_percent || 0
+    const vatPercent = currentQuotation.vat_percent || 0
     const vatAmount = subtotalNet * (vatPercent / 100)
     const finalAmount = subtotalNet + vatAmount
 
@@ -181,8 +198,8 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
     };
 
     // Proposal content helpers
-    const pc = quotation.proposal_content || {}
-    const hasProposal = quotation.type === 'proposal' && pc
+    const pc = currentQuotation.proposal_content || {}
+    const hasProposal = currentQuotation.type === 'proposal' && pc
 
     const handlePrint = () => {
         window.print();
@@ -200,25 +217,18 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             // Load libraries with reliable checks
             const loadScript = (src: string, globalCheck: string): Promise<any> => {
                 return new Promise((resolve, reject) => {
-                    const existing = document.querySelector(`script[src="${src}"]`);
-                    if ((window as any)[globalCheck] || (globalCheck.includes('.') && getGlobalByString(globalCheck))) {
-                        return resolve((window as any)[globalCheck]);
-                    }
-
+                    if ((window as any)[globalCheck]) return resolve((window as any)[globalCheck]);
+                    
                     const script = document.createElement('script');
                     script.src = src;
                     script.async = true;
                     script.onload = () => {
                         // Small delay to ensure global is bound
-                        setTimeout(() => resolve((window as any)[globalCheck]), 100);
+                        setTimeout(() => resolve((window as any)[globalCheck]), 200);
                     };
                     script.onerror = () => reject(new Error(`Failed to load ${src}`));
                     document.body.appendChild(script);
                 });
-            };
-
-            const getGlobalByString = (path: string) => {
-                return path.split('.').reduce((obj, key) => obj && obj[key], window as any);
             };
 
             await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
@@ -234,7 +244,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
             const { jsPDF } = jspdfLib;
 
             // Wait longer for images/styles to settle
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1500));
 
             const canvas = await html2canvas(element, {
                 scale: 2,
@@ -244,52 +254,21 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                 backgroundColor: '#ffffff',
                 windowWidth: 1200,
                 onclone: (doc: Document) => {
-                    // Sanitize any inline oklch() colors directly on elements
-                    try {
-                        const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_ELEMENT);
-                        let node: Node | null;
-                        while (node = walker.nextNode()) {
-                            const el = node as HTMLElement;
-                            if (el.style && el.style.cssText && el.style.cssText.includes('oklch')) {
-                                el.style.cssText = el.style.cssText.replace(/oklch\([^)]*\)/g, (match) => {
-                                    const lMatch = match.match(/oklch\(([\d.]+)/);
-                                    const l = lMatch ? parseFloat(lMatch[1]) : 0.5;
-                                    if (l > 0.85) return '#ffffff';
-                                    if (l > 0.7) return '#f1f5f9';
-                                    if (l > 0.5) return '#94a3b8';
-                                    if (l > 0.3) return '#475569';
-                                    return '#0f172a';
-                                });
-                            }
-                        }
-                    } catch (e) { /* safe fallback */ }
-
-                    // CRITICAL: Sanitize all modern CSS color functions inside <style> tags
-                    // html2canvas CSS parser crashes completely on oklch() and color-mix().
-                    try {
-                        const styleTags = doc.querySelectorAll('style');
-                        for (let i = 0; i < styleTags.length; i++) {
-                            let css = styleTags[i].innerHTML;
-                            if (css && (css.includes('oklch') || css.includes('color-mix') || css.includes('oklab') || css.includes('oklch('))) {
-                                // Super aggressive replacement
-                                css = css.replace(/color-mix\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklch\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklab\((?:[^()]+|\([^()]*\))*\)/g, '#0f172a');
-                                css = css.replace(/oklch\([^)]+\)/g, '#0f172a');
-                                styleTags[i].innerHTML = css;
-                            }
-                        }
-                        const root = doc.documentElement;
-                        if (root.style.cssText.includes('oklch')) root.style.cssText = '';
-                    } catch (e) { console.error('PDF Sanitize Error:', e); }
-
+                    // CRITICAL: CRASH PREVENTION
+                    // html2canvas fails completely when it encounters oklch() colors.
+                    // We must replace all oklch values in the cloned document's styles.
                     const style = doc.createElement('style');
                     style.innerHTML = `
                         @page { size: A4; margin: 0; }
                         body { background: white !important; font-family: sans-serif !important; }
-                        * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; box-sizing: border-box !important; }
+                        * { 
+                            -webkit-print-color-adjust: exact !important; 
+                            color-adjust: exact !important; 
+                            box-sizing: border-box !important;
+                            border-color: #e2e8f0 !important; /* Fallback for oklch borders */
+                        }
                         
-                        /* Override ALL CSS custom properties that may use oklch */
+                        /* Override ALL shadcn/tailwind variables using HEX/RGB instead of OKLCH */
                         :root, *, *::before, *::after {
                             --background: #ffffff !important;
                             --foreground: #0f172a !important;
@@ -309,24 +288,34 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             --border: #e2e8f0 !important;
                             --input: #e2e8f0 !important;
                             --ring: #94a3b8 !important;
-                            --sidebar-background: #ffffff !important;
-                            --sidebar-foreground: #0f172a !important;
-                            --sidebar-primary: #000000 !important;
-                            --sidebar-primary-foreground: #ffffff !important;
-                            --sidebar-accent: #f1f5f9 !important;
-                            --sidebar-accent-foreground: #0f172a !important;
-                            --sidebar-border: #e2e8f0 !important;
-                            --sidebar-ring: #94a3b8 !important;
                         }
 
-                        /* Force desktop layout for PDF - override sm: breakpoints */
-                        .quotation-paper { min-height: auto !important; }
-                        .quotation-inner { display: block !important; min-height: auto !important; }
-                        .fixed.bottom-0 { display: none !important; }
+                        /* Fix elements using specialized color classes */
+                        .bg-zinc-950 { background-color: #09090b !important; color: #ffffff !important; }
+                        .text-zinc-950 { color: #09090b !important; }
+                        .bg-slate-50 { background-color: #f8fafc !important; }
+                        .border-slate-200 { border-color: #e2e8f0 !important; }
+                        .text-slate-600 { color: #475569 !important; }
+                        .text-slate-800 { color: #1e293b !important; }
+
+                        /* Force desktop layout and hide interactive elements */
+                        .quotation-paper { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
+                        .fixed, .sticky { display: none !important; }
                     `;
                     doc.head.appendChild(style);
 
-                    // Force crossOrigin for images
+                    // Sanitize all <style> tags content - aggressive replacement for oklch/color-mix
+                    const allStyles = doc.querySelectorAll('style');
+                    allStyles.forEach(s => {
+                        let content = s.innerHTML;
+                        if (content.includes('oklch') || content.includes('color-mix')) {
+                            content = content.replace(/oklch\([^)]+\)/g, '#000000');
+                            content = content.replace(/color-mix\([^)]+\)/g, '#666666');
+                            s.innerHTML = content;
+                        }
+                    });
+
+                    // Set crossOrigin for all images to prevent taint errors
                     const images = doc.getElementsByTagName('img');
                     for (let n = 0; n < images.length; n++) {
                         images[n].crossOrigin = 'anonymous';
@@ -344,28 +333,28 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-            // Handle multi-page if content is too long
             const pageHeight = pdf.internal.pageSize.getHeight();
+            
             let heightLeft = pdfHeight;
             let position = 0;
 
+            // Add first page
             pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
             heightLeft -= pageHeight;
 
-            while (heightLeft >= 0) {
+            // Add subsequent pages if content overflows
+            while (heightLeft > 0) {
                 position = heightLeft - pdfHeight;
                 pdf.addPage();
                 pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
                 heightLeft -= pageHeight;
             }
 
-            pdf.save(`Bao_gia_${quotation.quotation_number || 'draft'}.pdf`);
+            pdf.save(`Bao_gia_${currentQuotation.quotation_number || 'draft'}.pdf`);
             toast.success('Đã tải PDF thành công!', { id: toastId });
         } catch (err) {
-            console.error('PDF Generation Detail:', err);
-            toast.error('Lỗi tạo PDF tự động. Vui lòng nhấn "In báo giá" và chọn "Lưu thành PDF".', { id: toastId });
-            throw err;
+            console.error('PDF Generation Error:', err);
+            toast.error('Lỗi tạo PDF. Vui lòng thử dùng trình duyệt Chrome hoặc dùng chức năng In của hệ thống.', { id: toastId });
         } finally {
             setIsDownloading(false);
         }
@@ -397,6 +386,65 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
 
     return (
         <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
+            {/* Options Switcher (Hero Section above Paper) */}
+            {activeOptions.length > 1 && (
+                <div className="max-w-[210mm] mx-auto mb-10 print:hidden px-4 sm:px-0">
+                    <div className="bg-white/90 backdrop-blur-xl border border-zinc-200/50 p-6 rounded-3xl shadow-2xl overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                            <Target className="w-40 h-40 text-black rotate-12" />
+                        </div>
+
+                        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="space-y-1.5 text-center md:text-left">
+                                <h3 className="text-2xl font-black tracking-tight text-zinc-950 uppercase italic">
+                                    Lựa chọn phương án đầu tư
+                                </h3>
+                                <p className="text-zinc-500 text-sm font-medium">Bản chào giá có {activeOptions.length} lựa chọn phù hợp nhất dành cho bạn.</p>
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 self-center">
+                                {activeOptions.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()).map((opt: any, idx: number) => {
+                                    const isActive = currentQuotation.id === opt.id;
+                                    return (
+                                        <button
+                                            key={opt.id}
+                                            onClick={() => {
+                                                setCurrentQuotation(opt);
+                                                setSelectedItemIds(() => {
+                                                    const init: string[] = [];
+                                                    const seen = new Set();
+                                                    (opt.items || []).forEach((i: any) => {
+                                                        if (!i.is_optional) {
+                                                            if (i.alternative_group && i.alternative_group.trim()) {
+                                                                const key = i.alternative_group.trim().toLowerCase();
+                                                                if (!seen.has(key)) { seen.add(key); init.push(i.id); }
+                                                            } else { init.push(i.id); }
+                                                        }
+                                                    });
+                                                    return init;
+                                                });
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            className={cn(
+                                                "relative px-6 py-4 rounded-2xl transition-all duration-500 group flex flex-col items-center gap-1",
+                                                isActive
+                                                    ? "bg-zinc-950 text-white shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] scale-105"
+                                                    : "bg-white text-zinc-600 hover:bg-zinc-50 border border-zinc-200"
+                                            )}
+                                        >
+                                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">PHƯƠNG ÁN {idx + 1}</span>
+                                            <span className="text-lg font-bold tabular-nums">{formatCurrency(opt.total_amount)}</span>
+                                            {isActive && (
+                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 bg-zinc-950 rotate-45 rounded-sm" />
+                                            )}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Global print style enforcement */}
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -472,15 +520,15 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 <div className="space-y-0.5 text-[12px] sm:text-[13px] text-black">
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
                                         <span className="font-medium text-black">Số<span className="text-[0.8em] italic font-normal opacity-70">/ No</span>:</span>
-                                        <span>{quotation.quotation_number}</span>
+                                        <span>{currentQuotation.quotation_number}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
                                         <span className="font-medium text-black">Ngày<span className="text-[0.8em] italic font-normal opacity-70">/ Date</span>:</span>
-                                        <span>{formatDate(quotation.created_at)}</span>
+                                        <span>{formatDate(currentQuotation.created_at)}</span>
                                     </p>
                                     <p className="flex sm:justify-end gap-1 h-4 items-center">
                                         <span className="font-medium text-black">Hết hạn<span className="text-[0.8em] italic font-normal opacity-70">/ Valid until</span>:</span>
-                                        <span>{formatDate(quotation.valid_until)}</span>
+                                        <span>{formatDate(currentQuotation.valid_until)}</span>
                                     </p>
                                 </div>
                             </div>
@@ -496,20 +544,20 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 flex flex-col gap-2 text-[12px] sm:text-[13px]">
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
                                     <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Đơn vị<span className="text-[0.8em] italic font-normal opacity-70">/ Company</span>:</span>
-                                    <span className="font-semibold text-black">{quotation.customer?.company_name || "N/A"}</span>
+                                    <span className="font-semibold text-black">{currentQuotation.customer?.company_name || "N/A"}</span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
                                     <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Địa chỉ<span className="text-[0.8em] italic font-normal opacity-70">/ Address</span>:</span>
-                                    <span className="text-black">{quotation.customer?.address || "N/A"}</span>
+                                    <span className="text-black">{currentQuotation.customer?.address || "N/A"}</span>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
                                     <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Người liên hệ<span className="text-[0.8em] italic font-normal opacity-70">/ Attn</span>:</span>
-                                    <span className="font-medium text-black">{quotation.customer?.contact_name || "N/A"}</span>
+                                    <span className="font-medium text-black">{currentQuotation.customer?.contact_name || "N/A"}</span>
                                 </div>
-                                {quotation.customer?.tax_code && (
+                                {currentQuotation.customer?.tax_code && (
                                     <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr]">
                                         <span className="text-slate-500 sm:text-slate-700 italic sm:not-italic">Mã số thuế<span className="text-[0.8em] italic font-normal opacity-70">/ Tax ID</span>:</span>
-                                        <span className="text-black">{quotation.customer.tax_code}</span>
+                                        <span className="text-black">{currentQuotation.customer.tax_code}</span>
                                     </div>
                                 )}
                             </div>
@@ -557,11 +605,13 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                         </h4>
                                                     </div>
                                                     {/* Card Body */}
-                                                    <div className="px-4 py-3 text-[11px] text-slate-600 leading-relaxed space-y-1.5">
+                                                    <div className="px-5 py-4 text-[12px] text-slate-800 leading-relaxed space-y-2">
                                                         {section.content.split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
-                                                            <div key={i} className="flex gap-2 text-[11px]">
-                                                                <span className="shrink-0 text-slate-400 mt-1">•</span>
-                                                                <span className="flex-1">{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                                            <div key={i} className="flex gap-4 pl-1">
+                                                                <div className="shrink-0 mt-[8px]">
+                                                                    <div className="w-2 h-2 rounded-full bg-zinc-300" />
+                                                                </div>
+                                                                <span className="flex-1 font-semibold text-slate-900">{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -642,7 +692,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                                     <Checkbox
                                                                         checked={isSelected}
                                                                         onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
-                                                                        className="h-5 w-5 rounded-full transition-all data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 ring-offset-background"
+                                                                        className="h-5 w-5 rounded-full transition-all data-[state=checked]:bg-zinc-950 data-[state=checked]:border-zinc-950 ring-offset-background"
                                                                     />
                                                                 </div>
                                                             </td>
@@ -661,11 +711,13 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <div className="text-slate-500 text-[10px] leading-snug border-l-2 border-slate-100 pl-2 py-0.5 mt-1 space-y-1">
+                                                                        <div className="text-slate-800 text-[11px] leading-snug mt-2 space-y-2 pl-4 border-l-2 border-slate-100/50">
                                                                             {item.description.split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
-                                                                                <div key={i} className="flex gap-1.5">
-                                                                                    <span className="shrink-0 text-slate-300 mt-0.5">•</span>
-                                                                                    <span className="flex-1 italic">{line.replace(/^[•\-\*]\s*/, '')}</span>
+                                                                                <div key={i} className="flex gap-3">
+                                                                                    <div className="shrink-0 mt-[6px]">
+                                                                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
+                                                                                    </div>
+                                                                                    <span className="flex-1 font-semibold text-slate-900">{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
@@ -704,15 +756,16 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                         </div>
                                     )}
                                     <div className="flex justify-between py-1.5 text-[12px]">
-                                        <span className="text-slate-500 italic">VAT ({quotation.vat_percent}%):</span>
+                                        <span className="text-slate-500 italic">VAT ({currentQuotation.vat_percent}%):</span>
                                         <span className="font-medium text-slate-900">{formatCurrency(vatAmount)}</span>
                                     </div>
                                     <div className="flex justify-between items-center py-2.5">
                                         <span className="font-bold text-slate-900 text-sm">Tổng cộng:</span>
                                         <span className="font-bold text-lg text-slate-900">{formatCurrency(finalAmount)}</span>
                                     </div>
-                                    <div className="text-right pt-2 text-[10px] italic text-slate-500">
-                                        Bằng chữ: {readNumberToWords(finalAmount)}
+                                    <div className="flex justify-between items-start pt-2 text-[10px] italic text-slate-500">
+                                        <span className="shrink-0">Bằng chữ:</span>
+                                        <span className="text-right ml-4">{readNumberToWords(finalAmount)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -724,9 +777,9 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     <div>
                                         <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Ghi chú <span className="text-[0.8em] italic font-normal opacity-70">/ Notes</span>:</h4>
                                         <div className="text-xs text-black leading-relaxed space-y-1">
-                                            {(quotation.notes || brandConfig?.default_notes || 'Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.').split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
+                                            {(currentQuotation.notes || brandConfig?.default_notes || 'Báo giá có hiệu lực trong vòng 07 ngày.\nGiá trên chưa bao gồm chi phí mua tên miền & hosting (nếu có).\nNội dung công việc sẽ được mô tả chi tiết trong hợp đồng.').split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
                                                 <div key={i} className="flex gap-2">
-                                                    <span className="shrink-0 text-slate-500">•</span>
+                                                    <span className="shrink-0 text-slate-400 mt-[-2px] text-lg font-bold">•</span>
                                                     <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                 </div>
                                             ))}
@@ -735,9 +788,9 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     <div className="border-t border-slate-200 pt-3 mt-auto">
                                         <h4 className="font-semibold text-black mb-1.5  text-[12px] ">Điều khoản thanh toán <span className="text-[0.8em] italic font-normal opacity-70">/ Payment Terms</span>:</h4>
                                         <div className="text-xs text-black leading-relaxed space-y-1">
-                                            {(quotation.terms || brandConfig?.default_payment_terms || "50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành").split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
+                                            {(currentQuotation.terms || brandConfig?.default_payment_terms || "50% đặt cọc khi xác nhận báo giá\n50% còn lại thanh toán khi hoàn thành").split('\n').filter((line: string) => line.trim()).map((line: string, i: number) => (
                                                 <div key={i} className="flex gap-2">
-                                                    <span className="shrink-0 text-slate-500">•</span>
+                                                    <span className="shrink-0 text-slate-400 mt-[-2px] text-lg font-bold">•</span>
                                                     <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                 </div>
                                             ))}
@@ -751,20 +804,20 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                     <div className="space-y-2 text-xs">
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Ngân hàng<span className="text-[0.8em] italic opacity-70">/ Bank</span>:</span>
-                                            <span className="font-semibold text-black">{quotation.bank_name || brandConfig?.bank_name || "Techcombank"}</span>
+                                            <span className="font-semibold text-black">{currentQuotation.bank_name || brandConfig?.bank_name || "Techcombank"}</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Số TK<span className="text-[0.8em] italic opacity-70">/ Account No</span>:</span>
-                                            <span className="font-mono text-sm font-semibold text-black leading-none">{quotation.bank_account_no || brandConfig?.bank_account_no || "190368686868"}</span>
+                                            <span className="font-mono text-sm font-semibold text-black leading-none">{currentQuotation.bank_account_no || brandConfig?.bank_account_no || "190368686868"}</span>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                             <span className="text-slate-500 sm:text-black italic sm:not-italic">Chủ TK<span className="text-[0.8em] italic opacity-70">/ Account Name</span>:</span>
-                                            <span className=" font-semibold text-black">{quotation.bank_account_name || brandConfig?.bank_account_name || "Công ty TNHH Tulie"}</span>
+                                            <span className=" font-semibold text-black">{currentQuotation.bank_account_name || brandConfig?.bank_account_name || "Công ty TNHH Tulie"}</span>
                                         </div>
-                                        {(quotation.bank_branch || brandConfig?.bank_branch) && (
+                                        {(currentQuotation.bank_branch || brandConfig?.bank_branch) && (
                                             <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-baseline">
                                                 <span className="text-slate-500 sm:text-black italic sm:not-italic">Chi nhánh<span className="text-[0.8em] italic opacity-70">/ Branch</span>:</span>
-                                                <span className="font-semibold text-black">{quotation.bank_branch || brandConfig?.bank_branch}</span>
+                                                <span className="font-semibold text-black">{currentQuotation.bank_branch || brandConfig?.bank_branch}</span>
                                             </div>
                                         )}
                                     </div>
@@ -790,6 +843,69 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                     </div>
                 </div>
             </div>
+
+            {/* History Timeline Panel */}
+            {historyItems.length > 0 && (
+                <div className="max-w-[210mm] mx-auto mt-12 mb-12 print:hidden px-4 sm:px-0">
+                    <div className="bg-white/80 backdrop-blur-md border-[3px] border-zinc-200/50 rounded-[40px] p-10 relative overflow-hidden shadow-2xl">
+                        <div className="relative z-10 space-y-10">
+                            <div className="flex items-center gap-6">
+                                <div className="w-14 h-14 rounded-2xl bg-zinc-950 flex items-center justify-center shadow-lg transform -rotate-3">
+                                    <Clock className="w-7 h-7 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black text-zinc-950 tracking-tight uppercase italic">Lịch sử phiên bản</h3>
+                                    <p className="text-zinc-500 text-sm font-medium">Quản lý các bản thảo và xác nhận trước đó của dự án.</p>
+                                </div>
+                            </div>
+
+                            <div className="relative pl-12 before:absolute before:left-[17px] before:top-4 before:bottom-0 before:w-[3px] before:bg-zinc-100 before:rounded-full">
+                                {historyItems.map((item: any) => (
+                                    <div key={item.id} className="relative mb-12 last:mb-0 group cursor-pointer" onClick={() => {
+                                        setCurrentQuotation(item);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}>
+                                        <div className={cn(
+                                            "absolute -left-[45px] top-2 w-[40px] h-[40px] rounded-2xl border-4 border-white z-10 transition-all duration-500 flex items-center justify-center shadow-md group-hover:scale-110",
+                                            item.status === 'accepted' ? "bg-zinc-950" :
+                                                item.status === 'rejected' ? "bg-rose-500" : "bg-zinc-400"
+                                        )}>
+                                            {item.status === 'accepted' ? <Check className="w-5 h-5 text-white" /> :
+                                                item.status === 'rejected' ? <XCircle className="w-5 h-5 text-white" /> :
+                                                    <FileText className="w-5 h-5 text-white" />}
+                                        </div>
+
+                                        <div className="bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-100 rounded-3xl p-6 transition-all duration-300 group-hover:translate-x-2">
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-lg font-black text-zinc-950 tracking-tighter">#{item.quotation_number}</span>
+                                                        <Badge variant="outline" className={cn(
+                                                            "text-[10px] h-5 px-2 font-black uppercase tracking-widest",
+                                                            item.status === 'accepted' ? "bg-zinc-100 text-zinc-900 border-zinc-200" :
+                                                                item.status === 'rejected' ? "bg-rose-50 text-rose-700 border-rose-200" : "bg-zinc-200/50"
+                                                        )}>
+                                                            {item.status}
+                                                        </Badge>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-zinc-500 font-bold text-[11px]">
+                                                        <Calendar className="w-3 h-3" />
+                                                        {formatDate(item.created_at)}
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-xl font-black tabular-nums text-zinc-950">{formatCurrency(item.total_amount)}</p>
+                                                    <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-zinc-600 transition-colors">Xem chi tiết phiên bản này →</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Sticky Action Footer */}
             <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 sm:p-4 shadow-md z-50 print:hidden overflow-hidden">
@@ -823,6 +939,7 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 size="default"
                                 className="font-medium text-muted-foreground hover:text-destructive order-4 sm:order-3"
                                 onClick={() => setShowReject(true)}
+                                disabled={['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
                                 Từ chối
                             </Button>
@@ -830,10 +947,10 @@ export function QuotationContent({ quotation, brandConfig }: QuotationContentPro
                                 size="default"
                                 className="col-span-2 sm:col-span-1 bg-zinc-950 text-white hover:bg-zinc-900 font-bold order-1 sm:order-4"
                                 onClick={() => setShowConfirm(true)}
-                                disabled={isSubmitting || quotation.status === 'accepted'}
+                                disabled={isSubmitting || ['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
                                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                                {quotation.status === 'accepted' ? 'Đã chấp nhận' : 'Chấp nhận ngay'}
+                                {currentQuotation.status === 'accepted' ? 'Đã chấp nhận' : 'Xác nhận ngay'}
                             </Button>
                         </div>
                     </div>
