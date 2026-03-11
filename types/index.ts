@@ -190,7 +190,7 @@ export interface QuotationItem {
 }
 
 // Contract Types
-export type ContractStatus = 'draft' | 'active' | 'completed' | 'cancelled' | 'suspended'
+export type ContractStatus = 'draft' | 'sent' | 'viewed' | 'signed' | 'active' | 'completed' | 'cancelled' | 'suspended'
 
 export interface Contract {
   id: string
@@ -270,7 +270,7 @@ export type ProjectStatus = 'todo' | 'in_progress' | 'review' | 'completed'
 
 export interface Project {
   id: string
-  contract_id: string
+  contract_id?: string
   contract?: Contract
   customer_id: string
   customer?: Customer
@@ -360,6 +360,8 @@ export interface Invoice {
   type: InvoiceType
   contract_id?: string
   contract?: Contract
+  project_id?: string
+  project?: Project
   customer_id?: string
   customer?: Customer
   vendor_id?: string

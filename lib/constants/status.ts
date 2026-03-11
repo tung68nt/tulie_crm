@@ -41,6 +41,9 @@ export const QUOTATION_STATUS_COLORS: Record<QuotationStatus, string> = {
 // Contract Status
 export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
     draft: 'Bản nháp',
+    sent: 'Đã gửi',
+    viewed: 'Đã xem',
+    signed: 'Đã ký',
     active: 'Đang thực hiện',
     completed: 'Hoàn thành',
     cancelled: 'Đã hủy',
@@ -49,6 +52,9 @@ export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
 
 export const CONTRACT_STATUS_COLORS: Record<ContractStatus, string> = {
     draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    viewed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    signed: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
     active: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
     completed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
     cancelled: 'bg-zinc-100 text-zinc-400 border border-zinc-200',

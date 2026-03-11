@@ -42,38 +42,34 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
     {
-        title: 'Tulie Agency',
+        title: 'Bán hàng',
         items: [
-            { title: 'Cơ hội Agency', href: '/deals', icon: TrendingUp },
-            { title: 'Khách hàng Agency', href: '/customers', icon: Users },
+            { title: 'Leads & Cơ hội', href: '/deals', icon: TrendingUp },
+            { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
-            { title: 'Hợp đồng', href: '/contracts', icon: FilePenLine },
-            { title: 'Đơn hàng Agency', href: '/orders', icon: ShoppingCart },
+        ]
+    },
+    {
+        title: 'Triển khai',
+        items: [
+            { title: 'Hợp đồng & Đơn hàng', href: '/contracts', icon: FilePenLine },
             { title: 'Dự án', href: '/projects', icon: Rocket },
-            { title: 'Hóa đơn', href: '/invoices', icon: Banknote },
+            { title: 'Theo dõi hoá đơn', href: '/invoices', icon: Banknote },
         ]
     },
     {
-        title: 'Tulie Studio',
+        title: 'Studio',
         items: [
-            { title: 'Cơ hội Studio', href: '/studio/deals', icon: TrendingUp },
             { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
-            { title: 'Khách hàng Studio', href: '/studio/customers', icon: Users },
+            { title: 'Khách Studio', href: '/studio/customers', icon: Users },
         ]
     },
     {
-        title: 'Tulie Lab',
+        title: 'Hệ thống',
         items: [
-            { title: 'Hệ thống Lab', href: '/academy', icon: Layout },
-        ]
-    },
-    {
-        title: 'Quản trị hệ thống',
-        items: [
-            { title: 'Leads', href: '/leads', icon: Contact },
             { title: 'Tài chính', href: '/finance', icon: Wallet },
             { title: 'Nhân sự', href: '/team', icon: UserCheck },
-            { title: 'Sản phẩm', href: '/products', icon: Box },
+            { title: 'Sản phẩm & Dịch vụ', href: '/products', icon: Box },
             { title: 'Mẫu giấy tờ', href: '/templates', icon: Files },
             { title: 'Báo cáo', href: '/reports', icon: PieChart },
             { title: 'Cài đặt', href: '/settings', icon: Settings },
