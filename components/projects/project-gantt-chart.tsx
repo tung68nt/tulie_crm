@@ -38,8 +38,11 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
         const h = now.getHours()
         const m = now.getMinutes()
         const s = now.getSeconds()
-        const fraction = (h * 3600 + m * 60 + s) / 86400
+        // Fraction of the day elapsed
+        const totalSeconds = h * 3600 + m * 60 + s
+        const fraction = totalSeconds / 86400
         
+        // Return percentage relative to the total days in view
         return ((index + fraction) / daysInView) * 100
     }, [now, timelineDates, daysInView])
 
@@ -107,16 +110,16 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                         <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 text-[11px] font-semibold text-muted-foreground flex items-center bg-zinc-50 sticky left-0 z-50">
                             Đầu việc
                         </div>
-                        <div className="flex-1 flex relative bg-zinc-50">
-                            {/* Today Line - Moved inside the flex-1 date container to fix alignment */}
+                        <div className="flex-1 flex relative bg-zinc-50/50">
+                            {/* Today Line */}
                             {todayLinePosition !== null && (
                                 <div
-                                    className="absolute top-0 bottom-[-1000px] w-[1px] bg-red-400 z-50 pointer-events-none"
+                                    className="absolute top-0 bottom-[-5000px] w-[2px] bg-red-500/80 z-[60] pointer-events-none"
                                     style={{
                                         left: `${todayLinePosition}%`,
                                     }}
                                 >
-                                    <div className="absolute top-0 left-[-5px] w-2.5 h-2.5 rounded-full bg-red-500 shadow-md border-[2px] border-white ring-2 ring-red-500/20" />
+                                    <div className="absolute top-0 left-[-4px] w-2.5 h-2.5 rounded-full bg-red-600 shadow-lg border-[2px] border-white ring-2 ring-red-500/30" />
                                 </div>
                             )}
 
@@ -159,7 +162,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                     <div className="w-[240px] shrink-0 p-3 border-r border-zinc-100 flex items-center bg-white sticky left-0 z-30 group-hover:bg-zinc-50/30 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                                         <p className="text-[11px] font-semibold text-zinc-900 leading-tight">{task.title}</p>
                                     </div>
-                                    <div className="flex-1 relative h-12 flex items-center px-0.5">
+                                    <div className="flex-1 relative h-14 flex items-center px-0">
                                         {/* Grid Background */}
                                         <div className="absolute inset-0 flex">
                                             {Array.from({ length: daysInView }).map((_, i) => (

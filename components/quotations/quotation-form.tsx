@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import {
     Select,
     SelectContent,
@@ -33,7 +34,7 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatNumber } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet, Check, AlertCircle, RotateCcw } from 'lucide-react'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
@@ -82,6 +83,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [importText, setImportText] = useState('')
     const [isImportJsonOpen, setIsImportJsonOpen] = useState(false)
     const [importJsonText, setImportJsonText] = useState('')
+    const [jsonError, setJsonError] = useState<string | null>(null)
+    const [jsonPath, setJsonPath] = useState<string>('')
 
     // Bank info state
     const [bankName, setBankName] = useState(quotation?.bank_name || '')
@@ -1397,12 +1400,81 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <Copy className="h-3 w-3 mr-1" /> Copy JSON
                                 </Button>
                             </div>
-                            <Textarea
-                                placeholder='{ "title": "...", "items": [...], ... }'
-                                value={importJsonText}
-                                onChange={(e) => setImportJsonText(e.target.value)}
-                                className="min-h-[350px] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors"
-                            />
+                            <div className="relative group">
+                                <Textarea
+                                    placeholder='{ "title": "...", "items": [...], ... }'
+                                    value={importJsonText}
+                                    onChange={(e) => {
+                                        setImportJsonText(e.target.value)
+                                        try {
+                                            if (e.target.value.trim()) {
+                                                JSON.parse(e.target.value)
+                                                setJsonError(null)
+                                            } else {
+                                                setJsonError(null)
+                                            }
+                                        } catch (err: any) {
+                                            setJsonError(err.message)
+                                        }
+                                    }}
+                                    onKeyUp={(e: any) => {
+                                        const pos = e.target.selectionStart
+                                        const text = e.target.value.substring(0, pos)
+                                        // Simple heuristic to show scope
+                                        let stack: string[] = []
+                                        let currentKey = ""
+                                        const matches = text.matchAll(/("[\w_]+"\s*:(?:\s*[\{\[])|[\{\}\[\]])/g)
+                                        for (const match of matches) {
+                                            const token = match[0]
+                                            if (token.includes('{') || token.includes('[')) {
+                                                const keyMatch = token.match(/"([\w_]+)"/)
+                                                stack.push(keyMatch ? keyMatch[1] : (token.includes('{') ? '{}' : '[]'))
+                                            } else if (token === '}' || token === ']') {
+                                                stack.pop()
+                                            }
+                                        }
+                                        setJsonPath(stack.length > 0 ? stack.join(' > ') : 'Root')
+                                    }}
+                                    className={cn(
+                                        "min-h-[350px] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors",
+                                        jsonError && "border-red-300 ring-1 ring-red-100"
+                                    )}
+                                />
+                                {jsonPath && (
+                                    <div className="absolute bottom-2 right-4 text-[10px] font-mono text-zinc-400 bg-white/80 backdrop-blur px-2 py-0.5 rounded border border-zinc-100 pointer-events-none">
+                                        Scope: {jsonPath}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-2 flex items-center justify-between">
+                                {jsonError ? (
+                                    <div className="flex items-center gap-1.5 text-red-500 text-[11px] font-medium">
+                                        <AlertCircle className="h-3.5 w-3.5" />
+                                        <span>Lỗi JSON: {jsonError}</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-medium">
+                                        <Check className="h-3.5 w-3.5" />
+                                        <span>Cấu trúc JSON hợp lệ</span>
+                                    </div>
+                                )}
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="h-8 text-[11px] font-bold"
+                                    onClick={() => {
+                                        try {
+                                            const obj = JSON.parse(importJsonText)
+                                            setImportJsonText(JSON.stringify(obj, null, 2))
+                                            toast.success('Đã định dạng JSON')
+                                        } catch (e) {
+                                            toast.error('Không thể định dạng: JSON lỗi')
+                                        }
+                                    }}
+                                >
+                                    <RotateCcw className="h-3 w-3 mr-1.5" /> Định dạng JSON
+                                </Button>
+                            </div>
                         </div>
                         <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
