@@ -231,32 +231,30 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                 });
             };
 
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
-            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
-
-            const html2canvas = (window as any).html2canvas;
-            const jspdfLib = (window as any).jspdf;
+            const html2canvas = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
+            const jspdfLib = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
 
             if (!html2canvas || !jspdfLib) {
                 throw new Error('PDF Libraries not ready after loading');
             }
 
-            const { jsPDF } = jspdfLib;
+            // Get jsPDF from UMD bundle correctly
+            const jsPDFClass = jspdfLib.jsPDF || (window as any).jspdf?.jsPDF;
+            if (!jsPDFClass) {
+                throw new Error('jsPDF class not found in library');
+            }
 
             // Wait longer for images/styles to settle
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r => setTimeout(r, 1000));
 
             const canvas = await html2canvas(element, {
-                scale: 2,
+                scale: 1.5,
                 useCORS: true,
                 allowTaint: false,
                 logging: false,
                 backgroundColor: '#ffffff',
-                windowWidth: 1200,
+                windowWidth: 1100,
                 onclone: (doc: Document) => {
-                    // CRITICAL: CRASH PREVENTION
-                    // html2canvas fails completely when it encounters oklch() colors.
-                    // We must replace all oklch values in the cloned document's styles.
                     const style = doc.createElement('style');
                     style.innerHTML = `
                         @page { size: A4; margin: 0; }
@@ -265,57 +263,55 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                             -webkit-print-color-adjust: exact !important; 
                             color-adjust: exact !important; 
                             box-sizing: border-box !important;
-                            border-color: #e2e8f0 !important; /* Fallback for oklch borders */
                         }
                         
-                        /* Override ALL shadcn/tailwind variables using HEX/RGB instead of OKLCH */
-                        :root, *, *::before, *::after {
+                        /* Force HEX colors to bypass oklch issues */
+                        :root, * {
                             --background: #ffffff !important;
-                            --foreground: #0f172a !important;
-                            --card: #ffffff !important;
-                            --card-foreground: #0f172a !important;
-                            --popover: #ffffff !important;
-                            --popover-foreground: #0f172a !important;
-                            --primary: #000000 !important;
+                            --foreground: #09090b !important;
+                            --border: #e2e8f0 !important;
+                            --primary: #09090b !important;
                             --primary-foreground: #ffffff !important;
-                            --secondary: #f1f5f9 !important;
-                            --secondary-foreground: #0f172a !important;
-                            --muted: #f8fafc !important;
+                            --muted: #f1f5f9 !important;
                             --muted-foreground: #64748b !important;
                             --accent: #f1f5f9 !important;
-                            --accent-foreground: #0f172a !important;
-                            --destructive: #ef4444 !important;
-                            --border: #e2e8f0 !important;
-                            --input: #e2e8f0 !important;
-                            --ring: #94a3b8 !important;
+                            --accent-foreground: #09090b !important;
                         }
 
-                        /* Fix elements using specialized color classes */
-                        .bg-zinc-950 { background-color: #09090b !important; color: #ffffff !important; }
-                        .text-zinc-950 { color: #09090b !important; }
-                        .bg-slate-50 { background-color: #f8fafc !important; }
-                        .border-slate-200 { border-color: #e2e8f0 !important; }
-                        .text-slate-600 { color: #475569 !important; }
-                        .text-slate-800 { color: #1e293b !important; }
+                        .bg-zinc-950, .bg-slate-900 { background-color: #09090b !important; color: #ffffff !important; }
+                        .text-zinc-950, .text-slate-900 { color: #09090b !important; }
+                        .bg-slate-50, .bg-zinc-50 { background-color: #f8fafc !important; }
+                        .border-slate-200, .border-zinc-200 { border-color: #e2e8f0 !important; }
+                        .text-slate-600, .text-zinc-600 { color: #475569 !important; }
+                        .text-slate-500, .text-zinc-500 { color: #64748b !important; }
 
-                        /* Force desktop layout and hide interactive elements */
-                        .quotation-paper { box-shadow: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
-                        .fixed, .sticky { display: none !important; }
+                        .quotation-paper { 
+                            box-shadow: none !important; 
+                            margin: 0 !important; 
+                            width: 100% !important; 
+                            max-width: none !important; 
+                            overflow: visible !important;
+                            height: auto !important;
+                        }
+                        .fixed, .sticky, button, .print\\:hidden { display: none !important; }
+                        
+                        /* Fix checkmark visibility */
+                        [data-state=checked] svg { stroke: white !important; stroke-width: 3px !important; color: white !important; opacity: 1 !important; }
                     `;
                     doc.head.appendChild(style);
 
-                    // Sanitize all <style> tags content - aggressive replacement for oklch/color-mix
+                    // Deeper oklch sanitization
                     const allStyles = doc.querySelectorAll('style');
                     allStyles.forEach(s => {
                         let content = s.innerHTML;
-                        if (content.includes('oklch') || content.includes('color-mix')) {
-                            content = content.replace(/oklch\([^)]+\)/g, '#000000');
-                            content = content.replace(/color-mix\([^)]+\)/g, '#666666');
+                        if (content.includes('oklch') || content.includes('color-mix') || content.includes('--')) {
+                            content = content.replace(/oklch\([^)]+\)/g, '#111111');
+                            content = content.replace(/color-mix\([^)]+\)/g, '#333333');
                             s.innerHTML = content;
                         }
                     });
 
-                    // Set crossOrigin for all images to prevent taint errors
+                    // Set crossOrigin for all images
                     const images = doc.getElementsByTagName('img');
                     for (let n = 0; n < images.length; n++) {
                         images[n].crossOrigin = 'anonymous';
@@ -323,8 +319,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                 }
             });
 
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const pdf = new jsPDF({
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
+            const pdf = new jsPDFClass({
                 orientation: 'portrait',
                 unit: 'mm',
                 format: 'a4',
@@ -338,11 +334,9 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
             let heightLeft = pdfHeight;
             let position = 0;
 
-            // Add first page
             pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
             heightLeft -= pageHeight;
 
-            // Add subsequent pages if content overflows
             while (heightLeft > 0) {
                 position = heightLeft - pdfHeight;
                 pdf.addPage();
@@ -352,9 +346,9 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
             pdf.save(`Bao_gia_${currentQuotation.quotation_number || 'draft'}.pdf`);
             toast.success('Đã tải PDF thành công!', { id: toastId });
-        } catch (err) {
+        } catch (err: any) {
             console.error('PDF Generation Error:', err);
-            toast.error('Lỗi tạo PDF. Vui lòng thử dùng trình duyệt Chrome hoặc dùng chức năng In của hệ thống.', { id: toastId });
+            toast.error(`Lỗi tạo PDF: ${err.message || 'Lỗi không xác định'}. Vui lòng thử trình duyệt Chrome.`, { id: toastId });
         } finally {
             setIsDownloading(false);
         }
@@ -635,8 +629,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
                                     <thead>
                                         <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
-                                            <th className="py-2.5 px-3 font-semibold w-10 text-center normal-case print:hidden">Xác nhận</th>
-                                            <th className="py-2.5 px-3 font-semibold w-8 text-center normal-case">#</th>
+                                            <th className="py-2.5 px-1 font-semibold w-8 text-center normal-case print:hidden">Chọn</th>
+                                            <th className="py-2.5 px-1 font-semibold w-8 text-center normal-case">#</th>
                                             <th className="py-2.5 px-3 font-semibold normal-case">
                                                 Hạng mục & Mô tả <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
@@ -687,16 +681,16 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             !isSelected && "bg-slate-50 opacity-40 grayscale-[0.5] print:hidden",
                                                             isSelected && "hover:bg-slate-50/50"
                                                         )}>
-                                                            <td className="px-3 text-center py-2 print:hidden">
+                                                            <td className="px-1 text-center py-2 print:hidden">
                                                                 <div className="flex items-center justify-center">
                                                                     <Checkbox
                                                                         checked={isSelected}
                                                                         onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
-                                                                        className="h-5 w-5 rounded-full transition-all data-[state=checked]:bg-zinc-950 data-[state=checked]:border-zinc-950 ring-offset-background"
+                                                                        className="h-5 w-5 rounded-full transition-all data-[state=checked]:bg-zinc-950 data-[state=checked]:border-zinc-950 ring-offset-background [&_svg]:stroke-[3px] [&_svg]:text-white"
                                                                     />
                                                                 </div>
                                                             </td>
-                                                            <td className="px-3 text-slate-500 align-top text-center py-2">{index + 1}</td>
+                                                            <td className="px-1 text-slate-500 align-top text-center py-2 font-bold text-[10px]">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
                                                                     <div className="flex flex-wrap items-center gap-2">

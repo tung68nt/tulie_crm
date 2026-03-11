@@ -29,7 +29,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
     const year = new Date(quotation.created_at).getFullYear();
 
     return (
-        <div className="bg-white p-[2cm] min-h-[297mm] text-black font-sans leading-normal overflow-hidden print:p-0">
+        <div className="bg-white p-[2cm] min-h-[297mm] text-black font-sans leading-normal print:p-0">
             {/* Header following administrative style */}
             <div className="flex gap-4 items-start mb-8 text-left">
                 {/* Logo */}
@@ -119,7 +119,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                             )}
                             {sectionItems.map((item: any, iIdx: number) => (
                                 <tr key={item.id} className="font-medium">
-                                    <td className="border border-black py-2 px-1 text-center align-top">{iIdx + 1}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top font-bold text-[10px]">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
                                     <td className="border border-black py-2 px-3 align-top">
                                         <p className="font-bold mb-1 uppercase">{item.name || item.product_name}</p>
                                         {(item.description) && <p className="text-[10px] text-zinc-600 whitespace-pre-line italic leading-snug">{item.description}</p>}

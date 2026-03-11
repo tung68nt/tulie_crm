@@ -187,7 +187,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                             {idx + 1}
                                         </div>
 
-                                        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
                                             <div className="flex items-center gap-3 px-5 py-3 border-b bg-slate-50/80 border-slate-100 text-zinc-900">
                                                 <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-900 text-white shadow-sm"
                                                     style={{ WebkitPrintColorAdjust: 'exact' }}>
@@ -216,11 +216,11 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                         <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>
                     </h3>
 
-                    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div className="border border-slate-200 rounded-xl shadow-sm">
                         <table className="w-full text-left border-collapse text-[12px]">
                             <thead>
                                 <tr className="text-white" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
-                                    <th className="py-4 px-4 font-bold w-10 text-center">#</th>
+                                    <th className="py-4 px-1 font-bold w-8 text-center text-[10px]">#</th>
                                     <th className="py-4 px-4 font-bold">Hạng mục & Mô tả <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Items</span></th>
                                     <th className="py-4 px-4 font-bold text-center w-20">ĐVT <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Unit</span></th>
                                     <th className="py-4 px-4 font-bold text-center w-20">SL <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Qty</span></th>
@@ -247,7 +247,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                         )}
                                         {sectionItems.map((item: any, iIdx: number) => (
                                             <tr key={iIdx} className="hover:bg-slate-50/50">
-                                                <td className="px-4 text-slate-400 align-top text-center py-4">{iIdx + 1}</td>
+                                                <td className="px-1 text-slate-500 align-top text-center py-4 font-bold text-[10px]">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
                                                 <td className="px-4 align-top py-4">
                                                     <p className="font-bold text-slate-900 text-[13px]">{item.product_name}</p>
                                                     {item.description && (

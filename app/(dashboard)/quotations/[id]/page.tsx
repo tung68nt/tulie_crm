@@ -610,18 +610,40 @@ export default function QuotationDetailPage() {
                 <style dangerouslySetInnerHTML={{
                     __html: `
                         @media print {
-                            @page { margin: 0; size: A4 portrait; }
+                            @page { margin: 10mm; size: A4 portrait; }
                             html, body { 
                                 margin: 0 !important; 
                                 padding: 0 !important; 
                                 background: white !important;
                                 height: auto !important;
+                                min-height: initial !important;
                                 overflow: visible !important;
                                 width: 100% !important;
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
                             }
-                            body > div { width: 100% !important; max-width: none !important; margin: 0 !important; }
-                            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                            .print:hidden { display: none !important; }
+                            /* Force visibility of print container and fix parent clipping */
+                            body > div, main, .print-container { 
+                                width: 100% !important; 
+                                max-width: none !important; 
+                                margin: 0 !important; 
+                                padding: 0 !important;
+                                height: auto !important;
+                                min-height: initial !important;
+                                overflow: visible !important;
+                                display: block !important;
+                                position: relative !important;
+                            }
+                            .print\\:hidden, header, nav, footer, button, .no-print { 
+                                display: none !important; 
+                            }
+                            /* Ensure paper components don't clip */
+                            .quotation-paper-modern, .bg-white {
+                                overflow: visible !important;
+                                height: auto !important;
+                                min-height: initial !important;
+                                display: block !important;
+                            }
                         }
                     ` }} />
                 <div className="bg-white w-full">
