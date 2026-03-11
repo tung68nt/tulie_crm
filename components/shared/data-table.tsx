@@ -167,7 +167,7 @@ export function DataTable<TData, TValue>({
                                 onChange={(event) =>
                                     table.getColumn(searchKey)?.setFilterValue(event.target.value)
                                 }
-                                className="pl-9 w-[250px] lg:w-[350px] bg-muted/30 border-transparent h-10 rounded-xl focus-visible:bg-background focus-visible:border-border transition-all"
+                                className="pl-9 w-full sm:w-[250px] lg:w-[350px] bg-muted/30 border-transparent h-10 rounded-xl focus-visible:bg-background focus-visible:border-border transition-all"
                             />
                         </div>
                     )}
@@ -337,6 +337,7 @@ export function DataTable<TData, TValue>({
 
             {/* Table */}
             <div className="rounded-xl border border-border/50 shadow-sm overflow-hidden bg-card">
+                <div className="overflow-x-auto">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -386,6 +387,7 @@ export function DataTable<TData, TValue>({
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
 
             {/* Pagination */}
@@ -406,7 +408,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50 hidden sm:inline-flex"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -433,7 +435,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50"
+                            className="h-9 w-9 rounded-xl bg-background hover:bg-muted/50 transition-all shadow-sm border-border/50 hidden sm:inline-flex"
                             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                             disabled={!table.getCanNextPage()}
                         >

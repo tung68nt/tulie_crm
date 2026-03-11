@@ -172,7 +172,7 @@ export function Header() {
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80">
+                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] sm:w-80">
                         <DropdownMenuLabel>Thông báo</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <div className="max-h-[300px] overflow-y-auto">
@@ -213,7 +213,7 @@ export function Header() {
                 {/* User Menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center gap-3 px-2 h-11 rounded-xl hover:bg-zinc-100 transition-all border border-transparent hover:border-border/50">
+                        <Button variant="ghost" className="flex items-center gap-2 sm:gap-3 px-1.5 sm:px-2 h-11 rounded-xl hover:bg-zinc-100 transition-all border border-transparent hover:border-border/50">
                             <Avatar className="h-8 w-8 ring-2 ring-background shadow-sm">
                                 <AvatarImage src={user?.avatar} />
                                 <AvatarFallback className="bg-zinc-950 text-white text-[10px] font-bold">
@@ -224,7 +224,7 @@ export function Header() {
                                 <span className="text-sm font-bold text-zinc-950 tracking-tight leading-none">{user?.name || 'Đang tải...'}</span>
                                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1 leading-none">{user?.role || 'Admin'}</span>
                             </div>
-                            <ChevronDown className="h-4 w-4 text-zinc-400" />
+                            <ChevronDown className="h-4 w-4 text-zinc-400 hidden sm:block" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">

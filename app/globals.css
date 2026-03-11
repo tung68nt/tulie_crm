@@ -130,11 +130,43 @@ html {
 
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
 
   button,
   [role="button"] {
     cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  /* Mobile: ensure tap targets meet 44px minimum (Apple HIG) */
+  @media (pointer: coarse) {
+    button,
+    [role="button"],
+    a,
+    input,
+    select,
+    textarea {
+      min-height: 44px;
+    }
+
+    /* Thin scrollbar on mobile */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: oklch(0.8 0 0);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  /* Safe area insets for notched devices */
+  main {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 

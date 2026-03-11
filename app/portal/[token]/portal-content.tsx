@@ -44,6 +44,7 @@ import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
 import { ProjectActivityHistory } from '@/components/projects/project-activity-history'
+import { sanitizeHtml } from '@/lib/security/sanitize'
 
 interface PortalContentProps {
     data: {
@@ -408,7 +409,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </DialogHeader>
                         <div
                             className="p-8 prose prose-zinc max-w-none bg-white min-h-[400px]"
-                            dangerouslySetInnerHTML={{ __html: selectedDocContent || '' }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
                         />
                         <div className="flex justify-end pt-4 border-t">
                             <Button onClick={() => setIsViewingDoc(false)}>Đóng</Button>

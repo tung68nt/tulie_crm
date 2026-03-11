@@ -7,11 +7,15 @@ export async function updateSession(request: NextRequest) {
     })
 
     try {
-        // Skip Supabase auth check if credentials are not configured
+        // Verify Supabase credentials are properly configured
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
         const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
         if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === 'your_supabase_url') {
+            // In development, allow pass-through; in production, this is a critical misconfiguration
+            if (process.env.NODE_ENV === 'production') {
+                console.error('CRITICAL: Supabase credentials not configured in production!')
+            }
             return supabaseResponse
         }
 

@@ -11,26 +11,22 @@ export async function login(formData: FormData) {
         const email = formData.get('email') as string
         const password = formData.get('password') as string
 
-        console.log('Attempting login for:', email)
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
         })
 
         if (error) {
-            console.error('Supabase auth error:', error.message, 'Code:', error.code, 'Status:', error.status)
-            return { error: `Đăng nhập thất bại [${error.code || error.status}]: ${error.message}` }
+            console.error('Auth error:', error.code || error.status)
+            return { error: `Đăng nhập thất bại: ${error.message}` }
         }
 
         if (!data.user) {
-            console.error('No user data returned after successful auth')
             return { error: 'Không tìm thấy thông tin người dùng' }
         }
-
-        console.log('Login successful for UID:', data.user.id)
     } catch (err: any) {
-        console.error('Login action critical error:', err.message || err)
-        return { error: `Lỗi hệ thống: ${err.message || 'Unknown error'}` }
+        console.error('Login action error')
+        return { error: 'Lỗi hệ thống. Vui lòng thử lại.' }
     }
 
     redirect('/dashboard')

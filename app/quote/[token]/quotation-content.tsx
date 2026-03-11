@@ -436,7 +436,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                 </div>
 
                                                 {/* Content Card */}
-                                                <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+                                                <div className="rounded-xl border border-slate-200 bg-white overflow-hidden overflow-x-auto">
                                                     {/* Card Header */}
                                                     <div className="flex items-center gap-2.5 px-4 py-2.5 border-b bg-slate-50 border-slate-100 text-zinc-900"
                                                         style={{ WebkitPrintColorAdjust: 'exact' }}>

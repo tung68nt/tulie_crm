@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
+import { checkRateLimit } from '@/lib/security/rate-limiter'
 import {
     sendEmail,
     quotationEmailTemplate,
@@ -7,8 +9,24 @@ import {
     notificationEmailTemplate,
 } from '@/lib/email'
 
+/**
+ * POST /api/send-email — Authenticated endpoint for sending emails
+ * Rate limited to prevent email bombing
+ */
 export async function POST(request: NextRequest) {
     try {
+        // Require authentication
+        const authResult = await requireAuth()
+        if (isAuthError(authResult)) return authResult
+
+        // Rate limit: 10 emails per minute per user
+        const rateLimitResult = checkRateLimit(authResult.user.id, {
+            maxRequests: 10,
+            windowSeconds: 60,
+            keyPrefix: 'email:send',
+        })
+        if (rateLimitResult) return rateLimitResult
+
         const body = await request.json()
         const { type, to, data } = body
 
@@ -78,7 +96,7 @@ export async function POST(request: NextRequest) {
 
             default:
                 return NextResponse.json(
-                    { error: `Unknown email type: ${type}` },
+                    { error: 'Unknown email type' },
                     { status: 400 }
                 )
         }
@@ -92,7 +110,7 @@ export async function POST(request: NextRequest) {
 
         if (!result.success) {
             return NextResponse.json(
-                { error: result.error },
+                { error: 'Failed to send email' },
                 { status: 500 }
             )
         }
@@ -105,7 +123,7 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('[API] Send email error:', error)
         return NextResponse.json(
-            { error: error.message || 'Internal server error' },
+            { error: 'Internal server error' },
             { status: 500 }
         )
     }

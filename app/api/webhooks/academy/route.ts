@@ -12,15 +12,20 @@ export async function POST(req: NextRequest) {
         const payload = await req.json()
         const apiKey = req.headers.get('x-academy-api-key')
 
-        // 1. Validate API Key from CRM perspective
+        // 1. Validate API Key — MANDATORY
         const telegramConfig = await getSystemSetting('telegram_config')
         const storedWebhookKey = telegramConfig?.academy_webhook_key
 
-        if (storedWebhookKey && apiKey !== storedWebhookKey) {
-            return NextResponse.json({ error: 'Unauthorized: API Key mismatch' }, { status: 401 })
+        if (!storedWebhookKey) {
+            console.error('Academy Webhook: No webhook key configured')
+            return NextResponse.json({ error: 'Webhook not configured' }, { status: 503 })
         }
 
-        console.log('Academy Webhook Received:', payload)
+        if (!apiKey || apiKey !== storedWebhookKey) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        console.log('Academy Webhook Received: event=', payload?.event)
 
         const { event, order } = payload
 
@@ -77,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     } catch (err: any) {
         console.error('Academy Webhook Integration Error:', err)
-        return NextResponse.json({ error: err.message }, { status: 500 })
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
 

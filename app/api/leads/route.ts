@@ -1,18 +1,52 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
+import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
+import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitize'
 
-// Use service role or anon key for public form submissions
+// Use anon key for public form submissions only
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
+/**
+ * POST /api/leads — Public endpoint for landing page form
+ * Rate limited to prevent spam
+ */
 export async function POST(req: Request) {
     try {
+        // Rate limit: 5 submissions per minute per IP
+        const ip = getClientIp(req)
+        const rateLimitResult = checkRateLimit(ip, {
+            maxRequests: 5,
+            windowSeconds: 60,
+            keyPrefix: 'leads:post',
+        })
+        if (rateLimitResult) return rateLimitResult
+
         const body = await req.json()
         const { full_name, company_name, phone, email, business_type, message } = body
 
-        if (!full_name || !phone) {
+        // Input validation
+        const cleanName = sanitizeText(full_name, 200)
+        const cleanPhone = sanitizeText(phone, 20)
+
+        if (!cleanName || !cleanPhone) {
             return NextResponse.json(
                 { error: 'Vui lòng điền họ tên và số điện thoại' },
+                { status: 400 }
+            )
+        }
+
+        if (!isValidPhone(cleanPhone)) {
+            return NextResponse.json(
+                { error: 'Số điện thoại không hợp lệ' },
+                { status: 400 }
+            )
+        }
+
+        if (email && !isValidEmail(email)) {
+            return NextResponse.json(
+                { error: 'Email không hợp lệ' },
                 { status: 400 }
             )
         }
@@ -22,12 +56,12 @@ export async function POST(req: Request) {
         const { data, error } = await supabase
             .from('leads')
             .insert({
-                full_name,
-                company_name: company_name || null,
-                phone,
-                email: email || null,
-                business_type: business_type || null,
-                message: message || null,
+                full_name: cleanName,
+                company_name: sanitizeText(company_name, 200) || null,
+                phone: cleanPhone,
+                email: email ? sanitizeText(email, 320) : null,
+                business_type: sanitizeText(business_type, 100) || null,
+                message: sanitizeText(message, 2000) || null,
                 status: 'new',
                 source: 'landing_page',
             })
@@ -46,8 +80,18 @@ export async function POST(req: Request) {
     }
 }
 
+/**
+ * PATCH /api/leads — Authenticated endpoint for updating leads
+ * Only authenticated users (CRM staff) can modify lead data
+ */
 export async function PATCH(req: Request) {
     try {
+        // Require authentication
+        const authResult = await requireAuth()
+        if (isAuthError(authResult)) return authResult
+
+        const { supabase } = authResult
+
         const body = await req.json()
         const { id, status, notes } = body
 
@@ -55,11 +99,15 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 })
         }
 
-        const supabase = createClient(supabaseUrl, supabaseKey)
+        // Validate status if provided
+        const validStatuses = ['new', 'contacted', 'qualified', 'converted', 'lost']
+        if (status && !validStatuses.includes(status)) {
+            return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+        }
 
-        const updates: any = { updated_at: new Date().toISOString() }
+        const updates: Record<string, any> = { updated_at: new Date().toISOString() }
         if (status) updates.status = status
-        if (notes !== undefined) updates.notes = notes
+        if (notes !== undefined) updates.notes = sanitizeText(notes, 5000)
 
         const { data, error } = await supabase
             .from('leads')

@@ -20,13 +20,23 @@ export async function POST(req: NextRequest) {
         const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
         const authHeader = req.headers.get('authorization') || req.headers.get('x-api-key')
 
-        console.log('SePay Webhook Received:', payload)
+        // Log webhook receipt without sensitive details
+        console.log('SePay Webhook Received: txn_id=', payload?.id)
 
-        // 1. Verify API Key / Token if provided (Academy style)
+        // 1. Verify API Key / Token — MANDATORY
         const telegramConfig = await getSystemSetting('telegram_config')
         const storedApiKey = telegramConfig?.sepay_api_key
 
-        if (authHeader && storedApiKey) {
+        if (!storedApiKey) {
+            console.error('SePay Webhook: No API key configured in system settings')
+            return NextResponse.json({ success: false, message: 'Webhook not configured' }, { status: 503 })
+        }
+
+        if (!authHeader && !signature) {
+            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+        }
+
+        if (authHeader) {
             let receivedKey = ''
             const match = authHeader.match(/^(?:Apikey|Bearer)\s+(.+)$/i)
             receivedKey = match?.[1] ?? authHeader
@@ -34,17 +44,15 @@ export async function POST(req: NextRequest) {
             const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
 
             if (cleanReceivedKey !== cleanStoredKey) {
-                console.warn('SePay Webhook Auth Failed: API key mismatch')
-                return NextResponse.json({ success: false, message: 'Invalid API key' }, { status: 401 })
+                return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
             }
         }
 
-        // 2. Verify HMAC Signature
+        // 2. Verify HMAC Signature (if provided, must be valid)
         if (signature) {
             const isValid = await verifySepaySignature(payload, signature)
             if (!isValid) {
-                console.warn('SePay Webhook Signature Failed')
-                return NextResponse.json({ success: false, message: 'Invalid signature' }, { status: 401 })
+                return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
             }
         }
 
@@ -120,7 +128,7 @@ export async function POST(req: NextRequest) {
 
     } catch (err: any) {
         console.error('Webhook Error:', err)
-        return NextResponse.json({ error: err.message }, { status: 500 })
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
 

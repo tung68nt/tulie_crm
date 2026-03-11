@@ -9,6 +9,7 @@ import { saveGeneratedDocument } from '@/lib/supabase/services/document-template
 import { GeneratedDocument } from '@/types'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { sanitizeHtml } from '@/lib/security/sanitize'
 
 interface DocumentEditorProps {
     document: GeneratedDocument
@@ -83,7 +84,7 @@ export function DocumentEditor({ document: initialDoc, onBack }: DocumentEditorP
                     {isPreview ? (
                         <div
                             className="p-8 prose prose-zinc max-w-none bg-white min-h-[600px] overflow-auto"
-                            dangerouslySetInnerHTML={{ __html: content }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
                         />
                     ) : (
                         <Textarea
