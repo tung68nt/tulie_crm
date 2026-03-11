@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
-import { CheckCircle, CheckCircle2, XCircle, Download, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
+import { CheckCircle, CheckCircle2, XCircle, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -41,8 +41,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
     const [showReject, setShowReject] = useState(false)
     const [rejectReason, setRejectReason] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const printRef = useRef<HTMLDivElement>(null)
-    const [isDownloading, setIsDownloading] = useState(false)
+
     const [confirmer, setConfirmer] = useState({
         name: '',
         email: '',
@@ -205,162 +204,6 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
         window.print();
     };
 
-    const handleDownloadPDF = async () => {
-        if (isDownloading) return;
-        const element = printRef.current;
-        if (!element) return;
-
-        setIsDownloading(true);
-        const toastId = toast.loading('Đang chuẩn bị bản in PDF...');
-
-        try {
-            // Load libraries with reliable checks
-            const loadScript = (src: string, globalCheck: string): Promise<any> => {
-                return new Promise((resolve, reject) => {
-                    if ((window as any)[globalCheck]) return resolve((window as any)[globalCheck]);
-                    
-                    const script = document.createElement('script');
-                    script.src = src;
-                    script.async = true;
-                    script.onload = () => {
-                        // Small delay to ensure global is bound
-                        setTimeout(() => resolve((window as any)[globalCheck]), 200);
-                    };
-                    script.onerror = () => reject(new Error(`Failed to load ${src}`));
-                    document.body.appendChild(script);
-                });
-            };
-
-            const html2canvas = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas');
-            const jspdfLib = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf');
-
-            if (!html2canvas || !jspdfLib) {
-                throw new Error('PDF Libraries not ready after loading');
-            }
-
-            // Get jsPDF from UMD bundle correctly
-            const jsPDFClass = jspdfLib.jsPDF || (window as any).jspdf?.jsPDF;
-            if (!jsPDFClass) {
-                throw new Error('jsPDF class not found in library');
-            }
-
-            // Wait longer for images/styles to settle
-            await new Promise(r => setTimeout(r, 1000));
-
-            const canvas = await html2canvas(element, {
-                scale: 1.5,
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: 1100,
-                onclone: (doc: Document) => {
-                    const style = doc.createElement('style');
-                    style.innerHTML = `
-                        @page { size: A4; margin: 0; }
-                        body { background: white !important; font-family: sans-serif !important; }
-                        * { 
-                            -webkit-print-color-adjust: exact !important; 
-                            color-adjust: exact !important; 
-                            box-sizing: border-box !important;
-                        }
-                        
-                        /* Force HEX colors to bypass oklch issues */
-                        :root, * {
-                            --background: #ffffff !important;
-                            --foreground: #09090b !important;
-                            --border: #e2e8f0 !important;
-                            --primary: #09090b !important;
-                            --primary-foreground: #ffffff !important;
-                            --muted: #f1f5f9 !important;
-                            --muted-foreground: #64748b !important;
-                            --accent: #f1f5f9 !important;
-                            --accent-foreground: #09090b !important;
-                        }
-
-                        .bg-zinc-950, .bg-slate-900 { background-color: #09090b !important; color: #ffffff !important; }
-                        .text-zinc-950, .text-slate-900 { color: #09090b !important; }
-                        .bg-slate-50, .bg-zinc-50 { background-color: #f8fafc !important; }
-                        .border-slate-200, .border-zinc-200 { border-color: #e2e8f0 !important; }
-                        .text-slate-600, .text-zinc-600 { color: #475569 !important; }
-                        .text-slate-500, .text-zinc-500 { color: #64748b !important; }
-
-                        .quotation-paper { 
-                            box-shadow: none !important; 
-                            margin: 0 !important; 
-                            width: 100% !important; 
-                            max-width: none !important; 
-                            overflow: visible !important;
-                            height: auto !important;
-                        }
-                        .fixed, .sticky, button, .print\\:hidden { display: none !important; }
-                        
-                        /* Fix checkmark visibility */
-                        [data-state=checked] svg { stroke: white !important; stroke-width: 3px !important; color: white !important; opacity: 1 !important; }
-                    `;
-                    doc.head.appendChild(style);
-
-                    // Extremely aggressive oklch/color-mix sanitization
-                    // This fixes html2canvas crashes on newer shadcn/tailwind oklch colors
-                    const allStyles = doc.querySelectorAll('style, [style]');
-                    allStyles.forEach(s => {
-                        if (s instanceof HTMLStyleElement) {
-                            let content = s.innerHTML;
-                            if (content.includes('oklch') || content.includes('color-mix')) {
-                                content = content.replace(/oklch\([^)]+\)/g, '#111111');
-                                content = content.replace(/color-mix\([^)]+\)/g, '#333333');
-                                s.innerHTML = content;
-                            }
-                        } else if (s instanceof HTMLElement) {
-                            let styleAttr = s.getAttribute('style') || '';
-                            if (styleAttr.includes('oklch')) {
-                                s.setAttribute('style', styleAttr.replace(/oklch\([^)]+\)/g, '#111111'));
-                            }
-                        }
-                    });
-
-                    // Set crossOrigin for all images
-                    const images = Array.from(doc.getElementsByTagName('img'));
-                    images.forEach(img => {
-                        img.crossOrigin = 'anonymous';
-                    });
-                }
-            });
-
-            const imgData = canvas.toDataURL('image/jpeg', 0.9);
-            const pdf = new jsPDFClass({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4',
-                compress: true
-            });
-
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            
-            let heightLeft = pdfHeight;
-            let position = 0;
-
-            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
-            heightLeft -= pageHeight;
-
-            while (heightLeft > 0) {
-                position = heightLeft - pdfHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight, undefined, 'FAST');
-                heightLeft -= pageHeight;
-            }
-
-            pdf.save(`Bao_gia_${currentQuotation.quotation_number || 'draft'}.pdf`);
-            toast.success('Đã tải PDF thành công!', { id: toastId });
-        } catch (err: any) {
-            console.error('PDF Generation Error:', err);
-            toast.error(`Lỗi tạo PDF: ${err.message || 'Lỗi không xác định'}. Vui lòng thử trình duyệt Chrome.`, { id: toastId });
-        } finally {
-            setIsDownloading(false);
-        }
-    };
 
     // Build proposal sections for rendering
     const proposalSections: { label: string; content: string }[] = []
@@ -464,7 +307,6 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
             {/* A4 Container */}
             <div
-                ref={printRef}
                 className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden"
             >
 
@@ -918,16 +760,6 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                             >
                                 <Printer className="mr-1.5 h-3.5 w-3.5" />
                                 In báo giá
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="default"
-                                className="font-medium order-3 sm:order-2"
-                                onClick={handleDownloadPDF}
-                                disabled={isDownloading}
-                            >
-                                <Download className="mr-1.5 h-3.5 w-3.5" />
-                                {isDownloading ? 'Đang tạo...' : 'Tải báo giá'}
                             </Button>
                             <Button
                                 variant="ghost"
