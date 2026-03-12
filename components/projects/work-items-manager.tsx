@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
     Select,
     SelectContent,
@@ -88,7 +89,7 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
     const [newItem, setNewItem] = useState({
         title: '',
         description: '',
-        quotation_id: '',
+        quotation_ids: [] as string[],
         contract_id: '',
     })
 
@@ -109,21 +110,24 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
 
         startTransition(async () => {
             try {
+                // Use first quotation_id for DB column (backward compat) + store full array in metadata
+                const primaryQuotationId = newItem.quotation_ids[0] || undefined
                 await createWorkItem({
                     project_id: project.id,
                     title: newItem.title,
                     description: newItem.description,
-                    quotation_id: newItem.quotation_id || undefined,
+                    quotation_id: primaryQuotationId,
                     contract_id: newItem.contract_id || undefined,
                     sort_order: initialWorkItems.length,
                     required_documents: DEFAULT_DOCUMENTS.map(d => ({
                         title: d,
                         status: 'pending' as const,
                     })),
-                })
+                    metadata: newItem.quotation_ids.length > 1 ? { quotation_ids: newItem.quotation_ids } : undefined,
+                } as any)
                 toast.success('Đã tạo hạng mục mới')
                 setShowCreateDialog(false)
-                setNewItem({ title: '', description: '', quotation_id: '', contract_id: '' })
+                setNewItem({ title: '', description: '', quotation_ids: [], contract_id: '' })
                 router.refresh()
             } catch {
                 toast.error('Lỗi khi tạo hạng mục')
@@ -212,17 +216,37 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                             </div>
                             {quotations.length > 0 && (
                                 <div className="grid gap-2">
-                                    <Label>Gán báo giá</Label>
-                                    <Select value={newItem.quotation_id} onValueChange={v => setNewItem({ ...newItem, quotation_id: v })}>
-                                        <SelectTrigger><SelectValue placeholder="Chọn báo giá..." /></SelectTrigger>
-                                        <SelectContent>
-                                            {quotations.map((q: any) => (
-                                                <SelectItem key={q.id} value={q.id}>
-                                                    {q.quotation_number} — {formatCurrency(q.total_amount)}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <Label>Gán báo giá <span className="text-xs text-muted-foreground font-normal">(có thể chọn nhiều)</span></Label>
+                                    <div className="border rounded-lg divide-y max-h-[200px] overflow-y-auto">
+                                        {quotations.map((q: any) => {
+                                            const isChecked = newItem.quotation_ids.includes(q.id)
+                                            return (
+                                                <label
+                                                    key={q.id}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors",
+                                                        isChecked && "bg-zinc-50"
+                                                    )}
+                                                >
+                                                    <Checkbox
+                                                        checked={isChecked}
+                                                        onCheckedChange={(checked) => {
+                                                            setNewItem(prev => ({
+                                                                ...prev,
+                                                                quotation_ids: checked
+                                                                    ? [...prev.quotation_ids, q.id]
+                                                                    : prev.quotation_ids.filter((id: string) => id !== q.id)
+                                                            }))
+                                                        }}
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-medium truncate">{q.quotation_number}</p>
+                                                        <p className="text-xs text-muted-foreground">{formatCurrency(q.total_amount)}</p>
+                                                    </div>
+                                                </label>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
                             )}
                             {contracts.length > 0 && (
@@ -470,6 +494,20 @@ function WorkItemRow({
                                 {item.quotation.quotation_number}
                             </Badge>
                         )}
+                        {/* Show additional quotations from metadata */}
+                        {item.metadata?.quotation_ids && item.metadata.quotation_ids.length > 1 && 
+                            item.metadata.quotation_ids
+                                .filter((qId: string) => qId !== item.quotation_id)
+                                .map((qId: string) => {
+                                    const q = (project.quotations || []).find((q: any) => q.id === qId)
+                                    return q ? (
+                                        <Badge key={qId} variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                                            <FileText className="w-3 h-3 mr-1.5" />
+                                            {q.quotation_number}
+                                        </Badge>
+                                    ) : null
+                                })
+                        }
                         {item.contract && (
                             <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
                                 <FileSignature className="w-3 h-3 mr-1.5" />
