@@ -45,6 +45,7 @@ import { cn } from '@/lib/utils'
 import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
 import { ProjectActivityHistory } from '@/components/projects/project-activity-history'
 import { sanitizeHtml } from '@/lib/security/sanitize'
+import { useConfirm } from '@/components/ui/confirm-dialog'
 
 interface PortalContentProps {
     data: {
@@ -110,6 +111,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
         }
     }
     const router = useRouter()
+    const { confirm } = useConfirm()
 
     // Fallback: if no work items yet, build from quotations (legacy mode)
     const displayItems = useMemo(() => {
@@ -343,7 +345,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 size="sm"
                                 className="rounded-lg font-bold tracking-tight text-[12px] px-6"
                                 onClick={async () => {
-                                    if (!confirm('Xác nhận đồng ý ký hợp đồng này?')) return
+                                    const confirmed = await confirm({
+                                        title: 'Xác nhận ký hợp đồng',
+                                        description: 'Xác nhận đồng ý ký hợp đồng này?',
+                                        confirmText: 'Xác nhận & Đồng ý',
+                                    })
+                                    if (!confirmed) return
                                     try {
                                         const { confirmContractFromPortal } = await import('@/lib/supabase/services/portal-actions')
                                         const result = await confirmContractFromPortal(token, c.id, {

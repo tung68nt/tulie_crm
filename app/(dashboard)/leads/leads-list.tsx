@@ -34,6 +34,7 @@ import {
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useConfirm } from '@/components/ui/confirm-dialog'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
     new: { label: 'Mới', color: 'bg-blue-50 text-blue-700', icon: UserPlus },
@@ -50,6 +51,7 @@ interface LeadsListProps {
 
 export function LeadsList({ initialData, stats }: LeadsListProps) {
     const router = useRouter()
+    const { confirm } = useConfirm()
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState<string>('all')
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
@@ -89,7 +91,13 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
     }
 
     const handleDelete = async (leadId: string) => {
-        if (!confirm('Bạn có chắc muốn xóa lead này?')) return
+        const confirmed = await confirm({
+            title: 'Xóa lead',
+            description: 'Bạn có chắc muốn xóa lead này?',
+            variant: 'destructive',
+            confirmText: 'Xóa',
+        })
+        if (!confirmed) return
         try {
             const { deleteLead } = await import('@/lib/supabase/services/lead-service')
             await deleteLead(leadId)

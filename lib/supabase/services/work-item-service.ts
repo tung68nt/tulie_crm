@@ -161,3 +161,21 @@ export async function deleteTask(taskId: string) {
         throw err
     }
 }
+
+export async function reorderWorkItems(items: { id: string; sort_order: number }[]) {
+    try {
+        const supabase = await createClient()
+        // Update each item's sort_order
+        for (const item of items) {
+            const { error } = await supabase
+                .from('project_work_items')
+                .update({ sort_order: item.sort_order })
+                .eq('id', item.id)
+            if (error) throw error
+        }
+        return true
+    } catch (err) {
+        console.error('Error reordering work items:', err)
+        throw err
+    }
+}

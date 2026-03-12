@@ -136,11 +136,18 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
                 .from('retail_order_items')
                 .insert(orderItems)
 
-            if (itemsError) throw itemsError
+            if (itemsError) {
+                console.error('Error inserting order items:', itemsError)
+                // Don't throw - order was created. Items can be added manually.
+            }
         }
 
-        // Notification
-        await sendTelegramNotification(await formatNewRetailOrder(insertedOrder), 'notify_new_retail_order')
+        // Non-blocking: send Telegram notification (don't fail the order if this errors)
+        try {
+            await sendTelegramNotification(await formatNewRetailOrder(insertedOrder), 'notify_new_retail_order')
+        } catch (notifErr) {
+            console.error('Telegram notification failed (order still created):', notifErr)
+        }
 
         revalidatePath('/studio')
         return insertedOrder as RetailOrder
@@ -198,8 +205,12 @@ export async function recordRetailPayment(id: string, amount: number) {
 
         if (error) throw error
 
-        // Notification
-        await sendTelegramNotification(await formatPaymentReceived(order, amount), 'notify_retail_payment')
+        // Non-blocking: send Telegram notification
+        try {
+            await sendTelegramNotification(await formatPaymentReceived(order, amount), 'notify_retail_payment')
+        } catch (notifErr) {
+            console.error('Telegram notification failed (payment still recorded):', notifErr)
+        }
 
         revalidatePath('/studio')
         return true

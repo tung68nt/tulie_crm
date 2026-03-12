@@ -125,23 +125,23 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                             <MoreVertical className="h-4 w-4 text-zinc-500" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 rounded-xl border-zinc-200 shadow-xl p-1.5">
-                        <div className="px-2 py-1.5 mb-1">
+                    <DropdownMenuContent align="end" className="w-64 rounded-xl border-zinc-200 shadow-lg p-1">
+                        <div className="px-3 py-2">
                             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tác vụ đơn hàng</p>
                         </div>
-                        <DropdownMenuItem asChild className="rounded-lg h-9 cursor-pointer">
-                            <Link href={`/studio/${order.id}/edit`} className="flex items-center">
-                                <Pencil className="mr-2.5 h-4 w-4 text-zinc-400" />
+                        <DropdownMenuItem asChild className="rounded-lg h-10 cursor-pointer px-3">
+                            <Link href={`/studio/${order.id}/edit`} className="flex items-center gap-3">
+                                <Pencil className="h-4 w-4 text-zinc-400 shrink-0" />
                                 <span className="font-semibold text-sm">Chỉnh sửa đơn hàng</span>
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-zinc-100" />
+                        <DropdownMenuSeparator className="bg-zinc-100 my-1" />
                         <DropdownMenuItem
-                            className="text-destructive focus:text-destructive rounded-lg h-9 cursor-pointer"
-                            onClick={() => toast.info('Tính năng xóa đang chờ phân quyền')}
+                            className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg h-10 cursor-pointer px-3"
+                            onClick={() => toast.info('Tính năng hủy đơn đang chờ phân quyền')}
                         >
-                            <Trash2 className="mr-2.5 h-4 w-4" />
-                            <span className="font-semibold text-sm">Hủy đơn (Hành động mạnh)</span>
+                            <Trash2 className="mr-3 h-4 w-4 shrink-0" />
+                            <span className="font-semibold text-sm whitespace-nowrap">Hủy đơn hàng</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

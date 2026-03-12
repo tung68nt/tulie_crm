@@ -24,6 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { Toaster } from 'sonner'
+import { ConfirmProvider } from '@/components/ui/confirm-dialog'
 
 export default function RootLayout({
   children,
@@ -39,7 +40,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <ConfirmProvider>
+            {children}
+          </ConfirmProvider>
           <Toaster
             position="top-right"
             closeButton

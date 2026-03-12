@@ -47,15 +47,18 @@ import {
     Clock,
     AlertCircle,
     Undo2,
+    ArrowUp,
+    ArrowDown,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
-import { createWorkItem, updateWorkItem, deleteWorkItem, addTaskToWorkItem, updateTaskStatus, deleteTask } from '@/lib/supabase/services/work-item-service'
+import { createWorkItem, updateWorkItem, deleteWorkItem, addTaskToWorkItem, updateTaskStatus, deleteTask, reorderWorkItems } from '@/lib/supabase/services/work-item-service'
 import { useRouter } from 'next/navigation'
 import { BundleSelectorDialog } from './bundle-selector-dialog'
 import { DocumentEditorDialog } from './document-editor-dialog'
 import { FileEdit, Eye } from 'lucide-react'
+import { useConfirm } from '@/components/ui/confirm-dialog'
 
 interface WorkItemsManagerProps {
     project: any
@@ -135,8 +138,16 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
         })
     }
 
+    const { confirm } = useConfirm()
+
     const handleDelete = async (id: string) => {
-        if (!confirm('Xóa hạng mục này? Các công việc liên quan sẽ bị gỡ liên kết.')) return
+        const confirmed = await confirm({
+            title: 'Xóa hạng mục',
+            description: 'Xóa hạng mục này? Các công việc liên quan sẽ bị gỡ liên kết.',
+            variant: 'destructive',
+            confirmText: 'Xóa hạng mục',
+        })
+        if (!confirmed) return
         startTransition(async () => {
             try {
                 await deleteWorkItem(id, project.id)
@@ -144,6 +155,26 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                 router.refresh()
             } catch (err: any) {
                 toast.error(`Lỗi xóa hạng mục: ${err?.message || 'Thử lại sau'}`)
+            }
+        })
+    }
+
+    const handleMoveItem = async (index: number, direction: 'up' | 'down') => {
+        const swapIdx = direction === 'up' ? index - 1 : index + 1
+        if (swapIdx < 0 || swapIdx >= initialWorkItems.length) return
+
+        const itemA = initialWorkItems[index]
+        const itemB = initialWorkItems[swapIdx]
+
+        startTransition(async () => {
+            try {
+                await reorderWorkItems([
+                    { id: itemA.id, sort_order: swapIdx },
+                    { id: itemB.id, sort_order: index },
+                ])
+                router.refresh()
+            } catch (err: any) {
+                toast.error(`Lỗi sắp xếp: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -299,11 +330,14 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                             key={item.id}
                             item={item}
                             idx={idx}
+                            totalItems={initialWorkItems.length}
                             isExpanded={expandedItems.has(item.id)}
                             onToggle={() => toggleExpand(item.id)}
                             onDelete={() => handleDelete(item.id)}
                             onStatusChange={(status) => handleUpdateStatus(item.id, status)}
                             onRename={(title) => handleRename(item.id, title)}
+                            onMoveUp={() => handleMoveItem(idx, 'up')}
+                            onMoveDown={() => handleMoveItem(idx, 'down')}
                             project={project}
                             onEditDoc={setActiveEditDocId}
                         />
@@ -328,10 +362,11 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
 
 /* ===== Single Work Item Row ===== */
 function WorkItemRow({
-    item, idx, isExpanded, onToggle, onDelete, onStatusChange, onRename, project, onEditDoc
+    item, idx, totalItems, isExpanded, onToggle, onDelete, onStatusChange, onRename, onMoveUp, onMoveDown, project, onEditDoc
 }: {
-    item: any; idx: number; isExpanded: boolean; onToggle: () => void;
+    item: any; idx: number; totalItems: number; isExpanded: boolean; onToggle: () => void;
     onDelete: () => void; onStatusChange: (s: string) => void; onRename: (title: string) => void;
+    onMoveUp: () => void; onMoveDown: () => void;
     project: any; onEditDoc: (docId: string) => void;
 }) {
     const [isPending, startTransition] = useTransition()
@@ -520,7 +555,24 @@ function WorkItemRow({
                 className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/30 transition-colors"
                 onClick={onToggle}
             >
-                <GripVertical className="w-4 h-4 text-muted-foreground/40" />
+                <div className="flex flex-col items-center gap-0" onClick={e => e.stopPropagation()}>
+                    <button
+                        onClick={onMoveUp}
+                        disabled={idx === 0}
+                        className="p-0.5 rounded hover:bg-zinc-100 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                        title="Di chuyển lên"
+                    >
+                        <ArrowUp className="w-3 h-3 text-muted-foreground" />
+                    </button>
+                    <button
+                        onClick={onMoveDown}
+                        disabled={idx === totalItems - 1}
+                        className="p-0.5 rounded hover:bg-zinc-100 disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                        title="Di chuyển xuống"
+                    >
+                        <ArrowDown className="w-3 h-3 text-muted-foreground" />
+                    </button>
+                </div>
                 <div className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-xs font-bold">
                     {idx + 1}
                 </div>

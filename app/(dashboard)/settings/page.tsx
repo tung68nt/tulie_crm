@@ -1,6 +1,7 @@
 "use client"
 import * as React from 'react'
 import { useState, useEffect } from 'react'
+import { useConfirm } from '@/components/ui/confirm-dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -47,6 +48,7 @@ import { DocumentBundle, DocumentTemplate } from '@/types'
 import { StatusBadge } from '@/components/shared/status-badge'
 
 export default function SettingsPage() {
+    const { confirm: confirmDialog } = useConfirm()
     const [companySettings, setCompanySettings] = useState({
         name: "Tulie Agency",
         tax_code: "",
@@ -169,7 +171,13 @@ export default function SettingsPage() {
     }
 
     const handleDeleteBundle = async (id: string) => {
-        if (!confirm('Xoá bộ chứng từ này?')) return
+        const confirmed = await confirmDialog({
+            title: 'Xoá bộ chứng từ',
+            description: 'Xoá bộ chứng từ này? Hành động không thể hoàn tác.',
+            variant: 'destructive',
+            confirmText: 'Xoá',
+        })
+        if (!confirmed) return
         try {
             await deleteDocumentBundle(id)
             await loadBundles()
@@ -256,7 +264,13 @@ export default function SettingsPage() {
     }
 
     const handleDeleteCategory = async (id: string) => {
-        if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) return
+        const confirmed = await confirmDialog({
+            title: 'Xóa danh mục',
+            description: 'Bạn có chắc chắn muốn xóa danh mục này?',
+            variant: 'destructive',
+            confirmText: 'Xóa',
+        })
+        if (!confirmed) return
         try {
             await deleteProductCategory(id)
             await loadCategories()
@@ -311,7 +325,13 @@ export default function SettingsPage() {
     }
 
     const handleDeleteUnit = async (unitToDelete: string) => {
-        if (!confirm(`Bạn có chắc chắn muốn xóa đơn vị tính "${unitToDelete}"?`)) return
+        const confirmed = await confirmDialog({
+            title: 'Xóa đơn vị tính',
+            description: `Bạn có chắc chắn muốn xóa đơn vị tính "${unitToDelete}"?`,
+            variant: 'destructive',
+            confirmText: 'Xóa',
+        })
+        if (!confirmed) return
 
         const updatedUnits = units.filter(u => u !== unitToDelete)
         try {
@@ -398,7 +418,13 @@ export default function SettingsPage() {
     }
 
     const handleDeleteBrand = async (brandToDelete: string) => { // Added
-        if (!confirm(`Bạn có chắc chắn muốn xóa thương hiệu "${brandToDelete}"?`)) return
+        const confirmed = await confirmDialog({
+            title: 'Xóa thương hiệu',
+            description: `Bạn có chắc chắn muốn xóa thương hiệu "${brandToDelete}"?`,
+            variant: 'destructive',
+            confirmText: 'Xóa',
+        })
+        if (!confirmed) return
 
         const updatedBrands = brands.filter(b => b !== brandToDelete)
         try {

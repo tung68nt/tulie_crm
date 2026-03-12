@@ -29,6 +29,7 @@ import { Product, DocumentTemplate } from '@/types'
 import { updateProduct, deleteProduct } from '@/lib/supabase/services/product-service'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/ui/confirm-dialog'
 
 interface ProductEditClientProps {
     product: Product
@@ -38,6 +39,7 @@ interface ProductEditClientProps {
 
 export default function ProductEditClient({ product, categories, units }: ProductEditClientProps) {
     const router = useRouter()
+    const { confirm } = useConfirm()
     const [isLoading, setIsLoading] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [templates, setTemplates] = useState<DocumentTemplate[]>([])
@@ -92,7 +94,13 @@ export default function ProductEditClient({ product, categories, units }: Produc
     }
 
     const handleDelete = async () => {
-        if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return
+        const confirmed = await confirm({
+            title: 'Xóa sản phẩm',
+            description: 'Bạn có chắc chắn muốn xóa sản phẩm này? Hành động không thể hoàn tác.',
+            variant: 'destructive',
+            confirmText: 'Xóa sản phẩm',
+        })
+        if (!confirmed) return
 
         setIsDeleting(true)
         try {
