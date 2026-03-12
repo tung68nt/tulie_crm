@@ -1160,11 +1160,17 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                             )}
                                                                         </div>
 
-                                                                        <Input
+                                                                        <Textarea
                                                                             placeholder="Tên sản phẩm/dịch vụ"
                                                                             value={item.product_name}
                                                                             onChange={(e) => updateItem(item.id!, { product_name: e.target.value })}
-                                                                            className="h-9 font-medium"
+                                                                            className="min-h-[36px] font-medium resize-none overflow-hidden"
+                                                                            rows={1}
+                                                                            onInput={(e) => {
+                                                                                const el = e.target as HTMLTextAreaElement
+                                                                                el.style.height = 'auto'
+                                                                                el.style.height = el.scrollHeight + 'px'
+                                                                            }}
                                                                         />
 
                                                                         <Textarea
