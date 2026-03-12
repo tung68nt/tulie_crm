@@ -515,79 +515,12 @@ function WorkItemRow({
                     {item.description && <p className="text-xs text-muted-foreground truncate">{item.description}</p>}
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                        {/* Quotation badges */}
-                        {allQuotationIds.map((qId: string) => {
-                            const q = (project.quotations || []).find((q: any) => q.id === qId)
-                            return q ? (
-                                <Badge key={qId} variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
-                                    <FileText className="w-3 h-3 mr-1.5" />
-                                    {q.quotation_number}
-                                </Badge>
-                            ) : null
-                        })}
-                        {/* Edit quotation button */}
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <button
-                                    className="w-7 h-7 rounded-md border border-dashed border-zinc-300 flex items-center justify-center hover:bg-zinc-100 hover:border-zinc-400 transition-colors"
-                                    onClick={e => e.stopPropagation()}
-                                    title="Gán báo giá"
-                                >
-                                    <Plus className="w-3.5 h-3.5 text-muted-foreground" />
-                                </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-72 p-0" align="end" onClick={e => e.stopPropagation()}>
-                                <div className="p-3 border-b">
-                                    <p className="text-xs font-semibold">Gán báo giá cho hạng mục</p>
-                                </div>
-                                <div className="max-h-48 overflow-y-auto">
-                                    {(project.quotations || []).length === 0 ? (
-                                        <p className="text-xs text-muted-foreground p-3">Chưa có báo giá nào</p>
-                                    ) : (
-                                        (project.quotations || []).map((q: any) => {
-                                            const isChecked = editQuotationIds.includes(q.id)
-                                            return (
-                                                <label
-                                                    key={q.id}
-                                                    className={cn(
-                                                        "flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-zinc-50 transition-colors",
-                                                        isChecked && "bg-zinc-50"
-                                                    )}
-                                                >
-                                                    <Checkbox
-                                                        checked={isChecked}
-                                                        onCheckedChange={(checked) => {
-                                                            setEditQuotationIds(prev =>
-                                                                checked
-                                                                    ? [...prev, q.id]
-                                                                    : prev.filter((id: string) => id !== q.id)
-                                                            )
-                                                        }}
-                                                    />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-xs font-medium truncate">{q.quotation_number}</p>
-                                                        <p className="text-[10px] text-muted-foreground">{q.title || formatCurrency(q.total_amount)}</p>
-                                                    </div>
-                                                </label>
-                                            )
-                                        })
-                                    )}
-                                </div>
-                                <div className="p-2 border-t">
-                                    <Button
-                                        size="sm"
-                                        className="w-full h-7 text-xs"
-                                        disabled={isPending}
-                                        onClick={handleSaveQuotations}
-                                    >
-                                        {isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
-                                        Lưu
-                                    </Button>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
-                    </div>
+                    {allQuotationIds.length > 0 && (
+                        <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                            <FileText className="w-3 h-3 mr-1.5" />
+                            {allQuotationIds.length} báo giá
+                        </Badge>
+                    )}
                     {item.contract && (
                         <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
                             <FileSignature className="w-3 h-3 mr-1.5" />
@@ -614,6 +547,98 @@ function WorkItemRow({
             {isExpanded && (
                 <div className="border-t border-zinc-50 p-6 bg-zinc-50/20 space-y-8">
                     <div className="space-y-8">
+                        {/* Báo giá section */}
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
+                                    <FileText className="w-4 h-4" />
+                                    Báo giá ({allQuotationIds.length})
+                                </h5>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
+                                            <Plus className="w-3 h-3" />
+                                            Gán báo giá
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-72 p-0" align="end">
+                                        <div className="p-3 border-b">
+                                            <p className="text-xs font-semibold">Gán báo giá cho hạng mục</p>
+                                        </div>
+                                        <div className="max-h-48 overflow-y-auto">
+                                            {(project.quotations || []).length === 0 ? (
+                                                <p className="text-xs text-muted-foreground p-3">Chưa có báo giá nào</p>
+                                            ) : (
+                                                (project.quotations || []).map((q: any) => {
+                                                    const isChecked = editQuotationIds.includes(q.id)
+                                                    return (
+                                                        <label
+                                                            key={q.id}
+                                                            className={cn(
+                                                                "flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-zinc-50 transition-colors",
+                                                                isChecked && "bg-zinc-50"
+                                                            )}
+                                                        >
+                                                            <Checkbox
+                                                                checked={isChecked}
+                                                                onCheckedChange={(checked) => {
+                                                                    setEditQuotationIds(prev =>
+                                                                        checked
+                                                                            ? [...prev, q.id]
+                                                                            : prev.filter((id: string) => id !== q.id)
+                                                                    )
+                                                                }}
+                                                            />
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-xs font-medium truncate">{q.quotation_number}</p>
+                                                                <p className="text-[10px] text-muted-foreground">{q.title || formatCurrency(q.total_amount)}</p>
+                                                            </div>
+                                                        </label>
+                                                    )
+                                                })
+                                            )}
+                                        </div>
+                                        <div className="p-2 border-t">
+                                            <Button
+                                                size="sm"
+                                                className="w-full h-7 text-xs"
+                                                disabled={isPending}
+                                                onClick={handleSaveQuotations}
+                                            >
+                                                {isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
+                                                Lưu
+                                            </Button>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            {allQuotationIds.length > 0 ? (
+                                <div className="space-y-2">
+                                    {allQuotationIds.map((qId: string) => {
+                                        const q = (project.quotations || []).find((q: any) => q.id === qId)
+                                        if (!q) return null
+                                        return (
+                                            <div key={qId} className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 bg-white hover:border-zinc-200 transition-all">
+                                                <div className="flex items-center gap-3">
+                                                    <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                                                    <div>
+                                                        <p className="text-xs font-semibold text-zinc-900">{q.quotation_number}</p>
+                                                        {q.title && <p className="text-[10px] text-muted-foreground">{q.title}</p>}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-semibold tabular-nums text-zinc-700">{formatCurrency(q.total_amount)}</span>
+                                                    <Badge variant="outline" className="text-[10px] h-5">{q.status === 'accepted' ? 'Đã duyệt' : q.status === 'sent' ? 'Đã gửi' : 'Nháp'}</Badge>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <p className="text-xs text-muted-foreground py-2">Chưa gán báo giá nào</p>
+                            )}
+                        </div>
+
                         {/* Col 1: Todo List */}
                         <div className="space-y-4">
                             <h5 className="text-sm font-medium flex items-center gap-2 text-muted-foreground">

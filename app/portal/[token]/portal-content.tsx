@@ -144,10 +144,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     }, [])
 
     // Find quotation alternatives for each work item
-    // Each work item has its own quotation — only return that specific quotation
+    // Return all quotations linked via metadata.quotation_ids or single quotation_id
     const getQuotationOptionsForItem = useCallback((item: any): any[] => {
+        // Check metadata.quotation_ids first (multi-quotation support)
+        if (item.metadata?.quotation_ids?.length) {
+            return item.metadata.quotation_ids
+                .map((qId: string) => quotations.find((q: any) => q.id === qId))
+                .filter(Boolean)
+        }
+        // Fallback: single quotation
         if (!item.quotation_id && !item.quotation) return []
-        // Return only the quotation linked to this specific work item
         const itemQuotation = item.quotation || quotations.find((q: any) => q.id === item.quotation_id)
         if (!itemQuotation) return []
         return [itemQuotation]
