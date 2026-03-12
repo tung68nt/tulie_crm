@@ -562,13 +562,20 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
         <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm hover:border-zinc-300 transition-all">
             {/* Quotation Switcher — shown when multiple quotation options exist */}
             {quotationOptions.length > 1 && (
-                <div className="bg-zinc-950 p-4 sm:p-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="space-y-1">
-                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Lựa chọn phương án báo giá</p>
-                            <p className="text-xs text-zinc-400 font-medium">Chọn phương án phù hợp để xem chi tiết và cập nhật tổng đầu tư.</p>
+                <div className="relative overflow-hidden bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-800 p-5 sm:p-6">
+                    {/* Dot pattern overlay */}
+                    <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                    <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                                    <FileText className="w-4 h-4 text-white/80" />
+                                </div>
+                                <h4 className="text-base font-bold text-white tracking-tight">Lựa chọn phương án báo giá</h4>
+                            </div>
+                            <p className="text-[13px] text-zinc-400 font-medium leading-relaxed">Chọn phương án phù hợp để xem chi tiết và cập nhật tổng đầu tư.</p>
                         </div>
-                        <div className="flex gap-2 shrink-0">
+                        <div className="flex gap-2.5 shrink-0">
                             {quotationOptions.map((q: any, qIdx: number) => {
                                 const isActive = q.id === (selectedQuotationId || quotation?.id)
                                 return (
@@ -576,10 +583,10 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                         key={q.id}
                                         onClick={() => onSelectQuotation?.(q.id)}
                                         className={cn(
-                                            "flex flex-col items-center gap-1 px-4 py-3 rounded-xl transition-all duration-300 text-center min-w-[100px]",
+                                            "flex flex-col items-center gap-1.5 px-5 py-3.5 rounded-xl transition-all duration-300 text-center min-w-[120px]",
                                             isActive
-                                                ? "bg-white text-zinc-950 shadow-lg scale-105"
-                                                : "bg-white/10 text-zinc-400 hover:bg-white/15 hover:text-zinc-300 border border-white/10"
+                                                ? "bg-white text-zinc-950 shadow-lg shadow-white/10 scale-105"
+                                                : "bg-white/10 text-zinc-400 hover:bg-white/15 hover:text-zinc-300 border border-white/10 backdrop-blur-sm"
                                         )}
                                     >
                                         <span className="text-[9px] font-bold uppercase tracking-widest opacity-60">
