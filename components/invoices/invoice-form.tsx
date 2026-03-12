@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
     Select,
     SelectContent,
@@ -28,10 +27,9 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, CalendarIcon, Loader2, Save, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, Loader2, Save, FileUp, Search } from 'lucide-react'
 import { format } from 'date-fns'
-import { vi } from 'date-fns/locale'
-import { Invoice, Customer, Vendor, Contract } from '@/types'
+import { Invoice, Customer, Vendor, Contract, Project } from '@/types'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 
@@ -40,9 +38,10 @@ interface InvoiceFormProps {
     customers: Customer[]
     vendors: Vendor[]
     contracts: Contract[]
+    projects?: Project[]
 }
 
-export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceFormProps) {
+export function InvoiceForm({ invoice, customers, vendors, contracts, projects = [] }: InvoiceFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
 
@@ -51,6 +50,7 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
     const [customerId, setCustomerId] = useState(invoice.customer_id || '')
     const [vendorId, setVendorId] = useState(invoice.vendor_id || '')
     const [contractId, setContractId] = useState(invoice.contract_id || '')
+    const [projectId, setProjectId] = useState((invoice as any).project_id || '')
     const [issueDate, setIssueDate] = useState<Date | undefined>(
         invoice.issue_date ? new Date(invoice.issue_date) : undefined
     )
@@ -58,51 +58,11 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
         invoice.due_date ? new Date(invoice.due_date) : undefined
     )
     const [status, setStatus] = useState(invoice.status)
-    const [notes, setNotes] = useState(invoice.notes || '')
-    const [vatPercent, setVatPercent] = useState(invoice.vat_percent || 10)
+    const [totalAmount, setTotalAmount] = useState(invoice.total_amount || 0)
+    const [vatAmount, setVatAmount] = useState(invoice.vat_amount || 0)
+    const [paidAmount, setPaidAmount] = useState(invoice.paid_amount || 0)
     const [pdfUrl, setPdfUrl] = useState(invoice.pdf_url || '')
     const [lookupInfo, setLookupInfo] = useState(invoice.lookup_info || '')
-
-    const [items, setItems] = useState<any[]>(
-        invoice.items?.map(item => ({
-            id: item.id,
-            description: item.description,
-            quantity: item.quantity,
-            unit: item.unit || 'Lần',
-            unit_price: item.unit_price,
-            total: item.total
-        })) || []
-    )
-
-    const addItem = () => {
-        setItems([
-            ...items,
-            { id: `temp-${Date.now()}`, description: '', quantity: 1, unit: 'Lần', unit_price: 0, total: 0 }
-        ])
-    }
-
-    const removeItem = (id: string) => {
-        if (items.length > 1) {
-            setItems(items.filter(i => i.id !== id))
-        }
-    }
-
-    const updateItem = (id: string, field: string, value: any) => {
-        setItems(items.map(item => {
-            if (item.id === id) {
-                const newItem = { ...item, [field]: value }
-                if (field === 'quantity' || field === 'unit_price') {
-                    newItem.total = newItem.quantity * newItem.unit_price
-                }
-                return newItem
-            }
-            return item
-        }))
-    }
-
-    const subtotal = items.reduce((sum, item) => sum + item.total, 0)
-    const vatAmount = (subtotal * vatPercent) / 100
-    const totalAmount = subtotal + vatAmount
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -111,8 +71,7 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
         try {
             const supabase = createClient()
 
-            // 1. Update invoice
-            const { error: invoiceError } = await supabase
+            const { error } = await supabase
                 .from('invoices')
                 .update({
                     invoice_number: invoiceNumber,
@@ -120,41 +79,21 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                     customer_id: type === 'output' ? (customerId || null) : null,
                     vendor_id: type === 'input' ? (vendorId || null) : null,
                     contract_id: contractId || null,
+                    project_id: projectId || null,
                     issue_date: issueDate?.toISOString(),
                     due_date: dueDate?.toISOString(),
                     status,
-                    notes,
-                    subtotal,
-                    vat_percent: vatPercent,
-                    vat_amount: vatAmount,
                     total_amount: totalAmount,
-                    pdf_url: pdfUrl,
-                    lookup_info: lookupInfo,
+                    vat_amount: vatAmount,
+                    subtotal: totalAmount - vatAmount,
+                    vat_percent: totalAmount > 0 ? Math.round((vatAmount / (totalAmount - vatAmount)) * 100) : 0,
+                    paid_amount: paidAmount,
+                    pdf_url: pdfUrl || null,
+                    lookup_info: lookupInfo || null,
                 })
                 .eq('id', invoice.id)
 
-            if (invoiceError) throw invoiceError
-
-            // 2. Refresh items (delete and re-insert)
-            const { error: deleteError } = await supabase
-                .from('invoice_items')
-                .delete()
-                .eq('invoice_id', invoice.id)
-
-            if (deleteError) throw deleteError
-
-            const { error: itemsError } = await supabase
-                .from('invoice_items')
-                .insert(items.map(item => ({
-                    invoice_id: invoice.id,
-                    description: item.description,
-                    quantity: item.quantity,
-                    unit: item.unit,
-                    unit_price: item.unit_price,
-                    total: item.total
-                })))
-
-            if (itemsError) throw itemsError
+            if (error) throw error
 
             toast.success('Cập nhật hóa đơn thành công')
             router.push(`/invoices/${invoice.id}`)
@@ -178,95 +117,87 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                     </Button>
                     <div>
                         <h1 className="text-3xl font-semibold">Chỉnh sửa {invoice.invoice_number}</h1>
-                        <p className="text-muted-foreground">Cập nhật thông tin hóa đơn</p>
+                        <p className="text-muted-foreground">Theo dõi hoá đơn</p>
                     </div>
                 </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Items */}
+                    {/* Amount Tracking */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle>Hạng mục chi tiết</CardTitle>
-                            <Button type="button" size="sm" onClick={addItem}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Thêm hạng mục
-                            </Button>
+                        <CardHeader>
+                            <CardTitle>Thông tin tài chính</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {items.map((item, index) => (
-                                <div key={item.id} className="p-4 border rounded-lg space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-medium text-sm text-muted-foreground ">Hạng mục {index + 1}</span>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => removeItem(item.id)}
-                                            disabled={items.length === 1}
-                                        >
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
-                                    </div>
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label>Mô tả hạng mục</Label>
-                                            <Input
-                                                value={item.description}
-                                                onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                                                placeholder="VD: Phí triển khai phần mềm"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Đơn vị</Label>
-                                            <Input
-                                                value={item.unit}
-                                                onChange={(e) => updateItem(item.id, 'unit', e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grid gap-4 sm:grid-cols-3">
-                                        <div className="space-y-2">
-                                            <Label>Số lượng</Label>
-                                            <Input
-                                                type="number"
-                                                value={item.quantity}
-                                                onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Đơn giá</Label>
-                                            <Input
-                                                type="number"
-                                                value={item.unit_price}
-                                                onChange={(e) => updateItem(item.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Thành tiền</Label>
-                                            <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-medium">
-                                                {formatCurrency(item.total)}
-                                            </div>
-                                        </div>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label>Tổng tiền hoá đơn</Label>
+                                    <Input
+                                        type="number"
+                                        value={totalAmount}
+                                        onChange={(e) => setTotalAmount(parseFloat(e.target.value) || 0)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Thuế VAT</Label>
+                                    <Input
+                                        type="number"
+                                        value={vatAmount}
+                                        onChange={(e) => setVatAmount(parseFloat(e.target.value) || 0)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label>Đã thanh toán</Label>
+                                    <Input
+                                        type="number"
+                                        value={paidAmount}
+                                        onChange={(e) => setPaidAmount(parseFloat(e.target.value) || 0)}
+                                        placeholder="0"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Còn lại</Label>
+                                    <div className="h-10 px-3 py-2 bg-muted rounded-md flex items-center font-semibold">
+                                        {formatCurrency(totalAmount - paidAmount)}
                                     </div>
                                 </div>
-                            ))}
+                            </div>
                         </CardContent>
                     </Card>
 
-                    {/* Notes */}
+                    {/* File & Lookup */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Ghi chú</CardTitle>
+                            <CardTitle>File hoá đơn</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <Textarea
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                placeholder="Ghi chú thêm trên hóa đơn..."
-                                rows={4}
-                            />
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2">
+                                    <FileUp className="w-4 h-4" />
+                                    Link file PDF hoá đơn VAT
+                                </Label>
+                                <Input
+                                    value={pdfUrl}
+                                    onChange={(e) => setPdfUrl(e.target.value)}
+                                    placeholder="https://drive.google.com/... hoặc upload link"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2">
+                                    <Search className="w-4 h-4" />
+                                    Mã tra cứu HĐ điện tử
+                                </Label>
+                                <Input
+                                    value={lookupInfo}
+                                    onChange={(e) => setLookupInfo(e.target.value)}
+                                    placeholder="Mã tra cứu hoặc link portal hóa đơn điện tử"
+                                />
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
@@ -275,24 +206,24 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                     {/* Settings */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Cài đặt hóa đơn</CardTitle>
+                            <CardTitle>Cài đặt</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Loại hóa đơn</Label>
+                                <Label>Loại</Label>
                                 <Select value={type} onValueChange={(v: any) => setType(v)}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="output">Bán hàng (Xuất)</SelectItem>
+                                        <SelectItem value="output">Bán ra (Xuất)</SelectItem>
                                         <SelectItem value="input">Mua vào (Nhập)</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Số hóa đơn</Label>
+                                <Label>Số hoá đơn</Label>
                                 <Input
                                     value={invoiceNumber}
                                     onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -309,6 +240,7 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                                         <SelectItem value="draft">Bản nháp</SelectItem>
                                         <SelectItem value="sent">Đã gửi</SelectItem>
                                         <SelectItem value="paid">Đã thanh toán</SelectItem>
+                                        <SelectItem value="partial">Thanh toán 1 phần</SelectItem>
                                         <SelectItem value="overdue">Quá hạn</SelectItem>
                                         <SelectItem value="cancelled">Đã hủy</SelectItem>
                                     </SelectContent>
@@ -348,12 +280,28 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                             )}
 
                             <div className="space-y-2">
-                                <Label>Hợp đồng liên quan</Label>
-                                <Select value={contractId} onValueChange={setContractId}>
+                                <Label>Dự án</Label>
+                                <Select value={projectId} onValueChange={setProjectId}>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Chọn hợp đồng (tùy chọn)..." />
+                                        <SelectValue placeholder="Chọn dự án..." />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="">Không chọn</SelectItem>
+                                        {projects.map(p => (
+                                            <SelectItem key={p.id} value={p.id}>{p.title}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Hợp đồng</Label>
+                                <Select value={contractId} onValueChange={setContractId}>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Chọn hợp đồng..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">Không chọn</SelectItem>
                                         {contracts.map(c => (
                                             <SelectItem key={c.id} value={c.id}>{c.contract_number}</SelectItem>
                                         ))}
@@ -390,57 +338,6 @@ export function InvoiceForm({ invoice, customers, vendors, contracts }: InvoiceF
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                            </div>
-
-                            <Separator />
-
-                            <div className="space-y-2">
-                                <Label>Link file PDF (Tải về)</Label>
-                                <Input
-                                    value={pdfUrl}
-                                    onChange={(e) => setPdfUrl(e.target.value)}
-                                    placeholder="https://example.com/invoice.pdf"
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Thông tin tra cứu / Link (Xem)</Label>
-                                <Input
-                                    value={lookupInfo}
-                                    onChange={(e) => setLookupInfo(e.target.value)}
-                                    placeholder="Mã tra cứu hoặc link portal hóa đơn"
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Summary */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Tổng cộng</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Tạm tính:</span>
-                                <span>{formatCurrency(subtotal || 0)}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground">VAT (%):</span>
-                                <Input
-                                    type="number"
-                                    className="w-20 h-8 text-right"
-                                    value={vatPercent}
-                                    onChange={(e) => setVatPercent(parseInt(e.target.value) || 0)}
-                                />
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">Tiền thuế:</span>
-                                <span>{formatCurrency(vatAmount || 0)}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between font-semibold text-lg">
-                                <span>Tổng:</span>
-                                <span>{formatCurrency(totalAmount || 0)}</span>
                             </div>
 
                             <Button type="submit" className="w-full mt-4" disabled={isLoading}>

@@ -2,6 +2,7 @@ import { getInvoiceById } from '@/lib/supabase/services/invoice-service'
 import { getCustomers } from '@/lib/supabase/services/customer-service'
 import { getVendors } from '@/lib/supabase/services/vendor-service'
 import { getContracts } from '@/lib/supabase/services/contract-service'
+import { getProjects } from '@/lib/supabase/services/project-service'
 import { notFound } from 'next/navigation'
 import { InvoiceForm } from '@/components/invoices/invoice-form'
 
@@ -11,11 +12,12 @@ interface EditInvoicePageProps {
 
 export default async function EditInvoicePage({ params }: any) {
     const { id } = await params
-    const [invoice, customers, vendors, contracts] = await Promise.all([
+    const [invoice, customers, vendors, contracts, projects] = await Promise.all([
         getInvoiceById(id),
         getCustomers(),
         getVendors(),
-        getContracts()
+        getContracts(),
+        getProjects()
     ])
 
     if (!invoice) {
@@ -28,6 +30,7 @@ export default async function EditInvoicePage({ params }: any) {
             customers={customers}
             vendors={vendors}
             contracts={contracts}
+            projects={projects}
         />
     )
 }
