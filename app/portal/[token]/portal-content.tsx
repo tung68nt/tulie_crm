@@ -564,7 +564,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
             {quotationOptions.length > 1 && (
                 <div className="relative overflow-hidden bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-800 p-5 sm:p-6">
                     {/* Dot pattern overlay */}
-                    <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                    <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px', WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)' }} />
                     <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                         <div className="space-y-1.5">
                             <div className="flex items-center gap-2">
