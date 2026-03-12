@@ -305,8 +305,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                        <FileSignature className="w-5 h-5 text-blue-600" />
+                                    <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                                        <FileSignature className="w-5 h-5 text-zinc-700" />
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-bold text-zinc-950 tracking-tight">Hợp đồng #{c.contract_number}</h3>

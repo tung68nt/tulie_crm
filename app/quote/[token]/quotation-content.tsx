@@ -549,10 +549,10 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                     <div className="flex flex-wrap items-center gap-2">
                                                                         <p className="font-semibold text-slate-900 leading-tight">{item.product_name}</p>
                                                                         {item.is_optional && (
-                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-amber-200 bg-amber-50 text-amber-700 font-bold">Tùy chọn</Badge>
+                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-zinc-300 bg-zinc-50 text-zinc-600 font-bold">Tùy chọn</Badge>
                                                                         )}
                                                                         {isAlternative && (
-                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-blue-200 bg-blue-50 text-blue-700 font-bold">
+                                                                            <Badge variant="outline" className="text-[9px] h-4 px-1.5 border-zinc-300 bg-zinc-100 text-zinc-700 font-bold">
                                                                                 {item.alternative_group}
                                                                             </Badge>
                                                                         )}
@@ -591,8 +591,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                     </div>
                                     {totalDiscount > 0 && (
                                         <div className="flex justify-between py-1.5 text-[12px]">
-                                            <span className="text-emerald-600 italic">Chiết khấu:</span>
-                                            <span className="text-emerald-700">-{formatCurrency(totalDiscount)}</span>
+                                            <span className="text-zinc-500 italic">Chiết khấu:</span>
+                                            <span className="text-zinc-700">-{formatCurrency(totalDiscount)}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between py-1.5 text-[12px]">

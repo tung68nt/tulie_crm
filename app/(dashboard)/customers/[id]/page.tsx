@@ -58,44 +58,39 @@ export default async function CustomerDetailPage({ params }: any) {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80 shrink-0">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-start gap-3">
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80 shrink-0 mt-1">
                         <Link href="/customers">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <div className="flex items-center gap-3 min-w-0">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                            <Users className="h-6 w-6 text-primary" />
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <h1 className="text-2xl font-bold leading-tight">{customer.company_name}</h1>
+                            <Badge className={`text-xs ${CUSTOMER_STATUS_COLORS[customer.status] || 'bg-zinc-100 text-zinc-600'}`}>
+                                {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                                {customer.customer_type === 'individual' ? 'Cá nhân' : 'Doanh nghiệp'}
+                            </Badge>
                         </div>
-                        <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <h1 className="text-xl sm:text-2xl font-bold truncate">{customer.company_name}</h1>
-                                <Badge className={CUSTOMER_STATUS_COLORS[customer.status] || 'bg-gray-100'}>
-                                    {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
-                                </Badge>
-                                <Badge variant="outline" className="bg-background">
-                                    {customer.customer_type === 'individual' ? 'Cá nhân' : 'Doanh nghiệp'}
-                                </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground truncate">
-                                {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
-                            </p>
-                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
+                        </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 ml-14 sm:ml-0 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 ml-11 sm:ml-0">
                     <UnlockPortalButton customerId={customer.id} isUnlocked={customer.is_info_unlocked} />
                     <Button variant="outline" size="sm" asChild>
                         <Link href={`/quotations/new?customer=${customer.id}`}>
-                            <FileText className="mr-2 h-4 w-4" />
+                            <FileText className="mr-1.5 h-4 w-4" />
                             Tạo báo giá
                         </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
                         <Link href={`/customers/${customer.id}/edit`}>
-                            <Edit className="mr-2 h-4 w-4" />
+                            <Edit className="mr-1.5 h-4 w-4" />
                             Chỉnh sửa
                         </Link>
                     </Button>
