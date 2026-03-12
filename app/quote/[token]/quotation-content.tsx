@@ -532,8 +532,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             !isSelected && "bg-slate-50 opacity-40 grayscale-[0.5] print:hidden",
                                                             isSelected && "hover:bg-slate-50/50"
                                                         )}>
-                                                            <td className="w-10 text-center py-2 print:hidden">
-                                                                <div className="flex items-center justify-center">
+                                                            <td className="w-10 text-center py-2 align-top print:hidden">
+                                                                <div className="flex items-center justify-center pt-0.5">
                                                                     <Checkbox
                                                                         checked={isSelected}
                                                                         onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
@@ -541,8 +541,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                     />
                                                                 </div>
                                                             </td>
-                                                            <td className="w-10 text-center py-2">
-                                                                <span className="text-[11px] font-medium text-slate-400 tabular-nums">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</span>
+                                                            <td className="w-10 text-center py-2 align-top">
+                                                                <span className="text-[11px] font-medium text-slate-400 tabular-nums leading-[1.75rem]">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</span>
                                                             </td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
