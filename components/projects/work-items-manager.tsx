@@ -129,8 +129,8 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                 setShowCreateDialog(false)
                 setNewItem({ title: '', description: '', quotation_ids: [], contract_id: '' })
                 router.refresh()
-            } catch {
-                toast.error('Lỗi khi tạo hạng mục')
+            } catch (err: any) {
+                toast.error(`Lỗi tạo hạng mục: ${err?.message || 'Không thể kết nối server'}`)
             }
         })
     }
@@ -142,8 +142,8 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                 await deleteWorkItem(id, project.id)
                 toast.success('Đã xóa hạng mục')
                 router.refresh()
-            } catch {
-                toast.error('Lỗi khi xóa')
+            } catch (err: any) {
+                toast.error(`Lỗi xóa hạng mục: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -165,8 +165,8 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                 }
 
                 router.refresh()
-            } catch {
-                toast.error('Lỗi khi cập nhật')
+            } catch (err: any) {
+                toast.error(`Lỗi cập nhật trạng thái: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -340,8 +340,8 @@ function WorkItemRow({
                 await addTaskToWorkItem(item.id, project.id, { title: newTaskTitle })
                 setNewTaskTitle('')
                 router.refresh()
-            } catch {
-                toast.error('Lỗi khi thêm công việc')
+            } catch (err: any) {
+                toast.error(`Lỗi thêm công việc: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -352,8 +352,8 @@ function WorkItemRow({
             try {
                 await updateTaskStatus(taskId, newStatus)
                 router.refresh()
-            } catch {
-                toast.error('Lỗi khi cập nhật')
+            } catch (err: any) {
+                toast.error(`Lỗi cập nhật công việc: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -381,8 +381,8 @@ function WorkItemRow({
                     },
                     duration: 5000,
                 })
-            } catch {
-                toast.error('Lỗi khi xóa')
+            } catch (err: any) {
+                toast.error(`Lỗi xóa công việc: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -396,8 +396,8 @@ function WorkItemRow({
                 setNewLinkLabel('')
                 setNewLinkUrl('')
                 router.refresh()
-            } catch {
-                toast.error('Lỗi')
+            } catch (err: any) {
+                toast.error(`Lỗi thêm link bàn giao: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -424,8 +424,8 @@ function WorkItemRow({
                     },
                     duration: 5000,
                 })
-            } catch {
-                toast.error('Lỗi')
+            } catch (err: any) {
+                toast.error(`Lỗi xóa link: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -442,8 +442,8 @@ function WorkItemRow({
             try {
                 await updateWorkItem(item.id, { required_documents: updated })
                 router.refresh()
-            } catch {
-                toast.error('Lỗi')
+            } catch (err: any) {
+                toast.error(`Lỗi cập nhật ngày chứng từ: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }
@@ -463,8 +463,8 @@ function WorkItemRow({
             try {
                 await updateWorkItem(item.id, { required_documents: updated })
                 router.refresh()
-            } catch {
-                toast.error('Lỗi')
+            } catch (err: any) {
+                toast.error(`Lỗi cập nhật chứng từ: ${err?.message || 'Thử lại sau'}`)
             }
         })
     }

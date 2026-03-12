@@ -31,7 +31,7 @@ export function ProjectMetadataForm({ project }: ProjectMetadataFormProps) {
             toast.success('Đã cập nhật tài nguyên dự án')
             router.refresh()
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi cập nhật')
+            toast.error(`Lỗi cập nhật metadata: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setIsLoading(false)
         }

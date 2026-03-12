@@ -66,7 +66,7 @@ export function ContactList({ customerId, initialContacts }: ContactListProps) {
             setContactToDelete(null)
         } catch (error) {
             console.error('Failed to delete contact:', error)
-            toast.error('Có lỗi xảy ra khi xóa liên hệ')
+            toast.error(`Lỗi xóa liên hệ: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setIsDeleting(false)
         }

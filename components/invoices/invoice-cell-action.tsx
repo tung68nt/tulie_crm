@@ -53,7 +53,7 @@ export function InvoiceCellAction({ data }: InvoiceCellActionProps) {
             router.refresh()
             toast.success('Xóa hóa đơn thành công')
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi xóa hóa đơn')
+            toast.error(`Lỗi xóa hóa đơn: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setLoading(false)
             setOpen(false)

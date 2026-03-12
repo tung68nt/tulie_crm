@@ -52,8 +52,8 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
             if (!res.ok) throw new Error('Failed')
             toast.success('Đã cập nhật trạng thái dự án')
             router.refresh()
-        } catch (error) {
-            toast.error('Lỗi khi cập nhật trạng thái')
+        } catch (err: any) {
+            toast.error(`Lỗi cập nhật trạng thái: ${err?.message || 'Thử lại sau'}`)
         } finally {
             setStatusLoading(false)
         }
@@ -75,8 +75,8 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
             if (!res.ok) throw new Error('Failed')
             toast.success('Đã lưu thông tin quản lý')
             router.refresh()
-        } catch (error) {
-            toast.error('Lỗi khi lưu thông tin')
+        } catch (err: any) {
+            toast.error(`Lỗi lưu thông tin: ${err?.message || 'Thử lại sau'}`)
         } finally {
             setSaving(false)
         }
@@ -90,11 +90,23 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'create_acceptance_report' })
             })
-            if (!res.ok) throw new Error('Failed')
+            const data = await res.json()
+            if (!res.ok) {
+                const errMsg = data?.error || 'Lỗi không xác định'
+                // Check common causes
+                if (errMsg.includes('relation') && errMsg.includes('does not exist')) {
+                    toast.error('Bảng acceptance_reports chưa tồn tại trong database. Cần chạy migration.', { duration: 8000 })
+                } else if (errMsg.includes('permission') || errMsg.includes('RLS')) {
+                    toast.error(`Lỗi quyền truy cập: ${errMsg}`, { duration: 6000 })
+                } else {
+                    toast.error(`Lỗi tạo nghiệm thu: ${errMsg}`, { duration: 6000 })
+                }
+                return
+            }
             toast.success('Đã tạo biên bản nghiệm thu mới')
             router.refresh()
-        } catch (error) {
-            toast.error('Lỗi khi tạo biên bản nghiệm thu')
+        } catch (error: any) {
+            toast.error(`Lỗi hệ thống: ${error.message || 'Không thể kết nối server'}`, { duration: 6000 })
         } finally {
             setReportLoading(false)
         }

@@ -32,7 +32,7 @@ export function DocumentEditor({ document: initialDoc, onBack }: DocumentEditorP
             toast.success('Đã lưu thay đổi văn bản')
             router.refresh()
         } catch (err) {
-            toast.error('Lỗi khi lưu văn bản')
+            toast.error(`Lỗi lưu văn bản: ${(err as any)?.message || 'Thử lại sau'}`)
         } finally {
             setIsSaving(false)
         }

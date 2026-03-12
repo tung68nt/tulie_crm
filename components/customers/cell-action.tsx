@@ -42,7 +42,7 @@ export function CellAction({ data }: CellActionProps) {
             router.refresh()
             toast.success('Xóa khách hàng thành công')
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi xóa khách hàng')
+            toast.error(`Lỗi xóa khách hàng: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setLoading(false)
             setOpen(false)

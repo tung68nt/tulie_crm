@@ -48,7 +48,7 @@ export function ContractCellAction({ data }: ContractCellActionProps) {
             router.refresh()
             toast.success('Xóa hợp đồng thành công')
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi xóa hợp đồng')
+            toast.error(`Lỗi xóa hợp đồng: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setLoading(false)
             setOpen(false)

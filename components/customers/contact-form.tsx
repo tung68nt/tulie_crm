@@ -86,7 +86,7 @@ export function ContactForm({ customerId, contact, open, onOpenChange, onSuccess
             if (onSuccess) onSuccess()
         } catch (error) {
             console.error('Failed to save contact:', error)
-            toast.error('Có lỗi xảy ra khi lưu liên hệ')
+            toast.error(`Lỗi lưu liên hệ: ${(error as any)?.message || 'Thử lại sau'}`)
         } finally {
             setIsLoading(false)
         }

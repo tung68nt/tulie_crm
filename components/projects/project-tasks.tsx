@@ -82,9 +82,9 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
             await updateProjectTasks(project.id, dataToSave)
             toast.success('Cập nhật danh sách công việc thành công')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            toast.error('Có lỗi xảy ra')
+            toast.error(`Lỗi lưu công việc: ${error?.message || 'Thử lại sau'}`)
         } finally {
             setIsLoading(false)
         }

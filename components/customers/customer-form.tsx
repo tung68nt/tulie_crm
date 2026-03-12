@@ -107,7 +107,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
  router.refresh()
  } catch (error) {
  console.error('Failed to update customer:', error)
- toast.error('Có lỗi xảy ra khi cập nhật khách hàng')
+ toast.error(`Lỗi cập nhật khách hàng: ${(error as any)?.message || 'Thử lại sau'}`)
  } finally {
  setIsLoading(false)
  }
@@ -122,7 +122,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
  router.refresh()
  } catch (error) {
  console.error('Failed to delete customer:', error)
- toast.error('Có lỗi xảy ra khi xóa khách hàng')
+ toast.error(`Lỗi xóa khách hàng: ${(error as any)?.message || 'Thử lại sau'}`)
  } finally {
  setIsDeleting(false)
  setDeleteDialogOpen(false)

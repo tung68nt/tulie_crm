@@ -110,7 +110,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
             router.refresh()
         } catch (err) {
             console.error(err)
-            toast.error('Lỗi khi áp dụng bộ chứng từ')
+            toast.error(`Lỗi áp dụng bộ chứng từ: ${(err as any)?.message || 'Thử lại sau'}`)
         } finally {
             setIsSaving(false)
         }

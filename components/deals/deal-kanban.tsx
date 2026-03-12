@@ -54,7 +54,7 @@ export function DealKanban({ deals }: DealKanbanProps) {
                 toast.success(`Đã chuyển sang ${DEAL_STATUS_LABELS[status]}`)
                 router.refresh()
             } catch (error) {
-                toast.error('Có lỗi xảy ra khi cập nhật trạng thái')
+                toast.error(`Lỗi cập nhật trạng thái cơ hội: ${(error as any)?.message || 'Thử lại sau'}`)
             }
         }
     }

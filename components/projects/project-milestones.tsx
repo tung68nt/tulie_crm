@@ -65,9 +65,9 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
             await updateProjectMilestones(project.id, dataToSave)
             toast.success('Cập nhật lịch trình thành công')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            toast.error('Có lỗi xảy ra')
+            toast.error(`Lỗi lưu lịch trình: ${error?.message || 'Thử lại sau'}`)
         } finally {
             setIsLoading(false)
         }

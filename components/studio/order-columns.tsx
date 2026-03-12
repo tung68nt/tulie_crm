@@ -194,7 +194,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                     toast.success('Hủy đơn hàng thành công')
                     router.refresh()
                 } catch (error) {
-                    toast.error('Có lỗi xảy ra khi hủy đơn')
+                    toast.error(`Lỗi hủy đơn: ${(error as any)?.message || 'Thử lại sau'}`)
                 } finally {
                     setLoading(false)
                     setShowCancelDialog(false)
@@ -209,7 +209,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                     toast.success('Xóa đơn hàng thành công')
                     router.refresh()
                 } catch (error) {
-                    toast.error('Có lỗi xảy ra khi xóa đơn')
+                    toast.error(`Lỗi xóa đơn: ${(error as any)?.message || 'Thử lại sau'}`)
                 } finally {
                     setLoading(false)
                     setShowDeleteDialog(false)

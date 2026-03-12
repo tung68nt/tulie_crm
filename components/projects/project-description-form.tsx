@@ -26,8 +26,8 @@ export function ProjectDescriptionForm({ project }: ProjectDescriptionFormProps)
             toast.success('Đã cập nhật mô tả dự án')
             setIsEditing(false)
             router.refresh()
-        } catch (error) {
-            toast.error('Có lỗi xảy ra khi cập nhật')
+        } catch (error: any) {
+            toast.error(`Lỗi cập nhật mô tả: ${error?.message || 'Thử lại sau'}`)
         } finally {
             setIsSaving(false)
         }

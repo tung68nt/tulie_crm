@@ -21,7 +21,7 @@ export function RetailOrderList({ initialData }: RetailOrderListProps) {
             toast.success(`Đã xóa ${rows.length} đơn hàng`)
             router.refresh()
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi xóa đơn hàng')
+            toast.error(`Lỗi xóa đơn hàng: ${(error as any)?.message || 'Thử lại sau'}`)
         }
     }
 
@@ -33,7 +33,7 @@ export function RetailOrderList({ initialData }: RetailOrderListProps) {
             toast.success(`Đã hủy ${rows.length} đơn hàng`)
             router.refresh()
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+            toast.error(`Lỗi hủy đơn hàng: ${(error as any)?.message || 'Thử lại sau'}`)
         }
     }
 

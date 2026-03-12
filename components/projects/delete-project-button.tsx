@@ -28,8 +28,8 @@ export function DeleteProjectButton({ projectId }: { projectId: string }) {
                 setOpen(false)
                 router.push('/projects')
                 router.refresh()
-            } catch (err) {
-                toast.error('Lỗi khi xóa dự án')
+            } catch (err: any) {
+                toast.error(`Lỗi xóa dự án: ${err?.message || 'Thử lại sau'}`)
                 console.error(err)
             }
         })
