@@ -332,6 +332,7 @@ export interface ProjectWorkItem {
   rejection_reason?: string
   sort_order: number
   total_amount: number
+  metadata?: Record<string, any>
   tasks?: ProjectTask[]
   created_at: string
   updated_at: string

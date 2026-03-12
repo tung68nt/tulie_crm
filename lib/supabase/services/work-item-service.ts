@@ -42,6 +42,7 @@ export async function createWorkItem(item: Partial<ProjectWorkItem>) {
                 required_documents: item.required_documents || [],
                 sort_order: item.sort_order || 0,
                 total_amount: item.total_amount || 0,
+                ...(item.metadata && { metadata: item.metadata }),
             }])
             .select()
             .single()
@@ -74,6 +75,7 @@ export async function updateWorkItem(id: string, updates: Partial<ProjectWorkIte
                 ...(updates.accepted_at !== undefined && { accepted_at: updates.accepted_at }),
                 ...(updates.accepted_by !== undefined && { accepted_by: updates.accepted_by }),
                 ...(updates.rejection_reason !== undefined && { rejection_reason: updates.rejection_reason }),
+                ...(updates.metadata !== undefined && { metadata: updates.metadata }),
             })
             .eq('id', id)
 
