@@ -1174,30 +1174,32 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                         <div className="flex flex-wrap items-center gap-4 mt-2 mb-1 p-2 rounded-md bg-stone-50 border border-stone-100">
                                                                             <div className="flex items-center gap-2">
                                                                                 <span className="text-[10px] font-bold text-muted-foreground">Phương án:</span>
-                                                                                <Select
-                                                                                    value={item.alternative_group || '__none__'}
-                                                                                    onValueChange={(v) => updateItem(item.id!, { alternative_group: v === '__none__' ? '' : v })}
-                                                                                >
-                                                                                    <SelectTrigger className="h-6 w-40 text-[11px] focus:ring-1 focus:ring-offset-0 px-2">
-                                                                                        <SelectValue placeholder="Chọn phương án" />
-                                                                                    </SelectTrigger>
-                                                                                    <SelectContent>
-                                                                                        <SelectItem value="__none__">
-                                                                                            <span className="text-muted-foreground">— Không thuộc PA nào —</span>
-                                                                                        </SelectItem>
-                                                                                        {(() => {
-                                                                                            const existingGroups = [...new Set(items.map(i => i.alternative_group).filter(Boolean))] as string[]
-                                                                                            return existingGroups.map(g => (
-                                                                                                <SelectItem key={g} value={g}>{g}</SelectItem>
-                                                                                            ))
-                                                                                        })()}
-                                                                                    </SelectContent>
-                                                                                </Select>
+                                                                                {(() => {
+                                                                                    const existingGroups = [...new Set(items.map(i => i.alternative_group).filter(Boolean))] as string[]
+                                                                                    return existingGroups.length > 0 ? (
+                                                                                        <Select
+                                                                                            value={item.alternative_group || '__none__'}
+                                                                                            onValueChange={(v) => updateItem(item.id!, { alternative_group: v === '__none__' ? '' : v })}
+                                                                                        >
+                                                                                            <SelectTrigger className="h-7 w-40 text-[11px] focus:ring-1 focus:ring-offset-0 px-2.5 rounded-lg">
+                                                                                                <SelectValue placeholder="Chọn phương án" />
+                                                                                            </SelectTrigger>
+                                                                                            <SelectContent>
+                                                                                                <SelectItem value="__none__">
+                                                                                                    <span className="text-muted-foreground">— Không —</span>
+                                                                                                </SelectItem>
+                                                                                                {existingGroups.map(g => (
+                                                                                                    <SelectItem key={g} value={g}>{g}</SelectItem>
+                                                                                                ))}
+                                                                                            </SelectContent>
+                                                                                        </Select>
+                                                                                    ) : null
+                                                                                })()}
                                                                                 <Input
                                                                                     value={item.alternative_group || ''}
                                                                                     onChange={(e) => updateItem(item.id!, { alternative_group: e.target.value })}
-                                                                                    placeholder="hoặc nhập mới"
-                                                                                    className="h-6 w-28 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2"
+                                                                                    placeholder="Nhập tên PA"
+                                                                                    className="h-7 w-28 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2.5 rounded-lg"
                                                                                 />
                                                                             </div>
 
