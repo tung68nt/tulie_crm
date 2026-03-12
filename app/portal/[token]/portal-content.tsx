@@ -573,39 +573,39 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                 <StatusBadge status={item.status} />
             </div>
 
-            {/* Quotation Switcher — compact strip below title */}
+            {/* Quotation Switcher — modern card selector */}
             {quotationOptions.length > 1 && (
-                <div className="relative overflow-hidden bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-800 px-5 py-3.5">
-                    <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px', WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)' }} />
-                    <div className="relative flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-2 min-w-0">
-                            <FileText className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                            <p className="text-[11px] font-semibold text-zinc-400 truncate">Chọn phương án báo giá</p>
-                        </div>
-                        <div className="flex gap-2 shrink-0">
-                            {quotationOptions.map((q: any, qIdx: number) => {
-                                const isActive = q.id === (selectedQuotationId || quotation?.id)
-                                return (
-                                    <button
-                                        key={q.id}
-                                        onClick={() => onSelectQuotation?.(q.id)}
-                                        className={cn(
-                                            "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 text-center",
-                                            isActive
-                                                ? "bg-white text-zinc-950 shadow-lg shadow-white/10"
-                                                : "bg-white/10 text-zinc-400 hover:bg-white/15 hover:text-zinc-300 border border-white/10"
-                                        )}
-                                    >
-                                        <span className="text-[9px] font-bold uppercase tracking-wide opacity-70">
-                                            {q.status === 'accepted' ? '✓' : `PA${qIdx + 1}`}
-                                        </span>
-                                        <span className={cn("text-xs font-bold tabular-nums", isActive ? "text-zinc-950" : "text-zinc-300")}>
-                                            {formatCurrency(q.total_amount)}
-                                        </span>
-                                    </button>
-                                )
-                            })}
-                        </div>
+                <div className="px-5 py-4 border-b border-zinc-100 bg-zinc-50/50">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">Phương án báo giá</p>
+                    <div className="flex gap-3">
+                        {quotationOptions.map((q: any, qIdx: number) => {
+                            const isActive = q.id === (selectedQuotationId || quotation?.id)
+                            return (
+                                <button
+                                    key={q.id}
+                                    onClick={() => onSelectQuotation?.(q.id)}
+                                    className={cn(
+                                        "flex-1 relative flex flex-col items-center gap-1.5 px-5 py-4 rounded-xl transition-all duration-200 border-2",
+                                        isActive
+                                            ? "bg-zinc-950 text-white border-zinc-950 shadow-lg shadow-zinc-950/20"
+                                            : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 hover:shadow-sm"
+                                    )}
+                                >
+                                    <span className={cn(
+                                        "text-[10px] font-bold uppercase tracking-wider",
+                                        isActive ? "text-zinc-400" : "text-zinc-400"
+                                    )}>
+                                        {q.status === 'accepted' ? '✓ Đã chọn' : `Phương án ${qIdx + 1}`}
+                                    </span>
+                                    <span className={cn(
+                                        "text-lg font-bold tabular-nums tracking-tight",
+                                        isActive ? "text-white" : "text-zinc-900"
+                                    )}>
+                                        {formatCurrency(q.total_amount)}
+                                    </span>
+                                </button>
+                            )
+                        })}
                     </div>
                 </div>
             )}
