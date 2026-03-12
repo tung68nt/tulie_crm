@@ -109,18 +109,31 @@ export default function SettingsPage() {
     const [noteTemplates, setNoteTemplates] = useState<any[]>([])
     const [isSavingNoteTemplates, setIsSavingNoteTemplates] = useState(false)
 
+    const [loadedTabs, setLoadedTabs] = React.useState<Set<string>>(new Set(['company']))
+
+    const loadTabData = React.useCallback((tab: string) => {
+        if (loadedTabs.has(tab)) return
+        setLoadedTabs(prev => new Set(prev).add(tab))
+        switch (tab) {
+            case 'categories': loadCategories(); break
+            case 'units': loadUnits(); break
+            case 'brands': loadBrands(); break
+            case 'telegram': loadTelegram(); break
+            case 'appearance': loadAppearance(); break
+            case 'mail': loadSmtp(); break
+            case 'bundles': loadBundles(); break
+            case 'bank-accounts': loadBankAccounts(); break
+            case 'note-templates': loadNoteTemplates(); break
+            case 'statuses': break // static data
+            case 'notifications': break
+            case 'security': break
+            case 'data': break
+        }
+    }, [loadedTabs])
+
     useEffect(() => {
         loadCompanySettings()
-        loadCategories()
-        loadUnits()
-        loadBrands() // Added
-        loadTelegram()
-        loadAppearance()
-        loadSmtp()
         loadBrand()
-        loadBundles()
-        loadBankAccounts()
-        loadNoteTemplates()
     }, [])
 
     const [bundles, setBundles] = useState<DocumentBundle[]>([])
@@ -468,7 +481,7 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="company" className="flex flex-col lg:flex-row gap-8">
+            <Tabs defaultValue="company" onValueChange={loadTabData} className="flex flex-col lg:flex-row gap-8">
                 <aside className="lg:w-64 space-y-4">
                     <TabsList className="flex flex-col h-auto bg-muted/30 p-1.5 space-y-1 items-stretch rounded-xl border border-border/50">
                         <TabsTrigger

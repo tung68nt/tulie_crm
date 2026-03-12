@@ -357,7 +357,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     Mã QR thanh toán nhanh
                                 </div>
                                 <div className="p-2 bg-white rounded-xl border">
-                                    <img src={qrUrl} alt="QR Code" className="w-44 h-44" />
+                                    <img src={qrUrl} alt="QR Code" className="w-44 h-auto" />
                                 </div>
                                 <p className="text-[10px] text-muted-foreground text-center leading-relaxed font-medium">
                                     Gửi mã này cho khách để quét bằng app Ngân hàng.
