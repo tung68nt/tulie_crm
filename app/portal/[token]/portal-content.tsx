@@ -578,7 +578,15 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
             {/* Quotation Switcher — sleek inline strip */}
             {quotationOptions.length > 1 && (
                 <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100 bg-zinc-50/30">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Phương án báo giá</span>
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0">
+                            <ListTodo className="w-4 h-4 text-zinc-600" />
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold text-zinc-700 leading-tight">Phương án báo giá</p>
+                            <p className="text-[10px] text-zinc-400">Chọn phương án phù hợp để xem chi tiết</p>
+                        </div>
+                    </div>
                     <div className="flex gap-2">
                         {quotationOptions.map((q: any, qIdx: number) => {
                             const isActive = q.id === (selectedQuotationId || quotation?.id)
