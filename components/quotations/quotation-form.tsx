@@ -1090,9 +1090,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                         <TableHead className="w-[50px]"></TableHead>
                                                         <TableHead className="pl-0 min-w-[250px]">Sản phẩm / Dịch vụ</TableHead>
                                                         <TableHead className="min-w-[100px]">ĐVT</TableHead>
-                                                        <TableHead className="min-w-[80px]">SL</TableHead>
+                                                        <TableHead className="w-[70px]">SL</TableHead>
                                                         <TableHead className="min-w-[140px]">Đơn giá</TableHead>
-                                                        <TableHead className="min-w-[80px]">Chiết khấu %</TableHead>
+                                                        <TableHead className="w-[70px]">CK %</TableHead>
                                                         <TableHead className="min-w-[130px] text-right">Thành tiền</TableHead>
                                                         <TableHead className="w-[40px] pr-4"></TableHead>
                                                     </TableRow>
@@ -1249,11 +1249,20 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                 </TableCell>
                                                                 <TableCell className="align-top py-4">
                                                                     <Input
-                                                                        type="number"
-                                                                        min={1}
-                                                                        value={item.quantity}
-                                                                        onChange={(e) => updateItem(item.id!, { quantity: parseInt(e.target.value) || 1 })}
-                                                                        className="h-9"
+                                                                        inputMode="numeric"
+                                                                        value={item.quantity === 0 || item.quantity === undefined ? '' : Number(item.quantity).toLocaleString('vi-VN')}
+                                                                        onChange={(e) => {
+                                                                            const raw = e.target.value.replace(/\D/g, '')
+                                                                            updateItem(item.id!, { quantity: raw === '' ? 0 : parseInt(raw) })
+                                                                        }}
+                                                                        onFocus={(e) => {
+                                                                            const raw = String(item.quantity || '')
+                                                                            e.target.value = raw === '0' ? '' : raw
+                                                                        }}
+                                                                        onBlur={(e) => {
+                                                                            if (!e.target.value.trim()) updateItem(item.id!, { quantity: 1 })
+                                                                        }}
+                                                                        className="h-9 w-full text-center tabular-nums"
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell className="align-top py-4">
@@ -1265,12 +1274,21 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                 </TableCell>
                                                                 <TableCell className="align-top py-4">
                                                                     <Input
-                                                                        type="number"
-                                                                        min={0}
-                                                                        max={100}
-                                                                        value={item.discount}
-                                                                        onChange={(e) => updateItem(item.id!, { discount: parseInt(e.target.value) || 0 })}
-                                                                        className="h-9"
+                                                                        inputMode="numeric"
+                                                                        value={item.discount === 0 || item.discount === undefined ? '' : item.discount}
+                                                                        onChange={(e) => {
+                                                                            const raw = e.target.value.replace(/[^0-9]/g, '')
+                                                                            const val = raw === '' ? 0 : Math.min(parseInt(raw), 100)
+                                                                            updateItem(item.id!, { discount: val })
+                                                                        }}
+                                                                        onFocus={(e) => {
+                                                                            if (e.target.value === '' || e.target.value === '0') e.target.value = ''
+                                                                        }}
+                                                                        onBlur={(e) => {
+                                                                            if (!e.target.value.trim()) updateItem(item.id!, { discount: 0 })
+                                                                        }}
+                                                                        placeholder="0"
+                                                                        className="h-9 w-full text-center tabular-nums"
                                                                     />
                                                                 </TableCell>
                                                                 <TableCell className="text-right font-medium align-top py-6">
@@ -1421,13 +1439,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </div>
 
                 {/* Summary - Moved to bottom */}
-                <Card className="sticky bottom-6 z-10 mt-12 shadow-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 overflow-hidden">
-                    <CardHeader className="py-6 px-6">
-                        <CardTitle>Tổng kết & Hoàn tất</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div className="flex-1 flex flex-col sm:flex-row gap-12 w-full md:w-auto">
+                <Card className="sticky bottom-4 z-10 mt-8 shadow-md bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 overflow-hidden">
+                    <CardContent className="px-6 py-4">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div className="flex-1 flex flex-col sm:flex-row gap-8 w-full md:w-auto">
                                 <div className="space-y-1">
                                     <p className="text-[11px] text-zinc-400">Tạm tính</p>
                                     <div className="flex items-baseline gap-1">
