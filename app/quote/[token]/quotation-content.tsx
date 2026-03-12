@@ -522,9 +522,14 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                     </tr>
                                                 )}
 
-                                                {sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order).map((item: any, index: number) => {
+                                                {(() => {
+                                                    const sortedItems = sectionItems.sort((a: any, b: any) => a.sort_order - b.sort_order);
+                                                    let selectedCounter = 0;
+                                                    return sortedItems.map((item: any, index: number) => {
                                                     const isSelected = selectedItemIds.includes(item.id);
                                                     const isAlternative = item.alternative_group && item.alternative_group.trim() !== '';
+                                                    if (isSelected) selectedCounter++;
+                                                    const displayNumber = isSelected ? selectedCounter : null;
 
                                                     return (
                                                         <tr key={`${sectionIndex}-${index}`} className={cn(
@@ -542,7 +547,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                 </div>
                                                             </td>
                                                             <td className="w-10 text-center py-2 align-top">
-                                                                <span className="text-[11px] font-medium text-slate-400 tabular-nums leading-[1.75rem]">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</span>
+                                                                <span className="text-xs font-medium text-slate-400 tabular-nums leading-[1.75rem]">{sectionName ? `${sectionIndex + 1}.${displayNumber ?? (index + 1)}` : displayNumber ?? (index + 1)}</span>
                                                             </td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
@@ -575,7 +580,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             </td>
                                                         </tr>
                                                     );
-                                                })}
+                                                })
+                                                })()}
                                             </React.Fragment>
                                         ))}
                                     </tbody>

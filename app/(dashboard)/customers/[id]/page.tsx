@@ -66,18 +66,18 @@ export default async function CustomerDetailPage({ params }: any) {
                         </Link>
                     </Button>
                     <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <h1 className="text-2xl font-bold leading-tight">{customer.company_name}</h1>
+                        <h1 className="text-2xl font-bold leading-tight">{customer.company_name}</h1>
+                        <div className="flex items-center gap-2 flex-wrap mt-1.5">
                             <Badge className={`text-xs ${CUSTOMER_STATUS_COLORS[customer.status] || 'bg-zinc-100 text-zinc-600'}`}>
                                 {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
                                 {customer.customer_type === 'individual' ? 'Cá nhân' : 'Doanh nghiệp'}
                             </Badge>
+                            <span className="text-xs text-muted-foreground">
+                                {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
+                            </span>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
-                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-11 sm:ml-0">

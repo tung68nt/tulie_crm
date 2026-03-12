@@ -132,7 +132,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                     "h-4 w-4 shrink-0 transition-colors",
                                     pathname === '/dashboard' ? "text-zinc-950" : "opacity-70 group-hover:opacity-100"
                                 )} />
-                                {!isCollapsed && <span className={cn("truncate font-bold tracking-tight", pathname === '/dashboard' ? "text-zinc-950" : "text-muted-foreground group-hover:text-zinc-950")}>Dashboard</span>}
+                                {!isCollapsed && <span className={cn("truncate font-medium", pathname === '/dashboard' ? "text-zinc-950" : "text-muted-foreground group-hover:text-zinc-950")}>Dashboard</span>}
                             </Button>
                         </Link>
                     </div>
@@ -140,7 +140,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                     {navGroups.map((group, idx) => (
                         <div key={idx} className="flex flex-col">
                             {!isCollapsed && (
-                                <h4 className="px-3 py-1.5 mt-4 text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-tight">
+                                <h4 className="px-3 py-1.5 mt-5 mb-1 text-xs font-bold text-foreground/50 uppercase tracking-wider">
                                     {group.title}
                                 </h4>
                             )}
@@ -174,7 +174,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                                 )} />
                                                 {!isCollapsed && (
                                                     <span className={cn(
-                                                        "truncate font-bold tracking-tight",
+                                                        "truncate font-medium",
                                                         isActive ? "text-zinc-950" : "text-muted-foreground group-hover:text-zinc-950"
                                                     )}>
                                                         {item.title}
