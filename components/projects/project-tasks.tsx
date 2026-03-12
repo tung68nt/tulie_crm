@@ -102,12 +102,14 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                    <CardTitle className="text-lg font-bold flex items-center gap-2">
-                        <ListTodo className="h-5 w-5 text-zinc-900" />
-                        Danh sách công việc chi tiết (To-do List)
-                    </CardTitle>
-                    <CardDescription className="font-normal text-xs">Quản lý tất cả đầu việc trong dự án, bao gồm các đầu việc thuộc hạng mục (Module).</CardDescription>
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                        <ListTodo className="w-5 h-5 text-zinc-900" />
+                    </div>
+                    <div className="space-y-0.5">
+                        <CardTitle className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Danh sách công việc chi tiết (To-do List)</CardTitle>
+                        <CardDescription className="text-[11px] font-medium">Quản lý tất cả đầu việc trong dự án, bao gồm các đầu việc thuộc hạng mục (Module).</CardDescription>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={addTask}>

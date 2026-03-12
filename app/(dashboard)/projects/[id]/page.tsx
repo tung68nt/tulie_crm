@@ -94,11 +94,15 @@ export default async function ProjectDetailPage({ params }: any) {
                     {/* Overview & Metadata */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Layout className="h-5 w-5 text-muted-foreground" />
-                                Tài nguyên dự án (Agency Assets)
-                            </CardTitle>
-                            <CardDescription>Các liên kết quan trọng phục vụ bàn giao và triển khai dự án.</CardDescription>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                                    <Layout className="w-5 h-5 text-zinc-900" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <CardTitle className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Tài nguyên dự án (Agency Assets)</CardTitle>
+                                    <CardDescription className="text-[11px] font-medium">Các liên kết quan trọng phục vụ bàn giao và triển khai dự án.</CardDescription>
+                                </div>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <ProjectMetadataForm project={project} />
@@ -117,12 +121,14 @@ export default async function ProjectDetailPage({ params }: any) {
                     {/* Financial Documents Section (Quotations & Contracts) */}
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <div>
-                                <CardTitle className="text-xl flex items-center gap-2">
-                                    <Receipt className="h-5 w-5 text-muted-foreground" />
-                                    Tài chính &amp; Pháp lý
-                                </CardTitle>
-                                <CardDescription>Quản lý báo giá và hợp đồng liên quan đến dự án</CardDescription>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                                    <Receipt className="w-5 h-5 text-zinc-900" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <CardTitle className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Tài chính &amp; Pháp lý</CardTitle>
+                                    <CardDescription className="text-[11px] font-medium">Quản lý báo giá và hợp đồng liên quan đến dự án</CardDescription>
+                                </div>
                             </div>
                             <div className="text-right">
                                 <p className="text-xs text-muted-foreground font-semibold">Tổng giá trị dự án</p>
@@ -224,7 +230,15 @@ export default async function ProjectDetailPage({ params }: any) {
                     {/* Description Section */}
                     <Card>
                         <CardHeader>
-                            <CardTitle className="text-lg">Mô tả dự án</CardTitle>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                                    <FileTextIcon className="w-5 h-5 text-zinc-900" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <CardTitle className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Mô tả dự án</CardTitle>
+                                    <CardDescription className="text-[11px] font-medium">Thông tin chi tiết về dự án</CardDescription>
+                                </div>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <ProjectDescriptionForm project={project} />

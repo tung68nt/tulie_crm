@@ -38,15 +38,13 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center">
-                            <Files className="w-4 h-4 text-white" />
-                        </div>
-                        <div>
-                            <CardTitle className="text-lg font-bold">Bộ chứng từ dự án</CardTitle>
-                            <CardDescription className="text-xs font-normal">Lộ trình hoàn thiện hồ sơ pháp lý và thủ tục cho toàn bộ dự án.</CardDescription>
-                        </div>
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                        <Files className="w-5 h-5 text-zinc-900" />
+                    </div>
+                    <div className="space-y-0.5">
+                        <CardTitle className="text-sm font-semibold text-zinc-950 tracking-tight leading-none">Bộ chứng từ dự án</CardTitle>
+                        <CardDescription className="text-[11px] font-medium">Lộ trình hoàn thiện hồ sơ pháp lý và thủ tục cho toàn bộ dự án.</CardDescription>
                     </div>
                 </div>
                 <Badge variant="secondary" className="font-semibold">
