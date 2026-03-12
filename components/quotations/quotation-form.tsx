@@ -183,9 +183,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         let currentSecId = 0
         let lastSectionName: string | null = null
         return rawItems.map((item, idx) => {
-            if (idx === 0 || item.section_name !== lastSectionName) {
+            const normalizedName = (item.section_name || '').trim()
+            if (idx === 0 || normalizedName !== lastSectionName) {
                 currentSecId++
-                lastSectionName = item.section_name || ''
+                lastSectionName = normalizedName
             }
             return { ...item, section_id: `sec-${currentSecId}` }
         })
@@ -482,9 +483,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 let currentSecId = 0
                 let lastSectionName: string | null = null
                 const newItems = rawItems.map((item: any, idx: number) => {
-                    if (idx === 0 || item.section_name !== lastSectionName) {
+                    const normalizedName = (item.section_name || '').trim()
+                    if (idx === 0 || normalizedName !== lastSectionName) {
                         currentSecId++
-                        lastSectionName = item.section_name || ''
+                        lastSectionName = normalizedName
                     }
                     return { ...item, section_id: `sec-${currentSecId}` }
                 })
