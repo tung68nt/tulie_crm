@@ -329,6 +329,34 @@ function WorkItemRow({
     const [showBundleDialog, setShowBundleDialog] = useState(false)
     const router = useRouter()
 
+    // Compute all quotation IDs from metadata or primary
+    const allQuotationIds: string[] = useMemo(() => {
+        if (item.metadata?.quotation_ids?.length) return item.metadata.quotation_ids
+        if (item.quotation_id) return [item.quotation_id]
+        return []
+    }, [item.metadata?.quotation_ids, item.quotation_id])
+
+    const [editQuotationIds, setEditQuotationIds] = useState<string[]>(allQuotationIds)
+
+    const handleSaveQuotations = async () => {
+        startTransition(async () => {
+            try {
+                const primaryId = editQuotationIds[0] || undefined
+                await updateWorkItem(item.id, {
+                    quotation_id: primaryId,
+                    metadata: {
+                        ...(item.metadata || {}),
+                        quotation_ids: editQuotationIds,
+                    },
+                })
+                toast.success('Đã cập nhật báo giá cho hạng mục')
+                router.refresh()
+            } catch (err: any) {
+                toast.error(`Lỗi cập nhật báo giá: ${err?.message || 'Thử lại sau'}`)
+            }
+        })
+    }
+
     const tasks = item.tasks || []
     const deliveryLinks = item.delivery_links || []
     const requiredDocs = item.required_documents || []
@@ -487,46 +515,97 @@ function WorkItemRow({
                     {item.description && <p className="text-xs text-muted-foreground truncate">{item.description}</p>}
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-3">
-                        {item.quotation && (
-                            <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
-                                <FileText className="w-3 h-3 mr-1.5" />
-                                {item.quotation.quotation_number}
-                            </Badge>
-                        )}
-                        {/* Show additional quotations from metadata */}
-                        {item.metadata?.quotation_ids && item.metadata.quotation_ids.length > 1 && 
-                            item.metadata.quotation_ids
-                                .filter((qId: string) => qId !== item.quotation_id)
-                                .map((qId: string) => {
-                                    const q = (project.quotations || []).find((q: any) => q.id === qId)
-                                    return q ? (
-                                        <Badge key={qId} variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
-                                            <FileText className="w-3 h-3 mr-1.5" />
-                                            {q.quotation_number}
-                                        </Badge>
-                                    ) : null
-                                })
-                        }
-                        {item.contract && (
-                            <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
-                                <FileSignature className="w-3 h-3 mr-1.5" />
-                                {item.contract.contract_number}
-                            </Badge>
-                        )}
-                        <Select value={item.status} onValueChange={onStatusChange}>
-                            <SelectTrigger className={cn("h-7 text-xs w-auto min-w-[130px] px-3 font-medium shadow-none outline-none focus:ring-0", statusOption?.color)} onClick={e => e.stopPropagation()}>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {STATUS_OPTIONS.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">{opt.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        <div className="p-1 hover:bg-muted rounded-md transition-colors">
-                            {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
-                        </div>
+                    <div className="flex items-center gap-1.5">
+                        {/* Quotation badges */}
+                        {allQuotationIds.map((qId: string) => {
+                            const q = (project.quotations || []).find((q: any) => q.id === qId)
+                            return q ? (
+                                <Badge key={qId} variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                                    <FileText className="w-3 h-3 mr-1.5" />
+                                    {q.quotation_number}
+                                </Badge>
+                            ) : null
+                        })}
+                        {/* Edit quotation button */}
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <button
+                                    className="w-7 h-7 rounded-md border border-dashed border-zinc-300 flex items-center justify-center hover:bg-zinc-100 hover:border-zinc-400 transition-colors"
+                                    onClick={e => e.stopPropagation()}
+                                    title="Gán báo giá"
+                                >
+                                    <Plus className="w-3.5 h-3.5 text-muted-foreground" />
+                                </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-72 p-0" align="end" onClick={e => e.stopPropagation()}>
+                                <div className="p-3 border-b">
+                                    <p className="text-xs font-semibold">Gán báo giá cho hạng mục</p>
+                                </div>
+                                <div className="max-h-48 overflow-y-auto">
+                                    {(project.quotations || []).length === 0 ? (
+                                        <p className="text-xs text-muted-foreground p-3">Chưa có báo giá nào</p>
+                                    ) : (
+                                        (project.quotations || []).map((q: any) => {
+                                            const isChecked = editQuotationIds.includes(q.id)
+                                            return (
+                                                <label
+                                                    key={q.id}
+                                                    className={cn(
+                                                        "flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-zinc-50 transition-colors",
+                                                        isChecked && "bg-zinc-50"
+                                                    )}
+                                                >
+                                                    <Checkbox
+                                                        checked={isChecked}
+                                                        onCheckedChange={(checked) => {
+                                                            setEditQuotationIds(prev =>
+                                                                checked
+                                                                    ? [...prev, q.id]
+                                                                    : prev.filter((id: string) => id !== q.id)
+                                                            )
+                                                        }}
+                                                    />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xs font-medium truncate">{q.quotation_number}</p>
+                                                        <p className="text-[10px] text-muted-foreground">{q.title || formatCurrency(q.total_amount)}</p>
+                                                    </div>
+                                                </label>
+                                            )
+                                        })
+                                    )}
+                                </div>
+                                <div className="p-2 border-t">
+                                    <Button
+                                        size="sm"
+                                        className="w-full h-7 text-xs"
+                                        disabled={isPending}
+                                        onClick={handleSaveQuotations}
+                                    >
+                                        {isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
+                                        Lưu
+                                    </Button>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    {item.contract && (
+                        <Badge variant="secondary" className="font-medium h-7 flex items-center px-2.5 rounded-md border text-muted-foreground shadow-sm">
+                            <FileSignature className="w-3 h-3 mr-1.5" />
+                            {item.contract.contract_number}
+                        </Badge>
+                    )}
+                    <Select value={item.status} onValueChange={onStatusChange}>
+                        <SelectTrigger className={cn("h-7 text-xs w-auto min-w-[130px] px-3 font-medium shadow-none outline-none focus:ring-0", statusOption?.color)} onClick={e => e.stopPropagation()}>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {STATUS_OPTIONS.map(opt => (
+                                <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium">{opt.label}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className="p-1 hover:bg-muted rounded-md transition-colors">
+                        {isExpanded ? <ChevronDown className="w-4 h-4 text-zinc-400" /> : <ChevronRight className="w-4 h-4 text-zinc-400" />}
                     </div>
                 </div>
             </div>

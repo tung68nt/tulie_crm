@@ -48,7 +48,7 @@ BEGIN
         '2026-03-15',
         '2026-06-30',
         v_user_id,
-        v_brand,
+        v_brand::brand_type,
         now(),
         now()
     );
@@ -64,7 +64,7 @@ BEGIN
         'Website Doanh nghiệp - Gói Cơ bản',
         'Thiết kế website doanh nghiệp responsive, chuẩn SEO',
         45000000, 10, 4500000, 49500000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     -- Items cho BG1 Cơ bản (2 phương án: Tiết kiệm & Cao cấp)
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
@@ -88,7 +88,7 @@ BEGIN
         'Website Doanh nghiệp - Gói Nâng cao',
         'Website doanh nghiệp cao cấp kèm blog, portfolio, đa ngôn ngữ',
         95000000, 10, 9500000, 104500000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
     (gen_random_uuid(), v_q1_advanced, 'Thiết kế UI/UX toàn bộ', 'Wireframe + Mockup + Prototype Figma', 1, 'gói', 20000000, 20000000, 1, 'Thiết kế', 'PA1/Tiết kiệm'),
@@ -104,7 +104,7 @@ BEGIN
         'Email Marketing - Gói Cơ bản',
         'Thiết lập hệ thống email marketing tự động',
         25000000, 10, 2500000, 27500000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
     (gen_random_uuid(), v_q2_basic, 'Thiết kế 5 Email Template', 'Welcome, Newsletter, Promotion, Cart, Thank you', 5, 'mẫu', 2000000, 10000000, 1, 'Email Template', 'PA1/Tiết kiệm'),
@@ -118,7 +118,7 @@ BEGIN
         'Email Marketing - Gói Nâng cao',
         'Email marketing đầy đủ kèm CRM và personalization',
         55000000, 10, 5500000, 60500000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
     (gen_random_uuid(), v_q2_advanced, 'Email Design System', 'Bộ component email tái sử dụng', 1, 'gói', 15000000, 15000000, 1, 'Design', 'PA1/Tiết kiệm'),
@@ -132,7 +132,7 @@ BEGIN
         'Landing Page & Ads - Gói Cơ bản',
         'Thiết kế landing page và setup quảng cáo Google/Facebook',
         30000000, 10, 3000000, 33000000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
     (gen_random_uuid(), v_q3_basic, 'Thiết kế 2 Landing Page', 'Responsive, A/B testing ready', 2, 'trang', 5000000, 10000000, 1, 'Landing Page', 'PA1/Tiết kiệm'),
@@ -147,7 +147,7 @@ BEGIN
         'Landing Page & Ads - Gói Nâng cao',
         'Full landing page ecosystem với conversion optimization',
         70000000, 10, 7000000, 77000000,
-        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand, v_project_id, now(), now());
+        '2026-04-15', encode(gen_random_bytes(16), 'hex'), v_brand::brand_type, v_project_id, now(), now());
 
     INSERT INTO quotation_items (id, quotation_id, product_name, description, quantity, unit, unit_price, total_price, sort_order, section_name, alternative_group) VALUES
     (gen_random_uuid(), v_q3_advanced, 'Landing Page Funnel (3 bước)', 'Awareness → Consideration → Conversion', 3, 'trang', 10000000, 30000000, 1, 'Funnel', 'PA1/Tiết kiệm'),
