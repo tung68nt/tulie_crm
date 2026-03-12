@@ -28,7 +28,7 @@ import {
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
 import { getBankAccounts } from '@/lib/supabase/services/settings-service'
-import { generatePaymentContent } from '@/lib/supabase/services/payment-service'
+import { generatePaymentContent } from '@/lib/utils/payment-utils'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
