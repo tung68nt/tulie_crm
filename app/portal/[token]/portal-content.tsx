@@ -212,7 +212,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
                         <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200 mt-2">
                             <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-zinc-900" : "bg-zinc-400")} />
-                            <span className="text-[10px] font-semibold text-zinc-600">{projectStatusLabel}</span>
+                            <span className="text-xs font-semibold text-zinc-600">{projectStatusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -231,7 +231,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold rounded-xl px-10 h-12 shadow-xl transition-all text-[11px]">
+                            <Button className="relative z-10 bg-white text-zinc-900 hover:bg-zinc-100 font-semibold rounded-xl px-10 h-12 shadow-xl transition-all text-xs">
                                 Cập nhật hồ sơ
                             </Button>
                         </DialogTrigger>
@@ -310,7 +310,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-bold text-zinc-950 tracking-tight">Hợp đồng #{c.contract_number}</h3>
-                                        <p className="text-[11px] text-muted-foreground font-medium">{c.title || 'Hợp đồng dịch vụ'}</p>
+                                        <p className="text-xs text-muted-foreground font-medium">{c.title || 'Hợp đồng dịch vụ'}</p>
                                     </div>
                                 </div>
                                 <StatusBadge status={c.status} />
@@ -336,7 +336,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         </div>
 
                         <div className="border-t border-zinc-100 p-4 bg-zinc-50/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <p className="text-[11px] text-muted-foreground font-medium">
+                            <p className="text-xs text-muted-foreground font-medium">
                                 Nhấn "Xác nhận" để đồng ý ký hợp đồng này
                             </p>
                             <Button
@@ -379,7 +379,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     ].map((stat, i) => (
                         <div key={i} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm transition-all hover:shadow-md">
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</span>
+                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{stat.label}</span>
                                 <div className={cn("p-1.5 rounded-lg border border-zinc-100", stat.bgColor)}>
                                     <stat.icon className={cn("w-4 h-4", stat.color)} />
                                 </div>
@@ -392,7 +392,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <div className="text-sm font-semibold text-muted-foreground">đ</div>
                                 )}
                             </div>
-                            <div className="text-[10px] font-semibold text-muted-foreground mt-1 uppercase tracking-widest">{stat.sub}</div>
+                            <div className="text-xs font-semibold text-muted-foreground mt-1 uppercase tracking-widest">{stat.sub}</div>
                         </div>
                     ))}
                 </div>
@@ -400,7 +400,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Mô tả dự án */}
                 {project?.description && (
                     <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
-                        <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả dự án</h3>
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">Mô tả dự án</h3>
                         <p className="text-sm text-zinc-600 leading-relaxed whitespace-pre-line font-medium">{project.description}</p>
                     </div>
                 )}
@@ -418,7 +418,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <p className="text-xs text-zinc-400 uppercase tracking-wider">Project Milestones & Billing</p>
                                 </div>
                             </div>
-                            <Badge variant="outline" className="text-[10px] font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Timeline</Badge>
+                            <Badge variant="outline" className="text-xs font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Timeline</Badge>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -444,19 +444,19 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         </div>
                                         <h4 className="text-[15px] font-bold text-zinc-950 mb-1.5 tracking-tight leading-tight">{milestone.title}</h4>
                                         {milestone.description && (
-                                            <p className="text-[11px] text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
+                                            <p className="text-xs text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
                                         )}
                                         <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
                                             <div className="flex flex-col">
-                                                <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
+                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
                                                 <span className="text-[12px] font-semibold text-zinc-950">{formatDate(milestone.date)}</span>
                                             </div>
                                             {milestone.amount > 0 && (
                                                 <div className="text-right">
-                                                    <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
                                                     <div className="flex items-baseline justify-end gap-1">
                                                         <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
-                                                        <span className="text-[10px] font-semibold text-zinc-900">đ</span>
+                                                        <span className="text-xs font-semibold text-zinc-900">đ</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -584,7 +584,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                         </div>
                         <div>
                             <p className="text-xs font-semibold text-zinc-700 leading-tight">Phương án báo giá</p>
-                            <p className="text-[10px] text-zinc-400">Chọn phương án phù hợp để xem chi tiết</p>
+                            <p className="text-xs text-zinc-400">Chọn phương án phù hợp để xem chi tiết</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
@@ -601,7 +601,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                             : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 hover:shadow-sm"
                                     )}
                                 >
-                                    <span className={cn("text-[10px] font-bold uppercase tracking-wide", isActive ? "text-zinc-400" : "text-zinc-400")}>
+                                    <span className={cn("text-xs font-bold uppercase tracking-wide", isActive ? "text-zinc-400" : "text-zinc-400")}>
                                         {q.status === 'accepted' ? '✓' : `PA${qIdx + 1}`}
                                     </span>
                                     <span className={cn("text-sm font-bold tabular-nums", isActive ? "text-white" : "text-zinc-900")}>
@@ -625,8 +625,8 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                 <div className="flex items-center gap-3">
                                     <FileText className="w-4 h-4 text-muted-foreground" />
                                     <div>
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Báo giá</p>
-                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{activeQuotation.quotation_number}</p>
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Báo giá</p>
+                                        <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{activeQuotation.quotation_number}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -640,8 +640,8 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                 <div className="flex items-center gap-3">
                                     <FileSignature className="w-4 h-4 text-muted-foreground" />
                                     <div>
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
-                                        <p className="text-[11px] font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
+                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
+                                        <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
                                     </div>
                                 </div>
                                 <StatusBadge status={contract.status} />
@@ -651,7 +651,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
 
                     {/* Amount */}
                     <div className="pt-4 border-t border-zinc-100">
-                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
                             <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
                             <span className="text-sm font-semibold text-zinc-900">đ</span>
@@ -673,7 +673,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                             <ExternalLink className="w-3 h-3 text-zinc-400" />
                                             <span className="text-[12px] font-medium text-zinc-700">{link.label}</span>
                                         </div>
-                                        {link.date && <span className="text-[10px] text-zinc-400">{formatDate(link.date)}</span>}
+                                        {link.date && <span className="text-xs text-zinc-400">{formatDate(link.date)}</span>}
                                     </a>
                                 ))}
                             </div>
@@ -684,12 +684,12 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                 {/* Right: Tasks (Todo List) */}
                 <div className="lg:w-3/5 p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <p className="text-[10px] font-bold text-zinc-400 flex items-center gap-2">
+                        <p className="text-xs font-bold text-zinc-400 flex items-center gap-2">
                             <ListTodo className="w-3.5 h-3.5" />
                             Danh sách công việc
                         </p>
                         {totalTasks > 0 && (
-                            <span className="text-[10px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
+                            <span className="text-xs font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">
                                 {completedTasks}/{totalTasks}
                             </span>
                         )}
@@ -729,11 +729,11 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                             {task.title}
                                         </p>
                                         {task.description && (
-                                            <p className="text-[11px] text-zinc-400 mt-0.5 truncate">{task.description}</p>
+                                            <p className="text-xs text-zinc-400 mt-0.5 truncate">{task.description}</p>
                                         )}
                                     </div>
                                     {task.priority === 'high' && (
-                                        <span className="text-[9px] font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">Cao</span>
+                                        <span className="text-xs font-semibold text-red-500 bg-red-50 px-1.5 py-0.5 rounded">Cao</span>
                                     )}
                                 </div>
                             ))}
@@ -816,20 +816,20 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                             {/* Group header */}
                             <div className="flex items-center justify-between px-6 py-4 bg-zinc-50/50">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-[10px] font-bold shrink-0">
+                                    <div className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-xs font-bold shrink-0">
                                         {gIdx + 1}
                                     </div>
                                     <h4 className="text-sm font-semibold text-zinc-950 tracking-tight">{group.title}</h4>
                                 </div>
                                 <div className="flex items-center gap-2.5">
-                                    <span className="text-[10px] font-bold text-zinc-400 tabular-nums">{completedCount}/{totalCount}</span>
+                                    <span className="text-xs font-bold text-zinc-400 tabular-nums">{completedCount}/{totalCount}</span>
                                     {isAllDone ? (
-                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900 text-white rounded-full text-[9px] font-bold uppercase tracking-wide">
+                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900 text-white rounded-full text-xs font-bold uppercase tracking-wide">
                                             <Check className="w-3 h-3" />
                                             Đủ hồ sơ
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-100 text-zinc-500 rounded-full border border-zinc-200 text-[9px] font-bold uppercase tracking-wide">
+                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-100 text-zinc-500 rounded-full border border-zinc-200 text-xs font-bold uppercase tracking-wide">
                                             Đang xử lý
                                         </div>
                                     )}
@@ -865,12 +865,12 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                             </div>
 
                                             <div className="flex items-center gap-2 shrink-0 ml-3">
-                                                {doc.date && <span className="text-[10px] text-zinc-400 font-medium hidden sm:inline tabular-nums">{formatDate(doc.date)}</span>}
+                                                {doc.date && <span className="text-xs text-zinc-400 font-medium hidden sm:inline tabular-nums">{formatDate(doc.date)}</span>}
                                                 {doc.generated_doc_id ? (
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="h-7 text-[10px] px-2.5 border-zinc-200 hover:bg-white font-semibold"
+                                                        className="h-7 text-xs px-2.5 border-zinc-200 hover:bg-white font-semibold"
                                                         onClick={() => handleViewDoc(doc.generated_doc_id)}
                                                     >
                                                         <Eye className="w-3 h-3 mr-1" />
@@ -881,7 +881,7 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                                 ) : isPending ? (
                                                     <span className="text-xs font-semibold text-zinc-400">Chờ xử lý</span>
                                                 ) : (
-                                                    <span className="text-[10px] font-semibold text-zinc-300">—</span>
+                                                    <span className="text-xs font-semibold text-zinc-300">—</span>
                                                 )}
                                             </div>
                                         </div>
@@ -937,7 +937,7 @@ function TimelineSection({ timeline }: { timeline: any[] }) {
                                         <p className="text-[12px] text-zinc-500 mt-0.5 max-w-lg">{event.description}</p>
                                     )}
                                 </div>
-                                <span className="text-[11px] text-zinc-400 shrink-0 ml-4">{formatDate(event.date)}</span>
+                                <span className="text-xs text-zinc-400 shrink-0 ml-4">{formatDate(event.date)}</span>
                             </div>
                         </div>
                     ))}
