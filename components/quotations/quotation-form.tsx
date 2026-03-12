@@ -34,7 +34,15 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatNumber } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet, Check, AlertCircle, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet, Check, AlertCircle, RotateCcw, ChevronDown } from 'lucide-react'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    DropdownMenuSeparator,
+    DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu'
 import { PriceInput } from '@/components/ui/price-input'
 import { Quotation, QuotationItem, Customer, Product } from '@/types'
 import { updateQuotation } from '@/lib/supabase/services/quotation-service'
@@ -86,6 +94,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const [importJsonText, setImportJsonText] = useState('')
     const [jsonError, setJsonError] = useState<string | null>(null)
     const [jsonPath, setJsonPath] = useState<string>('')
+    const [deletingSectionId, setDeletingSectionId] = useState<string | null>(null)
+    const [deletingSectionName, setDeletingSectionName] = useState('')
 
     // Available resources for selection
     const [availableBanks, setAvailableBanks] = useState<any[]>([])
@@ -295,9 +305,37 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
     const removeSection = (sectionId: string) => {
         const group = sectionGroups.find(g => g.id === sectionId)
-        if (confirm(`Bạn có chắc muốn xóa toàn bộ phần "${group?.name || 'này'}" không?`)) {
-            setItems(prev => prev.filter(item => item.section_id !== sectionId))
+        setDeletingSectionId(sectionId)
+        setDeletingSectionName(group?.name || '')
+    }
+
+    const confirmDeleteSection = (deleteItems: boolean) => {
+        if (!deletingSectionId) return
+        if (deleteItems) {
+            // Delete section and all its items
+            setItems(prev => prev.filter(item => item.section_id !== deletingSectionId))
+        } else {
+            // Keep items, move to first remaining section or create default
+            const otherSections = sectionGroups.filter(g => g.id !== deletingSectionId)
+            const targetSection = otherSections[0]
+            if (targetSection) {
+                setItems(prev => prev.map(item =>
+                    item.section_id === deletingSectionId
+                        ? { ...item, section_id: targetSection.id, section_name: targetSection.name }
+                        : item
+                ))
+            } else {
+                // No other sections - just rename to default
+                setItems(prev => prev.map(item =>
+                    item.section_id === deletingSectionId
+                        ? { ...item, section_name: 'Chung' }
+                        : item
+                ))
+            }
         }
+        setDeletingSectionId(null)
+        setDeletingSectionName('')
+        toast.success(deleteItems ? 'Đã xoá phần và tất cả sản phẩm' : 'Đã xoá phần, sản phẩm được giữ lại')
     }
 
     const updateItem = (id: string | undefined, updates: Partial<QuotationItem>) => {
@@ -948,10 +986,36 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <span className="hidden sm:inline">Thêm phần mới</span>
                                     <span className="sm:hidden">Thêm mục</span>
                                 </Button>
-                                <Button type="button" size="sm" onClick={addItem}>
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Thêm nhanh
-                                </Button>
+                                {sectionGroups.length > 1 ? (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button type="button" size="sm">
+                                                <Plus className="mr-2 h-4 w-4" />
+                                                Thêm SP
+                                                <ChevronDown className="ml-1 h-3 w-3" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-56">
+                                            <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground">Thêm vào phần</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            {sectionGroups.map((group, idx) => (
+                                                <DropdownMenuItem
+                                                    key={group.id}
+                                                    onClick={() => addItemToSection(group.name, group.id)}
+                                                    className="font-medium"
+                                                >
+                                                    <span className="h-5 w-5 rounded bg-zinc-100 flex items-center justify-center text-[10px] font-bold text-zinc-500 mr-2 shrink-0">{idx + 1}</span>
+                                                    <span className="truncate">{group.name || 'Chưa đặt tên'}</span>
+                                                </DropdownMenuItem>
+                                            ))}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                ) : (
+                                    <Button type="button" size="sm" onClick={addItem}>
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Thêm nhanh
+                                    </Button>
+                                )}
                             </div>
                         </CardHeader>
                         <CardContent className="p-0 overflow-x-auto p-4 space-y-8 bg-white">
@@ -1391,6 +1455,46 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     <option key={idx} value={option} />
                 ))}
             </datalist>
+
+            {/* Dialog Xác nhận xoá phần */}
+            <Dialog open={!!deletingSectionId} onOpenChange={(open) => { if (!open) { setDeletingSectionId(null); setDeletingSectionName('') } }}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Trash2 className="h-5 w-5 text-red-500" />
+                            Xoá phần &ldquo;{deletingSectionName || 'này'}&rdquo;
+                        </DialogTitle>
+                        <DialogDescription>
+                            Bạn muốn xử lý sản phẩm trong phần này như thế nào?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-3 py-4">
+                        <Button
+                            variant="outline"
+                            className="h-auto py-4 px-4 justify-start text-left"
+                            onClick={() => confirmDeleteSection(false)}
+                        >
+                            <div className="flex flex-col gap-1">
+                                <span className="font-semibold text-sm">Chỉ xoá phần</span>
+                                <span className="text-xs text-muted-foreground font-normal">Sản phẩm được giữ lại và chuyển sang phần khác</span>
+                            </div>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="h-auto py-4 px-4 justify-start text-left border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                            onClick={() => confirmDeleteSection(true)}
+                        >
+                            <div className="flex flex-col gap-1">
+                                <span className="font-semibold text-sm text-red-600">Xoá phần + tất cả sản phẩm</span>
+                                <span className="text-xs text-muted-foreground font-normal">Xoá hoàn toàn phần này và toàn bộ sản phẩm bên trong</span>
+                            </div>
+                        </Button>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => { setDeletingSectionId(null); setDeletingSectionName('') }}>Huỷ</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Dialog Thêm phần mới */}
             <Dialog open={isAddSectionOpen} onOpenChange={setIsAddSectionOpen}>
