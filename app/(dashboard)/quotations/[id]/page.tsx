@@ -381,7 +381,7 @@ export default function QuotationDetailPage() {
                                                         </TableRow>
                                                     )}
                                                     {sectionItems.map((item: any, idx: number) => (
-                                                        <TableRow key={item.id} className="hover:bg-muted/30 group last:border-0">
+                                                        <TableRow key={item.id} className="hover:bg-muted/30 group last:border-0 align-top">
                                                             <TableCell className="text-center w-12 py-3">
                                                                 <span className="text-xs font-medium text-muted-foreground tabular-nums">
                                                                     {sectionName ? `${sectionIdx + 1}.${idx + 1}` : idx + 1}
@@ -392,7 +392,7 @@ export default function QuotationDetailPage() {
                                                                     <div className="flex items-center gap-2">
                                                                         <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
                                                                         {item.is_optional && (
-                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-medium border-amber-200 bg-amber-50 text-amber-700">Tùy chọn</Badge>
+                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
@@ -402,10 +402,10 @@ export default function QuotationDetailPage() {
                                                                     )}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap">{item.unit}</TableCell>
-                                                            <TableCell className="text-center text-sm font-medium text-foreground">{item.quantity}</TableCell>
-                                                            <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap">{formatCurrency(item.unit_price)}</TableCell>
-                                                            <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap">{formatCurrency(item.total_price)}</TableCell>
+                                                            <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap py-3">{item.unit}</TableCell>
+                                                            <TableCell className="text-center text-sm font-medium text-foreground py-3">{item.quantity}</TableCell>
+                                                            <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap py-3">{formatCurrency(item.unit_price)}</TableCell>
+                                                            <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap py-3">{formatCurrency(item.total_price)}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </React.Fragment>

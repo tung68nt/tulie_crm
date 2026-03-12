@@ -575,11 +575,11 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                 <StatusBadge status={item.status} />
             </div>
 
-            {/* Quotation Switcher — modern card selector */}
+            {/* Quotation Switcher — sleek inline strip */}
             {quotationOptions.length > 1 && (
-                <div className="px-5 py-4 border-b border-zinc-100 bg-zinc-50/50">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-3">Phương án báo giá</p>
-                    <div className="flex gap-3">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100 bg-zinc-50/30">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Phương án báo giá</span>
+                    <div className="flex gap-2">
                         {quotationOptions.map((q: any, qIdx: number) => {
                             const isActive = q.id === (selectedQuotationId || quotation?.id)
                             return (
@@ -587,22 +587,16 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                     key={q.id}
                                     onClick={() => onSelectQuotation?.(q.id)}
                                     className={cn(
-                                        "flex-1 relative flex flex-col items-center gap-1.5 px-5 py-4 rounded-xl transition-all duration-200 border-2",
+                                        "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 text-center border",
                                         isActive
-                                            ? "bg-zinc-950 text-white border-zinc-950 shadow-lg shadow-zinc-950/20"
+                                            ? "bg-zinc-950 text-white border-zinc-950 shadow-sm"
                                             : "bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 hover:shadow-sm"
                                     )}
                                 >
-                                    <span className={cn(
-                                        "text-[10px] font-bold uppercase tracking-wider",
-                                        isActive ? "text-zinc-400" : "text-zinc-400"
-                                    )}>
-                                        {q.status === 'accepted' ? '✓ Đã chọn' : `Phương án ${qIdx + 1}`}
+                                    <span className={cn("text-[10px] font-bold uppercase tracking-wide", isActive ? "text-zinc-400" : "text-zinc-400")}>
+                                        {q.status === 'accepted' ? '✓' : `PA${qIdx + 1}`}
                                     </span>
-                                    <span className={cn(
-                                        "text-lg font-bold tabular-nums tracking-tight",
-                                        isActive ? "text-white" : "text-zinc-900"
-                                    )}>
+                                    <span className={cn("text-sm font-bold tabular-nums", isActive ? "text-white" : "text-zinc-900")}>
                                         {formatCurrency(q.total_amount)}
                                     </span>
                                 </button>

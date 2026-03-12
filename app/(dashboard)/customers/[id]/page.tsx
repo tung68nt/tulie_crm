@@ -58,20 +58,20 @@ export default async function CustomerDetailPage({ params }: any) {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
+                    <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80 shrink-0">
                         <Link href="/customers">
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                             <Users className="h-6 w-6 text-primary" />
                         </div>
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-3xl font-bold">{customer.company_name}</h1>
+                        <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <h1 className="text-xl sm:text-2xl font-bold truncate">{customer.company_name}</h1>
                                 <Badge className={CUSTOMER_STATUS_COLORS[customer.status] || 'bg-gray-100'}>
                                     {CUSTOMER_STATUS_LABELS[customer.status] || customer.status}
                                 </Badge>
@@ -79,21 +79,21 @@ export default async function CustomerDetailPage({ params }: any) {
                                     {customer.customer_type === 'individual' ? 'Cá nhân' : 'Doanh nghiệp'}
                                 </Badge>
                             </div>
-                            <p className="text-muted-foreground">
+                            <p className="text-sm text-muted-foreground truncate">
                                 {customer.customer_type === 'individual' ? 'CCCD' : 'MST'}: {customer.tax_code || 'Chưa cập nhật'}
                             </p>
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-14 sm:ml-0 shrink-0">
                     <UnlockPortalButton customerId={customer.id} isUnlocked={customer.is_info_unlocked} />
-                    <Button variant="outline" asChild>
+                    <Button variant="outline" size="sm" asChild>
                         <Link href={`/quotations/new?customer=${customer.id}`}>
                             <FileText className="mr-2 h-4 w-4" />
                             Tạo báo giá
                         </Link>
                     </Button>
-                    <Button variant="outline" asChild>
+                    <Button variant="outline" size="sm" asChild>
                         <Link href={`/customers/${customer.id}/edit`}>
                             <Edit className="mr-2 h-4 w-4" />
                             Chỉnh sửa
