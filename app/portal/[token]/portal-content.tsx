@@ -748,10 +748,10 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
 
 /* ===== Document Procedures Section ===== */
 function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: any[]; handleViewDoc: (id: string) => void }) {
-    // Aggregate all required_documents from all work items
-    const allDocs: { title: string; status: string; workItemTitle: string; date?: string; generated_doc_id?: string }[] = []
+    // Group documents by work item
+    const groupedDocs: { title: string; docs: any[] }[] = []
 
-    // Default procedures for projects
+    // Default procedures for projects (fallback)
     const defaultProcedures = [
         { title: 'Báo giá dịch vụ', status: 'completed' },
         { title: 'Hợp đồng & Phụ lục', status: 'completed' },
@@ -762,97 +762,131 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
 
     workItems.forEach((item: any) => {
         const docs = item.required_documents || []
-        docs.forEach((doc: any) => {
-            allDocs.push({ ...doc, workItemTitle: item.title })
-        })
+        if (docs.length > 0) {
+            groupedDocs.push({ title: item.title, docs })
+        }
     })
 
-    const displayDocs = allDocs.length > 0 ? allDocs : defaultProcedures.map(p => ({
-        ...p,
-        workItemTitle: 'Dự án',
-    }))
+    if (groupedDocs.length === 0) {
+        groupedDocs.push({ title: 'Dự án', docs: defaultProcedures })
+    }
+
+    // Overall stats
+    const totalAllDocs = groupedDocs.reduce((sum, g) => sum + g.docs.length, 0)
+    const completedAllDocs = groupedDocs.reduce((sum, g) => sum + g.docs.filter((d: any) => d.status === 'signed' || d.status === 'completed' || d.status === 'auto').length, 0)
 
     return (
         <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-zinc-100 flex items-center justify-between">
-                <div>
+            {/* Header */}
+            <div className="p-6 border-b border-zinc-100">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
                             <FileCheck className="w-5 h-5 text-zinc-900" />
                         </div>
                         <div className="space-y-0.5">
                             <h3 className="text-base font-semibold text-zinc-950 tracking-tight leading-none">Bộ chứng từ & Hồ sơ dự án</h3>
-                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest">Project Procedures & Docs</p>
+                            <p className="text-[11px] font-medium text-muted-foreground">Tiến độ hoàn thiện hồ sơ theo từng hạng mục</p>
                         </div>
                     </div>
+                    <span className="text-xs font-bold text-zinc-500 tabular-nums">{completedAllDocs}/{totalAllDocs} hoàn thành</span>
                 </div>
-                <div className="hidden sm:block">
-                    <Badge variant="outline" className="text-[10px] font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Full Docs</Badge>
+                {/* Overall progress */}
+                <div className="mt-4 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
+                    <div
+                        className={cn("h-full rounded-full transition-all duration-700", completedAllDocs === totalAllDocs ? "bg-emerald-500" : "bg-zinc-900")}
+                        style={{ width: `${totalAllDocs > 0 ? (completedAllDocs / totalAllDocs) * 100 : 0}%` }}
+                    />
                 </div>
             </div>
-            <div className="p-6">
-                <div className="relative space-y-0">
-                    {/* Vertical line */}
-                    <div className="absolute left-[11px] top-2 bottom-6 w-0.5 bg-zinc-100" />
 
-                    {displayDocs.map((doc: any, i: number) => {
-                        const isDone = doc.status === 'signed' || doc.status === 'completed' || doc.status === 'auto'
-                        const isPending = doc.status === 'pending'
+            {/* Grouped by work item */}
+            <div className="divide-y divide-zinc-100">
+                {groupedDocs.map((group, gIdx) => {
+                    const completedCount = group.docs.filter((d: any) => d.status === 'signed' || d.status === 'completed' || d.status === 'auto').length
+                    const totalCount = group.docs.length
+                    const isAllDone = completedCount === totalCount
 
-                        return (
-                            <div key={i} className="relative pl-10 pb-8 last:pb-0 group">
-                                {/* Dot */}
-                                <div className={cn(
-                                    "absolute left-0 top-1 w-[24px] h-[24px] rounded-full text-white flex items-center justify-center z-10 transition-all shadow-sm",
-                                    isDone ? "bg-emerald-500" : isPending ? "bg-amber-400" : "bg-zinc-200"
-                                )}>
-                                    {isDone ? <Check className="w-3 h-3 stroke-[3]" /> : <span className="text-[10px] font-semibold text-muted-foreground group-last:text-muted-foreground">{i + 1}</span>}
+                    return (
+                        <div key={gIdx}>
+                            {/* Group header */}
+                            <div className="flex items-center justify-between px-6 py-4 bg-zinc-50/50">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-[10px] font-bold shrink-0">
+                                        {gIdx + 1}
+                                    </div>
+                                    <h4 className="text-[13px] font-semibold text-zinc-950 tracking-tight">{group.title}</h4>
                                 </div>
-
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                    <div>
-                                        <p className={cn(
-                                            "text-sm font-semibold transition-all",
-                                            isDone ? "text-zinc-900" : "text-muted-foreground"
-                                        )}>{doc.title}</p>
-                                        {doc.workItemTitle && doc.workItemTitle !== 'Dự án' && (
-                                            <p className="text-[11px] text-muted-foreground mt-0.5 font-medium">{doc.workItemTitle}</p>
-                                        )}
-                                    </div>
-
-                                    <div className="flex items-center gap-3">
-                                        {doc.generated_doc_id && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-7 text-[10px] border-zinc-200 hover:bg-zinc-50"
-                                                onClick={() => handleViewDoc(doc.generated_doc_id)}
-                                            >
-                                                <Eye className="w-3 h-3 mr-1" />
-                                                Xem dự thảo
-                                            </Button>
-                                        )}
-                                        {doc.date && <span className="text-[11px] text-zinc-400 font-medium">{formatDate(doc.date)}</span>}
-                                        {isDone ? (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[10px] font-semibold">
-                                                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                                Đã hoàn thành
-                                            </div>
-                                        ) : isPending ? (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[10px] font-semibold">
-                                                Chờ xử lý
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-zinc-50 text-muted-foreground rounded-full border border-zinc-100 text-[10px] font-semibold">
-                                                Chưa có
-                                            </div>
-                                        )}
-                                    </div>
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-[10px] font-bold text-zinc-400 tabular-nums">{completedCount}/{totalCount}</span>
+                                    {isAllDone ? (
+                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100 text-[9px] font-bold uppercase tracking-wide">
+                                            <Check className="w-3 h-3" />
+                                            Đủ hồ sơ
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full border border-amber-100 text-[9px] font-bold uppercase tracking-wide">
+                                            Đang xử lý
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )
-                    })}
-                </div>
+
+                            {/* Documents list */}
+                            <div className="px-4 py-2">
+                                {group.docs.map((doc: any, dIdx: number) => {
+                                    const isDone = doc.status === 'signed' || doc.status === 'completed' || doc.status === 'auto'
+                                    const isPending = doc.status === 'pending'
+
+                                    return (
+                                        <div
+                                            key={dIdx}
+                                            className={cn(
+                                                "flex items-center justify-between px-3 py-2.5 rounded-lg transition-all",
+                                                isDone ? "hover:bg-emerald-50/30" : "hover:bg-zinc-50"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0">
+                                                {isDone ? (
+                                                    <CheckCircle className="w-[18px] h-[18px] text-emerald-500 shrink-0" />
+                                                ) : isPending ? (
+                                                    <Clock className="w-[18px] h-[18px] text-amber-400 shrink-0" />
+                                                ) : (
+                                                    <div className="w-[18px] h-[18px] rounded-full border-2 border-zinc-200 shrink-0" />
+                                                )}
+                                                <span className={cn(
+                                                    "text-[13px] font-medium truncate",
+                                                    isDone ? "text-zinc-800" : "text-zinc-500"
+                                                )}>{doc.title}</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0 ml-3">
+                                                {doc.date && <span className="text-[10px] text-zinc-400 font-medium hidden sm:inline tabular-nums">{formatDate(doc.date)}</span>}
+                                                {doc.generated_doc_id ? (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-7 text-[10px] px-2.5 border-zinc-200 hover:bg-white font-semibold"
+                                                        onClick={() => handleViewDoc(doc.generated_doc_id)}
+                                                    >
+                                                        <Eye className="w-3 h-3 mr-1" />
+                                                        Xem
+                                                    </Button>
+                                                ) : isDone ? (
+                                                    <span className="text-[10px] font-semibold text-emerald-600">✓</span>
+                                                ) : isPending ? (
+                                                    <span className="text-[10px] font-semibold text-amber-500">Chờ xử lý</span>
+                                                ) : (
+                                                    <span className="text-[10px] font-semibold text-zinc-300">—</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )
