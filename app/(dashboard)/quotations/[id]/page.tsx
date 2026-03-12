@@ -357,58 +357,55 @@ export default function QuotationDetailPage() {
                                     <Table>
                                         <TableHeader className="bg-muted/40">
                                             <TableRow>
-                                                <TableHead className="w-14 text-center">#</TableHead>
-                                                <TableHead>Hạng mục & Mô tả</TableHead>
-                                                <TableHead className="text-center">ĐVT</TableHead>
-                                                <TableHead className="text-center">SL</TableHead>
-                                                <TableHead className="text-right">Đơn giá</TableHead>
-                                                <TableHead className="text-right pr-8">Thành tiền</TableHead>
+                                                <TableHead className="w-12 text-center text-xs">#</TableHead>
+                                                <TableHead className="text-xs">Hạng mục & Mô tả</TableHead>
+                                                <TableHead className="text-center text-xs">ĐVT</TableHead>
+                                                <TableHead className="text-center text-xs">SL</TableHead>
+                                                <TableHead className="text-right text-xs">Đơn giá</TableHead>
+                                                <TableHead className="text-right pr-6 text-xs">Thành tiền</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody className="bg-white">
                                             {sectionEntries.map(([sectionName, sectionItems], sectionIdx) => (
                                                 <React.Fragment key={sectionIdx}>
                                                     {sectionName && (
-                                                        <TableRow className="bg-zinc-50/80 border-y border-zinc-100">
-                                                            <TableCell className="py-2.5 px-3 w-14 text-center">
-                                                                <div className="w-5 h-5 rounded bg-zinc-950 text-white text-[9px] font-bold flex items-center justify-center mx-auto">
+                                                        <TableRow className="bg-muted/60 border-y">
+                                                            <TableCell className="py-2 w-12 text-center">
+                                                                <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center mx-auto">
                                                                     {sectionIdx + 1}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell colSpan={5} className="py-2.5 px-3">
-                                                                <span className="text-[12px] font-bold text-zinc-900 uppercase tracking-tight">{sectionName}</span>
+                                                            <TableCell colSpan={5} className="py-2">
+                                                                <span className="text-xs font-semibold text-foreground">{sectionName}</span>
                                                             </TableCell>
                                                         </TableRow>
                                                     )}
                                                     {sectionItems.map((item: any, idx: number) => (
-                                                        <TableRow key={item.id} className="hover:bg-zinc-50/40 group border-zinc-100 last:border-0">
-                                                            <TableCell className="text-center font-medium text-zinc-400 text-[10px] tabular-nums py-5 w-14">
-                                                                {sectionName ? `${sectionIdx + 1}.${idx + 1}` : idx + 1}
+                                                        <TableRow key={item.id} className="hover:bg-muted/30 group last:border-0">
+                                                            <TableCell className="text-center w-12 py-3">
+                                                                <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                                                                    {sectionName ? `${sectionIdx + 1}.${idx + 1}` : idx + 1}
+                                                                </span>
                                                             </TableCell>
-                                                            <TableCell className="py-5">
+                                                            <TableCell className="py-3">
                                                                 <div className="space-y-1">
                                                                     <div className="flex items-center gap-2">
-                                                                        <p className="font-bold text-zinc-950 text-sm leading-tight">{item.product_name}</p>
+                                                                        <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
                                                                         {item.is_optional && (
-                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-bold border-amber-200 bg-amber-50 text-amber-700">Tùy chọn</Badge>
+                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-medium border-amber-200 bg-amber-50 text-amber-700">Tùy chọn</Badge>
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <div className="text-[12px] text-zinc-700 font-medium leading-relaxed italic mt-1.5 space-y-1.5">
-                                                                            {item.description.split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
-                                                                                <div key={i} className="flex gap-2">
-                                                                                    <span className="shrink-0 text-zinc-400 text-lg font-bold mt-[-2px]">•</span>
-                                                                                    <span>{line.replace(/^[•\-\*]\s*/, '')}</span>
-                                                                                </div>
-                                                                            ))}
-                                                                        </div>
+                                                                        <p className="text-xs text-muted-foreground leading-relaxed mt-1 whitespace-pre-line">
+                                                                            {item.description}
+                                                                        </p>
                                                                     )}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-center font-medium text-zinc-600 text-sm whitespace-nowrap">{item.unit}</TableCell>
-                                                            <TableCell className="text-center font-bold text-zinc-950 text-sm">{item.quantity}</TableCell>
-                                                            <TableCell className="text-right font-medium text-zinc-700 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.unit_price)}</TableCell>
-                                                            <TableCell className="text-right pr-8 font-bold text-zinc-950 text-sm tabular-nums whitespace-nowrap">{formatCurrency(item.total_price)}</TableCell>
+                                                            <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap">{item.unit}</TableCell>
+                                                            <TableCell className="text-center text-sm font-medium text-foreground">{item.quantity}</TableCell>
+                                                            <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap">{formatCurrency(item.unit_price)}</TableCell>
+                                                            <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap">{formatCurrency(item.total_price)}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </React.Fragment>

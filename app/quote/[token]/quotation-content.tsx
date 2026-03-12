@@ -479,8 +479,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
                                     <thead>
                                         <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
-                                            <th className="py-2.5 px-1 font-semibold w-8 text-center normal-case print:hidden">Chọn</th>
-                                            <th className="py-2.5 px-1 font-semibold w-8 text-center normal-case">#</th>
+                                            <th className="py-2.5 px-1 font-semibold w-10 text-center normal-case print:hidden">Chọn</th>
+                                            <th className="py-2.5 px-1 font-semibold w-10 text-center normal-case">#</th>
                                             <th className="py-2.5 px-3 font-semibold normal-case">
                                                 Hạng mục & Mô tả <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
@@ -509,14 +509,14 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                             <React.Fragment key={sectionIndex}>
                                                 {sectionName && (
                                                     <tr className="bg-slate-100 border-b border-slate-200">
-                                                        <td className="print:hidden"></td>
-                                                        <td className="px-1 py-2.5 text-center">
-                                                            <span className="flex items-center justify-center w-6 h-6 rounded-md bg-slate-900 text-white text-[10px] font-bold mx-auto"
+                                                        <td className="print:hidden w-10"></td>
+                                                        <td className="w-10 py-2.5">
+                                                            <div className="w-6 h-6 rounded-md bg-slate-900 text-white text-[11px] font-semibold flex items-center justify-center mx-auto"
                                                                 style={{ WebkitPrintColorAdjust: 'exact' }}>
                                                                 {sectionIndex + 1}
-                                                            </span>
+                                                            </div>
                                                         </td>
-                                                        <td colSpan={hasDiscount ? 6 : 5} className="px-3 py-2.5 font-bold text-slate-900 text-[13px] normal-case">
+                                                        <td colSpan={hasDiscount ? 6 : 5} className="px-3 py-2.5 font-semibold text-slate-900 text-[13px] normal-case">
                                                             <span>{sectionName || "Sản phẩm & Dịch vụ chi tiết"}</span>
                                                         </td>
                                                     </tr>
@@ -532,7 +532,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             !isSelected && "bg-slate-50 opacity-40 grayscale-[0.5] print:hidden",
                                                             isSelected && "hover:bg-slate-50/50"
                                                         )}>
-                                                            <td className="px-1 text-center py-2 print:hidden">
+                                                            <td className="w-10 text-center py-2 print:hidden">
                                                                 <div className="flex items-center justify-center">
                                                                     <Checkbox
                                                                         checked={isSelected}
@@ -541,7 +541,9 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                     />
                                                                 </div>
                                                             </td>
-                                                            <td className="px-1 text-slate-500 align-top text-center pt-[11px] pb-2 font-bold text-[10px] leading-tight shrink-0">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</td>
+                                                            <td className="w-10 text-center py-2">
+                                                                <span className="text-[11px] font-medium text-slate-400 tabular-nums">{sectionName ? `${sectionIndex + 1}.${index + 1}` : index + 1}</span>
+                                                            </td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
                                                                     <div className="flex flex-wrap items-center gap-2">
