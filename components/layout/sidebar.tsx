@@ -25,7 +25,8 @@ import {
     Camera,
     GraduationCap,
     Layout,
-    Contact
+    Contact,
+    Headphones
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -55,6 +56,7 @@ const navGroups: NavGroup[] = [
             { title: 'Hợp đồng & Đơn hàng', href: '/contracts', icon: FilePenLine },
             { title: 'Dự án', href: '/projects', icon: Rocket },
             { title: 'Theo dõi hoá đơn', href: '/invoices', icon: Banknote },
+            { title: 'Helpdesk', href: '/helpdesk', icon: Headphones },
         ]
     },
     {

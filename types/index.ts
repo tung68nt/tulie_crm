@@ -689,3 +689,41 @@ export interface SystemSettings {
   telegram_config: TelegramConfig
   [key: string]: any
 }
+
+// Support / Helpdesk Types
+export type SupportTicketStatus = 'open' | 'in_progress' | 'waiting' | 'resolved' | 'closed'
+export type SupportTicketPriority = 'low' | 'medium' | 'high' | 'urgent'
+export type SupportTicketCategory = 'bug' | 'feature' | 'support' | 'warranty' | 'other'
+
+export interface SupportTicket {
+  id: string
+  ticket_number: string
+  project_id?: string
+  project?: Project
+  customer_id: string
+  customer?: Customer
+  assigned_to?: string
+  assigned_user?: User
+  title: string
+  description?: string
+  status: SupportTicketStatus
+  priority: SupportTicketPriority
+  category: SupportTicketCategory
+  created_by?: string
+  creator?: User
+  resolved_at?: string
+  closed_at?: string
+  messages?: TicketMessage[]
+  created_at: string
+  updated_at: string
+}
+
+export interface TicketMessage {
+  id: string
+  ticket_id: string
+  sender_type: 'staff' | 'customer'
+  sender_name: string
+  content: string
+  attachments?: string[]
+  created_at: string
+}

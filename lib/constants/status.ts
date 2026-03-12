@@ -1,4 +1,4 @@
-import { CustomerStatus, QuotationStatus, ContractStatus, InvoiceStatus, DealStatus, ProjectStatus } from '@/types'
+import { CustomerStatus, QuotationStatus, ContractStatus, InvoiceStatus, DealStatus, ProjectStatus, SupportTicketStatus, SupportTicketPriority } from '@/types'
 
 // Customer Status
 export const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
@@ -142,4 +142,43 @@ export const BRAND_COLORS = {
     agency: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold',
     studio: 'bg-zinc-500 text-white dark:bg-zinc-400 dark:text-zinc-900',
     academy: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-medium',
+}
+
+// Ticket Status
+export const TICKET_STATUS_LABELS: Record<SupportTicketStatus, string> = {
+    open: 'Mới',
+    in_progress: 'Đang xử lý',
+    waiting: 'Chờ phản hồi',
+    resolved: 'Đã giải quyết',
+    closed: 'Đóng',
+}
+
+export const TICKET_STATUS_COLORS: Record<SupportTicketStatus, string> = {
+    open: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
+    in_progress: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
+    waiting: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
+    resolved: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
+    closed: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
+}
+
+export const TICKET_PRIORITY_LABELS: Record<SupportTicketPriority, string> = {
+    low: 'Thấp',
+    medium: 'Bình thường',
+    high: 'Cao',
+    urgent: 'Khẩn cấp',
+}
+
+export const TICKET_PRIORITY_COLORS: Record<SupportTicketPriority, string> = {
+    low: 'bg-zinc-100 text-zinc-500',
+    medium: 'bg-zinc-100 text-zinc-800',
+    high: 'bg-zinc-100 text-zinc-900 border border-zinc-300 font-medium',
+    urgent: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-bold',
+}
+
+export const TICKET_CATEGORY_LABELS: Record<string, string> = {
+    bug: 'Lỗi',
+    feature: 'Yêu cầu mới',
+    support: 'Hỗ trợ',
+    warranty: 'Bảo hành',
+    other: 'Khác',
 }
