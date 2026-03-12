@@ -370,13 +370,13 @@ export default function QuotationDetailPage() {
                                                 <React.Fragment key={sectionIdx}>
                                                     {sectionName && (
                                                         <TableRow className="bg-zinc-50/80 border-y border-zinc-100">
-                                                            <TableCell colSpan={6} className="py-2.5 px-3">
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="w-5 h-5 rounded bg-zinc-950 text-white text-[9px] font-bold flex items-center justify-center">
-                                                                        {sectionIdx + 1}
-                                                                    </div>
-                                                                    <span className="text-[12px] font-bold text-zinc-900 uppercase tracking-tight">{sectionName}</span>
+                                                            <TableCell className="py-2.5 px-3 w-14 text-center">
+                                                                <div className="w-5 h-5 rounded bg-zinc-950 text-white text-[9px] font-bold flex items-center justify-center mx-auto">
+                                                                    {sectionIdx + 1}
                                                                 </div>
+                                                            </TableCell>
+                                                            <TableCell colSpan={5} className="py-2.5 px-3">
+                                                                <span className="text-[12px] font-bold text-zinc-900 uppercase tracking-tight">{sectionName}</span>
                                                             </TableCell>
                                                         </TableRow>
                                                     )}
