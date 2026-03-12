@@ -294,6 +294,76 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     )
                 })()}
 
+                {/* Contract Review & Confirm Panel */}
+                {contracts.filter((c: any) => ['sent', 'viewed'].includes(c.status)).map((c: any) => (
+                    <div key={c.id} className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+                        <div className="p-6 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                        <FileSignature className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-zinc-950 tracking-tight">Hợp đồng #{c.contract_number}</h3>
+                                        <p className="text-[11px] text-muted-foreground font-medium">{c.title || 'Hợp đồng dịch vụ'}</p>
+                                    </div>
+                                </div>
+                                <StatusBadge status={c.status} />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 text-[12px]">
+                                <div className="bg-zinc-50 rounded-lg p-3">
+                                    <p className="text-muted-foreground font-medium mb-1">Giá trị HĐ</p>
+                                    <p className="font-bold text-zinc-950">{formatCurrency(c.total_amount)}</p>
+                                </div>
+                                <div className="bg-zinc-50 rounded-lg p-3">
+                                    <p className="text-muted-foreground font-medium mb-1">Ngày bắt đầu</p>
+                                    <p className="font-bold text-zinc-950">{c.start_date ? formatDate(c.start_date) : '—'}</p>
+                                </div>
+                            </div>
+
+                            {c.terms && (
+                                <div className="bg-zinc-50 rounded-lg p-3 text-[12px]">
+                                    <p className="text-muted-foreground font-medium mb-1">Điều khoản</p>
+                                    <p className="text-zinc-700 whitespace-pre-line leading-relaxed">{c.terms}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="border-t border-zinc-100 p-4 bg-zinc-50/50 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <p className="text-[11px] text-muted-foreground font-medium">
+                                Nhấn "Xác nhận" để đồng ý ký hợp đồng này
+                            </p>
+                            <Button
+                                size="sm"
+                                className="rounded-lg font-bold tracking-tight text-[12px] px-6"
+                                onClick={async () => {
+                                    if (!confirm('Xác nhận đồng ý ký hợp đồng này?')) return
+                                    try {
+                                        const { confirmContractFromPortal } = await import('@/lib/supabase/services/portal-actions')
+                                        const result = await confirmContractFromPortal(token, c.id, {
+                                            name: customer?.representative || '',
+                                            phone: customer?.phone || '',
+                                            email: customer?.email || '',
+                                        })
+                                        if (result.success) {
+                                            toast.success('Đã xác nhận hợp đồng thành công!')
+                                            router.refresh()
+                                        } else {
+                                            toast.error(result.error || 'Có lỗi xảy ra')
+                                        }
+                                    } catch {
+                                        toast.error('Có lỗi xảy ra')
+                                    }
+                                }}
+                            >
+                                <Check className="w-4 h-4 mr-1.5" />
+                                Xác nhận & Đồng ý ký
+                            </Button>
+                        </div>
+                    </div>
+                ))}
+
                 {/* Stats Row — Clean, no uppercase, no letter-spacing */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[

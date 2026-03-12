@@ -244,13 +244,84 @@ export async function updateQuotationStatus(quotationId: string, status: string,
                 .single()
 
             if (error) throw error
-            
+
             revalidatePath(`/quotations/${quotationId}`)
             if (data?.public_token) revalidatePath(`/quote/${data.public_token}`)
             return { success: true }
         }
     } catch (err: any) {
         console.error('Error updating quotation status:', err)
+        return { success: false, error: err.message || 'Lỗi hệ thống' }
+    }
+}
+
+export async function confirmContractFromPortal(
+    token: string,
+    contractId: string,
+    confirmerInfo: { name: string; phone: string; email: string; position?: string }
+) {
+    try {
+        const supabase = await createClient()
+
+        // 1. Verify token → get project_id
+        const { data: qData } = await supabase
+            .from('quotations')
+            .select('project_id')
+            .eq('public_token', token)
+            .single()
+
+        if (!qData?.project_id) {
+            throw new Error('Không tìm thấy dự án liên kết')
+        }
+
+        // 2. Verify contract belongs to this project
+        const { data: contract } = await supabase
+            .from('contracts')
+            .select('id, project_id, status')
+            .eq('id', contractId)
+            .single()
+
+        if (!contract || contract.project_id !== qData.project_id) {
+            throw new Error('Hợp đồng không hợp lệ')
+        }
+
+        if (!['sent', 'viewed'].includes(contract.status)) {
+            throw new Error('Hợp đồng không ở trạng thái chờ xác nhận')
+        }
+
+        // 3. Update contract → signed
+        const { error: updateErr } = await supabase
+            .from('contracts')
+            .update({
+                status: 'signed',
+                signed_date: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', contractId)
+
+        if (updateErr) throw updateErr
+
+        // 4. Auto-tick "Hợp đồng" in work item document procedures
+        const { data: workItems } = await supabase
+            .from('project_work_items')
+            .select('id, required_documents')
+            .eq('project_id', qData.project_id)
+
+        for (const wi of workItems || []) {
+            const docs = (wi.required_documents || []).map((d: any) =>
+                (d.title?.includes('Hợp đồng') || d.title?.includes('hợp đồng'))
+                    ? { ...d, status: 'signed', date: new Date().toISOString() }
+                    : d
+            )
+            await supabase.from('project_work_items').update({ required_documents: docs }).eq('id', wi.id)
+        }
+
+        revalidatePath(`/portal/${token}`)
+        revalidatePath(`/contracts/${contractId}`)
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Error confirming contract from portal:', err)
         return { success: false, error: err.message || 'Lỗi hệ thống' }
     }
 }
