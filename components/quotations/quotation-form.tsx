@@ -1190,6 +1190,36 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                                     className="h-6 w-32 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2"
                                                                                 />
                                                                             </div>
+
+                                                                            {sectionGroups.length > 1 && (
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <span className="text-[10px] font-bold text-muted-foreground mr-1">Phần:</span>
+                                                                                    <Select
+                                                                                        value={item.section_id || ''}
+                                                                                        onValueChange={(newSectionId) => {
+                                                                                            const targetSection = sectionGroups.find(g => g.id === newSectionId)
+                                                                                            if (targetSection) {
+                                                                                                setItems(prev => prev.map(i =>
+                                                                                                    i.id === item.id
+                                                                                                        ? { ...i, section_id: newSectionId, section_name: targetSection.name }
+                                                                                                        : i
+                                                                                                ))
+                                                                                            }
+                                                                                        }}
+                                                                                    >
+                                                                                        <SelectTrigger className="h-6 w-36 text-[11px] focus:ring-1 focus:ring-offset-0 px-2">
+                                                                                            <SelectValue />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {sectionGroups.map((sg, sgIdx) => (
+                                                                                                <SelectItem key={sg.id} value={sg.id} className="text-xs">
+                                                                                                    {sgIdx + 1}. {sg.name || 'Chưa đặt tên'}
+                                                                                                </SelectItem>
+                                                                                            ))}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                </div>
+                                                                            )}
                                                                         </div>
                                                                     </div>
                                                                 </TableCell>
