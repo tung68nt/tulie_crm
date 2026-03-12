@@ -216,7 +216,6 @@ export interface Contract {
   order_number?: string
   project_id?: string
   project?: Project
-  deal_id?: string
   brand: Brand
   password_hash?: string
   created_at: string

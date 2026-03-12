@@ -53,7 +53,7 @@ function getLifecycleSteps(contract: Contract, project?: Project | null): Lifecy
             label: '1. Cơ hội',
             description: 'Tiếp nhận yêu cầu từ khách hàng',
             status: 'completed', // Always done if contract exists
-            link: contract.deal_id ? `/deals/${contract.deal_id}` : undefined,
+            link: (contract as any).quotation?.deal_id ? `/deals/${(contract as any).quotation.deal_id}` : undefined,
         },
         {
             id: 'quotation',

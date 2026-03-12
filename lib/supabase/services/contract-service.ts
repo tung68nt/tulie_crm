@@ -44,7 +44,7 @@ export async function getContractById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('contracts')
-            .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quotation_number)')
+            .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quotation_number, deal_id)')
             .eq('id', id)
             .single()
 
@@ -232,7 +232,6 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
                 start_date: new Date().toISOString().split('T')[0],
                 terms: quotation.terms,
                 created_by: (await supabase.auth.getUser()).data.user?.id,
-                deal_id: quotation.deal_id,
                 brand: quotation.brand,
                 project_id: quotation.project_id
             }])
