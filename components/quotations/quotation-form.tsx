@@ -1089,8 +1089,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                     <TableRow className="hover:bg-transparent">
                                                         <TableHead className="w-[50px]"></TableHead>
                                                         <TableHead className="pl-0 min-w-[250px]">Sản phẩm / Dịch vụ</TableHead>
-                                                        <TableHead className="min-w-[100px]">ĐVT</TableHead>
-                                                        <TableHead className="w-[70px]">SL</TableHead>
+                                                        <TableHead className="w-[70px]">ĐVT</TableHead>
+                                                        <TableHead className="w-[90px]">SL</TableHead>
                                                         <TableHead className="min-w-[140px]">Đơn giá</TableHead>
                                                         <TableHead className="w-[70px]">CK %</TableHead>
                                                         <TableHead className="min-w-[130px] text-right">Thành tiền</TableHead>
