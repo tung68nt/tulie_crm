@@ -220,10 +220,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
             <main className="max-w-6xl mx-auto px-6 mt-10 space-y-10">
                 {/* Update Info CTA — dot pattern + gradient like quotation */}
-                <div className="relative rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden text-white"
-                    style={{ backgroundImage: "linear-gradient(to right, #09090b, #171717, #404040)" }}>
-                    <div className="absolute inset-0 opacity-20 pointer-events-none"
-                        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,1)'/%3E%3C/svg%3E\")" }}>
+                <div className="relative rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden text-white bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-800">
+                    <div className="absolute inset-0 opacity-[0.15] pointer-events-none"
+                        style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px', WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)' }}>
                     </div>
                     <div className="relative z-10 space-y-2">
                         <h3 className="text-lg font-semibold tracking-tight">Cần cập nhật thông tin?</h3>
