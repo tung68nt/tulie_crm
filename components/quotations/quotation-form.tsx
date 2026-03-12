@@ -1028,9 +1028,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 sectionGroups.map((group, groupIdx) => (
                                     <div key={groupIdx} className="bg-white rounded-xl shadow-sm border overflow-hidden">
                                         {/* Section Header */}
-                                        <div className="bg-zinc-950 px-5 py-3 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                        <div className="bg-zinc-950 px-5 py-3 text-white flex flex-col sm:flex-row items-center justify-between gap-2">
                                             <div className="flex items-center gap-3 flex-1 w-full">
-                                                <div className="flex flex-col gap-0.5">
+                                                <div className="flex flex-col gap-0.5 items-center">
                                                     <Button
                                                         type="button"
                                                         variant="ghost"
@@ -1103,10 +1103,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
                                                         return group.items.map((item, itemIdx) => (
                                                             <TableRow key={item.id} className="group/row">
-                                                                <TableCell className="pl-4 py-4 align-top">
-                                                                    <div className="flex flex-col gap-1 items-center">
+                                                                <TableCell className="pl-4 py-4 align-middle">
+                                                                    <div className="flex flex-col gap-1 items-center justify-center">
                                                                         <span className="text-[10px] font-bold text-slate-400 mb-1">{globalStartIndex + itemIdx + 1}</span>
-                                                                        <div className="flex flex-col gap-1 opacity-20 group-hover/row:opacity-100 transition-opacity">
+                                                                        <div className="flex flex-col gap-1 items-center opacity-20 group-hover/row:opacity-100 transition-opacity">
                                                                             <Button
                                                                                 type="button"
                                                                                 variant="ghost"
@@ -1172,22 +1172,32 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                         />
 
                                                                         <div className="flex flex-wrap items-center gap-4 mt-2 mb-1 p-2 rounded-md bg-stone-50 border border-stone-100">
-                                                                            <div className="flex items-center space-x-2">
-                                                                                <Checkbox
-                                                                                    id={`optional-${item.id}`}
-                                                                                    checked={!!item.is_optional}
-                                                                                    onCheckedChange={(c) => updateItem(item.id!, { is_optional: c === true })}
-                                                                                />
-                                                                                <Label htmlFor={`optional-${item.id}`} className="text-[11px] font-medium leading-none cursor-pointer text-muted-foreground hover:text-foreground transition-colors">Tùy chọn (Option / Không bắt buộc)</Label>
-                                                                            </div>
-
                                                                             <div className="flex items-center gap-2">
-                                                                                <span className="text-[10px] font-bold text-muted-foreground mr-1">Thuộc phương án:</span>
+                                                                                <span className="text-[10px] font-bold text-muted-foreground">Phương án:</span>
+                                                                                <Select
+                                                                                    value={item.alternative_group || '__none__'}
+                                                                                    onValueChange={(v) => updateItem(item.id!, { alternative_group: v === '__none__' ? '' : v })}
+                                                                                >
+                                                                                    <SelectTrigger className="h-6 w-40 text-[11px] focus:ring-1 focus:ring-offset-0 px-2">
+                                                                                        <SelectValue placeholder="Chọn phương án" />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        <SelectItem value="__none__">
+                                                                                            <span className="text-muted-foreground">— Không thuộc PA nào —</span>
+                                                                                        </SelectItem>
+                                                                                        {(() => {
+                                                                                            const existingGroups = [...new Set(items.map(i => i.alternative_group).filter(Boolean))] as string[]
+                                                                                            return existingGroups.map(g => (
+                                                                                                <SelectItem key={g} value={g}>{g}</SelectItem>
+                                                                                            ))
+                                                                                        })()}
+                                                                                    </SelectContent>
+                                                                                </Select>
                                                                                 <Input
                                                                                     value={item.alternative_group || ''}
                                                                                     onChange={(e) => updateItem(item.id!, { alternative_group: e.target.value })}
-                                                                                    placeholder="VD: PA 1 / Gói Cao Cấp"
-                                                                                    className="h-6 w-32 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2"
+                                                                                    placeholder="hoặc nhập mới"
+                                                                                    className="h-6 w-28 text-[11px] focus-visible:ring-1 focus-visible:ring-offset-0 px-2"
                                                                                 />
                                                                             </div>
 
