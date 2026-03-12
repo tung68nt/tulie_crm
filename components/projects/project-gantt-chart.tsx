@@ -152,8 +152,8 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                             left: `${todayLinePosition}%`,
                                         }}
                                     >
-                                        {/* Adjusted dot position to avoid cropping */}
-                                        <div className="absolute top-[8px] left-[-5px] w-3 h-3 rounded-full bg-red-600 shadow-lg border-[3px] border-white ring-2 ring-red-500/20" />
+                                        {/* Dot at header-body intersection */}
+                                        <div className="absolute top-[54px] left-[-5px] w-3 h-3 rounded-full bg-red-600 shadow-lg border-[3px] border-white ring-2 ring-red-500/20" />
                                     </div>
                                 )}
 
