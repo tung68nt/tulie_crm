@@ -616,7 +616,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 unit_price: Number(item.unit_price) || 0,
                 discount: Number(item.discount) || 0,
                 total_price: Number(item.total_price) || 0,
-                sort_order: Number(item.sort_order) || 0
+                sort_order: Number(item.sort_order) || 0,
+                alternative_group: item.alternative_group || null,
+                is_optional: item.is_optional || false,
             }))
 
             await updateQuotation(quotation.id, updateData, cleanedItems)
