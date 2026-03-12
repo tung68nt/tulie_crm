@@ -67,7 +67,7 @@ export function StudioBookingForm() {
     const totalAmount = selectedPackage.price + (needShipping ? 30000 : 0) // Giả sử phí ship 30k
 
     // Link tạo QR qua SePay nếu cần sau này (demo cứng theo totalAmount)
-    const qrUrl = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${totalAmount}&des=THANH TOAN DON ANH THE`
+    const qrUrl = `https://qr.sepay.vn/img?acc=104002106705&bank=ICB&amount=${totalAmount}&des=SEVQR TLS DON ANH THE`
 
     return (
         <div className="max-w-3xl mx-auto py-8 px-4">
@@ -325,7 +325,7 @@ export function StudioBookingForm() {
                             <h2 className="text-xl font-bold flex items-center gap-2">
                                 <CreditCard className="h-5 w-5 text-primary" /> Xác nhận & Thanh toán
                             </h2>
-                            <p className="text-muted-foreground font-medium text-sm">Kiểm tra thông tin và dùng Ứng dụng Ngân hàng quét thẻ để hoàn tất đơn đặt hàng.</p>
+                            <p className="text-muted-foreground font-medium text-sm">Kiểm tra thông tin và dùng Ứng dụng Ngân hàng quét mã để thanh toán.</p>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-8">
@@ -368,6 +368,21 @@ export function StudioBookingForm() {
                                         <p><span className="font-semibold text-muted-foreground">Giao đến:</span> {customer.address}</p>
                                     )}
                                 </div>
+
+                                {/* Bank Info */}
+                                <div className="border-t pt-4 space-y-2">
+                                    <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Thông tin chuyển khoản</p>
+                                    <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-sm">
+                                        <span className="text-muted-foreground">Ngân hàng:</span>
+                                        <span className="font-bold">Vietinbank</span>
+                                        <span className="text-muted-foreground">Số TK:</span>
+                                        <span className="font-bold font-mono tracking-wider">104002106705</span>
+                                        <span className="text-muted-foreground">Chủ TK:</span>
+                                        <span className="font-bold">NGHIEM THI LIEN</span>
+                                        <span className="text-muted-foreground">Nội dung:</span>
+                                        <span className="font-bold font-mono text-primary">SEVQR TLS DON ANH THE</span>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* QR Payment */}
@@ -378,6 +393,9 @@ export function StudioBookingForm() {
                                 <h3 className="font-bold text-center">Quét mã QR để thanh toán</h3>
                                 <p className="text-sm text-center text-muted-foreground font-medium">Tự động điền tiền và nội dung.</p>
                                 <img src={qrUrl} alt="Payment QR Code" className="w-56 h-56 rounded-lg border shadow-sm mix-blend-multiply" />
+                                <p className="text-xs text-center text-muted-foreground font-medium">
+                                    Mở app Ngân hàng → Quét QR → Xác nhận chuyển khoản
+                                </p>
                             </div>
                         </div>
 
@@ -386,7 +404,7 @@ export function StudioBookingForm() {
                                 <ArrowLeft className="mr-2 h-4 w-4" /> Quay lại sửa
                             </Button>
                             <Button size="lg" className="font-bold" onClick={() => window.location.href = '/portal/order/success'}>
-                                Đã thanh toán & Hoàn tất <ArrowRight className="ml-2 h-4 w-4" />
+                                Tôi đã chuyển khoản <CheckCircle2 className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
                     </div>

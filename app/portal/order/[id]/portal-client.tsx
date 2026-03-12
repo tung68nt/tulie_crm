@@ -159,13 +159,13 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                         </div>
 
                         {/* Order Items */}
-                        {items.length > 0 && (
-                            <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-                                <div className="p-5 border-b border-zinc-100">
-                                    <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Chi tiết đơn hàng</h2>
-                                </div>
-                                <div className="divide-y divide-zinc-100">
-                                    {items.map((item: any, i: number) => (
+                        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+                            <div className="p-5 border-b border-zinc-100">
+                                <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Danh sách sản phẩm / dịch vụ</h2>
+                            </div>
+                            <div className="divide-y divide-zinc-100">
+                                {items.length > 0 ? (
+                                    items.map((item: any, i: number) => (
                                         <div key={item.id || i} className="px-5 py-4 flex items-center justify-between gap-4">
                                             <div className="min-w-0 flex-1">
                                                 <p className="text-sm font-semibold text-zinc-900 truncate">{item.product_name}</p>
@@ -177,16 +177,28 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                                 {formatCurrency(item.total_price || item.quantity * item.unit_price)}
                                             </p>
                                         </div>
-                                    ))}
-                                </div>
-                                {order.shipping_fee > 0 && (
-                                    <div className="px-5 py-3 border-t border-zinc-100 flex items-center justify-between bg-zinc-50/50">
-                                        <p className="text-sm text-muted-foreground">Phí vận chuyển</p>
-                                        <p className="text-sm font-semibold text-zinc-700 tabular-nums">{formatCurrency(order.shipping_fee)}</p>
+                                    ))
+                                ) : (
+                                    <div className="px-5 py-4 flex items-center justify-between gap-4">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-sm font-semibold text-zinc-900">Dịch vụ Studio</p>
+                                            {order.notes && (
+                                                <p className="text-[12px] text-muted-foreground mt-0.5 line-clamp-2">{order.notes}</p>
+                                            )}
+                                        </div>
+                                        <p className="text-sm font-bold text-zinc-900 tabular-nums whitespace-nowrap">
+                                            {formatCurrency(order.total_amount - (order.shipping_fee || 0))}
+                                        </p>
                                     </div>
                                 )}
                             </div>
-                        )}
+                            {order.shipping_fee > 0 && (
+                                <div className="px-5 py-3 border-t border-zinc-100 flex items-center justify-between bg-zinc-50/50">
+                                    <p className="text-sm text-muted-foreground">Phí vận chuyển</p>
+                                    <p className="text-sm font-semibold text-zinc-700 tabular-nums">{formatCurrency(order.shipping_fee)}</p>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Payment Summary */}
                         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">

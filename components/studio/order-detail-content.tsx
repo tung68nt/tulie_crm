@@ -20,15 +20,21 @@ import {
     Sparkles,
     Download,
     QrCode,
-    History
+    History,
+    Send,
+    Building2,
+    Copy
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
 import { getBankAccounts } from '@/lib/supabase/services/settings-service'
+import { generatePaymentContent } from '@/lib/supabase/services/payment-service'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
+import { PaymentWatcher } from './payment-watcher'
 
 interface OrderDetailContentProps {
     order: RetailOrder
@@ -38,6 +44,8 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const [isSavingLinks, setIsSavingLinks] = useState(false)
     const [isRecordingPayment, setIsRecordingPayment] = useState(false)
     const [paymentAmount, setPaymentAmount] = useState('')
+    const [isConfirmingTransfer, setIsConfirmingTransfer] = useState(false)
+    const [transferConfirmed, setTransferConfirmed] = useState(false)
     const [availableBanks, setAvailableBanks] = useState<any[]>([])
     const [links, setLinks] = useState({
         demo_link: order.demo_link || '',
@@ -59,12 +67,14 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         account_no: availableBanks[0].account_no,
         account_name: availableBanks[0].account_name
     } : {
-        bank_name: 'MB',
+        bank_name: 'ICB',
         account_no: '104002106705',
-        account_name: 'CONG TY TNHH TULIE'
+        account_name: 'NGHIEM THI LIEN'
     })
 
-    const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: 'THANH TOAN ' + order.order_number })
+    const router = useRouter()
+    const paymentContent = generatePaymentContent(order.order_number, 'studio')
+    const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: paymentContent })
 
     const handleSaveLinks = async () => {
         if (links.demo_link === order.demo_link && links.resource_link === order.resource_link) {
@@ -180,13 +190,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
                 {/* Product/Service List */}
                 <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
-                    <CardHeader className="bg-zinc-50/50 border-b py-4">
+                    <CardHeader className="bg-zinc-50/50 border-b">
                         <div className="space-y-1">
-                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                                <FileText className="h-4 w-4 text-zinc-500" />
+                            <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-primary" />
                                 Chi tiết sản phẩm & dịch vụ
                             </CardTitle>
-                            <CardDescription className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider italic">Danh sách các hạng mục khách hàng đã đăng ký</CardDescription>
+                            <CardDescription className="text-xs font-normal">Danh sách các hạng mục khách hàng đã đăng ký</CardDescription>
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
@@ -317,11 +327,11 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
             </div>
 
             <div className="space-y-6">
-                {/* Payment Card */}
+                {/* Payment Card with Real-time Watcher */}
                 <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
                     <CardHeader className="bg-zinc-50/50 border-b pb-3">
                         <Badge variant="outline" className="w-fit mb-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
-                            Thanh toán
+                            Thanh toán Real-time
                         </Badge>
                         <CardTitle className="text-3xl font-bold tracking-tighter tabular-nums">
                             {formatCurrency(remainingAmount)}
@@ -330,53 +340,118 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                     </CardHeader>
 
                     <CardContent className="space-y-5 pt-5">
-                        <div className="p-4 rounded-xl bg-muted/30 border space-y-3">
-                            <div className="flex justify-between items-center text-sm font-medium">
-                                <span className="text-muted-foreground">Tổng giá trị đơn</span>
-                                <span className="text-foreground">{formatCurrency(order.total_amount)}</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm font-medium">
-                                <span className="text-emerald-600">Đã thu hồi</span>
-                                <span className="text-emerald-600">{formatCurrency(order.paid_amount || 0)}</span>
-                            </div>
-                            <Separator />
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-muted-foreground font-semibold uppercase">Trạng thái</span>
-                                {remainingAmount <= 0 ? (
-                                    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 font-bold px-2 hover:bg-emerald-100">ĐÃ XONG</Badge>
-                                ) : (
-                                    <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50 font-bold px-2">CHƯA ĐỦ</Badge>
-                                )}
-                            </div>
-                        </div>
+                        {/* Real-time Payment Watcher */}
+                        <PaymentWatcher
+                            orderId={order.id}
+                            orderNumber={order.order_number}
+                            totalAmount={order.total_amount}
+                            initialPaidAmount={order.paid_amount || 0}
+                            initialPaymentStatus={order.payment_status}
+                            onPaymentReceived={() => router.refresh()}
+                        />
 
                         {remainingAmount > 0 && (
-                            <div className="flex flex-col items-center gap-3 p-4 rounded-xl border bg-muted/20">
-                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-tight text-muted-foreground">
-                                    <QrCode className="h-4 w-4" />
-                                    Mã QR thanh toán nhanh
-                                </div>
-                                <div className="p-2 bg-white rounded-xl border">
-                                    <img src={qrUrl} alt="QR Code" className="w-44 h-auto" />
-                                </div>
-                                <p className="text-[10px] text-muted-foreground text-center leading-relaxed font-medium">
-                                    Gửi mã này cho khách để quét bằng app Ngân hàng.
-                                </p>
-                            </div>
-                        )}
+                            <>
+                                <Separator />
 
-                        {remainingAmount <= 0 && (
-                            <div className="flex flex-col items-center justify-center py-4 space-y-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                                    <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                                {/* Bank Info */}
+                                <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-100 space-y-1.5">
+                                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600">
+                                        <Building2 className="h-3 w-3" />
+                                        Thông tin chuyển khoản
+                                    </div>
+                                    <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                                        <span className="text-muted-foreground font-medium">Ngân hàng:</span>
+                                        <span className="font-bold">Vietinbank (VietinBank)</span>
+                                        <span className="text-muted-foreground font-medium">Số TK:</span>
+                                        <span className="font-bold font-mono tracking-wider flex items-center gap-1.5">
+                                            {bankInfo.account_no}
+                                            <button onClick={() => { navigator.clipboard.writeText(bankInfo.account_no); toast.success('Đã copy STK') }} className="text-muted-foreground hover:text-foreground transition-colors">
+                                                <Copy className="h-3 w-3" />
+                                            </button>
+                                        </span>
+                                        <span className="text-muted-foreground font-medium">Chủ TK:</span>
+                                        <span className="font-bold">{bankInfo.account_name}</span>
+                                        <span className="text-muted-foreground font-medium">Nội dung:</span>
+                                        <span className="font-bold font-mono text-primary flex items-center gap-1.5">
+                                            {paymentContent}
+                                            <button onClick={() => { navigator.clipboard.writeText(paymentContent); toast.success('Đã copy nội dung CK') }} className="text-muted-foreground hover:text-foreground transition-colors">
+                                                <Copy className="h-3 w-3" />
+                                            </button>
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-sm font-bold text-emerald-700 tracking-tight">CÔNG NỢ ĐÃ HOÀN TẤT</p>
-                            </div>
+
+                                {/* QR Code */}
+                                <div className="flex flex-col items-center gap-3 p-4 rounded-xl border bg-muted/20">
+                                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-tight text-muted-foreground">
+                                        <QrCode className="h-4 w-4" />
+                                        Mã QR thanh toán nhanh
+                                    </div>
+                                    <div className="p-2 bg-white rounded-xl border">
+                                        <img src={qrUrl} alt="QR Code" className="w-44 h-auto" />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground text-center leading-relaxed font-medium">
+                                        Gửi mã này cho khách để quét bằng app Ngân hàng.
+                                    </p>
+                                </div>
+
+                                {/* Customer: Tôi đã chuyển khoản */}
+                                <Separator />
+                                {transferConfirmed ? (
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+                                        <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+                                        <div>
+                                            <p className="text-sm font-bold text-emerald-700">Đã gửi yêu cầu xác nhận!</p>
+                                            <p className="text-xs text-emerald-600 mt-0.5">Team sẽ kiểm tra sao kê và ghi nhận thanh toán. Nếu hệ thống auto-check được thì sẽ cập nhật tự động.</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        onClick={async () => {
+                                            setIsConfirmingTransfer(true)
+                                            try {
+                                                const res = await fetch('/api/studio/confirm-transfer', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        order_id: order.id,
+                                                        order_number: order.order_number,
+                                                        customer_name: order.customer_name,
+                                                        customer_phone: order.customer_phone,
+                                                        amount: remainingAmount,
+                                                    })
+                                                })
+                                                const data = await res.json()
+                                                if (res.ok) {
+                                                    toast.success('✅ ' + data.message)
+                                                    setTransferConfirmed(true)
+                                                } else {
+                                                    toast.error(data.error || 'Có lỗi xảy ra')
+                                                }
+                                            } catch (err) {
+                                                toast.error('Không thể gửi yêu cầu. Thử lại sau.')
+                                            }
+                                            setIsConfirmingTransfer(false)
+                                        }}
+                                        disabled={isConfirmingTransfer}
+                                        variant="outline"
+                                        className="w-full h-11 rounded-lg font-bold border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                                    >
+                                        {isConfirmingTransfer ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : (
+                                            <Send className="mr-2 h-4 w-4" />
+                                        )}
+                                        Tôi đã chuyển khoản — Yêu cầu xác nhận
+                                    </Button>
+                                )}
+                            </>
                         )}
                     </CardContent>
                 </Card>
 
-                {/* Record Payment Section */}
+                {/* Record Payment Section (Manual) */}
                 {remainingAmount > 0 && (
                     <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
                         <CardHeader className="pb-3 bg-zinc-50/30">

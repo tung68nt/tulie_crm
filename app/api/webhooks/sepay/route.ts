@@ -1,34 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { recordRetailPayment, getRetailOrders } from '@/lib/supabase/services/retail-order-service'
-import { recordInvoicePayment } from '@/lib/supabase/services/invoice-service'
-import { sendTelegramNotification } from '@/lib/supabase/services/telegram-service'
-import { verifySepaySignature, getSystemSetting } from '@/lib/supabase/services/settings-service'
+import { processWebhookPayment, SepayWebhookPayload } from '@/lib/supabase/services/payment-service'
+import { getSystemSetting, verifySepaySignature } from '@/lib/supabase/services/settings-service'
 
 /**
  * SePay Webhook Handler
- * Standard SePay payload fields: 
- * - id: Transaction ID
- * - content: Transfer description
- * - transferAmount: Amount transferred
- * - transferType: "in" or "out"
- * - gateway: Bank name
+ * Nhận thông báo giao dịch real-time từ SePay
+ * 
+ * Luồng xử lý:
+ * 1. Xác thực API Key / HMAC
+ * 2. Lưu giao dịch vào payment_transactions (idempotent)
+ * 3. Phân biệt hệ thống: TLS = Tulie Studio, TLL = Tulie Lab
+ * 4. Match đơn hàng retail (B2C) hoặc invoice (B2B)
+ * 5. Cập nhật payment_status & ghi activity_log
+ * 
+ * SePay Timeout: Connection 5s, Response 8s
+ * Response format: {"success": true} + HTTP 200/201
  */
 export async function POST(req: NextRequest) {
     try {
-        const payload = await req.json()
-        const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
+        const payload: SepayWebhookPayload = await req.json()
         const authHeader = req.headers.get('authorization') || req.headers.get('x-api-key')
+        const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
 
-        // Log webhook receipt without sensitive details
-        console.log('SePay Webhook Received: txn_id=', payload?.id)
+        console.log(`[SePay Webhook] Received: txn_id=${payload?.id}, type=${payload?.transferType}`)
 
-        // 1. Verify API Key / Token — MANDATORY
+        // 1. Verify API Key — MANDATORY
         const telegramConfig = await getSystemSetting('telegram_config')
         const storedApiKey = telegramConfig?.sepay_api_key
 
         if (!storedApiKey) {
-            console.error('SePay Webhook: No API key configured in system settings')
+            console.error('[SePay Webhook] No API key configured in system settings')
             return NextResponse.json({ success: false, message: 'Webhook not configured' }, { status: 503 })
         }
 
@@ -44,110 +45,39 @@ export async function POST(req: NextRequest) {
             const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
 
             if (cleanReceivedKey !== cleanStoredKey) {
+                console.warn('[SePay Webhook] API key mismatch')
                 return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
             }
         }
 
-        // 2. Verify HMAC Signature (if provided, must be valid)
+        // 2. Verify HMAC Signature (if provided)
         if (signature) {
             const isValid = await verifySepaySignature(payload, signature)
             if (!isValid) {
-                return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+                return NextResponse.json({ success: false, message: 'Invalid signature' }, { status: 401 })
             }
         }
 
-        const { content, transferAmount, transferType, id: transactionId, description: payloadDescription, code: paymentCode } = payload
+        // 3. Process payment via service
+        const result = await processWebhookPayment(payload)
 
-        // Only process incoming transfers
-        if (transferType !== 'in') {
-            return NextResponse.json({ message: 'Ignored: Not an incoming transfer' }, { status: 200 })
-        }
+        console.log(`[SePay Webhook] Processed: matched=${result.matched}, order=${result.orderNumber}, system=${result.sourceSystem}`)
 
-        const description = (content || payloadDescription || '').trim().toUpperCase()
-        const amount = parseFloat(transferAmount)
-
-        if (isNaN(amount)) {
-            return NextResponse.json({ message: 'Invalid payload: missing amount' }, { status: 400 })
-        }
-
-        // 1. Try to match Retail Order (B2C)
-        // Standard pattern: DH_YY_MMDD_STT_VALUE or just order_number
-        // We look for DH_XX_XXXX_XXX_XXX in the description
-        // Match pattern: DH_YY_MMDD_STT_VALUE or just order_number
-        const orderCodePattern = /DH_\d{2}_\d{4}_\d+_\d+/i
-        let orderNumber: string | null = null
-
-        const match = description.match(orderCodePattern) || (paymentCode ? paymentCode.match(orderCodePattern) : null)
-        if (match) {
-            orderNumber = match[0].toUpperCase()
-            const supabase = await createClient()
-            const { data: order } = await supabase
-                .from('retail_orders')
-                .select('id, order_number')
-                .eq('order_number', orderNumber)
-                .single()
-
-            if (order) {
-                await recordRetailPayment(order.id, amount)
-                await logWebhookTransaction(transactionId, 'retail_order', order.id, amount, description)
-                return NextResponse.json({ success: true, matched: 'retail_order', order: orderNumber })
-            }
-        }
-
-        // 2. Try to match B2B Invoice
-        // Standard pattern: HD-XXXX, INV-XXXX, or whatever you use
-        // In this CRM, we often use HĐ-YY-XXX or IV-XXXX
-        const invoiceMatch = description.match(/(HD|IV|INV|HĐ)[-\s]\d+/)
-        if (invoiceMatch) {
-            const invoiceNumber = invoiceMatch[0].replace(/\s/g, '-') // Normalize
-            const supabase = await createClient()
-            const { data: invoice } = await supabase
-                .from('invoices')
-                .select('id, invoice_number')
-                .eq('invoice_number', invoiceNumber)
-                .single()
-
-            if (invoice) {
-                await recordInvoicePayment(invoice.id, amount, `Auto-matched via SePay: ${transactionId}`)
-                await logWebhookTransaction(transactionId, 'invoice', invoice.id, amount, description)
-                return NextResponse.json({ success: true, matched: 'invoice', invoice: invoiceNumber })
-            }
-        }
-
-        // 3. Fallback: Notify Telegram that a payment was received but not matched
-        await sendTelegramNotification(`
-<b>⚠️ THANH TOÁN KHÔNG TỰ ĐỘNG KHỚP</b>
-━━━━━━━━━━━━━━━━━━
-💰 Số tiền: <b>+${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)}</b>
-📝 Nội dung: <code>${description}</code>
-🏦 Giao dịch: ${transactionId}
-━━━━━━━━━━━━━━━━━━
-<i>Vui lòng kiểm tra và ghi nhận thủ công!</i>`, 'notify_unmatched_payment')
-
-        return NextResponse.json({ success: false, message: 'Could not match order/invoice' }, { status: 200 })
+        // SePay requires: {"success": true} + HTTP 200
+        return NextResponse.json({
+            success: true,
+            matched: result.matched,
+            order: result.orderNumber,
+        })
 
     } catch (err: any) {
-        console.error('Webhook Error:', err)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-    }
-}
+        console.error('[SePay Webhook] Error:', err)
 
-async function logWebhookTransaction(externalId: string, type: string, internalId: string, amount: number, content: string) {
-    try {
-        const supabase = await createClient()
-        await supabase.from('activity_log').insert([{
-            entity_type: type === 'invoice' ? 'invoice' : 'customer',
-            entity_id: internalId,
-            action: 'update',
-            details: {
-                event: 'webhook_payment',
-                gateway: 'sepay',
-                external_id: externalId,
-                amount,
-                description: content
-            }
-        }])
-    } catch (e) {
-        console.error('Failed to log webhook transaction:', e)
+        // Return 200 for known error types so SePay stops retrying
+        if (err.message?.includes('already') || err.message?.includes('not found')) {
+            return NextResponse.json({ success: true, message: err.message })
+        }
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }
