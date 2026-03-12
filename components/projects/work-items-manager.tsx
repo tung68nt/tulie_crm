@@ -171,6 +171,17 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
         })
     }
 
+    const handleRename = async (id: string, title: string) => {
+        startTransition(async () => {
+            try {
+                await updateWorkItem(id, { title })
+                router.refresh()
+            } catch (err: any) {
+                toast.error(`Lỗi đổi tên: ${err?.message || 'Thử lại sau'}`)
+            }
+        })
+    }
+
     const quotations = project.quotations || []
     const contracts = project.contracts || []
 
@@ -292,6 +303,7 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                             onToggle={() => toggleExpand(item.id)}
                             onDelete={() => handleDelete(item.id)}
                             onStatusChange={(status) => handleUpdateStatus(item.id, status)}
+                            onRename={(title) => handleRename(item.id, title)}
                             project={project}
                             onEditDoc={setActiveEditDocId}
                         />
@@ -316,10 +328,10 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
 
 /* ===== Single Work Item Row ===== */
 function WorkItemRow({
-    item, idx, isExpanded, onToggle, onDelete, onStatusChange, project, onEditDoc
+    item, idx, isExpanded, onToggle, onDelete, onStatusChange, onRename, project, onEditDoc
 }: {
     item: any; idx: number; isExpanded: boolean; onToggle: () => void;
-    onDelete: () => void; onStatusChange: (s: string) => void;
+    onDelete: () => void; onStatusChange: (s: string) => void; onRename: (title: string) => void;
     project: any; onEditDoc: (docId: string) => void;
 }) {
     const [isPending, startTransition] = useTransition()
@@ -327,6 +339,8 @@ function WorkItemRow({
     const [newLinkLabel, setNewLinkLabel] = useState('')
     const [newLinkUrl, setNewLinkUrl] = useState('')
     const [showBundleDialog, setShowBundleDialog] = useState(false)
+    const [isRenaming, setIsRenaming] = useState(false)
+    const [renameValue, setRenameValue] = useState(item.title)
     const router = useRouter()
 
     // Compute all quotation IDs from metadata or primary
@@ -511,7 +525,40 @@ function WorkItemRow({
                     {idx + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{item.title}</p>
+                    {isRenaming ? (
+                        <Input
+                            autoFocus
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && renameValue.trim()) {
+                                    onRename(renameValue.trim())
+                                    setIsRenaming(false)
+                                } else if (e.key === 'Escape') {
+                                    setRenameValue(item.title)
+                                    setIsRenaming(false)
+                                }
+                            }}
+                            onBlur={() => {
+                                if (renameValue.trim() && renameValue.trim() !== item.title) {
+                                    onRename(renameValue.trim())
+                                }
+                                setIsRenaming(false)
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="h-7 text-sm font-semibold"
+                        />
+                    ) : (
+                        <p
+                            className="text-sm font-semibold truncate cursor-text"
+                            onDoubleClick={(e) => {
+                                e.stopPropagation()
+                                setRenameValue(item.title)
+                                setIsRenaming(true)
+                            }}
+                            title="Nhấp đúp để đổi tên"
+                        >{item.title}</p>
+                    )}
                     {item.description && <p className="text-xs text-muted-foreground truncate">{item.description}</p>}
                 </div>
                 <div className="flex items-center gap-3">
