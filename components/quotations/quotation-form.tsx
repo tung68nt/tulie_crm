@@ -1068,12 +1068,14 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                 </TableCell>
                                                                 <TableCell className="align-top py-4">
                                                                     <div className="space-y-2">
-                                                                        <div className="flex gap-1">
-                                                                            <ProductCombobox
-                                                                                products={products || []}
-                                                                                value={item.product_id || ''}
-                                                                                onSelect={(v) => updateItem(item.id!, { product_id: v })}
-                                                                            />
+                                                                        <div className="flex gap-1 items-center">
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <ProductCombobox
+                                                                                    products={products || []}
+                                                                                    value={item.product_id || ''}
+                                                                                    onSelect={(v) => updateItem(item.id!, { product_id: v })}
+                                                                                />
+                                                                            </div>
                                                                             {item.product_id && (
                                                                                 <Button
                                                                                     type="button"
@@ -1083,9 +1085,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                                         updateItem(item.id!, { product_id: '', product_name: '' })
                                                                                     }}
                                                                                     title="Xóa lựa chọn"
-                                                                                    className="h-9 w-9 shrink-0"
+                                                                                    className="h-7 w-7 shrink-0 text-zinc-400 hover:text-red-500"
                                                                                 >
-                                                                                    <X className="h-4 w-4" />
+                                                                                    <X className="h-3.5 w-3.5" />
                                                                                 </Button>
                                                                             )}
                                                                         </div>
