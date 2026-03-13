@@ -39,7 +39,7 @@ import {
 import { getGeneratedDocumentById } from '@/lib/supabase/services/document-template-service'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { CustomerInfoForm } from '@/components/portal/customer-info-form'
+import { CustomerInfoForm, isCustomerInfoComplete } from '@/components/portal/customer-info-form'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
@@ -221,7 +221,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             </div>
 
             <main className="max-w-6xl mx-auto px-6 mt-10 space-y-10">
-                {/* Update Info CTA — dot pattern + gradient like quotation */}
+                {/* Update Info CTA — hidden when all fields are filled */}
+                {!isCustomerInfoComplete(customer) && (
                 <div className="relative rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden text-white bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-800">
                     <div className="absolute inset-0 opacity-[0.15] pointer-events-none"
                         style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px)', backgroundSize: '16px 16px', WebkitMaskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%)' }}>
@@ -253,11 +254,16 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                         router.refresh()
                                         toast.success('Đã cập nhật thông tin thành công!')
                                     }}
+                                    onDraftSave={() => {
+                                        setIsDialogOpen(false)
+                                        router.refresh()
+                                    }}
                                 />
                             </div>
                         </DialogContent>
                     </Dialog>
                 </div>
+                )}
 
                 {/* Lifecycle Status Banner */}
                 {(() => {

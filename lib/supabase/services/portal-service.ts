@@ -311,3 +311,48 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
         return { success: false, error: err.message }
     }
 }
+
+/**
+ * Save customer info as draft (partial save, does NOT lock profile)
+ * Allows customers to fill in data incrementally
+ */
+export async function savePortalCustomerInfoDraft(token: string, customerId: string, updateData: any) {
+    try {
+        const supabase = await createClient()
+
+        const { data: qData } = await supabase
+            .from('quotations')
+            .select('customer_id')
+            .eq('public_token', token)
+            .single()
+
+        if (!qData || qData.customer_id !== customerId) {
+            throw new Error('Unauthorized or invalid token.')
+        }
+
+        // Only update non-empty fields, keep is_info_unlocked = true
+        const fieldsToUpdate: Record<string, any> = {}
+        const allowedFields = ['company_name', 'representative', 'position', 'tax_code', 'email', 'phone', 'address', 'invoice_address']
+        for (const field of allowedFields) {
+            if (updateData[field] !== undefined && updateData[field] !== '') {
+                fieldsToUpdate[field] = updateData[field]
+            }
+        }
+
+        if (Object.keys(fieldsToUpdate).length === 0) {
+            return { success: true }
+        }
+
+        const { error } = await supabase
+            .from('customers')
+            .update(fieldsToUpdate)
+            .eq('id', customerId)
+
+        if (error) throw error
+
+        return { success: true }
+    } catch (err: any) {
+        console.error('Error saving customer info draft:', err)
+        return { success: false, error: err.message }
+    }
+}
