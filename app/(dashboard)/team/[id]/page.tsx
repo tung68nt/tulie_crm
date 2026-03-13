@@ -20,13 +20,13 @@ import {
 } from 'lucide-react'
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 export default async function TeamMemberDetailPage({ params }: PageProps) {
-    const { id } = params
+    const { id } = await params
     const member = await getUserById(id)
 
     if (!member) {
