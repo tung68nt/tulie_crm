@@ -57,13 +57,13 @@ export default async function ProjectDetailPage({ params }: any) {
                         </Link>
                     </Button>
                     <div>
-                        <div className="flex items-center gap-3">
-                            <h1 className="text-3xl font-bold">{project.title}</h1>
+                        <h1 className="text-3xl font-bold">{project.title}</h1>
+                        <div className="flex items-center gap-2 mt-2">
                             <Badge className={PROJECT_STATUS_COLORS[project.status as keyof typeof PROJECT_STATUS_LABELS] || 'bg-gray-100'}>
                                 {PROJECT_STATUS_LABELS[project.status as keyof typeof PROJECT_STATUS_LABELS] || project.status}
                             </Badge>
                         </div>
-                        <p className="text-muted-foreground">
+                        <p className="text-muted-foreground mt-1">
                             Khách hàng: <Link href={`/customers/${project.customer?.id}`} className="hover:underline font-medium">{project.customer?.company_name}</Link>
                         </p>
                     </div>

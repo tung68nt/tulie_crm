@@ -212,7 +212,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <div className="flex flex-col items-center md:items-end">
                         <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200 mt-2">
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200 mt-3">
                             <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-zinc-900" : "bg-zinc-400")} />
                             <span className="text-xs font-semibold text-zinc-600">{projectStatusLabel}</span>
                         </div>
