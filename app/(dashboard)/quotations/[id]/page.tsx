@@ -402,10 +402,10 @@ export default function QuotationDetailPage() {
                                                                     )}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap py-3">{item.unit}</TableCell>
-                                                            <TableCell className="text-center text-sm font-medium text-foreground py-3">{item.quantity}</TableCell>
-                                                            <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap py-3">{formatCurrency(item.unit_price)}</TableCell>
-                                                            <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap py-3">{formatCurrency(item.total_price)}</TableCell>
+                                                            <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap py-3 align-top">{item.unit}</TableCell>
+                                                            <TableCell className="text-center text-sm font-medium text-foreground py-3 align-top">{item.quantity}</TableCell>
+                                                            <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap py-3 align-top">{formatCurrency(item.unit_price)}</TableCell>
+                                                            <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap py-3 align-top">{formatCurrency(item.total_price)}</TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </React.Fragment>
