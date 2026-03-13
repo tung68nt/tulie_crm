@@ -224,22 +224,44 @@ export async function generateDocument(
                     ...data,
                     items: data.quotation?.items || []
                 }
+
+                // Auto-save snapshot if contract doesn't have one yet
+                if (!data.customer_snapshot && customer) {
+                    const snapshot = {
+                        company_name: customer.company_name,
+                        tax_code: customer.tax_code,
+                        email: customer.email,
+                        phone: customer.phone,
+                        address: customer.address,
+                        invoice_address: customer.invoice_address,
+                        representative: customer.representative,
+                        position: customer.position,
+                    }
+                    await supabase
+                        .from('contracts')
+                        .update({ customer_snapshot: snapshot })
+                        .eq('id', contractId)
+                    contract.customer_snapshot = snapshot
+                }
             }
         }
 
         const now = new Date()
 
+        // Use snapshot from contract if available, otherwise live customer data
+        const custData = contract?.customer_snapshot || customer
+
         // Build variables map
         const variables: Record<string, string> = {
-            // Customer variables
-            customer_company: customer.company_name || customer.name || '',
-            customer_address: customer.address || '',
-            customer_tax_code: customer.tax_code || '',
-            customer_email: customer.email || '',
-            customer_phone: customer.phone || '',
-            customer_representative: customer.representative || '',
-            customer_position: customer.position || '',
-            customer_invoice_address: customer.invoice_address || customer.address || '',
+            // Customer variables (from snapshot or live)
+            customer_company: custData.company_name || customer.company_name || '',
+            customer_address: custData.address || customer.address || '',
+            customer_tax_code: custData.tax_code || customer.tax_code || '',
+            customer_email: custData.email || customer.email || '',
+            customer_phone: custData.phone || customer.phone || '',
+            customer_representative: custData.representative || customer.representative || '',
+            customer_position: custData.position || customer.position || '',
+            customer_invoice_address: custData.invoice_address || custData.address || customer.address || '',
 
             // Provider variables
             provider_company: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',

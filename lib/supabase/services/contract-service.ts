@@ -63,6 +63,18 @@ export async function getContractById(id: string) {
 export async function createContract(contract: Partial<Contract>, milestones: Partial<ContractMilestone>[]) {
     const supabase = await createClient()
 
+    // Auto-snapshot customer info if customer_id is provided and no snapshot exists
+    if (contract.customer_id && !contract.customer_snapshot) {
+        const { data: custData } = await supabase
+            .from('customers')
+            .select('company_name, tax_code, email, phone, address, invoice_address, representative, position')
+            .eq('id', contract.customer_id)
+            .single()
+        if (custData) {
+            contract.customer_snapshot = custData
+        }
+    }
+
     // 1. Insert contract
     const { data: contractData, error: contractError } = await supabase
         .from('contracts')
@@ -217,7 +229,19 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
         const nextNum = (countRes.count || 0) + 1
         const formattedNum = `${prefix}-${dateStr}-${nextNum.toString().padStart(3, '0')}`
 
-        // 3. Create Contract/Order
+        // 3. Snapshot customer info from quotation join
+        const customerSnapshot = quotation.customer ? {
+            company_name: quotation.customer.company_name,
+            tax_code: quotation.customer.tax_code,
+            email: quotation.customer.email,
+            phone: quotation.customer.phone,
+            address: quotation.customer.address,
+            invoice_address: quotation.customer.invoice_address,
+            representative: quotation.customer.representative,
+            position: quotation.customer.position,
+        } : null
+
+        // 4. Create Contract/Order
         const { data: contract, error: cError } = await supabase
             .from('contracts')
             .insert([{
@@ -233,7 +257,8 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
                 terms: quotation.terms,
                 created_by: (await supabase.auth.getUser()).data.user?.id,
                 brand: quotation.brand,
-                project_id: quotation.project_id
+                project_id: quotation.project_id,
+                customer_snapshot: customerSnapshot,
             }])
             .select()
             .single()

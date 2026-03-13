@@ -189,6 +189,18 @@ export interface QuotationItem {
   alternative_group?: string | null
 }
 
+// Customer Snapshot (frozen at contract creation time)
+export interface CustomerSnapshot {
+  company_name: string
+  tax_code?: string
+  email?: string
+  phone?: string
+  address?: string
+  invoice_address?: string
+  representative?: string
+  position?: string
+}
+
 // Contract Types
 export type ContractStatus = 'draft' | 'sent' | 'viewed' | 'signed' | 'active' | 'completed' | 'cancelled' | 'suspended'
 
@@ -218,6 +230,7 @@ export interface Contract {
   project?: Project
   brand: Brand
   password_hash?: string
+  customer_snapshot?: CustomerSnapshot
   created_at: string
   updated_at: string
 }
