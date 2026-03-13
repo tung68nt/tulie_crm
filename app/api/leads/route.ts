@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
+import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitize'
+import { applyScopeFilter } from '@/lib/security/permissions'
 
 // Use anon key for public form submissions only
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
     try {
         // Rate limit: 5 submissions per minute per IP
         const ip = getClientIp(req)
-        const rateLimitResult = checkRateLimit(ip, {
+        const rateLimitResult = await checkRateLimit(ip, {
             maxRequests: 5,
             windowSeconds: 60,
             keyPrefix: 'leads:post',
@@ -81,13 +82,44 @@ export async function POST(req: Request) {
 }
 
 /**
+ * GET /api/leads — Authenticated endpoint for listing leads
+ * Data scoped by role (admin=all, leader=team, staff=own)
+ */
+export async function GET() {
+    try {
+        const authResult = await requirePermission('leads', 'view')
+        if (isAuthError(authResult)) return authResult
+
+        const { supabase, user, teamMemberIds } = authResult
+
+        let query = supabase
+            .from('leads')
+            .select('*')
+            .order('created_at', { ascending: false })
+
+        query = applyScopeFilter(query, user, 'leads', teamMemberIds)
+
+        const { data, error } = await query
+
+        if (error) {
+            console.error('Error fetching leads:', error)
+            return NextResponse.json([], { status: 500 })
+        }
+
+        return NextResponse.json(data || [])
+    } catch (error: any) {
+        console.error('Lead API error:', error)
+        return NextResponse.json([], { status: 500 })
+    }
+}
+
+/**
  * PATCH /api/leads — Authenticated endpoint for updating leads
- * Only authenticated users (CRM staff) can modify lead data
+ * Requires 'edit' permission on leads resource
  */
 export async function PATCH(req: Request) {
     try {
-        // Require authentication
-        const authResult = await requireAuth()
+        const authResult = await requirePermission('leads', 'edit')
         if (isAuthError(authResult)) return authResult
 
         const { supabase } = authResult

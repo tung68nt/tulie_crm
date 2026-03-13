@@ -25,6 +25,20 @@ const securityHeaders = [
         key: 'Strict-Transport-Security',
         value: 'max-age=31536000; includeSubDomains',
     },
+    {
+        key: 'Content-Security-Policy',
+        value: [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: blob: https:",
+            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://my.sepay.vn https://api.vietqr.io",
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ].join('; '),
+    },
 ]
 
 const nextConfig: NextConfig = {
@@ -35,10 +49,10 @@ const nextConfig: NextConfig = {
     poweredByHeader: false,
     compress: true,
     typescript: {
-        ignoreBuildErrors: true,
+        ignoreBuildErrors: false,
     },
     eslint: {
-        ignoreDuringBuilds: true,
+        ignoreDuringBuilds: false,
     },
     async headers() {
         return [

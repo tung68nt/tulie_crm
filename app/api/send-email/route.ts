@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
+import { hasPermission } from '@/lib/security/permissions'
 import { checkRateLimit } from '@/lib/security/rate-limiter'
 import {
     sendEmail,
@@ -12,6 +13,7 @@ import {
 /**
  * POST /api/send-email — Authenticated endpoint for sending emails
  * Rate limited to prevent email bombing
+ * Permission checked based on email type (quotation→quotations, invoice→invoices, etc.)
  */
 export async function POST(request: NextRequest) {
     try {
@@ -20,7 +22,7 @@ export async function POST(request: NextRequest) {
         if (isAuthError(authResult)) return authResult
 
         // Rate limit: 10 emails per minute per user
-        const rateLimitResult = checkRateLimit(authResult.user.id, {
+        const rateLimitResult = await checkRateLimit(authResult.user.id, {
             maxRequests: 10,
             windowSeconds: 60,
             keyPrefix: 'email:send',

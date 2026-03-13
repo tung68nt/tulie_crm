@@ -3,7 +3,7 @@ import { createClient } from '../server'
 import { Customer } from '@/types'
 import { revalidatePath } from 'next/cache'
 import { createNotification } from './notification-service'
-import { logActivity } from './activity-service'
+import { logActivity, logDestructiveAction, logStatusChange, logReassign } from './activity-service'
 
 export async function getCustomers() {
     try {
@@ -152,6 +152,10 @@ export async function updateCustomer(id: string, customer: Partial<Customer>) {
 export async function deleteCustomer(id: string) {
     try {
         const supabase = await createClient()
+
+        // Get customer name for audit log before deleting
+        const { data: customer } = await supabase.from('customers').select('company_name').eq('id', id).single()
+
         const { error } = await supabase
             .from('customers')
             .delete()
@@ -163,6 +167,7 @@ export async function deleteCustomer(id: string) {
         }
 
         revalidatePath('/customers')
+        await logDestructiveAction('customer', id, 'delete', { entity_name: customer?.company_name })
         return true
     } catch (err: any) {
         console.error('[deleteCustomer] Fatal error:', err)
@@ -184,6 +189,7 @@ export async function deleteCustomers(ids: string[]) {
         }
 
         revalidatePath('/customers')
+        await logDestructiveAction('customer', ids[0], 'bulk_delete', { affected_count: ids.length })
         return true
     } catch (err: any) {
         console.error('[deleteCustomers] Fatal error:', err)
@@ -226,6 +232,7 @@ export async function reassignCustomers(ids: string[], userId: string) {
         }
 
         revalidatePath('/customers')
+        await logReassign('customer', ids, userId)
         return true
     } catch (err: any) {
         console.error('[reassignCustomers] Fatal error:', err)

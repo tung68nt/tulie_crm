@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { updateProjectStatus, updateProject, createAcceptanceReport } from '@/lib/supabase/services/project-service'
 
+/**
+ * PATCH /api/projects/[id] — Requires 'edit' permission on projects
+ * Updates project status or fields
+ */
 export async function PATCH(req: NextRequest, { params }: any) {
     try {
+        const authResult = await requirePermission('projects', 'edit')
+        if (isAuthError(authResult)) return authResult
+
         const { id } = await params
         const body = await req.json()
 
@@ -18,8 +26,15 @@ export async function PATCH(req: NextRequest, { params }: any) {
     }
 }
 
+/**
+ * POST /api/projects/[id] — Authenticated endpoint
+ * Handles project actions (e.g., create acceptance report)
+ */
 export async function POST(req: NextRequest, { params }: any) {
     try {
+        const authResult = await requirePermission('projects', 'create')
+        if (isAuthError(authResult)) return authResult
+
         const { id } = await params
         const body = await req.json()
 

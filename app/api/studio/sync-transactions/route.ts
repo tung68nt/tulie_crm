@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requireAdmin, isAuthError } from '@/lib/security/auth-guard'
 import { syncTransactionsFromSePay } from '@/lib/supabase/services/payment-service'
 
 /**
@@ -9,27 +9,13 @@ import { syncTransactionsFromSePay } from '@/lib/supabase/services/payment-servi
  * POST /api/studio/sync-transactions
  * Body: { limit?, dateMin?, dateMax? }
  * 
- * Requires: Admin authentication
+ * Requires: Admin role
  */
 export async function POST(req: NextRequest) {
     try {
-        // Auth check - only admin
-        const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        // Check admin role
-        const { data: profile } = await supabase
-            .from('users')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-        if (profile?.role !== 'admin') {
-            return NextResponse.json({ error: 'Admin only' }, { status: 403 })
-        }
+        // Require admin role
+        const authResult = await requireAdmin()
+        if (isAuthError(authResult)) return authResult
 
         const body = await req.json().catch(() => ({}))
 
