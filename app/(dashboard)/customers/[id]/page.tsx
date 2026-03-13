@@ -19,7 +19,10 @@ import {
     MessageSquare,
     Plus,
     ExternalLink,
-    Users
+    Users,
+    User,
+    Briefcase,
+    Receipt
 } from 'lucide-react'
 import { getCustomerById } from '@/lib/supabase/services/customer-service'
 import { getQuotations } from '@/lib/supabase/services/quotation-service'
@@ -112,6 +115,20 @@ export default async function CustomerDetailPage({ params }: any) {
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
+                            <User className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Người đại diện</p>
+                                <p className="font-medium">{customer.representative || 'Chưa cập nhật'}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Briefcase className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className="text-sm text-muted-foreground">Chức vụ</p>
+                                <p className="font-medium">{customer.position || 'Chưa cập nhật'}</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
                             <Mail className="h-5 w-5 text-muted-foreground" />
                             <div>
                                 <p className="text-sm text-muted-foreground">Email</p>
@@ -132,10 +149,19 @@ export default async function CustomerDetailPage({ params }: any) {
                         <div className="flex items-center gap-3 sm:col-span-2">
                             <MapPin className="h-5 w-5 text-muted-foreground" />
                             <div>
-                                <p className="text-sm text-muted-foreground">Địa chỉ</p>
+                                <p className="text-sm text-muted-foreground">Địa chỉ trụ sở</p>
                                 <p className="font-medium">{customer.address || 'Chưa cập nhật'}</p>
                             </div>
                         </div>
+                        {customer.invoice_address && customer.invoice_address !== customer.address && (
+                            <div className="flex items-center gap-3 sm:col-span-2">
+                                <Receipt className="h-5 w-5 text-muted-foreground" />
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Địa chỉ xuất hóa đơn</p>
+                                    <p className="font-medium">{customer.invoice_address}</p>
+                                </div>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 

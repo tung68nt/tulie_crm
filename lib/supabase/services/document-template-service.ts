@@ -239,6 +239,7 @@ export async function generateDocument(
             customer_phone: customer.phone || '',
             customer_representative: customer.representative || '',
             customer_position: customer.position || '',
+            customer_invoice_address: customer.invoice_address || customer.address || '',
 
             // Provider variables
             provider_company: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',
