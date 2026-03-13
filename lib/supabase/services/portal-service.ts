@@ -273,7 +273,8 @@ export async function getPortalDataByToken(token: string) {
 
 export async function updatePortalCustomerInfo(token: string, customerId: string, updateData: any) {
     try {
-        const supabase = await createClient()
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
 
         // 1. Verify token belongs to this customer
         const { data: qData } = await supabase
@@ -298,10 +299,9 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
                 phone: updateData.phone,
                 address: updateData.address,
                 invoice_address: updateData.invoice_address,
-                is_info_unlocked: false // lock after updating
+                is_info_unlocked: false // lock after final save
             })
             .eq('id', customerId)
-            .eq('is_info_unlocked', true) // ensure it was actually unlocked
 
         if (error) throw error
 
@@ -318,7 +318,8 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
  */
 export async function savePortalCustomerInfoDraft(token: string, customerId: string, updateData: any) {
     try {
-        const supabase = await createClient()
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
 
         const { data: qData } = await supabase
             .from('quotations')
@@ -330,7 +331,7 @@ export async function savePortalCustomerInfoDraft(token: string, customerId: str
             throw new Error('Unauthorized or invalid token.')
         }
 
-        // Only update non-empty fields, keep is_info_unlocked = true
+        // Only update non-empty fields, keep is_info_unlocked unchanged
         const fieldsToUpdate: Record<string, any> = {}
         const allowedFields = ['company_name', 'representative', 'position', 'tax_code', 'email', 'phone', 'address', 'invoice_address']
         for (const field of allowedFields) {
