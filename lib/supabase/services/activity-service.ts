@@ -18,6 +18,9 @@ export type AuditAction =
     | 'bulk_delete'
     | 'reassign'
     | 'send_email'
+    | 'convert'
+    | 'accept'
+    | 'update_tasks'
 
 export type AuditEntityType =
     | 'customer'
@@ -28,6 +31,7 @@ export type AuditEntityType =
     | 'project'
     | 'invoice'
     | 'retail_order'
+    | 'order'
     | 'user'
     | 'template'
     | 'settings'
