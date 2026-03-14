@@ -92,7 +92,15 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                 </Button>
                 <div>
                     <div className="flex items-center gap-3 mb-1">
-                        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">{order.order_number}</h1>
+                        <h1 className="text-2xl font-bold tracking-tight text-zinc-900 flex items-center gap-1.5">
+                            {order.order_number}
+                            <button
+                                onClick={() => { navigator.clipboard.writeText(order.order_number); toast.success('Đã copy mã đơn') }}
+                                className="text-zinc-300 hover:text-zinc-600 transition-colors"
+                            >
+                                <Copy className="h-4 w-4" />
+                            </button>
+                        </h1>
                         <Badge variant="outline" className={cn("px-2.5 py-0.5 font-bold text-[10px] uppercase tracking-wider rounded-md", STATUS_COLORS[order.order_status])}>
                             {isUpdatingStatus && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                             {STATUS_LABELS[order.order_status]}
