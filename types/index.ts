@@ -665,6 +665,15 @@ export interface RetailOrder {
     email?: string
   }
   notes?: string
+  tracking_number?: string // Mã vận đơn hoặc link tra cứu
+  shipping_info?: {
+    recipient_name?: string
+    recipient_phone?: string
+    address?: string
+    ward?: string
+    district?: string
+    province?: string
+  }
   metadata?: Record<string, any>
   created_by?: string
   creator?: User

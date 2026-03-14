@@ -92,7 +92,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
     // Auto-select first bank and first note template for new orders
     useEffect(() => {
         if (!isEdit && availableBanks.length > 0 && !formData.metadata?.bank_info) {
-            const b = availableBanks[0]
+            const b = availableBanks.find((x: any) => (x.default_for || []).includes('retail_order')) || availableBanks[0]
             setFormData(prev => ({
                 ...prev,
                 metadata: {
@@ -461,18 +461,6 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="resource_link" className="text-sm font-medium flex items-center gap-2">
-                                    <LinkIcon className="h-4 w-4" /> Link Drive bàn giao
-                                </Label>
-                                <Input
-                                    id="resource_link"
-                                    placeholder="https://drive.google.com/..."
-                                    value={formData.resource_link}
-                                    onChange={(e) => setFormData({ ...formData, resource_link: e.target.value })}
-                                    className="h-9"
-                                />
-                            </div>
 
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">

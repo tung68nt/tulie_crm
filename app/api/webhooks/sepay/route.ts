@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Webhook not configured' }, { status: 503 })
         }
 
+        // Auth is optional — SePay may be configured with "Không chứng thực"
         if (!authHeader && !signature) {
-            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+            console.log('[SePay Webhook] No auth header (SePay configured without authentication)')
         }
 
-        if (authHeader) {
+        if (authHeader && storedApiKey) {
             let receivedKey = ''
             const match = authHeader.match(/^(?:Apikey|Bearer)\s+(.+)$/i)
             receivedKey = match?.[1] ?? authHeader
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
             const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
 
             if (cleanReceivedKey !== cleanStoredKey) {
-                console.warn('[SePay Webhook] API key mismatch')
+                console.warn('[SePay Webhook] API key mismatch — rejecting')
                 return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
             }
         }

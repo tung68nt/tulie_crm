@@ -4,8 +4,11 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2 } from 'lucide-react'
+import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { generatePaymentContent } from '@/lib/utils/payment-utils'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
 import { toast } from 'sonner'
@@ -218,6 +221,186 @@ function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; r
                 )}
                 Kiểm tra ngay
             </Button>
+        </div>
+    )
+}
+
+function ShippingInfoForm({ order }: { order: any }) {
+    const existing = order.shipping_info || {}
+    const [form, setForm] = useState({
+        recipient_name: existing.recipient_name || order.customer_name || '',
+        recipient_phone: existing.recipient_phone || order.customer_phone || '',
+        address: existing.address || '',
+        ward: existing.ward || '',
+        district: existing.district || '',
+        province: existing.province || '',
+    })
+    const [provinces, setProvinces] = useState<any[]>([])
+    const [districts, setDistricts] = useState<any[]>([])
+    const [wards, setWards] = useState<any[]>([])
+    const [isSaving, setIsSaving] = useState(false)
+    const [saved, setSaved] = useState(false)
+
+    useEffect(() => {
+        fetch('https://provinces.open-api.vn/api/p/')
+            .then(r => r.json())
+            .then(setProvinces)
+            .catch(() => {})
+    }, [])
+
+    const handleProvinceChange = async (code: string) => {
+        const prov = provinces.find((p: any) => String(p.code) === code)
+        setForm(f => ({ ...f, province: prov?.name || '', district: '', ward: '' }))
+        setWards([])
+        try {
+            const res = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+            const data = await res.json()
+            setDistricts(data.districts || [])
+        } catch { setDistricts([]) }
+    }
+
+    const handleDistrictChange = async (code: string) => {
+        const dist = districts.find((d: any) => String(d.code) === code)
+        setForm(f => ({ ...f, district: dist?.name || '', ward: '' }))
+        try {
+            const res = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+            const data = await res.json()
+            setWards(data.wards || [])
+        } catch { setWards([]) }
+    }
+
+    const handleWardChange = (code: string) => {
+        const w = wards.find((wd: any) => String(wd.code) === code)
+        setForm(f => ({ ...f, ward: w?.name || '' }))
+    }
+
+    const handleSave = async () => {
+        setIsSaving(true)
+        try {
+            const res = await fetch('/api/studio/shipping-info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: order.id, shipping_info: form })
+            })
+            const data = await res.json()
+            if (res.ok) {
+                toast.success(data.message || 'Đã lưu thông tin nhận hàng')
+                setSaved(true)
+            } else {
+                toast.error(data.error || 'Có lỗi xảy ra')
+            }
+        } catch {
+            toast.error('Không thể lưu. Vui lòng thử lại.')
+        }
+        setIsSaving(false)
+    }
+
+    // Find selected codes for controlled selects
+    const selectedProvinceCode = provinces.find((p: any) => p.name === form.province)?.code
+    const selectedDistrictCode = districts.find((d: any) => d.name === form.district)?.code
+    const selectedWardCode = wards.find((w: any) => w.name === form.ward)?.code
+
+    return (
+        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Thông tin nhận hàng</h3>
+                        <p className="text-[11px] font-medium text-muted-foreground">Điền nếu bạn muốn nhận ảnh in</p>
+                    </div>
+                </div>
+                {saved && (
+                    <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-semibold">
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Đã lưu
+                    </Badge>
+                )}
+            </div>
+            <div className="p-5 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600">Tên người nhận</Label>
+                        <Input
+                            value={form.recipient_name}
+                            onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))}
+                            placeholder="Nguyễn Văn A"
+                            className="h-10 text-sm"
+                        />
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600">Số điện thoại</Label>
+                        <Input
+                            value={form.recipient_phone}
+                            onChange={e => setForm(f => ({ ...f, recipient_phone: e.target.value }))}
+                            placeholder="09xx xxx xxx"
+                            className="h-10 text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600">Tỉnh / Thành phố</Label>
+                        <Select value={selectedProvinceCode ? String(selectedProvinceCode) : undefined} onValueChange={handleProvinceChange}>
+                            <SelectTrigger className="h-10 text-sm">
+                                <SelectValue placeholder="Chọn tỉnh/TP" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                                {provinces.map((p: any) => (
+                                    <SelectItem key={p.code} value={String(p.code)}>{p.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600">Quận / Huyện</Label>
+                        <Select value={selectedDistrictCode ? String(selectedDistrictCode) : undefined} onValueChange={handleDistrictChange} disabled={districts.length === 0}>
+                            <SelectTrigger className="h-10 text-sm">
+                                <SelectValue placeholder="Chọn quận/huyện" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                                {districts.map((d: any) => (
+                                    <SelectItem key={d.code} value={String(d.code)}>{d.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600">Phường / Xã</Label>
+                        <Select value={selectedWardCode ? String(selectedWardCode) : undefined} onValueChange={handleWardChange} disabled={wards.length === 0}>
+                            <SelectTrigger className="h-10 text-sm">
+                                <SelectValue placeholder="Chọn phường/xã" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                                {wards.map((w: any) => (
+                                    <SelectItem key={w.code} value={String(w.code)}>{w.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-zinc-600">Địa chỉ chi tiết</Label>
+                    <Input
+                        value={form.address}
+                        onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                        placeholder="Số nhà, tên đường, tòa nhà..."
+                        className="h-10 text-sm"
+                    />
+                </div>
+
+                <Button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="w-full h-10 rounded-lg font-semibold text-sm"
+                >
+                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    Lưu thông tin nhận hàng
+                </Button>
+            </div>
         </div>
     )
 }
@@ -439,6 +622,31 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                 )}
                             </div>
                         )}
+
+                        {/* Tracking Info */}
+                        {order.tracking_number && (
+                            <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+                                <div className="p-5 flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                        <Truck className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Mã vận đơn</p>
+                                        {/^https?:\/\//.test(order.tracking_number) ? (
+                                            <a href={order.tracking_number} target="_blank" className="text-sm font-bold text-blue-600 hover:underline truncate block">
+                                                Tra cứu vận đơn →
+                                            </a>
+                                        ) : (
+                                            <p className="text-sm font-bold text-zinc-900 font-mono tracking-tight">{order.tracking_number}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Shipping Info Form */}
+                        <ShippingInfoForm order={order} />
+
 
                         {/* Notes */}
                         {order.notes && (

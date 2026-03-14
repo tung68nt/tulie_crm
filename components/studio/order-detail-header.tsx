@@ -130,18 +130,18 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tác vụ đơn hàng</p>
                         </div>
                         <DropdownMenuItem asChild className="rounded-lg h-10 cursor-pointer px-3">
-                            <Link href={`/studio/${order.id}/edit`} className="flex items-center gap-3">
+                            <Link href={`/studio/${order.id}/edit`} className="flex items-center gap-3 w-full">
                                 <Pencil className="h-4 w-4 text-zinc-400 shrink-0" />
-                                <span className="font-semibold text-sm">Chỉnh sửa đơn hàng</span>
+                                <span className="font-semibold text-sm text-left">Chỉnh sửa đơn hàng</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-zinc-100 my-1" />
                         <DropdownMenuItem
-                            className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg h-10 cursor-pointer px-3"
+                            className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg h-10 cursor-pointer px-3 flex items-center gap-3"
                             onClick={() => toast.info('Tính năng hủy đơn đang chờ phân quyền')}
                         >
-                            <Trash2 className="mr-3 h-4 w-4 shrink-0" />
-                            <span className="font-semibold text-sm whitespace-nowrap">Hủy đơn hàng</span>
+                            <Trash2 className="h-4 w-4 shrink-0" />
+                            <span className="font-semibold text-sm text-left whitespace-nowrap">Hủy đơn hàng</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

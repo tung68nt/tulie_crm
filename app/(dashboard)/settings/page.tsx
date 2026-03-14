@@ -1,5 +1,6 @@
 "use client"
 import * as React from 'react'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useState, useEffect } from 'react'
 import { useConfirm } from '@/components/ui/confirm-dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -1635,13 +1636,37 @@ export default function SettingsPage() {
                                                     />
                                                 </div>
                                             </div>
+                                            <div className="pt-3 border-t border-border/30">
+                                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">Sử dụng mặc định cho</Label>
+                                                <div className="flex flex-wrap gap-4">
+                                                    {[
+                                                        { value: 'retail_order', label: 'Đơn hàng (Studio B2C)' },
+                                                        { value: 'quotation', label: 'Báo giá (Agency B2B)' },
+                                                    ].map(option => (
+                                                        <label key={option.value} className="flex items-center gap-2 cursor-pointer select-none">
+                                                            <Checkbox
+                                                                checked={(account.default_for || []).includes(option.value)}
+                                                                onCheckedChange={(checked) => {
+                                                                    const newAccounts = [...bankAccounts]
+                                                                    const current = newAccounts[index].default_for || []
+                                                                    newAccounts[index].default_for = checked
+                                                                        ? [...current, option.value]
+                                                                        : current.filter((v: string) => v !== option.value)
+                                                                    setBankAccounts(newAccounts)
+                                                                }}
+                                                            />
+                                                            <span className="text-xs font-medium text-zinc-700">{option.label}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                     <Button
                                         variant="outline"
                                         className="w-full border-dashed h-12 rounded-xl text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 border-zinc-200"
                                         onClick={() => {
-                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '' }])
+                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '', default_for: [] }])
                                         }}
                                     >
                                         <Plus className="mr-2 h-4 w-4" /> Thêm tài khoản ngân hàng

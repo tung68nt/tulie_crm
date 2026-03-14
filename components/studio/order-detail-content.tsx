@@ -23,7 +23,8 @@ import {
     History,
     Send,
     Building2,
-    Copy
+    Copy,
+    Truck
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
@@ -47,7 +48,8 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const [availableBanks, setAvailableBanks] = useState<any[]>([])
     const [links, setLinks] = useState({
         demo_link: order.demo_link || '',
-        resource_link: order.resource_link || ''
+        resource_link: order.resource_link || '',
+        tracking_number: order.tracking_number || ''
     })
 
     useEffect(() => {
@@ -75,7 +77,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: paymentContent })
 
     const handleSaveLinks = async () => {
-        if (links.demo_link === order.demo_link && links.resource_link === order.resource_link) {
+        if (links.demo_link === order.demo_link && links.resource_link === order.resource_link && links.tracking_number === order.tracking_number) {
             toast.info('Không có thay đổi nào để lưu')
             return
         }
@@ -181,6 +183,31 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     />
                                 </div>
                                 <p className="text-[10px] text-muted-foreground font-normal italic">Sẽ chỉ hiển thị trên Portal của khách sau khi họ hoàn tất 100% thanh toán.</p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
+                                        <Truck className="h-4 w-4 text-zinc-400" />
+                                        Mã vận đơn / Link tra cứu
+                                    </Label>
+                                    {order.tracking_number && /^https?:\/\//.test(order.tracking_number) && (
+                                        <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5">
+                                            <a href={order.tracking_number} target="_blank" className="flex items-center gap-1 hover:text-primary">
+                                                Tra cứu <ExternalLink className="h-3 w-3" />
+                                            </a>
+                                        </Badge>
+                                    )}
+                                </div>
+                                <div className="relative group">
+                                    <Input
+                                        placeholder="VD: GHTK123456 hoặc https://tracking.ghn.vn/..."
+                                        value={links.tracking_number}
+                                        onChange={(e) => setLinks({ ...links, tracking_number: e.target.value })}
+                                        className="h-11 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none transition-all group-hover:border-zinc-300"
+                                    />
+                                </div>
+                                <p className="text-[10px] text-muted-foreground font-normal italic">Nhập mã vận đơn hoặc URL tra cứu để khách có thể theo dõi đơn ship.</p>
                             </div>
                         </div>
                     </CardContent>

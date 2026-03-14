@@ -110,7 +110,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     // Initialize bank and notes from the first available template if it's a new quotation
     useEffect(() => {
         if (!quotation && availableBanks.length > 0 && bankName === '') {
-            const b = availableBanks[0]
+            const b = availableBanks.find((x: any) => (x.default_for || []).includes('quotation')) || availableBanks[0]
             setBankName(b.bank_name || '')
             setBankAccountNo(b.account_no || '')
             setBankAccountName(b.account_name || '')
