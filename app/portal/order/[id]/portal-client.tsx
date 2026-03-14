@@ -723,7 +723,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                     <div className="h-px bg-zinc-200" />
                     <p className="text-xs text-muted-foreground font-medium">
                         Bạn cần hỗ trợ?{' '}
-                        <a href="https://zalo.me/0963715692" target="_blank" className="font-bold text-zinc-900 hover:underline transition-colors">
+                        <a href="https://zalo.me/0979684731" target="_blank" className="font-bold text-zinc-900 hover:underline transition-colors">
                             Liên hệ Zalo
                         </a>
                     </p>

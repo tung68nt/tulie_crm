@@ -67,8 +67,38 @@ export function buildVietQrUrl(params: {
 }
 
 /**
+ * VietQR bank code mapping (for deeplink `app` param)
+ * Maps bank names to their VietQR code (used in ba=accountNo@code format)
+ */
+const BANK_CODE_MAP: Record<string, { app: string; code: string }> = {
+    'VietinBank': { app: 'vietinbank', code: 'ICB' },
+    'CTG': { app: 'vietinbank', code: 'ICB' },
+    'Vietcombank': { app: 'vietcombank', code: 'VCB' },
+    'VCB': { app: 'vietcombank', code: 'VCB' },
+    'BIDV': { app: 'bidv', code: 'BIDV' },
+    'MB': { app: 'mbbank', code: 'MB' },
+    'MBBank': { app: 'mbbank', code: 'MB' },
+    'Techcombank': { app: 'techcombank', code: 'TCB' },
+    'TCB': { app: 'techcombank', code: 'TCB' },
+    'ACB': { app: 'acb', code: 'ACB' },
+    'VPBank': { app: 'vpbank', code: 'VPB' },
+    'TPBank': { app: 'tpbank', code: 'TPB' },
+    'Sacombank': { app: 'sacombank', code: 'STB' },
+    'STB': { app: 'sacombank', code: 'STB' },
+    'HDBank': { app: 'hdbank', code: 'HDB' },
+    'Agribank': { app: 'agribank', code: 'VBA' },
+    'SHB': { app: 'shb', code: 'SHB' },
+    'MSB': { app: 'msb', code: 'MSB' },
+    'OCB': { app: 'ocb', code: 'OCB' },
+    'VIB': { app: 'vib', code: 'VIB' },
+    'SeABank': { app: 'seabank', code: 'SEAB' },
+    'LPBank': { app: 'lpbank', code: 'LPB' },
+    'Eximbank': { app: 'eximbank', code: 'EIB' },
+}
+
+/**
  * Build a VietQR deeplink URL that opens banking apps on mobile
- * Format: https://dl.vietqr.io/pay?app=...
+ * Format: https://dl.vietqr.io/pay?app={bankApp}&ba={accountNo}@{bankCode}&am={amount}&tn={content}
  */
 export function buildVietQrDeeplink(params: {
     bankName: string
@@ -77,14 +107,8 @@ export function buildVietQrDeeplink(params: {
     amount: number
     addInfo: string
 }): string {
-    const bin = getBankBin(params.bankName)
-    const query = new URLSearchParams({
-        app: 'vietqr',
-        ba: params.accountNo,
-        bn: bin,
-        am: String(params.amount),
-        tn: params.addInfo,
-        an: params.accountName,
-    })
-    return `https://dl.vietqr.io/pay?${query.toString()}`
+    const bankInfo = BANK_CODE_MAP[params.bankName]
+    const app = bankInfo?.app || params.bankName.toLowerCase()
+    const code = bankInfo?.code || params.bankName
+    return `https://dl.vietqr.io/pay?app=${app}&ba=${params.accountNo}@${code}&am=${params.amount}&tn=${encodeURIComponent(params.addInfo)}`
 }
