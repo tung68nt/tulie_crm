@@ -408,22 +408,19 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
         <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
             {/* ─── Header ─── */}
             <div className="bg-white border-b border-zinc-200 pt-10 pb-8 px-6">
-                <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-5">
-                        {brandConfig?.logo_url ? (
-                            <img src={brandConfig.logo_url} alt="Logo" className="h-12 w-auto object-contain grayscale" />
-                        ) : (
-                            <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
-                                <Package className="h-6 w-6 text-white" />
-                            </div>
-                        )}
-                        <div className="w-px h-10 bg-zinc-200" />
-                        <div>
-                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                                {brandConfig?.brand_name || 'Tulie Studio'}
-                            </p>
-                            <h1 className="text-xl font-semibold text-zinc-900 tracking-tight">{order.order_number}</h1>
+                <div className="max-w-5xl mx-auto flex flex-col items-center gap-4 text-center">
+                    {brandConfig?.logo_url ? (
+                        <img src={brandConfig.logo_url} alt="Logo" className="h-12 w-auto object-contain grayscale" />
+                    ) : (
+                        <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
+                            <Package className="h-6 w-6 text-white" />
                         </div>
+                    )}
+                    <div>
+                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                            {brandConfig?.brand_name || 'Tulie Studio'}
+                        </p>
+                        <h1 className="text-xl font-semibold text-zinc-900 tracking-tight mt-0.5">{order.order_number}</h1>
                     </div>
                     <StatusBadge status={order.order_status} />
                 </div>
