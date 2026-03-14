@@ -47,12 +47,20 @@ export async function getProductById(id: string) {
 export async function createProduct(product: Partial<Product>) {
     try {
         const supabase = await createClient()
-        // Map unit_price to price for database schema compatibility if needed
         const dbProduct = {
             ...product,
             price: product.price || (product as any).unit_price
         }
         delete (dbProduct as any).unit_price
+
+        // Auto-generate SKU if not provided
+        if (!dbProduct.sku) {
+            const prefix = (dbProduct.category || 'PRD').substring(0, 3).toUpperCase()
+            const { count } = await supabase
+                .from('products')
+                .select('*', { count: 'exact', head: true })
+            dbProduct.sku = `${prefix}-${String((count || 0) + 1).padStart(3, '0')}`
+        }
 
         const { data, error } = await supabase
             .from('products')
