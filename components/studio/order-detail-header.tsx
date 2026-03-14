@@ -43,13 +43,13 @@ export const STATUS_LABELS: Record<string, string> = {
 }
 
 export const STATUS_COLORS: Record<string, string> = {
-    pending: 'bg-zinc-100 text-zinc-700 border-zinc-200',
-    editing: 'bg-blue-50 text-blue-700 border-blue-100',
-    edit_done: 'bg-indigo-50 text-indigo-700 border-indigo-100',
-    waiting_ship: 'bg-amber-50 text-amber-700 border-amber-100',
-    shipping: 'bg-orange-50 text-orange-700 border-orange-100',
-    completed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
-    cancelled: 'bg-red-50 text-red-700 border-red-100',
+    pending: 'bg-zinc-50 text-zinc-500 border-zinc-200',
+    editing: 'bg-blue-50 text-blue-600 border-blue-200',
+    edit_done: 'bg-violet-50 text-violet-600 border-violet-200',
+    waiting_ship: 'bg-amber-50 text-amber-600 border-amber-200',
+    shipping: 'bg-orange-50 text-orange-600 border-orange-200',
+    completed: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    cancelled: 'bg-red-50 text-red-600 border-red-200',
 }
 
 const STATUS_DOT_COLORS: Record<string, string> = {
@@ -113,12 +113,12 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                                 <Copy className="h-4 w-4" />
                             </button>
                         </h1>
-                        <Badge variant="outline" className={cn("px-2.5 py-0.5 font-bold text-[10px] uppercase tracking-wider rounded-md", STATUS_COLORS[order.order_status])}>
+                        <Badge variant="outline" className={cn("px-2.5 py-0.5 font-medium text-[10px] uppercase tracking-wider rounded-md", STATUS_COLORS[order.order_status])}>
                             {isUpdatingStatus && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                             {STATUS_LABELS[order.order_status]}
                         </Badge>
                         {isPhysical && (
-                            <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-semibold text-orange-600 border-orange-200 bg-orange-50 rounded-md">
+                            <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-medium text-orange-600 border-orange-200 bg-orange-50 rounded-md">
                                 Ship
                             </Badge>
                         )}
@@ -146,7 +146,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-9 rounded-lg font-bold text-xs bg-white border-zinc-200 hover:border-zinc-300 shadow-sm transition-all"
+                    className="h-9 rounded-lg font-medium text-xs bg-white border-zinc-200 hover:border-zinc-300 shadow-sm transition-all"
                     onClick={() => {
                         navigator.clipboard.writeText(portalUrl)
                         toast.success('Đã copy link Portal cho khách', {
@@ -162,7 +162,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     variant="ghost"
                     size="sm"
                     asChild
-                    className="h-9 rounded-lg font-bold text-xs bg-zinc-100 text-zinc-700 hover:bg-primary/5 hover:text-primary transition-all border border-zinc-200/50"
+                    className="h-9 rounded-lg font-medium text-xs bg-zinc-100 text-zinc-700 hover:bg-primary/5 hover:text-primary transition-all border border-zinc-200/50"
                 >
                     <Link href={`/portal/order/${order.id}`} target="_blank">
                         <ExternalLink className="mr-2 h-3.5 w-3.5" />
@@ -195,7 +195,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                                 onClick={() => handleStatusChange(status)}
                             >
                                 <Circle className={cn("h-3 w-3 fill-current shrink-0", STATUS_DOT_COLORS[status])} />
-                                <span className="font-semibold text-sm">{STATUS_LABELS[status]}</span>
+                                <span className="font-medium text-sm">{STATUS_LABELS[status]}</span>
                                 {status === order.order_status && <span className="ml-auto text-[10px] text-zinc-400 font-medium">Hiện tại</span>}
                             </DropdownMenuItem>
                         ))}
@@ -206,7 +206,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                         <DropdownMenuItem asChild className="rounded-lg h-10 cursor-pointer px-3">
                             <Link href={`/studio/${order.id}/edit`} className="flex items-center gap-3 w-full">
                                 <Pencil className="h-4 w-4 text-zinc-400 shrink-0" />
-                                <span className="font-semibold text-sm text-left">Chỉnh sửa đơn hàng</span>
+                                <span className="font-medium text-sm text-left">Chỉnh sửa đơn hàng</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-zinc-100 my-1" />
@@ -216,7 +216,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                             onClick={() => handleStatusChange('cancelled')}
                         >
                             <Trash2 className="h-4 w-4 shrink-0" />
-                            <span className="font-semibold text-sm text-left whitespace-nowrap">Hủy đơn hàng</span>
+                            <span className="font-medium text-sm text-left whitespace-nowrap">Hủy đơn hàng</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
