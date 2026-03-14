@@ -109,13 +109,12 @@ export default function OrderForm({ products }: { products: Product[] }) {
   })
   const [pkgNotes, setPkgNotes] = useState<Record<string, string>>({})
 
-  // Print state
+  // Print state — per-vỉ sizes
   const [wantPrint, setWantPrint] = useState(false)
-  const [printSizeId, setPrintSizeId] = useState('mix')
-  const [printQty, setPrintQty] = useState(1)
+  const [viSizes, setViSizes] = useState<string[]>([])
+  const [extraViCount, setExtraViCount] = useState(0)
 
-  // Shipping state
-  const [wantShipping, setWantShipping] = useState(false)
+  // Shipping state (shown when print is on — no separate toggle)
   const [shippingName, setShippingName] = useState('')
   const [shippingPhone, setShippingPhone] = useState('')
   const [shippingAddress, setShippingAddress] = useState('')
@@ -172,12 +171,30 @@ export default function OrderForm({ products }: { products: Product[] }) {
     return PACKAGES.reduce((sum, pkg) => sum + (pkgQuantities[pkg.id] || 0) * pkg.price, 0)
   }, [pkgQuantities])
 
-  const extraPrints = wantPrint ? Math.max(0, printQty - totalFreePrints) : 0
+  const extraPrints = wantPrint ? extraViCount : 0
   const printExtraCost = extraPrints * EXTRA_PRINT_PRICE
+  const totalPrintQty = wantPrint ? totalFreePrints + extraViCount : 0
   const totalPrice = packageTotal + printExtraCost
   const totalPkgCount = Object.values(pkgQuantities).reduce((a, b) => a + b, 0)
 
-  const selectedPrintName = PRINT_SIZES.find(s => s.id === printSizeId)?.name || ''
+  // Sync viSizes array when totalFreePrints or extraViCount changes
+  const totalViSlots = totalFreePrints + extraViCount
+  if (viSizes.length !== totalViSlots) {
+    const newSizes = [...viSizes]
+    while (newSizes.length < totalViSlots) newSizes.push('mix')
+    while (newSizes.length > totalViSlots) newSizes.pop()
+    if (JSON.stringify(newSizes) !== JSON.stringify(viSizes)) {
+      setViSizes(newSizes)
+    }
+  }
+
+  const updateViSize = (index: number, sizeId: string) => {
+    setViSizes(prev => {
+      const next = [...prev]
+      next[index] = sizeId
+      return next
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -196,12 +213,12 @@ export default function OrderForm({ products }: { products: Product[] }) {
     }))
 
     formData.set('packages', JSON.stringify(pkgArray))
-    formData.set('printSizeName', wantPrint ? selectedPrintName : 'Không in')
-    formData.set('printQuantity', wantPrint ? printQty.toString() : '0')
+    formData.set('viSizes', wantPrint ? JSON.stringify(viSizes) : '[]')
+    formData.set('printQuantity', wantPrint ? totalPrintQty.toString() : '0')
     formData.set('photoUrls', JSON.stringify(uploadedFiles.map(f => f.url)))
 
-    // Shipping info
-    if (wantShipping) {
+    // Shipping info (always included when printing)
+    if (wantPrint) {
       formData.set('shippingName', shippingName)
       formData.set('shippingPhone', shippingPhone)
       formData.set('shippingAddress', shippingAddress)
@@ -507,39 +524,66 @@ export default function OrderForm({ products }: { products: Product[] }) {
               {/* Print Options Panel */}
               {wantPrint && (
                 <div className="border-t border-zinc-100 p-4 sm:p-5 space-y-5 animate-in fade-in slide-in-from-top-2 duration-200">
-                  {/* Size + Qty Row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-end">
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Kích thước in</Label>
-                      <Select value={printSizeId} onValueChange={setPrintSizeId}>
-                        <SelectTrigger className="h-10 sm:h-11 rounded-lg border-zinc-200 bg-zinc-50/50">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {PRINT_SIZES.map(size => (
-                            <SelectItem key={size.id} value={size.id}>{size.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                  {/* Per-vỉ size selection */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Chọn size cho từng vỉ</Label>
+                      <span className="text-[11px] font-bold text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-full">{totalViSlots} vỉ</span>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Số lượng vỉ</Label>
-                      <div className="flex items-center border border-zinc-200 rounded-lg bg-white select-none h-10 sm:h-11">
-                        <button type="button" onClick={() => setPrintQty(Math.max(1, printQty - 1))} className="px-3 py-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-l-lg transition-colors">
-                          <MinusIcon className="size-3.5" />
-                        </button>
-                        <span className="w-12 text-center text-sm font-bold text-zinc-900 tabular-nums">{printQty} vỉ</span>
-                        <button type="button" onClick={() => setPrintQty(printQty + 1)} className="px-3 py-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-r-lg transition-colors">
-                          <PlusIcon className="size-3.5" />
-                        </button>
+
+                    {viSizes.map((sizeId, idx) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <span className={cn(
+                          "w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold shrink-0",
+                          idx < totalFreePrints
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                        )}>
+                          {idx + 1}
+                        </span>
+                        <Select value={sizeId} onValueChange={(v) => updateViSize(idx, v)}>
+                          <SelectTrigger className="h-9 rounded-lg border-zinc-200 bg-zinc-50/50 text-xs flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {PRINT_SIZES.map(size => (
+                              <SelectItem key={size.id} value={size.id}>{size.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <span className="text-[10px] text-zinc-400 font-medium shrink-0 w-16 text-right">
+                          {idx < totalFreePrints ? 'Miễn phí' : `+${new Intl.NumberFormat('vi-VN').format(EXTRA_PRINT_PRICE)}đ`}
+                        </span>
                       </div>
+                    ))}
+
+                    {/* Add extra vỉ */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setExtraViCount(Math.max(0, extraViCount - 1))}
+                        disabled={extraViCount === 0}
+                        className="px-2.5 py-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-900 border border-zinc-200 rounded-lg hover:bg-zinc-50 disabled:opacity-30 transition-colors"
+                      >
+                        <MinusIcon className="size-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setExtraViCount(extraViCount + 1)}
+                        className="px-2.5 py-1.5 text-xs font-semibold text-zinc-600 hover:text-zinc-900 border border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors flex items-center gap-1"
+                      >
+                        <PlusIcon className="size-3" />
+                        Thêm vỉ ({new Intl.NumberFormat('vi-VN').format(EXTRA_PRINT_PRICE)}đ/vỉ)
+                      </button>
                     </div>
                   </div>
 
-                  {/* Layout Preview */}
-                  <div className="bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden">
-                    <PrintLayoutPreview sizeId={printSizeId} />
-                  </div>
+                  {/* Layout Preview — show first vỉ's size */}
+                  {viSizes.length > 0 && (
+                    <div className="bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden">
+                      <PrintLayoutPreview sizeId={viSizes[0]} />
+                    </div>
+                  )}
 
                   {/* Cost breakdown */}
                   <div className="bg-zinc-50 rounded-lg p-3 sm:p-4 border border-zinc-100 text-[12px] sm:text-[13px] space-y-2">
@@ -558,43 +602,13 @@ export default function OrderForm({ products }: { products: Product[] }) {
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
-          </section>
 
-          {/* Section 4: Shipping */}
-          {wantPrint && (
-            <section className="space-y-4 sm:space-y-5">
-              <div className="flex items-center gap-3 px-1">
-                <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                  <Package className="w-4.5 h-4.5 text-zinc-700" />
-                </div>
-                <div>
-                  <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Giao hàng</h2>
-                  <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Ship ảnh in đến địa chỉ của bạn</p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5">
-                  <div className="space-y-0.5">
-                    <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-ship">
-                      Muốn ship ảnh về
-                    </Label>
-                    <p className="text-[11px] text-zinc-400 font-medium">
-                      Phí ship tính theo địa chỉ giao hàng
-                    </p>
-                  </div>
-                  <Switch
-                    id="toggle-ship"
-                    checked={wantShipping}
-                    onCheckedChange={setWantShipping}
-                  />
-                </div>
-
-                {wantShipping && (
-                  <div className="border-t border-zinc-100 p-4 sm:p-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {/* Shipping info — inline, no separate toggle */}
+                  <div className="space-y-4 pt-3 border-t border-zinc-100">
+                    <div className="flex items-center gap-2">
+                      <Package className="size-4 text-zinc-500" />
+                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Thông tin nhận hàng</Label>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
@@ -604,7 +618,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                           value={shippingName}
                           onChange={(e) => setShippingName(e.target.value)}
                           placeholder="Nguyễn Văn B"
-                          required={wantShipping}
+                          required={wantPrint}
                           className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
                         />
                       </div>
@@ -617,7 +631,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                           onChange={(e) => setShippingPhone(e.target.value)}
                           type="tel"
                           placeholder="09xx xxx xxx"
-                          required={wantShipping}
+                          required={wantPrint}
                           className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
                         />
                       </div>
@@ -630,16 +644,16 @@ export default function OrderForm({ products }: { products: Product[] }) {
                         value={shippingAddress}
                         onChange={(e) => setShippingAddress(e.target.value)}
                         placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
-                        required={wantShipping}
+                        required={wantPrint}
                         className="min-h-[70px] text-xs bg-white border-zinc-200 rounded-lg resize-none placeholder:text-zinc-300"
                         rows={2}
                       />
                     </div>
                   </div>
-                )}
-              </div>
-            </section>
-          )}
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Order Summary + Submit */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm sticky bottom-4 z-10">
@@ -655,7 +669,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 {totalPkgCount > 0 && (
                   <p className="text-[11px] text-zinc-400 font-medium mt-1">
                     {totalPkgCount} gói
-                    {wantPrint && printQty > 0 && ` · ${printQty} vỉ in`}
+                    {wantPrint && totalPrintQty > 0 && ` · ${totalPrintQty} vỉ in`}
                   </p>
                 )}
               </div>
