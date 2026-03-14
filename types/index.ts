@@ -633,7 +633,8 @@ export interface InvoiceFilters {
   date_to?: string
 }
 // Retail Order Types (B2C Studio)
-export type RetailOrderStatus = 'pending' | 'shooting' | 'editing' | 'completed' | 'cancelled'
+export type RetailOrderStatus = 'pending' | 'editing' | 'edit_done' | 'waiting_ship' | 'shipping' | 'completed' | 'cancelled'
+export type DeliveryType = 'digital' | 'physical'
 export type RetailPaymentStatus = 'pending' | 'partial' | 'paid'
 
 export interface RetailOrder {
@@ -653,6 +654,7 @@ export interface RetailOrder {
   shipping_fee: number // Phí vận chuyển
   payment_status: RetailPaymentStatus
   order_status: RetailOrderStatus
+  delivery_type: DeliveryType
   resource_link?: string
   demo_link?: string
   delivery_date?: string // Ngày hẹn bàn giao

@@ -15,8 +15,10 @@ import { toast } from 'sonner'
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
     'pending': { label: 'Chờ xử lý', bg: 'bg-zinc-100', text: 'text-zinc-600', dot: 'bg-zinc-400' },
-    'shooting': { label: 'Đang chụp', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-400' },
-    'editing': { label: 'Đang chỉnh sửa', bg: 'bg-violet-50', text: 'text-violet-700', dot: 'bg-violet-400' },
+    'editing': { label: 'Đang chỉnh sửa', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-400' },
+    'edit_done': { label: 'Hoàn thành chỉnh sửa', bg: 'bg-indigo-50', text: 'text-indigo-700', dot: 'bg-indigo-400' },
+    'waiting_ship': { label: 'Chờ giao hàng', bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400' },
+    'shipping': { label: 'Đang giao hàng', bg: 'bg-orange-50', text: 'text-orange-700', dot: 'bg-orange-400' },
     'completed': { label: 'Hoàn thành', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-400' },
     'cancelled': { label: 'Đã hủy', bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-400' },
 }

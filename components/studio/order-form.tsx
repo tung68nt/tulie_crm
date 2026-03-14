@@ -58,6 +58,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
         delivery_date: initialData?.delivery_date || '',
         needs_vat: initialData?.needs_vat || false,
         brand: initialData?.brand || 'studio',
+        delivery_type: initialData?.delivery_type || 'digital',
         use_deposit: initialData ? (initialData.deposit_amount > 0 || initialData.paid_amount > 0) : true,
         metadata: initialData?.metadata || {}
     })
@@ -417,18 +418,49 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                 </div>
                             )}
 
-                            <div className="grid gap-6 md:grid-cols-2 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                            {/* Delivery Type Toggle */}
+                            <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="shipping_fee" className="text-sm font-medium flex items-center gap-2">
-                                        <Truck className="h-4 w-4" /> Phí vận chuyển
+                                    <Label className="text-sm font-medium flex items-center gap-2">
+                                        <Truck className="h-4 w-4" /> Loại giao hàng
                                     </Label>
-                                    <PriceInput
-                                        id="shipping_fee"
-                                        value={formData.shipping_fee}
-                                        onChange={(val) => setFormData({ ...formData, shipping_fee: val })}
-                                        className="h-9 font-medium"
-                                    />
+                                    <div className="flex gap-2">
+                                        <Button
+                                            type="button"
+                                            variant={formData.delivery_type === 'digital' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="h-9 text-xs font-bold flex-1"
+                                            onClick={() => setFormData({ ...formData, delivery_type: 'digital', shipping_fee: 0 })}
+                                        >
+                                            📁 Chỉ file mềm
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant={formData.delivery_type === 'physical' ? 'default' : 'outline'}
+                                            size="sm"
+                                            className="h-9 text-xs font-bold flex-1"
+                                            onClick={() => setFormData({ ...formData, delivery_type: 'physical' })}
+                                        >
+                                            📦 Có ship ảnh in
+                                        </Button>
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div className="grid gap-6 md:grid-cols-2">
+                                {formData.delivery_type === 'physical' && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="shipping_fee" className="text-sm font-medium flex items-center gap-2">
+                                            <Truck className="h-4 w-4" /> Phí vận chuyển
+                                        </Label>
+                                        <PriceInput
+                                            id="shipping_fee"
+                                            value={formData.shipping_fee}
+                                            onChange={(val) => setFormData({ ...formData, shipping_fee: val })}
+                                            className="h-9 font-medium"
+                                        />
+                                    </div>
+                                )}
                                 <div className="space-y-2">
                                     <Label htmlFor="delivery_date" className="text-sm font-medium flex items-center gap-2">
                                         <Clock className="h-4 w-4" /> Hẹn trả file

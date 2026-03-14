@@ -32,36 +32,48 @@ interface OrderDetailHeaderProps {
     order: RetailOrder
 }
 
-const STATUS_LABELS: Record<string, string> = {
+export const STATUS_LABELS: Record<string, string> = {
     pending: 'Chờ xử lý',
-    shooting: 'Đang chụp',
     editing: 'Đang chỉnh sửa',
-    completed: 'Đã hoàn thành',
+    edit_done: 'Hoàn thành chỉnh sửa',
+    waiting_ship: 'Chờ giao hàng',
+    shipping: 'Đang giao hàng',
+    completed: 'Hoàn thành',
     cancelled: 'Đã hủy',
 }
 
-const STATUS_COLORS: Record<string, string> = {
+export const STATUS_COLORS: Record<string, string> = {
     pending: 'bg-zinc-100 text-zinc-700 border-zinc-200',
-    shooting: 'bg-blue-50 text-blue-700 border-blue-100',
-    editing: 'bg-purple-50 text-purple-700 border-purple-100',
+    editing: 'bg-blue-50 text-blue-700 border-blue-100',
+    edit_done: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+    waiting_ship: 'bg-amber-50 text-amber-700 border-amber-100',
+    shipping: 'bg-orange-50 text-orange-700 border-orange-100',
     completed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
     cancelled: 'bg-red-50 text-red-700 border-red-100',
 }
 
 const STATUS_DOT_COLORS: Record<string, string> = {
     pending: 'text-zinc-400',
-    shooting: 'text-blue-500',
-    editing: 'text-purple-500',
+    editing: 'text-blue-500',
+    edit_done: 'text-indigo-500',
+    waiting_ship: 'text-amber-500',
+    shipping: 'text-orange-500',
     completed: 'text-emerald-500',
     cancelled: 'text-red-500',
 }
 
-const STATUS_ORDER: RetailOrderStatus[] = ['pending', 'shooting', 'editing', 'completed']
+// Digital: pending → editing → edit_done → completed
+const DIGITAL_FLOW: RetailOrderStatus[] = ['pending', 'editing', 'edit_done', 'completed']
+// Physical: pending → editing → edit_done → waiting_ship → shipping → completed
+const PHYSICAL_FLOW: RetailOrderStatus[] = ['pending', 'editing', 'edit_done', 'waiting_ship', 'shipping', 'completed']
 
 export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
     const portalUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/portal/order/${order.id}`
     const router = useRouter()
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+
+    const isPhysical = order.delivery_type === 'physical'
+    const statusFlow = isPhysical ? PHYSICAL_FLOW : DIGITAL_FLOW
 
     const handleStatusChange = async (newStatus: RetailOrderStatus) => {
         if (newStatus === order.order_status) return
@@ -105,6 +117,11 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                             {isUpdatingStatus && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                             {STATUS_LABELS[order.order_status]}
                         </Badge>
+                        {isPhysical && (
+                            <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-semibold text-orange-600 border-orange-200 bg-orange-50 rounded-md">
+                                📦 Ship
+                            </Badge>
+                        )}
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground font-normal">
                         <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
@@ -163,9 +180,11 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 rounded-xl border-zinc-200 shadow-lg p-1">
                         <div className="px-3 py-2">
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Chuyển trạng thái</p>
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                                Chuyển trạng thái {isPhysical ? '(có ship)' : '(file mềm)'}
+                            </p>
                         </div>
-                        {STATUS_ORDER.map((status) => (
+                        {statusFlow.map((status) => (
                             <DropdownMenuItem
                                 key={status}
                                 disabled={status === order.order_status || isUpdatingStatus}

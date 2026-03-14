@@ -33,16 +33,20 @@ import { useState } from 'react'
 
 const STATUS_LABELS: Record<string, string> = {
     pending: 'Chờ xử lý',
-    shooting: 'Đang chụp',
     editing: 'Đang chỉnh sửa',
-    completed: 'Đã hoàn thành',
+    edit_done: 'Xong chỉnh sửa',
+    waiting_ship: 'Chờ giao hàng',
+    shipping: 'Đang giao hàng',
+    completed: 'Hoàn thành',
     cancelled: 'Đã hủy',
 }
 
 const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
     pending: 'secondary',
-    shooting: 'outline',
-    editing: 'default',
+    editing: 'outline',
+    edit_done: 'default',
+    waiting_ship: 'secondary',
+    shipping: 'outline',
     completed: 'default',
     cancelled: 'destructive',
 }

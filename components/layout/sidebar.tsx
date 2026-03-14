@@ -43,16 +43,11 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
     {
-        title: 'Bán hàng',
+        title: 'Tulie Agency',
         items: [
             { title: 'Leads & Cơ hội', href: '/deals', icon: TrendingUp },
             { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },
-        ]
-    },
-    {
-        title: 'Triển khai',
-        items: [
             { title: 'Hợp đồng & Đơn hàng', href: '/contracts', icon: FilePenLine },
             { title: 'Dự án', href: '/projects', icon: Rocket },
             { title: 'Theo dõi hoá đơn', href: '/invoices', icon: Banknote },
@@ -60,7 +55,7 @@ const navGroups: NavGroup[] = [
         ]
     },
     {
-        title: 'Studio',
+        title: 'Tulie Studio',
         items: [
             { title: 'Đơn hàng Studio', href: '/studio', icon: Camera },
             { title: 'Khách Studio', href: '/studio/customers', icon: Users },
