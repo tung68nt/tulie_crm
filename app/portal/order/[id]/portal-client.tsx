@@ -289,8 +289,8 @@ function ShippingInfoForm({ order }: { order: any }) {
         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
-                        <MapPin className="h-4 w-4 text-orange-600" />
+                    <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                        <MapPin className="h-4 w-4 text-zinc-600" />
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Thông tin nhận hàng</h3>
