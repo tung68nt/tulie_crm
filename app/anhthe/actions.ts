@@ -18,7 +18,7 @@ const orderSchema = z.object({
   customerPhone: z.string().min(10, 'Số điện thoại không hợp lệ'),
   notes: z.string().optional(),
   packages: z.string(),
-  printSizeName: z.string().optional(),
+  viSizes: z.string().optional(),
   printQuantity: z.coerce.number().default(0),
   photoUrls: z.string().optional(),
   shippingName: z.string().optional(),
@@ -33,7 +33,7 @@ export async function submitPhotoOrder(formData: FormData) {
       customerPhone: formData.get('customerPhone') as string,
       notes: formData.get('notes') as string,
       packages: formData.get('packages') as string,
-      printSizeName: formData.get('printSizeName') as string,
+      viSizes: formData.get('viSizes') as string,
       printQuantity: formData.get('printQuantity') as string,
       photoUrls: formData.get('photoUrls') as string,
       shippingName: formData.get('shippingName') as string,
@@ -78,15 +78,18 @@ export async function submitPhotoOrder(formData: FormData) {
 
     // Print items
     const printQty = val.printQuantity
-    const printName = val.printSizeName || ''
+    const viSizes: string[] = val.viSizes ? JSON.parse(val.viSizes) : []
 
-    if (printName && printName !== 'Không in' && printQty > 0) {
+    if (printQty > 0 && viSizes.length > 0) {
       const freeIncluded = Math.min(printQty, totalFreePrints)
       const extraPaid = Math.max(0, printQty - totalFreePrints)
 
+      // Group sizes for summary
+      const sizeSummary = viSizes.join(', ')
+
       if (freeIncluded > 0) {
         items.push({
-          product_name: `In ảnh cứng — ${printName} (Đã bao gồm trong gói)`,
+          product_name: `In ảnh cứng (Đã bao gồm trong gói)`,
           quantity: freeIncluded,
           unit_price: 0,
           total_price: 0,
@@ -95,7 +98,7 @@ export async function submitPhotoOrder(formData: FormData) {
 
       if (extraPaid > 0) {
         items.push({
-          product_name: `In ảnh cứng — ${printName} (In thêm)`,
+          product_name: `In ảnh cứng (In thêm)`,
           quantity: extraPaid,
           unit_price: EXTRA_PRINT_PRICE,
           total_price: extraPaid * EXTRA_PRINT_PRICE,
@@ -129,6 +132,7 @@ export async function submitPhotoOrder(formData: FormData) {
       metadata: {
         form_type: 'id_photo',
         packages: pkgSelections.filter(p => p.qty > 0),
+        vi_sizes: viSizes,
         photo_urls: photoUrls,
         shipping: val.shippingName ? {
           name: val.shippingName,

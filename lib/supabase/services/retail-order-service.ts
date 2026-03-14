@@ -208,6 +208,11 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
             }
         }
 
+        // Auto-cleanup photos when order is completed
+        if (updateData.order_status === 'completed') {
+            cleanupOrderPhotos(id).catch(err => console.error('Photo cleanup failed:', err))
+        }
+
         revalidatePath('/studio')
         revalidatePath(`/studio/${id}`)
         revalidatePath(`/studio/${id}/edit`)
@@ -215,6 +220,38 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
     } catch (err) {
         console.error('Error updating retail order:', err)
         throw err
+    }
+}
+
+// Delete uploaded photos from Supabase Storage when order is done
+export async function cleanupOrderPhotos(orderId: string) {
+    try {
+        const supabase = await createClient()
+        const order = await getRetailOrderById(orderId)
+        if (!order) return
+
+        const photoUrls: string[] = (order as any).metadata?.photo_urls || []
+        if (photoUrls.length === 0) return
+
+        // Extract storage paths from URLs (format: .../id-photos/orders/timestamp_random.ext)
+        const paths = photoUrls
+            .map(url => {
+                const match = url.match(/id-photos\/(.+)$/)
+                return match ? match[1] : null
+            })
+            .filter(Boolean) as string[]
+
+        if (paths.length > 0) {
+            const { error } = await supabase.storage.from('id-photos').remove(paths)
+            if (error) console.error('Error deleting photos:', error)
+
+            // Clear photo_urls from metadata
+            const metadata = { ...(order as any).metadata, photo_urls: [] }
+            await supabase.from('retail_orders').update({ metadata }).eq('id', orderId)
+            console.log(`Cleaned up ${paths.length} photos for order ${orderId}`)
+        }
+    } catch (err) {
+        console.error('Error cleaning up order photos:', err)
     }
 }
 

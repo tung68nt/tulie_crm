@@ -25,7 +25,8 @@ import {
     Building2,
     Copy,
     Truck,
-    MapPin
+    MapPin,
+    ImageIcon
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
@@ -191,6 +192,37 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Customer Photos */}
+                {(order as any).metadata?.photo_urls?.length > 0 && (
+                    <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-zinc-50/50 border-b">
+                            <div className="space-y-1">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <ImageIcon className="h-4 w-4 text-primary" />
+                                    Ảnh gốc khách gửi
+                                </CardTitle>
+                                <CardDescription className="text-xs font-normal">
+                                    {(order as any).metadata.photo_urls.length} ảnh đã tải lên
+                                </CardDescription>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                {(order as any).metadata.photo_urls.map((url: string, idx: number) => (
+                                    <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block">
+                                        <div className="relative aspect-square rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50 hover:ring-2 hover:ring-primary/30 transition-all">
+                                            <img src={url} alt={`Ảnh ${idx + 1}`} className="w-full h-full object-cover" />
+                                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent px-2 py-1">
+                                                <p className="text-[9px] text-white font-medium">Ảnh {idx + 1}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Product/Service List */}
                 <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">

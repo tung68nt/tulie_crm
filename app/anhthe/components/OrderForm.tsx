@@ -321,7 +321,6 @@ export default function OrderForm({ products }: { products: Product[] }) {
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                   multiple
-                  capture="environment"
                   className="hidden"
                   onChange={handleFileUpload}
                 />
