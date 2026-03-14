@@ -497,7 +497,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                             )}
                         </div>
 
-                        {/* Order Items */}
+                        {/* Order Items + Payment Summary */}
                         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
                             <div className="p-5 border-b border-zinc-100">
                                 <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Danh sách sản phẩm / dịch vụ</h2>
@@ -537,11 +537,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                     <p className="text-sm font-semibold text-zinc-700 tabular-nums">{formatCurrency(order.shipping_fee)}</p>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Payment Summary */}
-                        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-                            <div className="p-5 space-y-3">
+                            <div className="border-t border-zinc-200 p-5 space-y-3 bg-zinc-50/30">
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">Tổng giá trị</span>
                                     <div className="flex items-baseline gap-1">

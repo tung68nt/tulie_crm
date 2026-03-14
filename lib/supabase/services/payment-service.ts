@@ -4,7 +4,7 @@ import { createClient } from '../server'
 import { recordRetailPayment } from './retail-order-service'
 import { sendTelegramNotification } from './telegram-service'
 import { getSystemSetting } from './settings-service'
-import { detectSourceSystem, extractOrderCode, generatePaymentContent, ORDER_CODE_PATTERN } from '@/lib/utils/payment-utils'
+import { detectSourceSystem, extractOrderCode, generatePaymentContent, normalizeOrderCode, ORDER_CODE_PATTERN } from '@/lib/utils/payment-utils'
 import type { SourceSystem } from '@/lib/utils/payment-utils'
 
 // Re-export for consumers
@@ -114,11 +114,28 @@ export async function processWebhookPayment(payload: SepayWebhookPayload): Promi
 
     // 4. Try to match retail order
     if (orderCode) {
-        const { data: order } = await supabase
+        const normalizedCode = normalizeOrderCode(orderCode)
+        
+        // First try exact match
+        let { data: order } = await supabase
             .from('retail_orders')
             .select('id, order_number, total_amount, paid_amount, payment_status')
             .eq('order_number', orderCode)
             .single()
+
+        // If no exact match, try normalized match (SePay strips underscores)
+        if (!order) {
+            const { data: orders } = await supabase
+                .from('retail_orders')
+                .select('id, order_number, total_amount, paid_amount, payment_status')
+                .ilike('order_number', 'DH_%')
+                .limit(100)
+
+            order = orders?.find(o => normalizeOrderCode(o.order_number) === normalizedCode) || null
+            if (order) {
+                console.log(`[PaymentService] Normalized match: "${orderCode}" → "${order.order_number}"`)
+            }
+        }
 
         if (order) {
             // Update transaction with matched order
@@ -133,7 +150,7 @@ export async function processWebhookPayment(payload: SepayWebhookPayload): Promi
             // Log to activity_log for finance tab
             await logPaymentActivity(transactionId, 'retail_order', order.id, amount, content, sourceSystem)
 
-            return { success: true, matched: 'retail_order', orderNumber: orderCode, sourceSystem, transactionId }
+            return { success: true, matched: 'retail_order', orderNumber: order.order_number, sourceSystem, transactionId }
         }
     }
 
