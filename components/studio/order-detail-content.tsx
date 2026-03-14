@@ -460,11 +460,11 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </p>
                                 </div>
 
-                                {/* Copy Payment Info for Customer */}
+                                {/* Share Payment Info + QR for Customer */}
                                 <Button
                                     variant="outline"
                                     className="w-full h-10 rounded-lg font-bold text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
-                                    onClick={() => {
+                                    onClick={async () => {
                                         const portalUrl = `${window.location.origin}/portal/order/${order.id}`
                                         const amount = new Intl.NumberFormat('vi-VN').format(remainingAmount)
                                         const msg = [
@@ -480,12 +480,25 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                             ``,
                                             `🔗 Theo dõi đơn hàng: ${portalUrl}`,
                                         ].join('\n')
+
+                                        try {
+                                            const res = await fetch(qrUrl)
+                                            const blob = await res.blob()
+                                            const file = new File([blob], `QR_${order.order_number}.png`, { type: 'image/png' })
+                                            if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                                                await navigator.share({ text: msg, files: [file] })
+                                                return
+                                            }
+                                        } catch (err: any) {
+                                            if (err?.name === 'AbortError') return
+                                        }
+                                        // Fallback: copy text only
                                         navigator.clipboard.writeText(msg)
-                                        toast.success('Đã copy thông tin thanh toán + link portal')
+                                        toast.success('Đã copy thông tin thanh toán (dán vào Zalo để gửi khách)')
                                     }}
                                 >
-                                    <Copy className="mr-2 h-3.5 w-3.5" />
-                                    Copy link thanh toán cho khách
+                                    <Send className="mr-2 h-3.5 w-3.5" />
+                                    Gửi thông tin thanh toán + QR cho khách
                                 </Button>
 
 
