@@ -1,31 +1,26 @@
 'use server'
 
 import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
+import { getProductById } from '@/lib/supabase/services/product-service'
 import { z } from 'zod'
 
 const EXTRA_PRINT_PRICE = 40000;
 
-const FREE_PRINTS: Record<string, number> = {
-  basic: 1,
-  standard: 2,
-  premium: 4,
-}
-
-const PACKAGE_INFO: Record<string, { name: string; price: number }> = {
-  basic: { name: 'Gói Cơ bản', price: 79000 },
-  standard: { name: 'Gói Tiêu chuẩn', price: 199000 },
-  premium: { name: 'Gói Cao cấp', price: 339000 },
+// Free prints by price tier (in thousands)
+const FREE_PRINTS_BY_PRICE: Record<number, number> = {
+  79: 1,
+  199: 2,
+  339: 4,
 }
 
 const orderSchema = z.object({
   customerName: z.string().min(2, 'Tên quá ngắn'),
   customerPhone: z.string().min(10, 'Số điện thoại không hợp lệ'),
   notes: z.string().optional(),
-  // JSON string: [{id, qty, note}]
   packages: z.string(),
   printSizeName: z.string().optional(),
   printQuantity: z.coerce.number().default(0),
-  photoUrls: z.string().optional(), // JSON string: ["url1", "url2"]
+  photoUrls: z.string().optional(),
   shippingName: z.string().optional(),
   shippingPhone: z.string().optional(),
   shippingAddress: z.string().optional(),
@@ -48,7 +43,7 @@ export async function submitPhotoOrder(formData: FormData) {
 
     const val = orderSchema.parse(rawData)
     
-    // Parse packages array
+    // Parse packages — id is now real product UUID from DB
     const pkgSelections: { id: string; qty: number; note: string }[] = JSON.parse(val.packages)
     
     if (pkgSelections.every(p => p.qty === 0)) {
@@ -61,20 +56,24 @@ export async function submitPhotoOrder(formData: FormData) {
 
     for (const sel of pkgSelections) {
       if (sel.qty <= 0) continue
-      const info = PACKAGE_INFO[sel.id]
-      if (!info) continue
       
-      const free = FREE_PRINTS[sel.id] || 0
+      // Fetch real product from DB
+      const product = await getProductById(sel.id)
+      if (!product) continue
+      
+      const priceKey = Math.floor(product.price / 1000)
+      const free = FREE_PRINTS_BY_PRICE[priceKey] || 0
       totalFreePrints += sel.qty * free
 
       items.push({
-        product_name: `${info.name}${sel.note ? ` — ${sel.note}` : ''}`,
+        product_id: product.id,
+        product_name: `${product.name}${sel.note ? ` — ${sel.note}` : ''}`,
         quantity: sel.qty,
-        unit_price: info.price,
-        total_price: info.price * sel.qty,
+        unit_price: product.price,
+        total_price: product.price * sel.qty,
       })
       
-      packageSummary.push(`${sel.qty}x ${info.name}`)
+      packageSummary.push(`${sel.qty}x ${product.name}`)
     }
 
     // Print items
@@ -125,7 +124,7 @@ export async function submitPhotoOrder(formData: FormData) {
       payment_status: 'pending',
       order_status: 'pending',
       source_system: 'website',
-      brand: 'tulie_studio' as any,
+      brand: 'studio',
       notes: orderNotes,
       metadata: {
         form_type: 'id_photo',
