@@ -1,24 +1,25 @@
 'use client'
 
-import { RetailOrder } from '@/types'
+import { RetailOrder, RetailOrderStatus } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
     ArrowLeft,
-    Share2,
     MoreVertical,
     Copy,
     ExternalLink,
     Pencil,
     Trash2,
-    CheckCircle2,
-    Camera,
-    Sparkles,
-    Calendar
+    Calendar,
+    Loader2,
+    Circle
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { updateRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,10 +34,10 @@ interface OrderDetailHeaderProps {
 
 const STATUS_LABELS: Record<string, string> = {
     pending: 'Chờ xử lý',
-    shooting: '🔨 Đang chụp',
-    editing: '✨ Đang chỉnh sửa',
-    completed: '✅ Đã hoàn thành',
-    cancelled: '❌ Đã hủy',
+    shooting: 'Đang chụp',
+    editing: 'Đang chỉnh sửa',
+    completed: 'Đã hoàn thành',
+    cancelled: 'Đã hủy',
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -47,8 +48,34 @@ const STATUS_COLORS: Record<string, string> = {
     cancelled: 'bg-red-50 text-red-700 border-red-100',
 }
 
+const STATUS_DOT_COLORS: Record<string, string> = {
+    pending: 'text-zinc-400',
+    shooting: 'text-blue-500',
+    editing: 'text-purple-500',
+    completed: 'text-emerald-500',
+    cancelled: 'text-red-500',
+}
+
+const STATUS_ORDER: RetailOrderStatus[] = ['pending', 'shooting', 'editing', 'completed']
+
 export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
     const portalUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/portal/order/${order.id}`
+    const router = useRouter()
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+
+    const handleStatusChange = async (newStatus: RetailOrderStatus) => {
+        if (newStatus === order.order_status) return
+        setIsUpdatingStatus(true)
+        try {
+            await updateRetailOrder(order.id, { order_status: newStatus })
+            toast.success(`Đã chuyển trạng thái → ${STATUS_LABELS[newStatus]}`)
+            router.refresh()
+        } catch (error: any) {
+            toast.error(error.message || 'Lỗi khi cập nhật trạng thái')
+        } finally {
+            setIsUpdatingStatus(false)
+        }
+    }
 
     return (
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-zinc-100">
@@ -67,6 +94,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     <div className="flex items-center gap-3 mb-1">
                         <h1 className="text-2xl font-bold tracking-tight text-zinc-900">{order.order_number}</h1>
                         <Badge variant="outline" className={cn("px-2.5 py-0.5 font-bold text-[10px] uppercase tracking-wider rounded-md", STATUS_COLORS[order.order_status])}>
+                            {isUpdatingStatus && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
                             {STATUS_LABELS[order.order_status]}
                         </Badge>
                     </div>
@@ -101,7 +129,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                         })
                     }}
                 >
-                    <Copy className="mr-2 h-3.5 w-3.5 text-zinc-400 group-hover:text-primary" />
+                    <Copy className="mr-2 h-3.5 w-3.5 text-zinc-400" />
                     Copy link
                 </Button>
 
@@ -127,6 +155,25 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 rounded-xl border-zinc-200 shadow-lg p-1">
                         <div className="px-3 py-2">
+                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Chuyển trạng thái</p>
+                        </div>
+                        {STATUS_ORDER.map((status) => (
+                            <DropdownMenuItem
+                                key={status}
+                                disabled={status === order.order_status || isUpdatingStatus}
+                                className={cn(
+                                    "rounded-lg h-10 cursor-pointer px-3 flex items-center gap-3",
+                                    status === order.order_status && "opacity-50 cursor-default"
+                                )}
+                                onClick={() => handleStatusChange(status)}
+                            >
+                                <Circle className={cn("h-3 w-3 fill-current shrink-0", STATUS_DOT_COLORS[status])} />
+                                <span className="font-semibold text-sm">{STATUS_LABELS[status]}</span>
+                                {status === order.order_status && <span className="ml-auto text-[10px] text-zinc-400 font-medium">Hiện tại</span>}
+                            </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator className="bg-zinc-100 my-1" />
+                        <div className="px-3 py-2">
                             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tác vụ đơn hàng</p>
                         </div>
                         <DropdownMenuItem asChild className="rounded-lg h-10 cursor-pointer px-3">
@@ -137,8 +184,9 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-zinc-100 my-1" />
                         <DropdownMenuItem
+                            disabled={order.order_status === 'cancelled' || isUpdatingStatus}
                             className="text-destructive focus:text-destructive focus:bg-destructive/5 rounded-lg h-10 cursor-pointer px-3 flex items-center gap-3"
-                            onClick={() => toast.info('Tính năng hủy đơn đang chờ phân quyền')}
+                            onClick={() => handleStatusChange('cancelled')}
                         >
                             <Trash2 className="h-4 w-4 shrink-0" />
                             <span className="font-semibold text-sm text-left whitespace-nowrap">Hủy đơn hàng</span>
