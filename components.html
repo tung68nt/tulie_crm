@@ -29,31 +29,32 @@
 body { background: var(--bg); color: var(--fg); font-size:14px; line-height:1.5; }
 a { color: inherit; text-decoration: none; }
 
-/* Layout */
-.top-bar { position:sticky; top:0; z-index:50; border-bottom:1px solid var(--border); background:var(--bg); backdrop-filter:blur(8px); }
-.top-bar-inner { display:flex; align-items:center; justify-content:space-between; height:56px; padding:0 24px; }
-.top-bar h1 { font-size:18px; font-weight:700; letter-spacing:-0.025em; }
-.version { display:inline-flex; align-items:center; padding:2px 8px; border-radius:9999px; background:var(--secondary); color:var(--secondary-fg); font-size:12px; font-weight:500; margin-left:8px; }
-.layout { display:flex; }
-.sidebar { width:220px; flex-shrink:0; border-right:1px solid var(--border); position:sticky; top:56px; height:calc(100vh - 56px); overflow-y:auto; padding:24px 16px; }
-.sidebar a { display:block; padding:8px 12px; border-radius:6px; font-size:14px; color:var(--muted-fg); transition:all .15s; }
-.sidebar a:hover { color:var(--fg); background:var(--accent); }
-.main { flex:1; max-width:960px; margin:0 auto; padding:32px 24px; }
+/* Showcase Layout — SFSV-inspired full-width */
+.showcase { max-width:1200px; margin:0 auto; padding:0 32px; }
+.showcase-header { text-align:center; padding:80px 0 48px; border-bottom:1px solid var(--border); margin-bottom:56px; }
+.showcase-header h1 { font-size:2.8rem; font-weight:700; letter-spacing:-0.03em; margin-bottom:12px; }
+.showcase-header p { font-size:1rem; color:var(--muted-fg); max-width:480px; margin:0 auto; }
+.dark-toggle { position:fixed; top:20px; right:20px; z-index:100; width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--card); color:var(--fg); cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; transition:all .2s; box-shadow:var(--shadow-dropdown); }
+.dark-toggle:hover { background:var(--accent); }
+.version { display:inline-flex; align-items:center; padding:3px 10px; border-radius:9999px; background:var(--secondary); color:var(--secondary-fg); font-size:12px; font-weight:500; margin-left:10px; vertical-align:middle; }
 
 /* Section */
-.section { margin-bottom:48px; }
-.section-title { font-size:24px; font-weight:700; letter-spacing:-0.025em; margin-bottom:4px; }
-.section-desc { font-size:14px; color:var(--muted-fg); margin-bottom:16px; }
-.section-sep { border-top:1px solid var(--border); margin-bottom:24px; }
+.section { margin-bottom:64px; }
+.section-title { font-size:1.5rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:6px; }
+.section-desc { font-size:0.9rem; color:var(--muted-fg); margin-bottom:28px; }
+.section-divider { border:none; border-top:1px solid var(--border); margin:56px 0; }
+.label-sub { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted-fg); margin-bottom:14px; margin-top:24px; }
 
 /* Component Block */
-.block { margin-bottom:24px; }
-.block-title { font-size:18px; font-weight:600; margin-bottom:12px; }
-.block-content { border:1px solid var(--border); border-radius:12px; padding:24px; background:var(--card); box-shadow:var(--shadow-card); }
+.block { margin-bottom:28px; }
+.block-title { font-size:1rem; font-weight:600; margin-bottom:12px; }
+.block-content { border:1px solid var(--border); border-radius:12px; padding:24px; background:var(--card); box-shadow:var(--shadow-card); transition:border-color .2s; }
+.block-content:hover { border-color:var(--ring); }
 .flex-wrap { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
 .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
 .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.row { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-bottom:20px; }
 .space-y > * + * { margin-top:16px; }
 .space-y-sm > * + * { margin-top:8px; }
 
@@ -216,10 +217,11 @@ td.right { text-align:right; font-weight:500; }
 .tip:hover .tip-text { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
 .tip-text { position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%) translateY(4px); background:var(--primary); color:var(--primary-fg); font-size:12px; padding:4px 8px; border-radius:4px; white-space:nowrap; opacity:0; pointer-events:none; transition:all .15s; z-index:10; }
 
-/* Color swatch */
-.swatch { height:48px; border-radius:6px; }
-.swatch-label { font-size:12px; font-weight:500; margin-top:8px; }
-.swatch-var { font-size:12px; color:var(--muted-fg); font-family:monospace; }
+/* Color Swatch — interactive hover */
+.swatch { width:100%; aspect-ratio:1; border-radius:12px; position:relative; transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s; cursor:pointer; }
+.swatch:hover { transform:scale(1.08) translateY(-4px); box-shadow:var(--shadow-dropdown); }
+.swatch-label { font-size:13px; font-weight:600; margin-top:8px; }
+.swatch-var { font-size:11px; color:var(--muted-fg); margin-top:2px; }
 
 /* Code token */
 .token { display:flex; align-items:center; gap:12px; font-size:14px; }
@@ -321,43 +323,22 @@ td.right { text-align:right; font-weight:500; }
 </head>
 <body>
 
-<!-- Top Bar -->
-<header class="top-bar">
-<div class="top-bar-inner">
-  <div style="display:flex;align-items:center;gap:8px">
-    <h1>Tulie CRM — UI Components</h1>
-    <span class="version">v1.0</span>
-  </div>
-  <button class="dark-toggle" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'☀':'☾'">☾</button>
-</div>
-</header>
+<!-- Dark mode toggle -->
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'☀':'☾'">☾</button>
 
-<div class="layout">
-<!-- Sidebar -->
-<nav class="sidebar">
-  <a href="#colors">Colors</a>
-  <a href="#elevation">Elevation</a>
-  <a href="#typography">Typography</a>
-  <a href="#spacing">Spacing</a>
-  <a href="#buttons">Buttons</a>
-  <a href="#badges">Badges</a>
-  <a href="#forms">Forms</a>
-  <a href="#cards">Cards</a>
-  <a href="#alerts">Alerts</a>
-  <a href="#tables">Tables</a>
-  <a href="#dialogs">Dialogs & Sheets</a>
-  <a href="#dropdowns">Dropdowns</a>
-  <a href="#misc">Misc</a>
-</nav>
+<div class="showcase">
+  <header class="showcase-header">
+    <h1>Tulie CRM <span class="version">v2.0</span></h1>
+    <p>Hệ thống thiết kế giao diện — shadcn/ui + Unified Semantic Status System</p>
+  </header>
 
-<!-- Main -->
-<main class="main">
 
-<!-- ═══ COLORS ═══ -->
-<div class="section" id="colors">
-  <h2 class="section-title">Colors</h2>
-  <p class="section-desc">Zinc monochrome palette — CSS variables từ shadcn/ui. Chỉ dùng destructive (red) cho errors.</p>
-  <div class="section-sep"></div>
+
+
+<!-- ═══ 1. COLORS ═══ -->
+<section class="section" id="colors">
+  <h2 class="section-title">1. Color System</h2>
+  <p class="section-desc">Zinc monochrome palette + Semantic accent colors — CSS variables từ shadcn/ui.</p>
 
   <div class="block">
     <h3 class="block-title">CSS Variable Colors</h3>
@@ -429,10 +410,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ ELEVATION ═══ -->
-<div class="section" id="elevation">
-  <h2 class="section-title">Elevation</h2>
+<hr class="section-divider">
+<section class="section" id="elevation">
+  <h2 class="section-title">2. Elevation</h2>
   <p class="section-desc">3-tier shadow system — cards, dropdowns, dialogs.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Shadow Levels</h3>
@@ -447,10 +429,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ TYPOGRAPHY ═══ -->
-<div class="section" id="typography">
-  <h2 class="section-title">Typography</h2>
+<hr class="section-divider">
+<section class="section" id="typography">
+  <h2 class="section-title">3. Typography</h2>
   <p class="section-desc">Inter font — KHÔNG uppercase, max font-bold (700) trong dashboard.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Text Styles (TEXT tokens)</h3>
@@ -494,10 +477,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ SPACING ═══ -->
-<div class="section" id="spacing">
-  <h2 class="section-title">Spacing</h2>
+<hr class="section-divider">
+<section class="section" id="spacing">
+  <h2 class="section-title">4. Spacing</h2>
   <p class="section-desc">Layout tokens — gap, padding, grid patterns.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Layout Tokens</h3>
@@ -538,10 +522,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ BUTTONS ═══ -->
-<div class="section" id="buttons">
-  <h2 class="section-title">Buttons</h2>
+<hr class="section-divider">
+<section class="section" id="buttons">
+  <h2 class="section-title">5. Buttons</h2>
   <p class="section-desc">6 variants × 6 sizes — shadcn/ui Button.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Variants</h3>
@@ -597,10 +582,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ BADGES ═══ -->
-<div class="section" id="badges">
-  <h2 class="section-title">Badges & Status</h2>
+<hr class="section-divider">
+<section class="section" id="badges">
+  <h2 class="section-title">6. Badges & Status</h2>
   <p class="section-desc">Badge variants + StatusBadge cho tất cả entity types.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Badge Variants (shadcn)</h3>
@@ -722,10 +708,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ FORMS ═══ -->
-<div class="section" id="forms">
-  <h2 class="section-title">Forms</h2>
+<hr class="section-divider">
+<section class="section" id="forms">
+  <h2 class="section-title">7. Forms</h2>
   <p class="section-desc">Input, Textarea, Select, Checkbox, Switch, Label.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Input</h3>
@@ -818,10 +805,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ CARDS ═══ -->
-<div class="section" id="cards">
-  <h2 class="section-title">Cards</h2>
+<hr class="section-divider">
+<section class="section" id="cards">
+  <h2 class="section-title">8. Cards</h2>
   <p class="section-desc">Card layout pattern — header, content, footer.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Basic Card</h3>
@@ -870,10 +858,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ ALERTS ═══ -->
-<div class="section" id="alerts">
-  <h2 class="section-title">Alerts</h2>
+<hr class="section-divider">
+<section class="section" id="alerts">
+  <h2 class="section-title">9. Alerts</h2>
   <p class="section-desc">Alert default + destructive.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Default Alert</h3>
@@ -898,10 +887,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ TABLES ═══ -->
-<div class="section" id="tables">
-  <h2 class="section-title">Tables</h2>
+<hr class="section-divider">
+<section class="section" id="tables">
+  <h2 class="section-title">10. Tables</h2>
   <p class="section-desc">Data table pattern.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Basic Table</h3>
@@ -923,10 +913,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ DIALOGS & SHEETS ═══ -->
-<div class="section" id="dialogs">
-  <h2 class="section-title">Dialogs & Sheets</h2>
+<hr class="section-divider">
+<section class="section" id="dialogs">
+  <h2 class="section-title">11. Dialogs & Sheets</h2>
   <p class="section-desc">Modal dialog, Confirm dialog, Sheet (slide panel).</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Dialog</h3>
@@ -954,10 +945,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ DROPDOWNS & COMMAND ═══ -->
-<div class="section" id="dropdowns">
-  <h2 class="section-title">Dropdowns & Command</h2>
+<hr class="section-divider">
+<section class="section" id="dropdowns">
+  <h2 class="section-title">12. Dropdowns & Command</h2>
   <p class="section-desc">Dropdown menu, Popover, Command palette (⌘K).</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Dropdown Menu</h3>
@@ -1040,10 +1032,11 @@ td.right { text-align:right; font-weight:500; }
 </div>
 
 <!-- ═══ MISC ═══ -->
-<div class="section" id="misc">
-  <h2 class="section-title">Misc Components</h2>
+<hr class="section-divider">
+<section class="section" id="misc">
+  <h2 class="section-title">13. Misc Components</h2>
   <p class="section-desc">Tabs, Tooltip, Avatar, Skeleton, Progress, Separator.</p>
-  <div class="section-sep"></div>
+  
 
   <div class="block">
     <h3 class="block-title">Tabs</h3>
@@ -1170,15 +1163,15 @@ td.right { text-align:right; font-weight:500; }
       </nav>
     </div>
   </div>
-</div>
+</section>
 
 <!-- Footer -->
 <div style="border-top:1px solid var(--border);padding:32px 0 64px;text-align:center">
   <p style="font-size:14px;color:var(--muted-fg)">Tulie CRM — UI Component Library v2 • shadcn/ui + Unified Semantic Status System</p>
 </div>
 
-</main>
-</div>
+</div> <!-- /showcase -->
+
 
 <!-- Modal: Dialog -->
 <div class="modal-overlay" id="demo-dialog" onclick="if(event.target===this)this.classList.remove('open')">
