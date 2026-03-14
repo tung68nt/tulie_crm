@@ -65,3 +65,26 @@ export function buildVietQrUrl(params: {
     const bin = getBankBin(params.bankName)
     return `https://img.vietqr.io/image/${bin}-${params.accountNo}-compact2.png?amount=${params.amount}&addInfo=${encodeURIComponent(params.addInfo)}&accountName=${encodeURIComponent(params.accountName)}`
 }
+
+/**
+ * Build a VietQR deeplink URL that opens banking apps on mobile
+ * Format: https://dl.vietqr.io/pay?app=...
+ */
+export function buildVietQrDeeplink(params: {
+    bankName: string
+    accountNo: string
+    accountName: string
+    amount: number
+    addInfo: string
+}): string {
+    const bin = getBankBin(params.bankName)
+    const query = new URLSearchParams({
+        app: 'vietqr',
+        ba: params.accountNo,
+        bn: bin,
+        am: String(params.amount),
+        tn: params.addInfo,
+        an: params.accountName,
+    })
+    return `https://dl.vietqr.io/pay?${query.toString()}`
+}

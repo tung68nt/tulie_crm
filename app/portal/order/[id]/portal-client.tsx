@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save, FileText } from 'lucide-react'
+import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save, FileText, Smartphone } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { generatePaymentContent } from '@/lib/utils/payment-utils'
-import { buildVietQrUrl } from '@/lib/utils/vietqr'
+import { buildVietQrUrl, buildVietQrDeeplink } from '@/lib/utils/vietqr'
 import { toast } from 'sonner'
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
@@ -393,6 +393,13 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
         amount: remainingAmount,
         addInfo: transferContent
     })
+    const payDeeplink = buildVietQrDeeplink({
+        bankName: bankInfo.bank_name,
+        accountNo: bankInfo.account_no,
+        accountName: bankInfo.account_name,
+        amount: remainingAmount,
+        addInfo: transferContent
+    })
 
     const items = order.items || []
     const isPaid = order.payment_status === 'paid'
@@ -691,13 +698,21 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                     </p>
                                 </div>
 
-                                {/* Mobile: Save QR */}
-                                <Button asChild variant="outline" className="w-full h-12 rounded-xl border-zinc-200 text-sm font-semibold sm:hidden">
-                                    <a href={qrUrl} download={`QR_${order.order_number}.png`}>
-                                        <Download className="mr-2 h-4 w-4" />
-                                        Lưu mã QR vào máy
-                                    </a>
-                                </Button>
+                                {/* Mobile: Quick Pay + Save QR */}
+                                <div className="space-y-2 sm:hidden">
+                                    <Button asChild className="w-full h-12 rounded-xl text-sm font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg">
+                                        <a href={payDeeplink} target="_blank" rel="noopener">
+                                            <Smartphone className="mr-2 h-4 w-4" />
+                                            Chuyển khoản ngay
+                                        </a>
+                                    </Button>
+                                    <Button asChild variant="outline" className="w-full h-10 rounded-xl border-zinc-200 text-sm font-semibold">
+                                        <a href={qrUrl} download={`QR_${order.order_number}.png`}>
+                                            <Download className="mr-2 h-4 w-4" />
+                                            Lưu mã QR vào máy
+                                        </a>
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     )}
