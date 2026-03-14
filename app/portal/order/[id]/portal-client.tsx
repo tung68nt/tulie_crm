@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save } from 'lucide-react'
+import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -430,8 +430,14 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                     <div className="flex-1 space-y-6 min-w-0">
                         {/* Order Info */}
                         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-                            <div className="p-5 border-b border-zinc-100">
-                                <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Thông tin đơn hàng</h2>
+                            <div className="p-5 border-b border-zinc-100 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                                    <FileText className="h-4 w-4 text-zinc-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Thông tin đơn hàng</h3>
+                                    <p className="text-[11px] font-medium text-muted-foreground">Chi tiết đơn hàng của bạn</p>
+                                </div>
                             </div>
                             <div className="grid grid-cols-2 divide-x divide-zinc-100">
                                 <div className="p-5 space-y-1">
@@ -471,8 +477,14 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
 
                         {/* Order Items + Payment Summary */}
                         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
-                            <div className="p-5 border-b border-zinc-100">
-                                <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Danh sách sản phẩm / dịch vụ</h2>
+                            <div className="p-5 border-b border-zinc-100 flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                                    <Package className="h-4 w-4 text-zinc-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Danh sách sản phẩm / dịch vụ</h3>
+                                    <p className="text-[11px] font-medium text-muted-foreground">Các sản phẩm trong đơn hàng</p>
+                                </div>
                             </div>
                             <div className="divide-y divide-zinc-100">
                                 {items.length > 0 ? (
@@ -548,8 +560,8 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                         {(order.order_status === 'completed' || order.resource_link || order.demo_link) && (
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 px-1">
-                                    <div className="w-8 h-8 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
-                                        <Sparkles className="h-4 w-4 text-zinc-900" />
+                                    <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                                        <Sparkles className="h-4 w-4 text-zinc-600" />
                                     </div>
                                     <div>
                                         <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Tài nguyên dự án</h3>
