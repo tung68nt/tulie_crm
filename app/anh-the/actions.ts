@@ -26,6 +26,9 @@ const orderSchema = z.object({
   printSizeName: z.string().optional(),
   printQuantity: z.coerce.number().default(0),
   photoUrls: z.string().optional(), // JSON string: ["url1", "url2"]
+  shippingName: z.string().optional(),
+  shippingPhone: z.string().optional(),
+  shippingAddress: z.string().optional(),
 })
 
 export async function submitPhotoOrder(formData: FormData) {
@@ -38,6 +41,9 @@ export async function submitPhotoOrder(formData: FormData) {
       printSizeName: formData.get('printSizeName') as string,
       printQuantity: formData.get('printQuantity') as string,
       photoUrls: formData.get('photoUrls') as string,
+      shippingName: formData.get('shippingName') as string,
+      shippingPhone: formData.get('shippingPhone') as string,
+      shippingAddress: formData.get('shippingAddress') as string,
     }
 
     const val = orderSchema.parse(rawData)
@@ -107,6 +113,7 @@ export async function submitPhotoOrder(formData: FormData) {
       val.notes ? `Link Drive/Ghi chú: ${val.notes}` : null,
       packageSummary.length > 0 ? `Gói: ${packageSummary.join(', ')}` : null,
       photoUrls.length > 0 ? `Ảnh đã upload: ${photoUrls.length} ảnh` : null,
+      val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
 
     const newOrder = await createRetailOrder({
@@ -124,6 +131,11 @@ export async function submitPhotoOrder(formData: FormData) {
         form_type: 'id_photo',
         packages: pkgSelections.filter(p => p.qty > 0),
         photo_urls: photoUrls,
+        shipping: val.shippingName ? {
+          name: val.shippingName,
+          phone: val.shippingPhone,
+          address: val.shippingAddress,
+        } : null,
       },
       items,
     })

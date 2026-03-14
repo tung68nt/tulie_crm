@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Camera, CheckCircle2, ImagePlus, Link2, Loader2, MinusIcon, PlusIcon, Printer, Sparkles, Star, Upload, User, X } from 'lucide-react'
+import { Camera, CheckCircle2, ImagePlus, Link2, Loader2, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Upload, User, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { PrintLayoutPreview } from './components/PrintLayoutPreview'
@@ -95,6 +95,12 @@ export default function IDPhotoOrderPage() {
   const [printSizeId, setPrintSizeId] = useState('mix')
   const [printQty, setPrintQty] = useState(1)
 
+  // Shipping state
+  const [wantShipping, setWantShipping] = useState(false)
+  const [shippingName, setShippingName] = useState('')
+  const [shippingPhone, setShippingPhone] = useState('')
+  const [shippingAddress, setShippingAddress] = useState('')
+
   // Photo upload state
   const [uploadedFiles, setUploadedFiles] = useState<{ name: string; url: string; path: string }[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -174,6 +180,13 @@ export default function IDPhotoOrderPage() {
     formData.set('printSizeName', wantPrint ? selectedPrintName : 'Không in')
     formData.set('printQuantity', wantPrint ? printQty.toString() : '0')
     formData.set('photoUrls', JSON.stringify(uploadedFiles.map(f => f.url)))
+
+    // Shipping info
+    if (wantShipping) {
+      formData.set('shippingName', shippingName)
+      formData.set('shippingPhone', shippingPhone)
+      formData.set('shippingAddress', shippingAddress)
+    }
 
     const res = await submitPhotoOrder(formData)
     setIsSubmitting(false)
@@ -527,6 +540,84 @@ export default function IDPhotoOrderPage() {
               )}
             </div>
           </section>
+
+          {/* Section 4: Shipping */}
+          {wantPrint && (
+            <section className="space-y-4 sm:space-y-5">
+              <div className="flex items-center gap-3 px-1">
+                <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
+                  <Package className="w-4.5 h-4.5 text-zinc-700" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Giao hàng</h2>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Ship ảnh in đến địa chỉ của bạn</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
+                <div className="flex items-center justify-between p-4 sm:p-5">
+                  <div className="space-y-0.5">
+                    <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-ship">
+                      Muốn ship ảnh về
+                    </Label>
+                    <p className="text-[11px] text-zinc-400 font-medium">
+                      Phí ship tính theo địa chỉ giao hàng
+                    </p>
+                  </div>
+                  <Switch
+                    id="toggle-ship"
+                    checked={wantShipping}
+                    onCheckedChange={setWantShipping}
+                  />
+                </div>
+
+                {wantShipping && (
+                  <div className="border-t border-zinc-100 p-4 sm:p-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                          Tên người nhận <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          value={shippingName}
+                          onChange={(e) => setShippingName(e.target.value)}
+                          placeholder="Nguyễn Văn B"
+                          required={wantShipping}
+                          className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                          SĐT người nhận <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          value={shippingPhone}
+                          onChange={(e) => setShippingPhone(e.target.value)}
+                          type="tel"
+                          placeholder="09xx xxx xxx"
+                          required={wantShipping}
+                          className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                        Địa chỉ giao hàng <span className="text-red-500">*</span>
+                      </Label>
+                      <Textarea
+                        value={shippingAddress}
+                        onChange={(e) => setShippingAddress(e.target.value)}
+                        placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                        required={wantShipping}
+                        className="min-h-[70px] text-xs bg-white border-zinc-200 rounded-lg resize-none placeholder:text-zinc-300"
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* Order Summary + Submit */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm sticky bottom-4 z-10">
