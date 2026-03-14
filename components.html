@@ -95,10 +95,10 @@ a { color: inherit; text-decoration: none; }
 .sb-ghost { background:#f4f4f5; color:#a1a1aa; border-color:#e4e4e7; }
 .sb-ghost .dot { background:#d4d4d8; }
 /* Outline — neutral/pending */
-.sb-outline { background:transparent; color:#3f3f46; border-color:#d4d4d8; }
+.sb-outline { background:transparent; color:#52525b; border-color:#d4d4d8; }
 .sb-outline .dot { background:#a1a1aa; }
-/* Solid — confirmed/active (zinc-700, NOT pure black) */
-.sb-solid { background:#3f3f46; color:white; border-color:#3f3f46; }
+/* Solid — confirmed/final (zinc-600, NOT black) */
+.sb-solid { background:#52525b; color:white; border-color:#52525b; }
 .sb-solid .dot { background:white; }
 /* Danger — destructive/overdue */
 .sb-danger { background:#fef2f2; color:#dc2626; border-color:#fecaca; }
@@ -107,26 +107,37 @@ a { color: inherit; text-decoration: none; }
 .sb-cancelled { background:#f4f4f5; color:#a1a1aa; border-color:#e4e4e7; text-decoration:line-through; }
 .sb-cancelled .dot { background:#d4d4d8; }
 
-/* Soft — tinted pastel (semantic colors) */
+/* Soft — tinted pastel (Tailwind 500/50/200 standard) */
 .sb-blue { background:#eff6ff; color:#2563eb; border-color:#bfdbfe; }
 .sb-blue .dot { background:#3b82f6; }
 .sb-violet { background:#f5f3ff; color:#7c3aed; border-color:#ddd6fe; }
 .sb-violet .dot { background:#8b5cf6; }
-.sb-amber { background:#fffbeb; color:#d97706; border-color:#fde68a; }
+.sb-amber { background:#fffbeb; color:#b45309; border-color:#fde68a; }
 .sb-amber .dot { background:#f59e0b; }
-.sb-orange { background:#fff7ed; color:#ea580c; border-color:#fed7aa; }
+.sb-orange { background:#fff7ed; color:#c2410c; border-color:#fed7aa; }
 .sb-orange .dot { background:#f97316; }
-.sb-emerald { background:#ecfdf5; color:#059669; border-color:#a7f3d0; }
+.sb-emerald { background:#ecfdf5; color:#047857; border-color:#a7f3d0; }
 .sb-emerald .dot { background:#10b981; }
-.sb-rose { background:#fff1f2; color:#e11d48; border-color:#fecdd3; }
+.sb-rose { background:#fff1f2; color:#be123c; border-color:#fecdd3; }
 .sb-rose .dot { background:#f43f5e; }
-.sb-cyan { background:#ecfeff; color:#0891b2; border-color:#a5f3fc; }
+.sb-cyan { background:#ecfeff; color:#0e7490; border-color:#a5f3fc; }
 .sb-cyan .dot { background:#06b6d4; }
+.sb-sky { background:#f0f9ff; color:#0369a1; border-color:#bae6fd; }
+.sb-sky .dot { background:#0ea5e9; }
+.sb-lime { background:#f7fee7; color:#4d7c0f; border-color:#bef264; }
+.sb-lime .dot { background:#84cc16; }
+.sb-pink { background:#fdf2f8; color:#be185d; border-color:#fbcfe8; }
+.sb-pink .dot { background:#ec4899; }
+.sb-teal { background:#f0fdfa; color:#0f766e; border-color:#99f6e4; }
+.sb-teal .dot { background:#14b8a6; }
 
-/* Brand badges */
-.sb-brand-agency { background:#18181b; color:white; }
-.sb-brand-studio { background:#71717a; color:white; }
-.sb-brand-academy { background:#f4f4f5; color:#18181b; border-color:#18181b; }
+/* Brand badges — with brand colors */
+.sb-brand-agency { background:#27272a; color:white; }
+.sb-brand-agency .dot { background:white; }
+.sb-brand-studio { background:#4f46e5; color:white; }
+.sb-brand-studio .dot { background:white; }
+.sb-brand-academy { background:#d97706; color:white; }
+.sb-brand-academy .dot { background:white; }
 
 /* Elevation demo */
 .elev-card { border:1px solid var(--border); border-radius:12px; padding:20px; background:var(--card); }
@@ -396,18 +407,27 @@ td.right { text-align:right; font-weight:500; }
       <span class="status-badge sb-emerald"><span class="dot"></span>Emerald</span>
       <span class="status-badge sb-rose"><span class="dot"></span>Rose</span>
       <span class="status-badge sb-cyan"><span class="dot"></span>Cyan</span>
+      <span class="status-badge sb-sky"><span class="dot"></span>Sky</span>
+      <span class="status-badge sb-lime"><span class="dot"></span>Lime</span>
+      <span class="status-badge sb-pink"><span class="dot"></span>Pink</span>
+      <span class="status-badge sb-teal"><span class="dot"></span>Teal</span>
       <span class="status-badge sb-solid"><span class="dot"></span>Solid</span>
       <span class="status-badge sb-danger"><span class="dot"></span>Danger</span>
       <span class="status-badge sb-cancelled"><span class="dot"></span>Cancelled</span>
     </div>
   </div>
 
-  <div class="label-sub" style="margin-top:20px">Brand Badges</div>
-  <div class="block-content">
+  <div class="label-sub" style="margin-top:20px">Brand</div>
+  <div class="color-row">
+    <div class="swatch light-text" style="background:#27272a"><span>Agency</span><span>#27272a</span></div>
+    <div class="swatch light-text" style="background:#4f46e5"><span>Studio</span><span>#4f46e5</span></div>
+    <div class="swatch light-text" style="background:#d97706"><span>Academy</span><span>#d97706</span></div>
+  </div>
+  <div class="block-content" style="margin-top:8px">
     <div class="flex-wrap">
-      <span class="status-badge sb-brand-agency">Tulie Agency</span>
-      <span class="status-badge sb-brand-studio">Tulie Studio</span>
-      <span class="status-badge sb-brand-academy">Tulie Academy</span>
+      <span class="status-badge sb-brand-agency"><span class="dot"></span>Tulie Agency</span>
+      <span class="status-badge sb-brand-studio"><span class="dot"></span>Tulie Studio</span>
+      <span class="status-badge sb-brand-academy"><span class="dot"></span>Tulie Academy</span>
     </div>
   </div>
 </section>
@@ -429,7 +449,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ TYPOGRAPHY ═══ -->
 <hr class="section-divider">
@@ -477,7 +497,7 @@ td.right { text-align:right; font-weight:500; }
       <p style="font-size:30px">text-3xl (30px) — Hero stats</p>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ SPACING ═══ -->
 <hr class="section-divider">
@@ -522,7 +542,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ BUTTONS ═══ -->
 <hr class="section-divider">
@@ -582,7 +602,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ BADGES ═══ -->
 <hr class="section-divider">
@@ -708,7 +728,7 @@ td.right { text-align:right; font-weight:500; }
       <span class="status-badge sb-cancelled"><span class="dot"></span>Đã hủy</span>
     </div></div>
   </div>
-</div>
+</section>
 
 <!-- ═══ FORMS ═══ -->
 <hr class="section-divider">
@@ -805,7 +825,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ CARDS ═══ -->
 <hr class="section-divider">
@@ -858,7 +878,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ ALERTS ═══ -->
 <hr class="section-divider">
@@ -887,7 +907,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ TABLES ═══ -->
 <hr class="section-divider">
@@ -913,7 +933,7 @@ td.right { text-align:right; font-weight:500; }
       </table>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ DIALOGS & SHEETS ═══ -->
 <hr class="section-divider">
@@ -945,7 +965,7 @@ td.right { text-align:right; font-weight:500; }
       <button class="btn btn-outline" onclick="document.getElementById('demo-sheet').classList.add('open')">Mở Sheet →</button>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ DROPDOWNS & COMMAND ═══ -->
 <hr class="section-divider">
@@ -1032,7 +1052,7 @@ td.right { text-align:right; font-weight:500; }
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- ═══ MISC ═══ -->
 <hr class="section-divider">
