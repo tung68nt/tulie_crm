@@ -432,7 +432,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                             className="h-9 text-xs font-bold flex-1"
                                             onClick={() => setFormData({ ...formData, delivery_type: 'digital', shipping_fee: 0 })}
                                         >
-                                            📁 Chỉ file mềm
+                                            Chỉ file mềm
                                         </Button>
                                         <Button
                                             type="button"
@@ -441,7 +441,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                             className="h-9 text-xs font-bold flex-1"
                                             onClick={() => setFormData({ ...formData, delivery_type: 'physical' })}
                                         >
-                                            📦 Có ship ảnh in
+                                            Có ship ảnh in
                                         </Button>
                                     </div>
                                 </div>

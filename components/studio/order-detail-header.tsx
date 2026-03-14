@@ -119,7 +119,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                         </Badge>
                         {isPhysical && (
                             <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-semibold text-orange-600 border-orange-200 bg-orange-50 rounded-md">
-                                📦 Ship
+                                Ship
                             </Badge>
                         )}
                     </div>

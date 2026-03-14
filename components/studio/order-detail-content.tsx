@@ -48,7 +48,6 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const [transferConfirmed, setTransferConfirmed] = useState(false)
     const [availableBanks, setAvailableBanks] = useState<any[]>([])
     const [links, setLinks] = useState({
-        demo_link: order.demo_link || '',
         resource_link: order.resource_link || '',
         tracking_number: order.tracking_number || ''
     })
@@ -86,7 +85,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: paymentContent })
 
     const handleSaveLinks = async () => {
-        if (links.demo_link === order.demo_link && links.resource_link === order.resource_link && links.tracking_number === order.tracking_number) {
+        if (links.resource_link === order.resource_link && links.tracking_number === order.tracking_number) {
             toast.info('Không có thay đổi nào để lưu')
             return
         }
@@ -148,76 +147,47 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                        <div className="grid gap-6">
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <Label className="text-sm font-semibold text-zinc-700">Link ảnh demo (Mẫu)</Label>
-                                    {order.demo_link && (
-                                        <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5">
-                                            <a href={order.demo_link} target="_blank" className="flex items-center gap-1 hover:text-primary">
-                                                Kiểm tra <ExternalLink className="h-3 w-3" />
-                                            </a>
-                                        </Badge>
-                                    )}
-                                </div>
-                                <div className="relative group">
-                                    <Input
-                                        placeholder="Dán link Google Drive, Dropbox hoặc thư mục demo..."
-                                        value={links.demo_link}
-                                        onChange={(e) => setLinks({ ...links, demo_link: e.target.value })}
-                                        className="h-11 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none transition-all group-hover:border-zinc-300"
-                                    />
-                                </div>
-                                <p className="text-[10px] text-muted-foreground font-normal italic">Khách hàng có thể thấy link này ngay cả khi chưa thanh toán hết.</p>
+                    <CardContent className="p-6 space-y-5">
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm font-semibold text-zinc-700">Link bàn giao</Label>
+                                {order.resource_link && (
+                                    <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5 border-primary/20 text-primary">
+                                        <a href={order.resource_link} target="_blank" className="flex items-center gap-1">
+                                            Mở link <ExternalLink className="h-3 w-3" />
+                                        </a>
+                                    </Badge>
+                                )}
                             </div>
+                            <Input
+                                placeholder="Dán link Google Drive, Dropbox hoặc folder bàn giao..."
+                                value={links.resource_link}
+                                onChange={(e) => setLinks({ ...links, resource_link: e.target.value })}
+                                className="h-10 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none"
+                            />
+                            <p className="text-[10px] text-muted-foreground font-normal italic">Chỉ hiển thị sau khi khách thanh toán 100%.</p>
+                        </div>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <Label className="text-sm font-semibold text-zinc-700">Link ảnh gốc (Final Resources)</Label>
-                                    {order.resource_link && (
-                                        <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5 border-primary/20 text-primary">
-                                            <a href={order.resource_link} target="_blank" className="flex items-center gap-1">
-                                                Xem sản phẩm <Download className="h-3 w-3" />
-                                            </a>
-                                        </Badge>
-                                    )}
-                                </div>
-                                <div className="relative group">
-                                    <Input
-                                        placeholder="Dán link Folder ảnh gốc dung lượng cao..."
-                                        value={links.resource_link}
-                                        onChange={(e) => setLinks({ ...links, resource_link: e.target.value })}
-                                        className="h-11 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none transition-all group-hover:border-zinc-300"
-                                    />
-                                </div>
-                                <p className="text-[10px] text-muted-foreground font-normal italic">Sẽ chỉ hiển thị trên Portal của khách sau khi họ hoàn tất 100% thanh toán.</p>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
+                                    <Truck className="h-4 w-4 text-zinc-400" />
+                                    Mã vận đơn / Link tra cứu
+                                </Label>
+                                {order.tracking_number && /^https?:\/\//.test(order.tracking_number) && (
+                                    <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5">
+                                        <a href={order.tracking_number} target="_blank" className="flex items-center gap-1 hover:text-primary">
+                                            Tra cứu <ExternalLink className="h-3 w-3" />
+                                        </a>
+                                    </Badge>
+                                )}
                             </div>
-
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <Label className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
-                                        <Truck className="h-4 w-4 text-zinc-400" />
-                                        Mã vận đơn / Link tra cứu
-                                    </Label>
-                                    {order.tracking_number && /^https?:\/\//.test(order.tracking_number) && (
-                                        <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5">
-                                            <a href={order.tracking_number} target="_blank" className="flex items-center gap-1 hover:text-primary">
-                                                Tra cứu <ExternalLink className="h-3 w-3" />
-                                            </a>
-                                        </Badge>
-                                    )}
-                                </div>
-                                <div className="relative group">
-                                    <Input
-                                        placeholder="VD: GHTK123456 hoặc https://tracking.ghn.vn/..."
-                                        value={links.tracking_number}
-                                        onChange={(e) => setLinks({ ...links, tracking_number: e.target.value })}
-                                        className="h-11 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none transition-all group-hover:border-zinc-300"
-                                    />
-                                </div>
-                                <p className="text-[10px] text-muted-foreground font-normal italic">Nhập mã vận đơn hoặc URL tra cứu để khách có thể theo dõi đơn ship.</p>
-                            </div>
+                            <Input
+                                placeholder="VD: GHTK123456 hoặc https://tracking.ghn.vn/..."
+                                value={links.tracking_number}
+                                onChange={(e) => setLinks({ ...links, tracking_number: e.target.value })}
+                                className="h-10 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none"
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -321,40 +291,6 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </p>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
-                        <CardHeader className="pb-3 px-6">
-                            <CardTitle className="text-sm font-semibold tracking-tight">Thông tin hóa đơn (VAT)</CardTitle>
-                        </CardHeader>
-                        <CardContent className="px-6 pb-6 space-y-4">
-                            {order.needs_vat ? (
-                                <div className="space-y-4">
-                                    <Badge className="font-semibold bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 px-3 py-1 text-[10px]">Cần xuất hóa đơn</Badge>
-                                    <div className="grid gap-4">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Mã số thuế</p>
-                                            <p className="text-sm font-bold text-zinc-900 bg-zinc-50 p-2 rounded border border-zinc-100">{order.vat_info?.tax_code || '---'}</p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tên đơn vị</p>
-                                            <p className="text-sm font-medium text-zinc-900 leading-snug">{order.vat_info?.company_name || '---'}</p>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Địa chỉ xuất hóa đơn</p>
-                                            <p className="text-xs text-zinc-600 leading-relaxed font-normal">{order.vat_info?.company_address || '---'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-12 text-center">
-                                    <div className="h-12 w-12 rounded-full bg-zinc-50 flex items-center justify-center mb-3">
-                                        <FileText className="h-6 w-6 text-zinc-300" />
-                                    </div>
-                                    <p className="text-sm text-zinc-400 font-medium">Khách lẻ. Không yêu cầu VAT.</p>
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
 
@@ -478,7 +414,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     )}
                                     variant="outline"
                                 >
-                                    {order.payment_status === 'paid' ? '✅ Hoàn tất' : order.payment_status === 'partial' ? 'Đã thu 1 phần' : 'Chưa thanh toán'}
+                                    {order.payment_status === 'paid' ? 'Hoàn tất' : order.payment_status === 'partial' ? 'Đã thu 1 phần' : 'Chưa thanh toán'}
                                 </Badge>
                             </div>
 
