@@ -34,7 +34,14 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [products, setProducts] = useState<any[]>([])
-    const [selectedItems, setSelectedItems] = useState<any[]>([])
+    const [selectedItems, setSelectedItems] = useState<any[]>(
+        initialData?.items?.map((item: any) => ({
+            product_id: item.product_id,
+            product_name: item.product_name,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+        })) || []
+    )
     const today = new Date().toISOString().split('T')[0]
     const [formData, setFormData] = useState({
         customer_name: initialData?.customer_name || '',
