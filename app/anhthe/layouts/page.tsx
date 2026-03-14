@@ -32,8 +32,8 @@ export default function PrintLayoutsPage() {
         {/* Info */}
         <div className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5 shadow-sm">
           <p className="text-sm text-zinc-600 font-medium leading-relaxed">
-            Tất cả các kiểu vỉ in đều sử dụng <strong>giấy ảnh Canon Selphy KP-108IN</strong>, khổ <strong>10×15 cm</strong> (4×6 inch). 
-            Mỗi vỉ in khác nhau sẽ có bố cục và số lượng ảnh khác nhau.
+            Tất cả các kiểu vỉ in đều sử dụng <strong>giấy in ảnh chính hãng Canon</strong>, khổ <strong>10×15 cm</strong> (4×6 inch). 
+            Giấy in có độ bền được công bố lên tới 100 năm trong điều kiện bảo quản tốt, không bị ẩm mốc.
           </p>
         </div>
 

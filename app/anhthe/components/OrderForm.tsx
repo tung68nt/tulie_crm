@@ -482,7 +482,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Dịch vụ In ấn</h2>
-                <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">In ảnh cứng Canon Selphy — khổ giấy 10×15cm/vỉ</p>
+                <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Giấy in chính hãng Canon — độ bền lên tới 100 năm</p>
               </div>
             </div>
 
