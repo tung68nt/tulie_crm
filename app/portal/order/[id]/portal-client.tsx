@@ -698,14 +698,32 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                     </p>
                                 </div>
 
-                                {/* Mobile: Quick Pay + Save QR */}
-                                <div className="space-y-2 sm:hidden">
-                                    <Button asChild className="w-full h-12 rounded-xl text-sm font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg">
-                                        <a href={payDeeplink} target="_blank" rel="noopener">
-                                            <Smartphone className="mr-2 h-4 w-4" />
-                                            Chuyển khoản ngay
-                                        </a>
-                                    </Button>
+                                {/* Mobile: Pick Bank + Quick Pay */}
+                                <div className="space-y-3 sm:hidden">
+                                    <p className="text-[11px] font-semibold text-zinc-500 text-center uppercase tracking-wider">Chọn ngân hàng để chuyển khoản</p>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {[
+                                            { name: 'VietinBank', code: 'ICB', app: 'vietinbank', logo: 'https://cdn.vietqr.io/img/ICB.png' },
+                                            { name: 'Vietcombank', code: 'VCB', app: 'vietcombank', logo: 'https://cdn.vietqr.io/img/VCB.png' },
+                                            { name: 'BIDV', code: 'BIDV', app: 'bidv', logo: 'https://cdn.vietqr.io/img/BIDV.png' },
+                                            { name: 'MBBank', code: 'MB', app: 'mbbank', logo: 'https://cdn.vietqr.io/img/MB.png' },
+                                            { name: 'Techcombank', code: 'TCB', app: 'techcombank', logo: 'https://cdn.vietqr.io/img/TCB.png' },
+                                            { name: 'ACB', code: 'ACB', app: 'acb', logo: 'https://cdn.vietqr.io/img/ACB.png' },
+                                            { name: 'VPBank', code: 'VPB', app: 'vpbank', logo: 'https://cdn.vietqr.io/img/VPB.png' },
+                                            { name: 'TPBank', code: 'TPB', app: 'tpbank', logo: 'https://cdn.vietqr.io/img/TPB.png' },
+                                        ].map((bank) => (
+                                            <a
+                                                key={bank.code}
+                                                href={`https://dl.vietqr.io/pay?app=${bank.app}&ba=${bankInfo.account_no}@${bank.code}&am=${remainingAmount}&tn=${encodeURIComponent(transferContent)}`}
+                                                target="_blank"
+                                                rel="noopener"
+                                                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50 transition-all active:scale-95"
+                                            >
+                                                <img src={bank.logo} alt={bank.name} className="w-8 h-8 object-contain" />
+                                                <span className="text-[9px] font-semibold text-zinc-600 text-center leading-tight">{bank.name}</span>
+                                            </a>
+                                        ))}
+                                    </div>
                                     <Button asChild variant="outline" className="w-full h-10 rounded-xl border-zinc-200 text-sm font-semibold">
                                         <a href={qrUrl} download={`QR_${order.order_number}.png`}>
                                             <Download className="mr-2 h-4 w-4" />
