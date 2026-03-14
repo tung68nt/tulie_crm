@@ -488,7 +488,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
 
             <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
               {/* Toggle */}
-              <div className="flex items-center justify-between p-4 sm:p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5">
                 <div className="space-y-0.5">
                   <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-print">
                     Muốn in ảnh cứng
@@ -577,7 +577,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
               </div>
 
               <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
-                <div className="flex items-center justify-between p-4 sm:p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5">
                   <div className="space-y-0.5">
                     <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-ship">
                       Muốn ship ảnh về
