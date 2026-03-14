@@ -698,32 +698,41 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                     </p>
                                 </div>
 
-                                {/* Mobile: Pick Bank + Quick Pay */}
-                                <div className="space-y-3 sm:hidden">
-                                    <p className="text-[11px] font-semibold text-zinc-500 text-center uppercase tracking-wider">Chọn ngân hàng để chuyển khoản</p>
-                                    <div className="grid grid-cols-4 gap-2">
-                                        {[
-                                            { name: 'VietinBank', code: 'ICB', app: 'vietinbank', logo: 'https://cdn.vietqr.io/img/ICB.png' },
-                                            { name: 'Vietcombank', code: 'VCB', app: 'vietcombank', logo: 'https://cdn.vietqr.io/img/VCB.png' },
-                                            { name: 'BIDV', code: 'BIDV', app: 'bidv', logo: 'https://cdn.vietqr.io/img/BIDV.png' },
-                                            { name: 'MBBank', code: 'MB', app: 'mbbank', logo: 'https://cdn.vietqr.io/img/MB.png' },
-                                            { name: 'Techcombank', code: 'TCB', app: 'techcombank', logo: 'https://cdn.vietqr.io/img/TCB.png' },
-                                            { name: 'ACB', code: 'ACB', app: 'acb', logo: 'https://cdn.vietqr.io/img/ACB.png' },
-                                            { name: 'VPBank', code: 'VPB', app: 'vpbank', logo: 'https://cdn.vietqr.io/img/VPB.png' },
-                                            { name: 'TPBank', code: 'TPB', app: 'tpbank', logo: 'https://cdn.vietqr.io/img/TPB.png' },
-                                        ].map((bank) => (
-                                            <a
-                                                key={bank.code}
-                                                href={`https://dl.vietqr.io/pay?app=${bank.app}&ba=${bankInfo.account_no}@${bank.code}&am=${remainingAmount}&tn=${encodeURIComponent(transferContent)}`}
-                                                target="_blank"
-                                                rel="noopener"
-                                                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50 transition-all active:scale-95"
-                                            >
-                                                <img src={bank.logo} alt={bank.name} className="w-8 h-8 object-contain" />
-                                                <span className="text-[9px] font-semibold text-zinc-600 text-center leading-tight">{bank.name}</span>
-                                            </a>
-                                        ))}
-                                    </div>
+                                {/* Mobile: Share QR + Save QR */}
+                                <div className="space-y-2 sm:hidden">
+                                    <Button
+                                        onClick={async () => {
+                                            try {
+                                                const res = await fetch(qrUrl)
+                                                const blob = await res.blob()
+                                                const file = new File([blob], `QR_${order.order_number}.png`, { type: 'image/png' })
+                                                if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                                                    await navigator.share({
+                                                        title: `Chuyển khoản ${order.order_number}`,
+                                                        text: `Quét mã QR để chuyển khoản ${new Intl.NumberFormat('vi-VN').format(remainingAmount)}đ - ${transferContent}`,
+                                                        files: [file],
+                                                    })
+                                                } else {
+                                                    // Fallback: download
+                                                    const url = URL.createObjectURL(blob)
+                                                    const a = document.createElement('a')
+                                                    a.href = url
+                                                    a.download = `QR_${order.order_number}.png`
+                                                    a.click()
+                                                    URL.revokeObjectURL(url)
+                                                    toast.success('Đã tải mã QR')
+                                                }
+                                            } catch (err: any) {
+                                                if (err?.name !== 'AbortError') {
+                                                    toast.error('Không thể chia sẻ. Hãy lưu mã QR rồi gửi thủ công.')
+                                                }
+                                            }
+                                        }}
+                                        className="w-full h-12 rounded-xl text-sm font-bold bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg"
+                                    >
+                                        <Smartphone className="mr-2 h-4 w-4" />
+                                        Chia sẻ mã QR qua Zalo
+                                    </Button>
                                     <Button asChild variant="outline" className="w-full h-10 rounded-xl border-zinc-200 text-sm font-semibold">
                                         <a href={qrUrl} download={`QR_${order.order_number}.png`}>
                                             <Download className="mr-2 h-4 w-4" />
