@@ -24,7 +24,8 @@ import {
     Send,
     Building2,
     Copy,
-    Truck
+    Truck,
+    MapPin
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
@@ -51,6 +52,14 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         resource_link: order.resource_link || '',
         tracking_number: order.tracking_number || ''
     })
+    const [shippingInfo, setShippingInfo] = useState({
+        recipient_name: order.shipping_info?.recipient_name || '',
+        recipient_phone: order.shipping_info?.recipient_phone || '',
+        province: order.shipping_info?.province || '',
+        ward: order.shipping_info?.ward || '',
+        address: order.shipping_info?.address || '',
+    })
+    const [isSavingShipping, setIsSavingShipping] = useState(false)
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -346,6 +355,87 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     <p className="text-sm text-zinc-400 font-medium">Khách lẻ. Không yêu cầu VAT.</p>
                                 </div>
                             )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Shipping Info Card */}
+                    <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
+                        <CardHeader className="pb-3 px-6">
+                            <CardTitle className="text-sm font-semibold tracking-tight flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-zinc-400" />
+                                Thông tin nhận hàng
+                            </CardTitle>
+                            <CardDescription className="text-[11px] font-normal">Người nhận có thể khác khách hàng</CardDescription>
+                        </CardHeader>
+                        <CardContent className="px-6 pb-6 space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Người nhận</Label>
+                                    <Input
+                                        value={shippingInfo.recipient_name}
+                                        onChange={e => setShippingInfo({ ...shippingInfo, recipient_name: e.target.value })}
+                                        placeholder={order.customer_name}
+                                        className="h-9 text-sm"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">SĐT nhận hàng</Label>
+                                    <Input
+                                        value={shippingInfo.recipient_phone}
+                                        onChange={e => setShippingInfo({ ...shippingInfo, recipient_phone: e.target.value })}
+                                        placeholder={order.customer_phone || '09xx'}
+                                        className="h-9 text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tỉnh / TP</Label>
+                                    <Input
+                                        value={shippingInfo.province}
+                                        onChange={e => setShippingInfo({ ...shippingInfo, province: e.target.value })}
+                                        placeholder="VD: TP. Hồ Chí Minh"
+                                        className="h-9 text-sm"
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Phường / Xã</Label>
+                                    <Input
+                                        value={shippingInfo.ward}
+                                        onChange={e => setShippingInfo({ ...shippingInfo, ward: e.target.value })}
+                                        placeholder="VD: Phường Bến Nghé"
+                                        className="h-9 text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Địa chỉ chi tiết</Label>
+                                <Input
+                                    value={shippingInfo.address}
+                                    onChange={e => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                                    placeholder="Số nhà, tên đường, tòa nhà..."
+                                    className="h-9 text-sm"
+                                />
+                            </div>
+                            <Button
+                                size="sm"
+                                className="w-full h-9 mt-2 font-bold text-xs"
+                                disabled={isSavingShipping}
+                                onClick={async () => {
+                                    setIsSavingShipping(true)
+                                    try {
+                                        await updateRetailOrder(order.id, { shipping_info: shippingInfo } as any)
+                                        toast.success('Đã lưu thông tin nhận hàng')
+                                    } catch (e: any) {
+                                        toast.error(e.message || 'Lỗi khi lưu')
+                                    } finally {
+                                        setIsSavingShipping(false)
+                                    }
+                                }}
+                            >
+                                {isSavingShipping ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> : <Save className="h-3.5 w-3.5 mr-2" />}
+                                Lưu thông tin nhận hàng
+                            </Button>
                         </CardContent>
                     </Card>
                 </div>
