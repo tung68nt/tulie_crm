@@ -25,6 +25,7 @@ import { getRetailOrderByToken } from '@/lib/supabase/services/retail-order-serv
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { toast } from 'sonner'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
+import { generatePaymentContent } from '@/lib/utils/payment-utils'
 
 interface OrderPortalClientProps {
     order: RetailOrder
@@ -86,7 +87,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
     const BANK_ID = brandConfig?.studio_bank_name || brandConfig?.bank_name || 'MB'
     const ACCOUNT_NO = brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '111222333'
     const ACCOUNT_NAME = brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'TULIE'
-    const qrUrl = buildVietQrUrl({ bankName: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME, amount: balance, addInfo: order.order_number || '' })
+    const qrUrl = buildVietQrUrl({ bankName: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME, amount: balance, addInfo: generatePaymentContent(order.order_number || '', 'studio') })
 
     // Timeline steps
     const steps = [
@@ -357,7 +358,7 @@ export default function OrderPortalClient({ order: initialOrder }: OrderPortalCl
                                             <p className="text-xs text-muted-foreground">Quét mã VietQR để thanh toán</p>
                                             <div className="text-2xl font-semibold tabular-nums">{formatCurrency(balance)}</div>
                                             <p className="text-xs text-muted-foreground font-mono bg-muted py-1.5 px-3 rounded-md inline-block mt-1">
-                                                Nội dung: {order.order_number}
+                                                Nội dung: {generatePaymentContent(order.order_number || '', 'studio')}
                                             </p>
                                         </div>
 

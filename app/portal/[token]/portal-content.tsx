@@ -398,7 +398,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 </div>
                             </div>
                             <div className="flex items-baseline gap-1">
-                                <div className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">
+                                <div className="text-lg sm:text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums truncate">
                                     {typeof stat.value === 'number' ? formatCurrency(stat.value).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim() : stat.value}
                                 </div>
                                 {typeof stat.value === 'number' && (
@@ -489,11 +489,11 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     <Package className="w-5 h-5 text-zinc-900" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-zinc-950 tracking-tight leading-tight">Hạng mục & Lộ trình thực hiện</h3>
+                                    <h3 className="text-base sm:text-lg font-semibold text-zinc-950 tracking-tight leading-tight">Hạng mục & Lộ trình thực hiện</h3>
                                     <p className="text-xs text-zinc-400 mt-0.5">Deliverables & Progress</p>
                                 </div>
                             </div>
-                            <span className="text-sm font-semibold text-zinc-500 tabular-nums">
+                            <span className="text-xs sm:text-sm font-semibold text-zinc-500 tabular-nums whitespace-nowrap">
                                 {displayItems.length} hạng mục · {completedItems} đã nghiệm thu
                             </span>
                         </div>
@@ -600,7 +600,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                             <p className="text-xs text-zinc-400">Chọn phương án phù hợp để xem chi tiết</p>
                         </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {quotationOptions.map((q: any, qIdx: number) => {
                             const isActive = q.id === (selectedQuotationId || quotation?.id)
                             return (
@@ -666,7 +666,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                     <div className="pt-4 border-t border-zinc-100">
                         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Giá trị hạng mục</p>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
+                            <span className="text-xl sm:text-2xl font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(activeAmount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
                             <span className="text-sm font-semibold text-zinc-900">đ</span>
                         </div>
                     </div>

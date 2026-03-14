@@ -204,10 +204,8 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                 await updateRetailOrder(initialData.id, {
                     ...submitData,
                     needs_vat: needs_vat || false,
-                    // Note: updateRetailOrder doesn't handle items currently in the service, 
-                    // but we can add item update logic if needed. 
-                    // For now, let's just update the order meta.
-                })
+                    items: selectedItems,
+                } as any)
                 toast.success('Đã cập nhật đơn hàng thành công')
             } else {
                 await createRetailOrder({

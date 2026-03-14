@@ -161,13 +161,15 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
     try {
         const supabase = await createClient()
 
-        const updateData = { ...order } as any
+        const { items, ...updateData } = order as any
         if (updateData.delivery_date === '') {
             updateData.delivery_date = null
         }
         if (updateData.order_date === '') {
             updateData.order_date = null
         }
+        // Remove non-DB fields
+        delete updateData.use_deposit
 
         const { error } = await supabase
             .from('retail_orders')
@@ -175,6 +177,36 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
             .eq('id', id)
 
         if (error) throw error
+
+        // Upsert items: delete all existing, then insert new ones
+        if (items && Array.isArray(items)) {
+            // Delete existing items
+            await supabase
+                .from('retail_order_items')
+                .delete()
+                .eq('order_id', id)
+
+            // Insert new items
+            if (items.length > 0) {
+                const orderItems = items.map((item: any, index: number) => ({
+                    order_id: id,
+                    product_id: item.product_id,
+                    product_name: item.product_name,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    total_price: item.total_price || (item.quantity * item.unit_price),
+                    sort_order: index
+                }))
+
+                const { error: itemsError } = await supabase
+                    .from('retail_order_items')
+                    .insert(orderItems)
+
+                if (itemsError) {
+                    console.error('Error upserting order items:', itemsError)
+                }
+            }
+        }
 
         revalidatePath('/studio')
         revalidatePath(`/studio/orders/${id}`)

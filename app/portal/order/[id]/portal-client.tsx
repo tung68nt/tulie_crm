@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { generatePaymentContent } from '@/lib/utils/payment-utils'
+import { buildVietQrUrl } from '@/lib/utils/vietqr'
 import { toast } from 'sonner'
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
@@ -73,15 +75,14 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
     }
 
     const remainingAmount = order.total_amount - (order.paid_amount || 0)
-    const bankId = bankInfo.bank_name.toLowerCase().includes('techcom') ? 'TCB'
-        : bankInfo.bank_name.toLowerCase().includes('vietin') ? 'ICB'
-        : bankInfo.bank_name.toLowerCase().includes('mb') ? 'MB'
-        : bankInfo.bank_name.toLowerCase().includes('vcb') || bankInfo.bank_name.toLowerCase().includes('vietcom') ? 'VCB'
-        : bankInfo.bank_name.toLowerCase().includes('acb') ? 'ACB'
-        : bankInfo.bank_name.toLowerCase().includes('bidv') ? 'BIDV'
-        : 'ICB'
-    const transferContent = `THANH TOAN ${order.order_number}`
-    const qrUrl = `https://qr.sepay.vn/img?acc=${bankInfo.account_no}&bank=${bankId}&amount=${remainingAmount}&des=${encodeURIComponent(transferContent)}`
+    const transferContent = generatePaymentContent(order.order_number, 'studio')
+    const qrUrl = buildVietQrUrl({
+        bankName: bankInfo.bank_name,
+        accountNo: bankInfo.account_no,
+        accountName: bankInfo.account_name,
+        amount: remainingAmount,
+        addInfo: transferContent
+    })
 
     const items = order.items || []
     const isPaid = order.payment_status === 'paid'

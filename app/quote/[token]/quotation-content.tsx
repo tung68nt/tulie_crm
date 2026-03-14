@@ -475,8 +475,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 {!hasProposal && <span className="text-[0.8em] italic font-normal opacity-70 ml-1">/ Service Details</span>}
                                 {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
                             </h3>
-                            <div className="border border-slate-200 rounded-lg overflow-hidden">
-                                <table className="w-full text-left border-collapse text-[11px] min-w-[600px] sm:min-w-0">
+                            <div className="border border-slate-200 rounded-lg overflow-x-auto">
+                                <table className="w-full text-left border-collapse text-[11px] min-w-[600px]">
                                     <thead>
                                         <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
                                             <th className="py-2.5 px-1 font-semibold w-10 text-center normal-case print:hidden">Chọn</th>

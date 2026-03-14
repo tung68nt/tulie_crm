@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -121,6 +121,7 @@ export default function SettingsPage() {
             case 'units': loadUnits(); break
             case 'brands': loadBrands(); break
             case 'telegram': loadTelegram(); break
+            case 'payment-gateway': loadTelegram(); break // shares telegramConfig for sepay fields
             case 'appearance': loadAppearance(); break
             case 'mail': loadSmtp(); break
             case 'bundles': loadBundles(); break
@@ -579,6 +580,13 @@ export default function SettingsPage() {
                             Cài đặt Telegram
                         </TabsTrigger>
                         <TabsTrigger
+                            value="payment-gateway"
+                            className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
+                        >
+                            <Wallet className="h-4 w-4" />
+                            Cổng thanh toán
+                        </TabsTrigger>
+                        <TabsTrigger
                             value="mail"
                             className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
                         >
@@ -991,78 +999,6 @@ export default function SettingsPage() {
                                             className="h-11 border-zinc-200 dark:border-zinc-800 focus:ring-zinc-900 rounded-xl font-mono text-xs"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="sepay_api_key">SePay API Key</Label>
-                                            <Input
-                                                id="sepay_api_key"
-                                                type="password"
-                                                placeholder="Để trống nếu không dùng"
-                                                value={telegramConfig.sepay_api_key || ''}
-                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_api_key: e.target.value })}
-                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="sepay_secret_key">SePay Webhook Secret</Label>
-                                            <Input
-                                                id="sepay_secret_key"
-                                                type="password"
-                                                placeholder="Mật khẩu Webhook"
-                                                value={telegramConfig.sepay_secret_key || ''}
-                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_secret_key: e.target.value })}
-                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-medium">SePay Webhook URL</h4>
-                                        <Badge variant="secondary">Realtime Sync</Badge>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
-                                            {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/sepay` : '...'}
-                                        </div>
-                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm" onClick={() => {
-                                            const url = `${window.location.origin}/api/webhooks/sepay`
-                                            navigator.clipboard.writeText(url)
-                                            toast.success('Đã copy Webhook URL')
-                                        }}>Copy</Button>
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
-                                </div>
-
-                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-medium">Academy Webhook URL</h4>
-                                        <Badge variant="outline">Academy Integration</Badge>
-                                    </div>
-                                    <div className="flex gap-2 items-end">
-                                        <div className="flex-1 space-y-3">
-                                            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
-                                                {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <Label htmlFor="academy_webhook_key">Webhook API Key</Label>
-                                                <Input
-                                                    id="academy_webhook_key"
-                                                    placeholder="Nhập khóa để Academy xác thực"
-                                                    value={telegramConfig.academy_webhook_key || ''}
-                                                    onChange={(e) => setTelegramConfig({ ...telegramConfig, academy_webhook_key: e.target.value })}
-                                                    className="h-10 text-xs border-zinc-200 dark:border-zinc-800 rounded-xl"
-                                                />
-                                            </div>
-                                        </div>
-                                        <Button size="sm" variant="outline" className="font-semibold border-zinc-300 shadow-sm" onClick={() => {
-                                            const url = `${window.location.origin}/api/webhooks/academy`
-                                            navigator.clipboard.writeText(url)
-                                            toast.success('Đã copy Academy Webhook URL')
-                                        }}>Copy</Button>
-                                    </div>
-                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
                                 </div>
 
                                 <div className="p-5 bg-card rounded-xl border shadow-sm">
@@ -1121,6 +1057,108 @@ export default function SettingsPage() {
                                         {isTestingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi tin nhắn thử
                                     </Button>
+                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
+                                        {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        Lưu cấu hình
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Payment Gateway Settings */}
+                    <TabsContent value="payment-gateway">
+                        <Card className="rounded-xl shadow-sm border-border/50 overflow-hidden">
+                            <CardHeader className="bg-muted/30 border-b border-border/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-zinc-950 flex items-center justify-center shadow-md">
+                                        <Wallet className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold tracking-tight">Cổng thanh toán</CardTitle>
+                                        <CardDescription className="text-sm font-medium">
+                                            Cấu hình SePay API và Webhook để tự động đối soát thanh toán.
+                                        </CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-8 pt-6">
+                                <div className="grid gap-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="sepay_api_key_pg">SePay API Key</Label>
+                                            <Input
+                                                id="sepay_api_key_pg"
+                                                type="password"
+                                                placeholder="Để trống nếu không dùng"
+                                                value={telegramConfig.sepay_api_key || ''}
+                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_api_key: e.target.value })}
+                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="sepay_secret_key_pg">SePay Webhook Secret</Label>
+                                            <Input
+                                                id="sepay_secret_key_pg"
+                                                type="password"
+                                                placeholder="Mật khẩu Webhook"
+                                                value={telegramConfig.sepay_secret_key || ''}
+                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_secret_key: e.target.value })}
+                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-sm font-medium">SePay Webhook URL</h4>
+                                        <Badge variant="secondary">Realtime Sync</Badge>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
+                                            {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/sepay` : '...'}
+                                        </div>
+                                        <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm" onClick={() => {
+                                            const url = `${window.location.origin}/api/webhooks/sepay`
+                                            navigator.clipboard.writeText(url)
+                                            toast.success('Đã copy Webhook URL')
+                                        }}>Copy</Button>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
+                                </div>
+
+                                <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-sm font-medium">Academy Webhook URL</h4>
+                                        <Badge variant="outline">Academy Integration</Badge>
+                                    </div>
+                                    <div className="flex gap-2 items-end">
+                                        <div className="flex-1 space-y-3">
+                                            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
+                                                {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <Label htmlFor="academy_webhook_key_pg">Webhook API Key</Label>
+                                                <Input
+                                                    id="academy_webhook_key_pg"
+                                                    placeholder="Nhập khóa để Academy xác thực"
+                                                    value={telegramConfig.academy_webhook_key || ''}
+                                                    onChange={(e) => setTelegramConfig({ ...telegramConfig, academy_webhook_key: e.target.value })}
+                                                    className="h-10 text-xs border-zinc-200 dark:border-zinc-800 rounded-xl"
+                                                />
+                                            </div>
+                                        </div>
+                                        <Button size="sm" variant="outline" className="font-semibold border-zinc-300 shadow-sm" onClick={() => {
+                                            const url = `${window.location.origin}/api/webhooks/academy`
+                                            navigator.clipboard.writeText(url)
+                                            toast.success('Đã copy Academy Webhook URL')
+                                        }}>Copy</Button>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
+                                </div>
+
+                                <div className="pt-6 border-t border-border/50 flex justify-end">
                                     <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
                                         {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                         Lưu cấu hình

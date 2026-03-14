@@ -326,6 +326,47 @@ export async function syncTransactionsFromSePay(params: {
 }
 
 /**
+ * Get all payment transactions with filters (for admin transactions page)
+ */
+export async function getAllTransactions(params?: {
+    dateFrom?: string
+    dateTo?: string
+    transferType?: string
+    sourceSystem?: string
+    matchedOnly?: boolean
+    unmatchedOnly?: boolean
+    search?: string
+    limit?: number
+    offset?: number
+}): Promise<{ data: any[]; total: number }> {
+    const supabase = await createClient()
+    const { dateFrom, dateTo, transferType, sourceSystem, matchedOnly, unmatchedOnly, search, limit = 50, offset = 0 } = params || {}
+
+    let query = supabase
+        .from('payment_transactions')
+        .select('*, matched_order:retail_orders!matched_order_id(id, order_number, customer_name), matched_invoice:invoices!matched_invoice_id(id, invoice_number)', { count: 'exact' })
+        .order('transaction_date', { ascending: false })
+
+    if (dateFrom) query = query.gte('transaction_date', dateFrom)
+    if (dateTo) query = query.lte('transaction_date', dateTo + 'T23:59:59')
+    if (transferType) query = query.eq('transfer_type', transferType)
+    if (sourceSystem && sourceSystem !== 'all') query = query.eq('source_system', sourceSystem)
+    if (matchedOnly) query = query.or('matched_order_id.not.is.null,matched_invoice_id.not.is.null')
+    if (unmatchedOnly) query = query.is('matched_order_id', null).is('matched_invoice_id', null)
+    if (search) query = query.or(`content.ilike.%${search}%,code.ilike.%${search}%,description.ilike.%${search}%`)
+
+    query = query.range(offset, offset + limit - 1)
+
+    const { data, error, count } = await query
+
+    if (error) {
+        console.error('[PaymentService] Error fetching all transactions:', error)
+        return { data: [], total: 0 }
+    }
+    return { data: data || [], total: count || 0 }
+}
+
+/**
  * Get payment transactions for an order (for display in order detail)
  */
 export async function getPaymentTransactions(orderId: string) {

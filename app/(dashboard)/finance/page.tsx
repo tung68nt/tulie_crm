@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils/format'
 import {
     TrendingUp,
@@ -6,7 +7,9 @@ import {
     CreditCard,
     DollarSign,
     Wallet,
+    ArrowRight,
 } from 'lucide-react'
+import Link from 'next/link'
 import { getDashboardStats, getRevenueChartData, getRecentTransactions } from '@/lib/supabase/services/dashboard-service'
 import { FinanceCharts } from './finance-charts'
 
@@ -23,16 +26,25 @@ export default async function FinancePage() {
     return (
         <div className="space-y-6">
             {/* Page Header */}
-            <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Wallet className="h-6 w-6 text-primary" />
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Wallet className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold">Tài chính</h1>
+                        <p className="text-muted-foreground">
+                            Theo dõi doanh thu, chi phí và lợi nhuận thực tế
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-bold">Tài chính</h1>
-                    <p className="text-muted-foreground">
-                        Theo dõi doanh thu, chi phí và lợi nhuận thực tế
-                    </p>
-                </div>
+                <Link href="/finance/transactions">
+                    <Button variant="outline" className="font-bold rounded-xl gap-2">
+                        <CreditCard className="h-4 w-4" />
+                        Xem giao dịch SePay
+                        <ArrowRight className="h-4 w-4" />
+                    </Button>
+                </Link>
             </div>
 
             {/* Stats Cards */}

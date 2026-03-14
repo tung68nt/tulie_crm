@@ -37,7 +37,7 @@ export function StatsCard({
                 )}
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-medium  whitespace-nowrap">{value}</div>
+                <div className="text-xl sm:text-2xl font-medium truncate">{value}</div>
                 {change !== undefined && (
                     <div className="flex items-center gap-1.5 mt-2">
                         <div className={cn(
