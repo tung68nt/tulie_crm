@@ -409,22 +409,43 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
     return (
         <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
             {/* ─── Header ─── */}
-            <div className="bg-white border-b border-zinc-200 pt-10 pb-8 px-6">
-                <div className="max-w-5xl mx-auto flex flex-col items-center gap-4 text-center">
-                    {brandConfig?.logo_url ? (
-                        <img src={brandConfig.logo_url} alt="Logo" className="h-12 w-auto object-contain grayscale" />
-                    ) : (
-                        <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
-                            <Package className="h-6 w-6 text-white" />
+            <div className="bg-white border-b border-zinc-200 py-4 px-4 lg:pt-10 lg:pb-8 lg:px-6">
+                <div className="max-w-5xl mx-auto">
+                    {/* Mobile: compact horizontal bar */}
+                    <div className="flex items-center gap-3 lg:hidden">
+                        {brandConfig?.logo_url ? (
+                            <img src={brandConfig.logo_url} alt="Logo" className="h-8 w-auto object-contain grayscale shrink-0" />
+                        ) : (
+                            <div className="h-8 w-8 rounded-lg bg-zinc-900 flex items-center justify-center shrink-0">
+                                <Package className="h-4 w-4 text-white" />
+                            </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                                {brandConfig?.brand_name || 'Tulie Studio'}
+                            </p>
+                            <h1 className="text-sm font-semibold text-zinc-900 tracking-tight truncate">{order.order_number}</h1>
                         </div>
-                    )}
-                    <div>
-                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                            {brandConfig?.brand_name || 'Tulie Studio'}
-                        </p>
-                        <h1 className="text-xl font-semibold text-zinc-900 tracking-tight mt-0.5">{order.order_number}</h1>
+                        <StatusBadge status={order.order_status} />
                     </div>
-                    <StatusBadge status={order.order_status} />
+
+                    {/* Desktop: centered stacked layout */}
+                    <div className="hidden lg:flex flex-col items-center gap-4 text-center">
+                        {brandConfig?.logo_url ? (
+                            <img src={brandConfig.logo_url} alt="Logo" className="h-12 w-auto object-contain grayscale" />
+                        ) : (
+                            <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
+                                <Package className="h-6 w-6 text-white" />
+                            </div>
+                        )}
+                        <div>
+                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                                {brandConfig?.brand_name || 'Tulie Studio'}
+                            </p>
+                            <h1 className="text-xl font-semibold text-zinc-900 tracking-tight mt-0.5">{order.order_number}</h1>
+                        </div>
+                        <StatusBadge status={order.order_status} />
+                    </div>
                 </div>
             </div>
 
