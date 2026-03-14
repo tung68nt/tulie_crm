@@ -37,7 +37,7 @@ export default async function StudioPage() {
 
 async function OrderListWrapper() {
     const orders = await getRetailOrders()
-    const activeOrders = orders.filter((c) => c.order_status === 'pending' || c.order_status === 'shooting' || c.order_status === 'editing').length
+    const activeOrders = orders.filter((c) => c.order_status === 'editing' || c.order_status === 'edit_done' || c.order_status === 'waiting_ship' || c.order_status === 'shipping').length
     const completedOrders = orders.filter((c) => c.order_status === 'completed').length
     const totalValue = orders.reduce((sum, c) => sum + (c.total_amount || 0), 0)
 
