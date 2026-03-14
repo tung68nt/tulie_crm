@@ -32,9 +32,7 @@ import { generatePaymentContent } from '@/lib/utils/payment-utils'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
-import { PaymentWatcher } from './payment-watcher'
 
 interface OrderDetailContentProps {
     order: RetailOrder
@@ -72,7 +70,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         account_name: 'NGHIEM THI LIEN'
     })
 
-    const router = useRouter()
+
     const paymentContent = generatePaymentContent(order.order_number, 'studio')
     const qrUrl = buildVietQrUrl({ bankName: bankInfo.bank_name, accountNo: bankInfo.account_no, accountName: bankInfo.account_name, amount: remainingAmount, addInfo: paymentContent })
 
@@ -327,11 +325,11 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
             </div>
 
             <div className="space-y-6">
-                {/* Payment Card with Real-time Watcher */}
+                {/* Payment Card */}
                 <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
                     <CardHeader className="bg-zinc-50/50 border-b pb-3">
                         <Badge variant="outline" className="w-fit mb-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
-                            Thanh toán Real-time
+                            Thanh toán
                         </Badge>
                         <CardTitle className="text-3xl font-bold tracking-tighter tabular-nums">
                             {formatCurrency(remainingAmount)}
@@ -340,15 +338,54 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                     </CardHeader>
 
                     <CardContent className="space-y-5 pt-5">
-                        {/* Real-time Payment Watcher */}
-                        <PaymentWatcher
-                            orderId={order.id}
-                            orderNumber={order.order_number}
-                            totalAmount={order.total_amount}
-                            initialPaidAmount={order.paid_amount || 0}
-                            initialPaymentStatus={order.payment_status}
-                            onPaymentReceived={() => router.refresh()}
-                        />
+                        {/* Payment Progress */}
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                                        Tiến độ thanh toán
+                                    </p>
+                                    <p className="text-2xl font-bold tabular-nums tracking-tight">
+                                        {formatCurrency(order.paid_amount || 0)}
+                                        <span className="text-sm font-normal text-muted-foreground"> / {formatCurrency(order.total_amount)}</span>
+                                    </p>
+                                </div>
+                                <Badge
+                                    className={cn(
+                                        "font-bold px-2.5 py-1",
+                                        order.payment_status === 'paid'
+                                            ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                                            : order.payment_status === 'partial'
+                                                ? "bg-amber-100 text-amber-700 border-amber-200"
+                                                : "bg-zinc-100 text-zinc-600 border-zinc-200"
+                                    )}
+                                    variant="outline"
+                                >
+                                    {order.payment_status === 'paid' ? '✅ Hoàn tất' : order.payment_status === 'partial' ? 'Đã thu 1 phần' : 'Chưa thanh toán'}
+                                </Badge>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="h-2 bg-zinc-100 rounded-full overflow-hidden">
+                                <div
+                                    className={cn(
+                                        "h-full rounded-full transition-all duration-700 ease-out",
+                                        order.payment_status === 'paid'
+                                            ? "bg-emerald-500"
+                                            : (order.paid_amount || 0) > 0
+                                                ? "bg-amber-500"
+                                                : "bg-zinc-200"
+                                    )}
+                                    style={{ width: `${order.total_amount > 0 ? Math.min(((order.paid_amount || 0) / order.total_amount) * 100, 100) : 0}%` }}
+                                />
+                            </div>
+
+                            {remainingAmount > 0 && (
+                                <p className="text-xs text-muted-foreground font-medium">
+                                    Còn thiếu: <span className="font-bold text-foreground">{formatCurrency(remainingAmount)}</span>
+                                </p>
+                            )}
+                        </div>
 
                         {remainingAmount > 0 && (
                             <>

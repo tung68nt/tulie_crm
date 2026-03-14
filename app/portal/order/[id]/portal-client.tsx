@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck } from 'lucide-react'
+import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { generatePaymentContent } from '@/lib/utils/payment-utils'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
@@ -64,6 +64,161 @@ function CopyableField({ value, label, dark }: { value: string; label: string; d
                 }
             </div>
         </button>
+    )
+}
+
+function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; remainingAmount: number }) {
+    const [isPolling, setIsPolling] = useState(true)
+    const [isTimedOut, setIsTimedOut] = useState(false)
+    const [isChecking, setIsChecking] = useState(false)
+    const [paymentDetected, setPaymentDetected] = useState(false)
+    const [elapsedSeconds, setElapsedSeconds] = useState(0)
+    const startTimeRef = useRef(Date.now())
+    const pollRef = useRef<NodeJS.Timeout | null>(null)
+    const tickRef = useRef<NodeJS.Timeout | null>(null)
+    const lastPaidRef = useRef(0)
+
+    const maxSeconds = 15 * 60 // 15 minutes
+    const remaining = maxSeconds - elapsedSeconds
+    const minutes = Math.floor(remaining / 60)
+    const seconds = remaining % 60
+
+    const checkPayment = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/studio/payment-status?order_id=${orderId}`, { cache: 'no-store' })
+            if (!res.ok) return
+            const data = await res.json()
+
+            if (data.paid_amount > lastPaidRef.current) {
+                lastPaidRef.current = data.paid_amount
+                setPaymentDetected(true)
+                setIsPolling(false)
+                if (pollRef.current) clearInterval(pollRef.current)
+                if (tickRef.current) clearInterval(tickRef.current)
+                toast.success('🎉 Đã nhận thanh toán! Trang sẽ cập nhật...')
+                setTimeout(() => window.location.reload(), 3000)
+            }
+        } catch { /* ignore */ }
+    }, [orderId])
+
+    useEffect(() => {
+        if (!isPolling || paymentDetected) return
+
+        checkPayment()
+        pollRef.current = setInterval(checkPayment, 5000)
+        tickRef.current = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000)
+            setElapsedSeconds(elapsed)
+            if (elapsed >= maxSeconds) {
+                setIsPolling(false)
+                setIsTimedOut(true)
+                if (pollRef.current) clearInterval(pollRef.current)
+                if (tickRef.current) clearInterval(tickRef.current)
+            }
+        }, 1000)
+
+        return () => {
+            if (pollRef.current) clearInterval(pollRef.current)
+            if (tickRef.current) clearInterval(tickRef.current)
+        }
+    }, [isPolling, paymentDetected, checkPayment, maxSeconds])
+
+    const handleResume = () => {
+        startTimeRef.current = Date.now()
+        setElapsedSeconds(0)
+        setIsTimedOut(false)
+        setIsPolling(true)
+    }
+
+    const handleManualCheck = async () => {
+        setIsChecking(true)
+        await checkPayment()
+        setIsChecking(false)
+        if (!paymentDetected) toast.info('Chưa nhận được thanh toán. Vui lòng chờ thêm.')
+    }
+
+    if (paymentDetected) {
+        return (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex flex-col items-center gap-3 animate-in fade-in">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+                    <CheckCircle2 className="h-7 w-7 text-emerald-600" />
+                </div>
+                <p className="text-sm font-bold text-emerald-700">Đã nhận thanh toán!</p>
+                <p className="text-xs text-emerald-600">Trang sẽ tự động cập nhật...</p>
+            </div>
+        )
+    }
+
+    return (
+        <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-5 space-y-4">
+            <div className={cn(
+                "flex items-center justify-between p-3 rounded-lg border text-sm",
+                isPolling
+                    ? "bg-blue-50 border-blue-200 text-blue-700"
+                    : isTimedOut
+                        ? "bg-amber-50 border-amber-200 text-amber-700"
+                        : "bg-zinc-50 border-zinc-200 text-zinc-600"
+            )}>
+                <div className="flex items-center gap-2">
+                    {isPolling ? (
+                        <>
+                            <span className="relative flex h-2.5 w-2.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
+                            </span>
+                            <span className="font-medium text-xs">Đang chờ xác nhận thanh toán</span>
+                        </>
+                    ) : isTimedOut ? (
+                        <>
+                            <Clock className="h-4 w-4" />
+                            <span className="font-medium text-xs">Hết thời gian chờ</span>
+                        </>
+                    ) : (
+                        <>
+                            <Clock className="h-4 w-4" />
+                            <span className="font-medium text-xs">Đã dừng kiểm tra</span>
+                        </>
+                    )}
+                </div>
+                <div className="flex items-center gap-2">
+                    {isPolling && (
+                        <span className="text-[10px] tabular-nums font-mono opacity-70">
+                            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                        </span>
+                    )}
+                    {!isPolling && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleResume}
+                            className="h-7 text-xs font-medium"
+                        >
+                            <RefreshCw className="h-3 w-3 mr-1" />
+                            Chờ tiếp
+                        </Button>
+                    )}
+                </div>
+            </div>
+
+            <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+                Hệ thống tự động kiểm tra mỗi 5 giây. Sau khi chuyển khoản, vui lòng chờ 1-2 phút để hệ thống xác nhận.
+            </p>
+
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={handleManualCheck}
+                disabled={isChecking}
+                className="w-full h-9 text-xs font-medium rounded-lg"
+            >
+                {isChecking ? (
+                    <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                ) : (
+                    <RefreshCw className="h-3 w-3 mr-1.5" />
+                )}
+                Kiểm tra ngay
+            </Button>
+        </div>
     )
 }
 
@@ -307,6 +462,9 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                         <p className="text-[11px] font-medium text-muted-foreground">Bank Transfer</p>
                                     </div>
                                 </div>
+
+                                {/* Payment Watcher */}
+                                <PortalPaymentWatcher orderId={order.id} remainingAmount={remainingAmount} />
 
                                 {/* QR Code Card */}
                                 <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-6 flex flex-col items-center">
