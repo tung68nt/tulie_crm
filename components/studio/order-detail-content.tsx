@@ -460,56 +460,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </p>
                                 </div>
 
-                                {/* Customer: Tôi đã chuyển khoản */}
-                                <Separator />
-                                {transferConfirmed ? (
-                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
-                                        <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
-                                        <div>
-                                            <p className="text-sm font-bold text-emerald-700">Đã gửi yêu cầu xác nhận!</p>
-                                            <p className="text-xs text-emerald-600 mt-0.5">Team sẽ kiểm tra sao kê và ghi nhận thanh toán. Nếu hệ thống auto-check được thì sẽ cập nhật tự động.</p>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <Button
-                                        onClick={async () => {
-                                            setIsConfirmingTransfer(true)
-                                            try {
-                                                const res = await fetch('/api/studio/confirm-transfer', {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({
-                                                        order_id: order.id,
-                                                        order_number: order.order_number,
-                                                        customer_name: order.customer_name,
-                                                        customer_phone: order.customer_phone,
-                                                        amount: remainingAmount,
-                                                    })
-                                                })
-                                                const data = await res.json()
-                                                if (res.ok) {
-                                                    toast.success('✅ ' + data.message)
-                                                    setTransferConfirmed(true)
-                                                } else {
-                                                    toast.error(data.error || 'Có lỗi xảy ra')
-                                                }
-                                            } catch (err) {
-                                                toast.error('Không thể gửi yêu cầu. Thử lại sau.')
-                                            }
-                                            setIsConfirmingTransfer(false)
-                                        }}
-                                        disabled={isConfirmingTransfer}
-                                        variant="outline"
-                                        className="w-full h-11 rounded-lg font-bold border-blue-200 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
-                                    >
-                                        {isConfirmingTransfer ? (
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        ) : (
-                                            <Send className="mr-2 h-4 w-4" />
-                                        )}
-                                        Tôi đã chuyển khoản — Yêu cầu xác nhận
-                                    </Button>
-                                )}
+
                             </>
                         )}
                     </CardContent>
