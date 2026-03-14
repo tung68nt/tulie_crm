@@ -71,6 +71,23 @@ html {
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.707 0.022 286.324);
+
+  /* Semantic accent colors */
+  --info: #2563eb;
+  --info-tint: #eff6ff;
+  --info-border: #bfdbfe;
+  --warning: #d97706;
+  --warning-tint: #fffbeb;
+  --warning-border: #fde68a;
+  --success: #059669;
+  --success-tint: #ecfdf5;
+  --success-border: #a7f3d0;
+
+  /* Elevation */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-dialog: 0 16px 40px rgba(0,0,0,0.12);
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -105,6 +122,23 @@ html {
   --border: oklch(0.278 0.033 285.938);
   --input: oklch(0.278 0.033 285.938);
   --ring: oklch(0.444 0.054 285.969);
+
+  /* Semantic accent colors (dark mode) */
+  --info: #60a5fa;
+  --info-tint: rgba(59,130,246,0.1);
+  --info-border: rgba(59,130,246,0.2);
+  --warning: #fbbf24;
+  --warning-tint: rgba(245,158,11,0.1);
+  --warning-border: rgba(245,158,11,0.2);
+  --success: #34d399;
+  --success-tint: rgba(16,185,129,0.1);
+  --success-border: rgba(16,185,129,0.2);
+
+  /* Elevation (dark: no shadow, use border) */
+  --shadow-card: none;
+  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-dialog: 0 16px 40px rgba(0,0,0,0.4);
+
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -174,16 +208,16 @@ html {
  *
  * RULES:
  * 1. Don't override font-weight globally — let components manage their own
- * 2. Remove shadows only on cards/buttons, preserve for dropdowns/popovers/tooltips
+ * 2. Cards get subtle shadow via --shadow-card (none in dark mode)
  * 3. Keep text-transform: none to enforce sentence case (Vercel style)
  *
  * Reference: @doc/guides/ui-guidelines-shadcn-ui-design-system
  */
 @layer base {
 
-  /* Cards: border only, no shadow (Vercel style) */
+  /* Cards: subtle elevation in light, border-only in dark */
   [data-slot="card"] {
-    box-shadow: none !important;
+    box-shadow: var(--shadow-card);
   }
 }
 
