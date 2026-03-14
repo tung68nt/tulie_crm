@@ -460,6 +460,34 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </p>
                                 </div>
 
+                                {/* Copy Payment Info for Customer */}
+                                <Button
+                                    variant="outline"
+                                    className="w-full h-10 rounded-lg font-bold text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+                                    onClick={() => {
+                                        const portalUrl = `${window.location.origin}/portal/order/${order.id}`
+                                        const amount = new Intl.NumberFormat('vi-VN').format(remainingAmount)
+                                        const msg = [
+                                            `💳 THÔNG TIN CHUYỂN KHOẢN`,
+                                            `━━━━━━━━━━━━━━━━━`,
+                                            `🏦 Ngân hàng: ${bankInfo.bank_name}`,
+                                            `📋 Số TK: ${bankInfo.account_no}`,
+                                            `👤 Chủ TK: ${bankInfo.account_name}`,
+                                            `💰 Số tiền: ${amount}đ`,
+                                            `📝 Nội dung CK: ${paymentContent}`,
+                                            ``,
+                                            `⚠️ Vui lòng KHÔNG thay đổi nội dung chuyển khoản để hệ thống xác nhận tự động.`,
+                                            ``,
+                                            `🔗 Theo dõi đơn hàng: ${portalUrl}`,
+                                        ].join('\n')
+                                        navigator.clipboard.writeText(msg)
+                                        toast.success('Đã copy thông tin thanh toán + link portal')
+                                    }}
+                                >
+                                    <Copy className="mr-2 h-3.5 w-3.5" />
+                                    Copy link thanh toán cho khách
+                                </Button>
+
 
                             </>
                         )}
