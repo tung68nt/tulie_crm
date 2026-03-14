@@ -209,7 +209,8 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
         }
 
         revalidatePath('/studio')
-        revalidatePath(`/studio/orders/${id}`)
+        revalidatePath(`/studio/${id}`)
+        revalidatePath(`/studio/${id}/edit`)
         return true
     } catch (err) {
         console.error('Error updating retail order:', err)
