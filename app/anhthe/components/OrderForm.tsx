@@ -243,7 +243,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
     <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
       {/* Header */}
       <div className="bg-white border-b border-zinc-200 pt-8 sm:pt-10 pb-6 sm:pb-8 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
           <div className="flex items-center gap-4 sm:gap-6">
             <img src="/file/tulie-agency-logo.png" alt="Logo" className="h-10 sm:h-14 w-auto object-contain grayscale" />
             <div className="w-px h-8 sm:h-10 bg-zinc-200" />
@@ -260,7 +260,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <main className="max-w-3xl mx-auto px-4 sm:px-6 mt-6 sm:mt-10 space-y-6 sm:space-y-8">
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 sm:mt-10 space-y-6 sm:space-y-8">
 
           {/* Section 1: Customer Info */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">

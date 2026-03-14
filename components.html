@@ -98,6 +98,17 @@ a { color: inherit; text-decoration: none; }
 .sz-brand-studio { background:#71717a; color:white; }
 .sz-brand-academy { background:#f4f4f5; color:#18181b; border:1px solid #18181b; font-weight:500; }
 
+/* Portal Status Tag — dot + rounded-full style */
+.portal-status { display:inline-flex; align-items:center; gap:6px; border-radius:9999px; padding:4px 12px; font-size:12px; font-weight:600; border:1px solid #e4e4e7; background:rgba(244,244,245,0.5); }
+.portal-status .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.ps-pending .dot { background:#a1a1aa; } .ps-pending { color:#71717a; }
+.ps-editing .dot { background:#60a5fa; } .ps-editing { color:#2563eb; }
+.ps-edit-done .dot { background:#818cf8; } .ps-edit-done { color:#4f46e5; }
+.ps-waiting-ship .dot { background:#fbbf24; } .ps-waiting-ship { color:#d97706; }
+.ps-shipping .dot { background:#f97316; } .ps-shipping { color:#ea580c; }
+.ps-completed .dot { background:#34d399; } .ps-completed { color:#059669; }
+.ps-cancelled .dot { background:#f87171; } .ps-cancelled { color:#dc2626; }
+
 /* Form */
 .input { height:36px; width:100%; border:1px solid var(--input); border-radius:6px; padding:0 12px; font-size:14px; background:transparent; color:var(--fg); outline:none; transition:all .15s; }
 .input:focus { border-color:var(--ring); box-shadow:0 0 0 3px rgba(161,161,170,.25); }
@@ -607,6 +618,19 @@ td.right { text-align:right; font-weight:500; }
       <span class="status-badge sz-pending">Bình thường</span>
       <span class="status-badge sz-pending" style="border:1px solid #d4d4d8;font-weight:500">Cao</span>
       <span class="status-badge sz-overdue">Khẩn cấp</span>
+    </div></div>
+  </div>
+
+  <div class="block">
+    <h3 class="block-title">StatusBadge — Retail Order (Portal)</h3>
+    <div class="block-content"><div class="flex-wrap">
+      <span class="portal-status ps-pending"><span class="dot"></span>Chờ xử lý</span>
+      <span class="portal-status ps-editing"><span class="dot"></span>Đang chỉnh sửa</span>
+      <span class="portal-status ps-edit-done"><span class="dot"></span>Hoàn thành CS</span>
+      <span class="portal-status ps-waiting-ship"><span class="dot"></span>Chờ giao hàng</span>
+      <span class="portal-status ps-shipping"><span class="dot"></span>Đang giao hàng</span>
+      <span class="portal-status ps-completed"><span class="dot"></span>Hoàn thành</span>
+      <span class="portal-status ps-cancelled"><span class="dot"></span>Đã hủy</span>
     </div></div>
   </div>
 </div>

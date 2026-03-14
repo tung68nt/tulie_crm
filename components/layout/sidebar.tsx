@@ -26,7 +26,8 @@ import {
     GraduationCap,
     Layout,
     Contact,
-    Headphones
+    Headphones,
+    LayoutDashboard
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -128,6 +129,22 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                     pathname === '/dashboard' ? "text-zinc-950" : "opacity-70 group-hover:opacity-100"
                                 )} />
                                 {!isCollapsed && <span className={cn("truncate font-medium", pathname === '/dashboard' ? "text-zinc-950" : "text-muted-foreground group-hover:text-zinc-950")}>Dashboard</span>}
+                            </Button>
+                        </Link>
+                        <Link href="/workspace">
+                            <Button
+                                variant="ghost"
+                                className={cn(
+                                    'w-full justify-start gap-3 h-10 transition-all duration-200 group rounded-xl',
+                                    pathname === '/workspace' || pathname.startsWith('/workspace/') ? 'bg-zinc-100 text-zinc-950 shadow-sm border border-border/50' : 'text-muted-foreground hover:text-zinc-950 hover:bg-zinc-100/50',
+                                    isCollapsed && 'justify-center px-0'
+                                )}
+                            >
+                                <LayoutDashboard className={cn(
+                                    "h-4 w-4 shrink-0 transition-colors",
+                                    pathname === '/workspace' || pathname.startsWith('/workspace/') ? "text-zinc-950" : "opacity-70 group-hover:opacity-100"
+                                )} />
+                                {!isCollapsed && <span className={cn("truncate font-medium", pathname === '/workspace' || pathname.startsWith('/workspace/') ? "text-zinc-950" : "text-muted-foreground group-hover:text-zinc-950")}>Workspace</span>}
                             </Button>
                         </Link>
                     </div>

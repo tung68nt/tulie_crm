@@ -7,13 +7,15 @@ import {
     hasPermission,
     getDataScope,
     getTeamMemberIds,
+    getEffectiveRole,
+    isManagement,
     UserContext,
 } from './permissions'
 
 export interface AuthResult {
     user: UserContext
     supabase: Awaited<ReturnType<typeof createClient>>
-    /** Team member IDs (populated for leaders) */
+    /** Team member IDs (populated for management roles) */
     teamMemberIds: string[]
 }
 
@@ -33,23 +35,27 @@ export async function requireAuth(): Promise<AuthResult | NextResponse> {
             )
         }
 
-        // Fetch role and team from users table
+        // Fetch role, team, and department from users table
         const { data: profile } = await supabase
             .from('users')
-            .select('role, team_id')
+            .select('role, team_id, department')
             .eq('id', user.id)
             .single()
+
+        const rawRole = (profile?.role as UserRole) ?? 'intern'
+        const effectiveRole = getEffectiveRole(rawRole)
 
         const userCtx: UserContext = {
             id: user.id,
             email: user.email ?? undefined,
-            role: (profile?.role as UserRole) ?? 'staff',
+            role: effectiveRole,
             team_id: profile?.team_id ?? undefined,
+            department: profile?.department ?? undefined,
         }
 
-        // Pre-fetch team member IDs for leaders
+        // Pre-fetch team member IDs for management roles
         let teamMemberIds: string[] = []
-        if (userCtx.role === 'leader' && userCtx.team_id) {
+        if (isManagement(effectiveRole) && userCtx.team_id) {
             teamMemberIds = await getTeamMemberIds(supabase, userCtx.id, userCtx.team_id)
         }
 
@@ -64,12 +70,14 @@ export async function requireAuth(): Promise<AuthResult | NextResponse> {
 
 /**
  * Verifies authentication AND checks user role.
- * Pass allowed roles (e.g., ['admin', 'leader']).
+ * Pass allowed roles (e.g., ['ceo', 'project_manager']).
+ * Works with both legacy and new role names.
  */
 export async function requireRole(allowedRoles: string[]): Promise<AuthResult | NextResponse> {
     const authResult = await requireAuth()
     if (isAuthError(authResult)) return authResult
 
+    // The user's role is already the effective role (mapped in requireAuth)
     if (!authResult.user.role || !allowedRoles.includes(authResult.user.role)) {
         return NextResponse.json(
             { error: 'Forbidden: insufficient permissions' },
@@ -108,10 +116,10 @@ export async function requirePermission(
 }
 
 /**
- * Shortcut: require admin role
+ * Shortcut: require CEO/admin level access
  */
 export async function requireAdmin(): Promise<AuthResult | NextResponse> {
-    return requireRole(['admin'])
+    return requireRole(['ceo', 'admin'])
 }
 
 /**

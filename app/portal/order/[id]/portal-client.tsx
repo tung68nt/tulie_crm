@@ -26,10 +26,10 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; d
 function StatusBadge({ status }: { status: string }) {
     const s = STATUS_CONFIG[status] || { label: status, bg: 'bg-zinc-100', text: 'text-zinc-600', dot: 'bg-zinc-400' }
     return (
-        <Badge className={cn("text-[10px] font-semibold border-none px-3 py-1.5 rounded-lg", s.bg, s.text)}>
-            <span className={cn("h-1.5 w-1.5 rounded-full mr-1.5", s.dot)} />
-            {s.label}
-        </Badge>
+        <div className={cn("flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 bg-zinc-100/50")}>
+            <span className={cn("w-1.5 h-1.5 rounded-full", s.dot)} />
+            <span className={cn("text-xs font-semibold", s.text)}>{s.label}</span>
+        </div>
     )
 }
 
@@ -429,20 +429,23 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                         <StatusBadge status={order.order_status} />
                     </div>
 
-                    {/* Desktop: centered stacked layout */}
-                    <div className="hidden lg:flex flex-col items-center gap-4 text-center">
-                        {brandConfig?.logo_url ? (
-                            <img src={brandConfig.logo_url} alt="Logo" className="h-12 w-auto object-contain grayscale" />
-                        ) : (
-                            <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
-                                <Package className="h-6 w-6 text-white" />
+                    {/* Desktop: horizontal bar like /anhthe */}
+                    <div className="hidden lg:flex items-center justify-between gap-8">
+                        <div className="flex items-center gap-6">
+                            {brandConfig?.logo_url ? (
+                                <img src={brandConfig.logo_url} alt="Logo" className="h-14 w-auto object-contain grayscale" />
+                            ) : (
+                                <div className="h-12 w-12 rounded-xl bg-zinc-900 flex items-center justify-center">
+                                    <Package className="h-6 w-6 text-white" />
+                                </div>
+                            )}
+                            <div className="w-px h-10 bg-zinc-200" />
+                            <div>
+                                <h1 className="text-xl font-semibold text-zinc-900 tracking-tight">{order.order_number}</h1>
+                                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mt-0.5">
+                                    {brandConfig?.brand_name || 'Tulie Studio'}
+                                </p>
                             </div>
-                        )}
-                        <div>
-                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-                                {brandConfig?.brand_name || 'Tulie Studio'}
-                            </p>
-                            <h1 className="text-xl font-semibold text-zinc-900 tracking-tight mt-0.5">{order.order_number}</h1>
                         </div>
                         <StatusBadge status={order.order_status} />
                     </div>

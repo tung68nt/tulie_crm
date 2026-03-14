@@ -3,7 +3,27 @@
 // ============================================
 
 // User & Auth Types
-export type UserRole = 'admin' | 'leader' | 'staff' | 'accountant'
+export type UserRole =
+  | 'ceo'
+  | 'creative_director'
+  | 'account_manager'
+  | 'account_executive'
+  | 'project_manager'
+  | 'designer'
+  | 'copywriter'
+  | 'social_media'
+  | 'media_buyer'
+  | 'photographer'
+  | 'video_editor'
+  | 'accountant'
+  | 'hr_admin'
+  | 'intern'
+  // Legacy roles (backward compat, mapped on login)
+  | 'admin'
+  | 'leader'
+  | 'staff'
+
+export type UserDepartment = 'management' | 'creative' | 'sales' | 'marketing' | 'studio' | 'finance' | 'admin' | 'operations'
 export type Brand = 'agency' | 'studio' | 'academy'
 
 export interface User {
@@ -13,6 +33,7 @@ export interface User {
   phone?: string
   avatar_url?: string
   role: UserRole
+  department?: UserDepartment
   team_id?: string
   is_active: boolean
   created_at: string
@@ -25,6 +46,92 @@ export interface Team {
   leader_id: string
   created_at: string
 }
+
+// Workspace Task Types (standalone tasks)
+export type WorkspaceTaskStatus = 'todo' | 'in_progress' | 'in_review' | 'completed' | 'cancelled'
+export type WorkspaceTaskPriority = 'low' | 'medium' | 'high' | 'urgent'
+export type WorkspaceTaskCategory = 'follow_up' | 'internal' | 'client_request' | 'admin'
+
+export interface WorkspaceTask {
+  id: string
+  title: string
+  description?: string
+  status: WorkspaceTaskStatus
+  priority: WorkspaceTaskPriority
+  assigned_to?: string
+  assigned_user?: User
+  created_by?: string
+  creator?: User
+  project_id?: string
+  project?: Project
+  due_date?: string
+  start_date?: string
+  completed_at?: string
+  labels?: string[]
+  category?: WorkspaceTaskCategory
+  brand: Brand
+  metadata?: Record<string, any>
+  comments?: TaskComment[]
+  created_at: string
+  updated_at: string
+}
+
+export interface TaskComment {
+  id: string
+  task_id: string
+  task_type: 'workspace' | 'project'
+  user_id?: string
+  user?: User
+  content: string
+  attachments?: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface RevenueTarget {
+  id: string
+  period_type: 'monthly' | 'quarterly' | 'yearly'
+  period_start: string
+  period_end: string
+  target_amount: number
+  actual_amount: number
+  brand: Brand
+  notes?: string
+  created_by?: string
+  created_at: string
+  updated_at: string
+}
+
+// Workspace Dashboard Types
+export interface WorkspaceDayOverview {
+  today_tasks: WorkspaceTask[]
+  overdue_tasks: WorkspaceTask[]
+  upcoming_deadlines: WorkspaceTask[]
+}
+
+export interface WorkspaceWeekOverview {
+  week_tasks: WorkspaceTask[]
+  milestone_deadlines: ContractMilestone[]
+}
+
+export interface RevenueProgress {
+  target: RevenueTarget | null
+  actual: number
+  percentage: number
+  period_label: string
+}
+
+export interface WorkspaceAlert {
+  id: string
+  type: 'overdue_task' | 'stale_proposal' | 'unchecked_project' | 'pending_invoice' | 'missed_milestone'
+  severity: 'warning' | 'danger' | 'info'
+  title: string
+  message: string
+  link?: string
+  entity_id?: string
+  created_at: string
+}
+
 
 // Customer Types
 export type CustomerStatus = 'lead' | 'prospect' | 'customer' | 'vip' | 'churned'
