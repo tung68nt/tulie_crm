@@ -480,13 +480,17 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 <Label className="text-xs font-semibold text-zinc-600">Số tiền khách vừa chuyển khoản/tiền mặt (VNĐ)</Label>
                                 <div className="relative">
                                     <Input
-                                        type="number"
-                                        placeholder={remainingAmount.toString()}
-                                        value={paymentAmount}
-                                        onChange={(e) => setPaymentAmount(e.target.value)}
-                                        className="h-12 text-lg font-bold tabular-nums border-zinc-200 focus-visible:ring-emerald-500/20 pl-4"
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder={new Intl.NumberFormat('vi-VN').format(remainingAmount)}
+                                        value={paymentAmount ? new Intl.NumberFormat('vi-VN').format(Number(paymentAmount)) : ''}
+                                        onChange={(e) => {
+                                            const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '')
+                                            setPaymentAmount(raw)
+                                        }}
+                                        className="h-12 text-lg font-bold tabular-nums border-zinc-200 focus-visible:ring-emerald-500/20 pl-4 pr-14"
                                     />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-300">VNĐ</div>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-300 pointer-events-none">VNĐ</div>
                                 </div>
                             </div>
                             <Button
