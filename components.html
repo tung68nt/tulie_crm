@@ -98,16 +98,16 @@ a { color: inherit; text-decoration: none; }
 .sz-brand-studio { background:#71717a; color:white; }
 .sz-brand-academy { background:#f4f4f5; color:#18181b; border:1px solid #18181b; font-weight:500; }
 
-/* Portal Status Tag — dot + rounded-full style */
-.portal-status { display:inline-flex; align-items:center; gap:6px; border-radius:9999px; padding:4px 12px; font-size:12px; font-weight:600; border:1px solid #e4e4e7; background:rgba(244,244,245,0.5); }
+/* Portal Status Tag — dot + rounded-full, lightweight */
+.portal-status { display:inline-flex; align-items:center; gap:6px; border-radius:9999px; padding:3px 10px; font-size:12px; font-weight:500; border:1px solid transparent; }
 .portal-status .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-.ps-pending .dot { background:#a1a1aa; } .ps-pending { color:#71717a; }
-.ps-editing .dot { background:#60a5fa; } .ps-editing { color:#2563eb; }
-.ps-edit-done .dot { background:#818cf8; } .ps-edit-done { color:#4f46e5; }
-.ps-waiting-ship .dot { background:#fbbf24; } .ps-waiting-ship { color:#d97706; }
-.ps-shipping .dot { background:#f97316; } .ps-shipping { color:#ea580c; }
-.ps-completed .dot { background:#34d399; } .ps-completed { color:#059669; }
-.ps-cancelled .dot { background:#f87171; } .ps-cancelled { color:#dc2626; }
+.ps-pending { color:#71717a; background:#f4f4f5; border-color:#e4e4e7; } .ps-pending .dot { background:#a1a1aa; }
+.ps-editing { color:#2563eb; background:#eff6ff; border-color:#bfdbfe; } .ps-editing .dot { background:#3b82f6; }
+.ps-edit-done { color:#7c3aed; background:#f5f3ff; border-color:#ddd6fe; } .ps-edit-done .dot { background:#8b5cf6; }
+.ps-waiting-ship { color:#d97706; background:#fffbeb; border-color:#fde68a; } .ps-waiting-ship .dot { background:#f59e0b; }
+.ps-shipping { color:#ea580c; background:#fff7ed; border-color:#fed7aa; } .ps-shipping .dot { background:#f97316; }
+.ps-completed { color:#059669; background:#ecfdf5; border-color:#a7f3d0; } .ps-completed .dot { background:#10b981; }
+.ps-cancelled { color:#dc2626; background:#fef2f2; border-color:#fecaca; } .ps-cancelled .dot { background:#ef4444; }
 
 /* Form */
 .input { height:36px; width:100%; border:1px solid var(--input); border-radius:6px; padding:0 12px; font-size:14px; background:transparent; color:var(--fg); outline:none; transition:all .15s; }

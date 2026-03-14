@@ -13,22 +13,22 @@ import { generatePaymentContent } from '@/lib/utils/payment-utils'
 import { buildVietQrUrl, buildVietQrDeeplink } from '@/lib/utils/vietqr'
 import { toast } from 'sonner'
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string }> = {
-    'pending': { label: 'Chờ xử lý', bg: 'bg-zinc-100', text: 'text-zinc-600', dot: 'bg-zinc-400' },
-    'editing': { label: 'Đang chỉnh sửa', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-400' },
-    'edit_done': { label: 'Hoàn thành chỉnh sửa', bg: 'bg-indigo-50', text: 'text-indigo-700', dot: 'bg-indigo-400' },
-    'waiting_ship': { label: 'Chờ giao hàng', bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400' },
-    'shipping': { label: 'Đang giao hàng', bg: 'bg-orange-50', text: 'text-orange-700', dot: 'bg-orange-400' },
-    'completed': { label: 'Hoàn thành', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-400' },
-    'cancelled': { label: 'Đã hủy', bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-400' },
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string; border: string }> = {
+    'pending': { label: 'Chờ xử lý', bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' },
+    'editing': { label: 'Đang chỉnh sửa', bg: 'bg-blue-50', text: 'text-blue-600', dot: 'bg-blue-500', border: 'border-blue-200' },
+    'edit_done': { label: 'Hoàn thành chỉnh sửa', bg: 'bg-violet-50', text: 'text-violet-600', dot: 'bg-violet-500', border: 'border-violet-200' },
+    'waiting_ship': { label: 'Chờ giao hàng', bg: 'bg-amber-50', text: 'text-amber-600', dot: 'bg-amber-500', border: 'border-amber-200' },
+    'shipping': { label: 'Đang giao hàng', bg: 'bg-orange-50', text: 'text-orange-600', dot: 'bg-orange-500', border: 'border-orange-200' },
+    'completed': { label: 'Hoàn thành', bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-500', border: 'border-emerald-200' },
+    'cancelled': { label: 'Đã hủy', bg: 'bg-red-50', text: 'text-red-600', dot: 'bg-red-400', border: 'border-red-200' },
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const s = STATUS_CONFIG[status] || { label: status, bg: 'bg-zinc-100', text: 'text-zinc-600', dot: 'bg-zinc-400' }
+    const s = STATUS_CONFIG[status] || { label: status, bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' }
     return (
-        <div className={cn("flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200 bg-zinc-100/50")}>
+        <div className={cn("flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border", s.bg, s.border)}>
             <span className={cn("w-1.5 h-1.5 rounded-full", s.dot)} />
-            <span className={cn("text-xs font-semibold", s.text)}>{s.label}</span>
+            <span className={cn("text-xs font-medium", s.text)}>{s.label}</span>
         </div>
     )
 }
@@ -586,8 +586,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                             </div>
                         </div>
 
-                        {/* Resources */}
-                        {(order.order_status === 'completed' || order.resource_link || order.demo_link) && (
+                        {order.resource_link && (
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 px-1">
                                     <div className="w-8 h-8 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center">
@@ -598,38 +597,16 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                         <p className="text-[11px] font-medium text-muted-foreground">Resources</p>
                                     </div>
                                 </div>
-                                <div className="grid gap-3 sm:grid-cols-2">
-                                    {order.demo_link && (
-                                        <Button asChild variant="outline" className="h-14 group rounded-xl border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 justify-start px-5 transition-all">
-                                            <a href={order.demo_link} target="_blank">
-                                                <div className="text-left flex-1">
-                                                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Xem trước</p>
-                                                    <p className="text-[13px] font-bold text-zinc-900">Ảnh mẫu Demo</p>
-                                                </div>
-                                                <ExternalLink className="ml-auto h-4 w-4 text-zinc-300 group-hover:text-zinc-900 transition-colors" />
-                                            </a>
-                                        </Button>
-                                    )}
-                                    {order.resource_link && (
-                                        <Button asChild className="h-14 group bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-black/10 rounded-xl justify-start px-5 border-none transition-all">
-                                            <a href={order.resource_link} target="_blank">
-                                                <Download className="mr-3 h-5 w-5 opacity-50" />
-                                                <div className="text-left flex-1">
-                                                    <p className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Bàn giao</p>
-                                                    <p className="text-[13px] font-bold">Tải ảnh gốc</p>
-                                                </div>
-                                                <ExternalLink className="ml-auto h-4 w-4 text-white/30 group-hover:text-white transition-colors" />
-                                            </a>
-                                        </Button>
-                                    )}
-                                </div>
-                                {!order.resource_link && order.demo_link && (
-                                    <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-100 text-center">
-                                        <p className="text-[13px] text-zinc-500 font-medium leading-relaxed">
-                                            Link tải ảnh gốc sẽ hiện ra sau khi bạn hoàn tất thanh toán phần còn lại.
-                                        </p>
-                                    </div>
-                                )}
+                                <Button asChild className="w-full h-14 group bg-zinc-950 hover:bg-zinc-800 text-white shadow-lg shadow-black/10 rounded-xl justify-start px-5 border-none transition-all">
+                                    <a href={order.resource_link} target="_blank">
+                                        <Download className="mr-3 h-5 w-5 opacity-50" />
+                                        <div className="text-left flex-1">
+                                            <p className="text-[10px] font-medium text-white/50 uppercase tracking-wider">Bàn giao</p>
+                                            <p className="text-[13px] font-bold">Tải ảnh gốc</p>
+                                        </div>
+                                        <ExternalLink className="ml-auto h-4 w-4 text-white/30 group-hover:text-white transition-colors" />
+                                    </a>
+                                </Button>
                             </div>
                         )}
 
