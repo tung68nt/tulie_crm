@@ -329,10 +329,10 @@ function ShippingInfoForm({ order }: { order: any }) {
                     <div className="space-y-1.5">
                         <Label className="text-xs font-semibold text-zinc-600">Tỉnh / Thành phố</Label>
                         <Select value={selectedProvinceCode ? String(selectedProvinceCode) : undefined} onValueChange={handleProvinceChange}>
-                            <SelectTrigger className="h-10 text-sm">
+                            <SelectTrigger className="h-10 text-sm w-full">
                                 <SelectValue placeholder="Chọn tỉnh/TP" />
                             </SelectTrigger>
-                            <SelectContent className="max-h-60">
+                            <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
                                 {provinces.map((p: any) => (
                                     <SelectItem key={p.code} value={String(p.code)}>{p.name}</SelectItem>
                                 ))}
@@ -342,10 +342,10 @@ function ShippingInfoForm({ order }: { order: any }) {
                     <div className="space-y-1.5">
                         <Label className="text-xs font-semibold text-zinc-600">Phường / Xã</Label>
                         <Select value={selectedWardCode ? String(selectedWardCode) : undefined} onValueChange={handleWardChange} disabled={wards.length === 0}>
-                            <SelectTrigger className="h-10 text-sm">
+                            <SelectTrigger className="h-10 text-sm w-full">
                                 <SelectValue placeholder="Chọn phường/xã" />
                             </SelectTrigger>
-                            <SelectContent className="max-h-60">
+                            <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
                                 {wards.map((w: any) => (
                                     <SelectItem key={w.code} value={String(w.code)}>{w.name}</SelectItem>
                                 ))}
