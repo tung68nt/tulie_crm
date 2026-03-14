@@ -460,46 +460,59 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </p>
                                 </div>
 
-                                {/* Share Payment Info + QR for Customer */}
-                                <Button
-                                    variant="outline"
-                                    className="w-full h-10 rounded-lg font-bold text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
-                                    onClick={async () => {
-                                        const portalUrl = `${window.location.origin}/portal/order/${order.id}`
-                                        const amount = new Intl.NumberFormat('vi-VN').format(remainingAmount)
-                                        const msg = [
-                                            `💳 THÔNG TIN CHUYỂN KHOẢN`,
-                                            `━━━━━━━━━━━━━━━━━`,
-                                            `🏦 Ngân hàng: ${bankInfo.bank_name}`,
-                                            `📋 Số TK: ${bankInfo.account_no}`,
-                                            `👤 Chủ TK: ${bankInfo.account_name}`,
-                                            `💰 Số tiền: ${amount}đ`,
-                                            `📝 Nội dung CK: ${paymentContent}`,
-                                            ``,
-                                            `⚠️ Vui lòng KHÔNG thay đổi nội dung chuyển khoản để hệ thống xác nhận tự động.`,
-                                            ``,
-                                            `🔗 Theo dõi đơn hàng: ${portalUrl}`,
-                                        ].join('\n')
+                                {/* Copy Payment Info + Download QR */}
+                                <div className="space-y-2">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full h-10 rounded-lg font-bold text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+                                        onClick={async () => {
+                                            const portalUrl = `${window.location.origin}/portal/order/${order.id}`
+                                            const amount = new Intl.NumberFormat('vi-VN').format(remainingAmount)
+                                            const msg = [
+                                                `💳 THÔNG TIN CHUYỂN KHOẢN`,
+                                                `━━━━━━━━━━━━━━━━━`,
+                                                `🏦 Ngân hàng: ${bankInfo.bank_name}`,
+                                                `📋 Số TK: ${bankInfo.account_no}`,
+                                                `👤 Chủ TK: ${bankInfo.account_name}`,
+                                                `💰 Số tiền: ${amount}đ`,
+                                                `📝 Nội dung CK: ${paymentContent}`,
+                                                ``,
+                                                `⚠️ Vui lòng KHÔNG thay đổi nội dung chuyển khoản để hệ thống xác nhận tự động.`,
+                                                ``,
+                                                `🔗 Theo dõi đơn hàng: ${portalUrl}`,
+                                            ].join('\n')
 
-                                        try {
-                                            const res = await fetch(qrUrl)
-                                            const blob = await res.blob()
-                                            const file = new File([blob], `QR_${order.order_number}.png`, { type: 'image/png' })
-                                            if (navigator.share && navigator.canShare?.({ files: [file] })) {
-                                                await navigator.share({ text: msg, files: [file] })
-                                                return
+                                            // Try Web Share with QR image
+                                            try {
+                                                const res = await fetch(qrUrl)
+                                                const blob = await res.blob()
+                                                const file = new File([blob], `QR_${order.order_number}.png`, { type: 'image/png' })
+                                                if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                                                    await navigator.share({ text: msg, files: [file] })
+                                                    return
+                                                }
+                                            } catch (err: any) {
+                                                if (err?.name === 'AbortError') return
                                             }
-                                        } catch (err: any) {
-                                            if (err?.name === 'AbortError') return
-                                        }
-                                        // Fallback: copy text only
-                                        navigator.clipboard.writeText(msg)
-                                        toast.success('Đã copy thông tin thanh toán (dán vào Zalo để gửi khách)')
-                                    }}
-                                >
-                                    <Send className="mr-2 h-3.5 w-3.5" />
-                                    Gửi thông tin thanh toán + QR cho khách
-                                </Button>
+                                            // Fallback: copy text
+                                            navigator.clipboard.writeText(msg)
+                                            toast.success('Đã copy nội dung — bấm "Tải QR" rồi gửi kèm cho khách')
+                                        }}
+                                    >
+                                        <Copy className="mr-2 h-3.5 w-3.5" />
+                                        Copy nội dung gửi khách
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full h-9 rounded-lg text-xs font-semibold text-zinc-500 hover:text-zinc-700"
+                                        asChild
+                                    >
+                                        <a href={qrUrl} download={`QR_${order.order_number}.png`}>
+                                            <Download className="mr-2 h-3.5 w-3.5" />
+                                            Tải mã QR để gửi kèm
+                                        </a>
+                                    </Button>
+                                </div>
 
 
                             </>
