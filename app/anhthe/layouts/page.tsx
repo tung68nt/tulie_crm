@@ -1,0 +1,72 @@
+import { PrintLayoutPreview } from '../components/PrintLayoutPreview'
+
+const PRINT_SIZES = [
+  { id: 'mix', name: 'Vỉ Mix', desc: '3×4x6 + 5×3x4 + 3×2x3', photos: '11 ảnh/vỉ' },
+  { id: '2x3', name: 'Cỡ 2×3 cm', desc: 'Ảnh thẻ nhỏ', photos: '18 ảnh/vỉ' },
+  { id: '3x4', name: 'Cỡ 3×4 cm', desc: 'Ảnh thẻ phổ biến', photos: '10 ảnh/vỉ' },
+  { id: '4x6', name: 'Cỡ 4×6 cm', desc: 'Ảnh thẻ lớn', photos: '5 ảnh/vỉ' },
+  { id: '3.5x4.5', name: 'Cỡ 3.5×4.5 cm', desc: 'Passport / Visa', photos: '8 ảnh/vỉ' },
+  { id: '3.3x4.8', name: 'Cỡ 3.3×4.8 cm', desc: 'Hộ chiếu Nhật', photos: '8 ảnh/vỉ' },
+  { id: '4.5x4.5', name: 'Cỡ 4.5×4.5 cm', desc: 'Vuông lớn', photos: '6 ảnh/vỉ' },
+  { id: '5x5', name: 'Cỡ 5.0×5.0 cm', desc: 'Vuông XL', photos: '4 ảnh/vỉ' },
+]
+
+export default function PrintLayoutsPage() {
+  return (
+    <div className="min-h-screen bg-zinc-50/50 font-sans text-zinc-900 pb-20 selection:bg-black selection:text-white">
+      {/* Header */}
+      <div className="bg-white border-b border-zinc-200 pt-8 sm:pt-10 pb-6 sm:pb-8 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <img src="/file/tulie-agency-logo.png" alt="Logo" className="h-10 sm:h-14 w-auto object-contain grayscale" />
+            <div className="w-px h-8 sm:h-10 bg-zinc-200" />
+            <div>
+              <h1 className="text-lg sm:text-xl font-semibold text-zinc-900 tracking-tight">Các kiểu vỉ in ảnh</h1>
+              <p className="text-[10px] sm:text-xs text-zinc-400 mt-0.5 font-medium uppercase tracking-wider">Print Layout Catalog — Khổ giấy 10×15 cm</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-10 space-y-6">
+        {/* Info */}
+        <div className="bg-white rounded-xl border border-zinc-200 p-4 sm:p-5 shadow-sm">
+          <p className="text-sm text-zinc-600 font-medium leading-relaxed">
+            Tất cả các kiểu vỉ in đều sử dụng <strong>giấy ảnh Canon Selphy KP-108IN</strong>, khổ <strong>10×15 cm</strong> (4×6 inch). 
+            Mỗi vỉ in khác nhau sẽ có bố cục và số lượng ảnh khác nhau.
+          </p>
+        </div>
+
+        {/* Grid of layouts */}
+        <div className="grid gap-6 sm:grid-cols-2">
+          {PRINT_SIZES.map(size => (
+            <div key={size.id} className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
+              <div className="p-4 sm:p-5 border-b border-zinc-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-[15px] font-bold text-zinc-950 tracking-tight">{size.name}</h3>
+                    <p className="text-xs text-zinc-400 font-medium mt-0.5">{size.desc}</p>
+                  </div>
+                  <span className="text-xs font-bold text-zinc-600 bg-zinc-100 px-2.5 py-1 rounded-full">{size.photos}</span>
+                </div>
+              </div>
+              <div className="p-3 bg-zinc-50">
+                <PrintLayoutPreview sizeId={size.id} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center py-6">
+          <a 
+            href="/anhthe" 
+            className="inline-flex items-center justify-center rounded-xl font-bold tracking-tight text-[13px] h-12 px-10 bg-zinc-900 hover:bg-zinc-800 text-white shadow-lg shadow-black/10 transition-all"
+          >
+            Đặt ảnh thẻ ngay
+          </a>
+        </div>
+      </main>
+    </div>
+  )
+}

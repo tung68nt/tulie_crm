@@ -213,7 +213,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
     if (res.success) {
       toast.success('Đặt đơn thành công!', { description: 'Chúng tôi sẽ sớm liên hệ với bạn.' })
       if (res.token) {
-        router.push(`/portal/${res.token}`)
+        router.push(`/portal/order/${res.token}`)
       } else {
         router.push('/')
       }

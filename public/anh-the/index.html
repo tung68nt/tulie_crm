@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dịch vụ ảnh thẻ - Tulie Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e1b4b;
+      --accent: #e91e8c;
+      --accent-light: #f9a8d4;
+      --bg: #fdf2f8;
+      --card-bg: #ffffff;
+      --text: #1e1b4b;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --photo-bg: #dbeafe;
+      --photo-border: #93c5fd;
+      --paper-bg: #f8fafc;
+      --paper-border: #cbd5e1;
+      --shadow: 0 4px 24px rgba(30, 27, 75, 0.08);
+      --shadow-lg: 0 8px 40px rgba(30, 27, 75, 0.12);
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      padding: 48px 20px 32px;
+      background: linear-gradient(135deg, #fce7f3, #ede9fe, #dbeafe);
+    }
+    .header .logo {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .header .logo span { color: var(--accent); }
+    .header h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ===== CONTAINER ===== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== SECTION ===== */
+    .section {
+      padding: 48px 0;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      font-size: 15px;
+    }
+
+    /* ===== LAYOUTS GRID ===== */
+    .layouts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .layout-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .layout-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .layout-card-header {
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .layout-card-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .layout-card-header .badge {
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    .layout-card-body {
+      padding: 0 24px 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ===== PAPER (10x15cm scaled) ===== */
+    /* Scale: 1cm = 25px. Paper landscape: 15cm W x 10cm H = 375x250px */
+    .paper {
+      width: 375px;
+      height: 250px;
+      background: var(--paper-bg);
+      border: 2px dashed var(--paper-border);
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .photo-slot {
+      background: linear-gradient(145deg, #bfdbfe, #93c5fd);
+      border: 1px solid var(--photo-border);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 600;
+      color: #1e40af;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    /* Size label under paper */
+    .paper-label {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ===== SPECIFIC LAYOUTS ===== */
+    /* We use absolute positioning for precise layouts */
+    .paper-abs {
+      width: 375px;
+      height: 250px;
+      background: var(--paper-bg);
+      border: 2px dashed var(--paper-border);
+      border-radius: 4px;
+      position: relative;
+    }
+    .paper-abs .photo-slot {
+      position: absolute;
+    }
+
+    /* ===== MIX LAYOUT ===== */
+    .layout-card.mix {
+      grid-column: 1 / -1;
+    }
+    .layout-card.mix .layout-card-body {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mix-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .mix-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .mix-legend-item .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .photo-slot.size-2x3 {
+      background: linear-gradient(145deg, #bbf7d0, #86efac);
+      border-color: #4ade80;
+      color: #166534;
+    }
+    .photo-slot.size-3x4 {
+      background: linear-gradient(145deg, #bfdbfe, #93c5fd);
+      border-color: #60a5fa;
+      color: #1e40af;
+    }
+    .photo-slot.size-4x6 {
+      background: linear-gradient(145deg, #fde68a, #fbbf24);
+      border-color: #f59e0b;
+      color: #92400e;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 420px) {
+      .paper-abs, .paper {
+        transform: scale(0.75);
+        transform-origin: top center;
+      }
+      .layout-card-body {
+        min-height: 220px;
+      }
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+    }
+    .footer strong { color: var(--primary); }
+
+    /* ===== NOTE CARD ===== */
+    .note-card {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #fbbf24;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      text-align: center;
+      font-size: 14px;
+      color: #92400e;
+    }
+    .note-card strong { color: #78350f; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">🌷 <span>Tulie</span> Studio</div>
+    <h1>Vỉ in ảnh thẻ</h1>
+    <p>Giấy in 10×15cm — Canon Selphy CP1300<br>Số lượng ảnh trên mỗi vỉ theo từng kích thước</p>
+  </div>
+
+  <!-- LAYOUTS SECTION -->
+  <div class="section">
+    <div class="container">
+      <h2 class="section-title">Bố cục vỉ in theo kích thước</h2>
+      <p class="section-subtitle">Mỗi vỉ in trên 1 tờ giấy 10×15cm</p>
+
+      <div class="note-card">
+        <strong>Lưu ý:</strong> Hình minh hoạ bên dưới thể hiện tỉ lệ thực tế của ảnh trên giấy in.
+        Khoảng trắng còn lại sẽ được cắt bỏ sau khi in.
+      </div>
+
+      <div class="layouts-grid">
+
+        <!-- 2x3cm: 18 photos → 6 cols x 3 rows -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 2×3 cm</h3>
+            <span class="badge">18 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-2x3"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3x4cm: 11 photos -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 3×4 cm</h3>
+            <span class="badge">11 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-3x4"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4x6cm: 5 photos -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 4×6 cm</h3>
+            <span class="badge">5 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-4x6"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.5x4.5cm: 8 photos → 4 cols x 2 rows -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 3.5×4.5 cm</h3>
+            <span class="badge">8 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-35x45"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.3x4.8cm: 8 photos → 4 cols x 2 rows -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 3.3×4.8 cm</h3>
+            <span class="badge">8 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-33x48"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4.5x4.5cm: 6 photos → 3 cols x 2 rows -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 4.5×4.5 cm</h3>
+            <span class="badge">6 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-45x45"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5x5cm: 4 photos → 2 cols x 2 rows -->
+        <div class="layout-card">
+          <div class="layout-card-header">
+            <h3>Cỡ 5×5 cm</h3>
+            <span class="badge">4 ảnh/vỉ</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-5x5"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MIX layout -->
+        <div class="layout-card mix">
+          <div class="layout-card-header">
+            <h3>Vỉ Mix (2×3 + 3×4 + 4×6)</h3>
+            <span class="badge">Mix</span>
+          </div>
+          <div class="layout-card-body">
+            <div>
+              <div class="paper-abs" id="layout-mix"></div>
+              <div class="paper-label">Giấy 10×15 cm</div>
+              <div class="mix-legend">
+                <div class="mix-legend-item">
+                  <div class="swatch" style="background: linear-gradient(145deg, #fde68a, #fbbf24);"></div>
+                  <span>4×6 cm</span>
+                </div>
+                <div class="mix-legend-item">
+                  <div class="swatch" style="background: linear-gradient(145deg, #bfdbfe, #93c5fd);"></div>
+                  <span>3×4 cm</span>
+                </div>
+                <div class="mix-legend-item">
+                  <div class="swatch" style="background: linear-gradient(145deg, #bbf7d0, #86efac);"></div>
+                  <span>2×3 cm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /layouts-grid -->
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <strong>Tulie Studio</strong> — Dịch vụ ảnh thẻ chuyên nghiệp
+  </div>
+
+  <script>
+    // =============================================
+    // Scale: 1cm = 25px
+    // Paper landscape: 15cm W × 10cm H = 375×250px
+    // =============================================
+    const S = 25; // px per cm
+    const GAP = 2; // px gap between photos
+
+    function createSlot(paper, x, y, w, h, label, extraClass) {
+      const el = document.createElement('div');
+      el.className = 'photo-slot' + (extraClass ? ' ' + extraClass : '');
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = w + 'px';
+      el.style.height = h + 'px';
+      if (label) el.textContent = label;
+      paper.appendChild(el);
+    }
+
+    function layoutGrid(paperId, photoW, photoH, cols, rows, total) {
+      const paper = document.getElementById(paperId);
+      const pw = photoW * S;
+      const ph = photoH * S;
+      // Center the grid
+      const gridW = cols * pw + (cols - 1) * GAP;
+      const gridH = rows * ph + (rows - 1) * GAP;
+      const offsetX = (375 - gridW) / 2;
+      const offsetY = (250 - gridH) / 2;
+
+      let count = 0;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (count >= total) break;
+          const x = offsetX + c * (pw + GAP);
+          const y = offsetY + r * (ph + GAP);
+          createSlot(paper, x, y, pw, ph, '');
+          count++;
+        }
+      }
+    }
+
+    // 2x3: 6 cols × 3 rows = 18
+    layoutGrid('layout-2x3', 2, 3, 6, 3, 18);
+
+    // 3x4: 5 cols × 2 rows = 10, + 1 extra
+    (function() {
+      const paper = document.getElementById('layout-3x4');
+      const pw = 3 * S; // 75
+      const ph = 4 * S; // 100
+      // Row 1 & 2: 5 cols each
+      const gridW = 5 * pw + 4 * GAP;
+      const offsetX = (375 - gridW) / 2;
+      const offsetY = 4;
+      let count = 0;
+      for (let r = 0; r < 2; r++) {
+        for (let c = 0; c < 5; c++) {
+          const x = offsetX + c * (pw + GAP);
+          const y = offsetY + r * (ph + GAP);
+          createSlot(paper, x, y, pw, ph, '');
+          count++;
+        }
+      }
+      // 11th photo: rotated (4cm W × 3cm H) in remaining space
+      const rotW = 4 * S;
+      const rotH = 3 * S;
+      const lastY = offsetY + 2 * (ph + GAP);
+      const lastX = offsetX;
+      createSlot(paper, lastX, lastY, rotW, rotH, '↻');
+    })();
+
+    // 4x6: 3 portrait + 2 landscape = 5
+    (function() {
+      const paper = document.getElementById('layout-4x6');
+      const pw = 4 * S; // 100
+      const ph = 6 * S; // 150
+      // 3 portrait photos on the left
+      const offsetX = 4;
+      const offsetY = (250 - ph) / 2;
+      for (let c = 0; c < 3; c++) {
+        createSlot(paper, offsetX + c * (pw + GAP), offsetY, pw, ph, '');
+      }
+      // 2 landscape (6W × 4H) stacked on the right
+      const rotW = 6 * S; // 150
+      const rotH = 4 * S; // 100
+      const rightX = offsetX + 3 * (pw + GAP);
+      const rightOffsetY = (250 - 2 * rotH - GAP) / 2;
+      createSlot(paper, rightX, rightOffsetY, rotW, rotH, '↻');
+      createSlot(paper, rightX, rightOffsetY + rotH + GAP, rotW, rotH, '↻');
+    })();
+
+    // 3.5x4.5: 4 cols × 2 rows = 8
+    layoutGrid('layout-35x45', 3.5, 4.5, 4, 2, 8);
+
+    // 3.3x4.8: 4 cols × 2 rows = 8
+    layoutGrid('layout-33x48', 3.3, 4.8, 4, 2, 8);
+
+    // 4.5x4.5: 3 cols × 2 rows = 6
+    layoutGrid('layout-45x45', 4.5, 4.5, 3, 2, 6);
+
+    // 5x5: 2 cols × 2 rows = 4
+    layoutGrid('layout-5x5', 5, 5, 2, 2, 4);
+
+    // MIX layout: 3× 4x6 portrait + 3× 2x3 landscape + 5× 3x4 portrait
+    (function() {
+      const paper = document.getElementById('layout-mix');
+      paper.innerHTML = '';
+      
+      const col4x6 = 'size-4x6';
+      const col3x4 = 'size-3x4';
+      const col2x3 = 'size-2x3';
+
+      // Three 4x6 portrait (4W x 6H) -> left 12cm
+      createSlot(paper, 0, 0, 4*S, 6*S, '4×6', col4x6);
+      createSlot(paper, 4*S, 0, 4*S, 6*S, '4×6', col4x6);
+      createSlot(paper, 8*S, 0, 4*S, 6*S, '4×6', col4x6);
+
+      // Three 2x3 landscape (3W x 2H) -> right 3cm, top 6cm perfectly matches!
+      createSlot(paper, 12*S, 0, 3*S, 2*S, '↻ 2×3', col2x3);
+      createSlot(paper, 12*S, 2*S, 3*S, 2*S, '↻ 2×3', col2x3);
+      createSlot(paper, 12*S, 4*S, 3*S, 2*S, '↻ 2×3', col2x3);
+
+      // Five 3x4 portrait (3W x 4H) -> bottom 4cm, full 15cm width (5*3=15)
+      for(let i=0; i<5; i++) {
+        createSlot(paper, i*3*S, 6*S, 3*S, 4*S, '3×4', col3x4);
+      }
+    })();
+  </script>
+
+</body>
+</html>

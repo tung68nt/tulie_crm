@@ -74,9 +74,17 @@ export async function createProduct(product: Partial<Product>) {
 export async function updateProduct(id: string, product: Partial<Product>) {
     try {
         const supabase = await createClient()
+        // Only send fields that exist in the DB table
+        const dbFields: Record<string, any> = {}
+        const allowedKeys = ['name', 'sku', 'brand', 'category', 'description', 'unit', 'price', 'cost_price', 'is_active', 'default_templates']
+        for (const key of allowedKeys) {
+            if (key in product) {
+                dbFields[key] = (product as any)[key]
+            }
+        }
         const { data, error } = await supabase
             .from('products')
-            .update(product)
+            .update(dbFields)
             .eq('id', id)
             .select()
             .single()
