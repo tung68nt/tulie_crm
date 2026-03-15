@@ -72,7 +72,7 @@ function CopyableField({ value, label, dark }: { value: string; label: string; d
     )
 }
 
-function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; remainingAmount: number }) {
+function PortalPaymentWatcher({ token, remainingAmount }: { token: string; remainingAmount: number }) {
     const [isPolling, setIsPolling] = useState(true)
     const [isTimedOut, setIsTimedOut] = useState(false)
     const [isChecking, setIsChecking] = useState(false)
@@ -90,7 +90,7 @@ function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; r
 
     const checkPayment = useCallback(async () => {
         try {
-            const res = await fetch(`/api/studio/payment-status?order_id=${orderId}`, { cache: 'no-store' })
+            const res = await fetch(`/api/studio/payment-status?token=${token}`, { cache: 'no-store' })
             if (!res.ok) return
             const data = await res.json()
 
@@ -104,7 +104,7 @@ function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; r
                 setTimeout(() => window.location.reload(), 3000)
             }
         } catch { /* ignore */ }
-    }, [orderId])
+    }, [token])
 
     useEffect(() => {
         if (!isPolling || paymentDetected) return
@@ -227,7 +227,7 @@ function PortalPaymentWatcher({ orderId, remainingAmount }: { orderId: string; r
     )
 }
 
-function ShippingInfoForm({ order }: { order: any }) {
+function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     const existing = order.shipping_info || {}
     const [form, setForm] = useState({
         recipient_name: existing.recipient_name || order.customer_name || '',
@@ -269,7 +269,7 @@ function ShippingInfoForm({ order }: { order: any }) {
             const res = await fetch('/api/studio/shipping-info', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_id: order.id, shipping_info: form })
+                body: JSON.stringify({ token, shipping_info: form })
             })
             const data = await res.json()
             if (res.ok) {
@@ -379,7 +379,7 @@ function ShippingInfoForm({ order }: { order: any }) {
     )
 }
 
-export default function RetailOrderPortalContent({ order, brandConfig }: { order: any, brandConfig: any }) {
+export default function RetailOrderPortalContent({ order, brandConfig, token }: { order: any, brandConfig: any, token: string }) {
     const bankInfo = order.metadata?.bank_info || {
         bank_name: brandConfig?.studio_bank_name || brandConfig?.bank_name || 'VietinBank',
         account_no: brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '104002106705',
@@ -632,7 +632,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                         )}
 
                         {/* Shipping Info Form */}
-                        <ShippingInfoForm order={order} />
+                        <ShippingInfoForm order={order} token={token} />
 
 
                         {/* Notes */}
@@ -659,7 +659,7 @@ export default function RetailOrderPortalContent({ order, brandConfig }: { order
                                 </div>
 
                                 {/* Payment Watcher */}
-                                <PortalPaymentWatcher orderId={order.id} remainingAmount={remainingAmount} />
+                                <PortalPaymentWatcher token={token} remainingAmount={remainingAmount} />
 
                                 {/* QR Code Card */}
                                 <div className="bg-white rounded-xl border border-zinc-200 shadow-sm p-6 flex flex-col items-center">

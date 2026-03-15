@@ -27,5 +27,5 @@ export default async function RetailOrderPortalPage({ params }: { params: Promis
 
     const brandConfig = await getBrandConfig()
 
-    return <RetailOrderPortalContent order={order} brandConfig={brandConfig} />
+    return <RetailOrderPortalContent order={order} brandConfig={brandConfig} token={order.public_token || id} />
 }

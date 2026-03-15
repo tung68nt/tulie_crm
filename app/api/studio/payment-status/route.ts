@@ -6,11 +6,10 @@ import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
  * Payment Status Polling API
  * Client polls this endpoint to check real-time payment status
  * 
- * PUBLIC endpoint (called from /order/[token] page)
- * Protected by: public_token verification (not order_id) + rate limiting
+ * PUBLIC endpoint (called from /order/[token] and /portal/order/[id] pages)
+ * Protected by: public_token verification + rate limiting
  * 
  * GET /api/studio/payment-status?token=xxx
- * Legacy support: GET /api/studio/payment-status?order_id=xxx (deprecated)
  */
 export async function GET(req: NextRequest) {
     try {
@@ -24,31 +23,19 @@ export async function GET(req: NextRequest) {
         if (rateLimitResult) return rateLimitResult
 
         const token = req.nextUrl.searchParams.get('token')
-        const orderId = req.nextUrl.searchParams.get('order_id')
 
-        if (!token && !orderId) {
+        if (!token) {
             return NextResponse.json({ error: 'Missing token parameter' }, { status: 400 })
         }
 
         const supabase = await createClient()
 
-        // Prefer token-based lookup (secure), fallback to order_id (legacy)
-        let order
-        if (token) {
-            const { data } = await supabase
-                .from('retail_orders')
-                .select('id, total_amount, paid_amount, payment_status')
-                .eq('public_token', token)
-                .single()
-            order = data
-        } else if (orderId) {
-            const { data } = await supabase
-                .from('retail_orders')
-                .select('id, total_amount, paid_amount, payment_status')
-                .eq('id', orderId)
-                .single()
-            order = data
-        }
+        // Token-based lookup only (secure)
+        const { data: order } = await supabase
+            .from('retail_orders')
+            .select('id, total_amount, paid_amount, payment_status')
+            .eq('public_token', token)
+            .single()
 
         if (!order) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 })
