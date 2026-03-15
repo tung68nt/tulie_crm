@@ -321,11 +321,32 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             <div className="space-y-2">
                                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ghi chú nghiệp vụ</p>
                                 <div className="p-3 bg-zinc-50/50 rounded-lg border border-dashed border-zinc-200">
-                                    <p className="text-sm text-zinc-600 leading-relaxed font-normal">
+                                    <p className="text-sm text-zinc-600 leading-relaxed font-normal whitespace-pre-line">
                                         {order.notes || "Không có ghi chú nào từ khách hàng hoặc tư vấn viên."}
                                     </p>
                                 </div>
                             </div>
+                            {/* Per-vỉ size info from metadata */}
+                            {(order as any).metadata?.vi_sizes?.length > 0 && (() => {
+                                const SIZE_NAMES: Record<string, string> = {
+                                    'mix': 'Mix (3×4×6 + 5×3×4 + 3×2×3)',
+                                    '2x3': '2×3 cm', '3x4': '3×4 cm', '4x6': '4×6 cm',
+                                    '3.5x4.5': '3.5×4.5 cm', '3.3x4.8': '3.3×4.8 cm',
+                                    '4.5x4.5': '4.5×4.5 cm', '5x5': '5×5 cm',
+                                }
+                                return (
+                                    <div className="space-y-2 mt-3">
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">🖨️ Kích thước in từng vỉ</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {(order as any).metadata.vi_sizes.map((sizeId: string, idx: number) => (
+                                                <div key={idx} className="px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-700">
+                                                    Vỉ {idx + 1}: {SIZE_NAMES[sizeId] || sizeId}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            })()}
                         </CardContent>
                     </Card>
 
