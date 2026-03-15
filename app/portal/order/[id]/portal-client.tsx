@@ -230,52 +230,19 @@ function PortalPaymentWatcher({ token, remainingAmount }: { token: string; remai
 function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     const existing = order.shipping_info || {}
     const [form, setForm] = useState({
-        recipient_name: existing.recipient_name || order.customer_name || '',
-        recipient_phone: existing.recipient_phone || order.customer_phone || '',
+        recipient_name: existing.recipient_name || '',
+        recipient_phone: existing.recipient_phone || '',
         address: existing.address || '',
-        ward: existing.ward || '',
-        district: existing.district || '',
-        province: existing.province || '',
     })
-    const [provinces, setProvinces] = useState<any[]>([])
-    const [districts, setDistricts] = useState<any[]>([])
-    const [wards, setWards] = useState<any[]>([])
     const [isSaving, setIsSaving] = useState(false)
     const [saved, setSaved] = useState(false)
 
-    useEffect(() => {
-        fetch('https://provinces.open-api.vn/api/v2/p/')
-            .then(r => r.json())
-            .then(setProvinces)
-            .catch(() => {})
-    }, [])
-
-    const handleProvinceChange = async (code: string) => {
-        const prov = provinces.find((p: any) => String(p.code) === code)
-        setForm(f => ({ ...f, province: prov?.name || '', district: '', ward: '' }))
-        setDistricts([])
-        setWards([])
-        try {
-            const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
-            const data = await res.json()
-            setDistricts(data.districts || [])
-        } catch { setDistricts([]) }
-    }
-
-    const handleDistrictChange = async (code: string) => {
-        const dist = districts.find((d: any) => String(d.code) === code)
-        setForm(f => ({ ...f, district: dist?.name || '', ward: '' }))
-        setWards([])
-        try {
-            const res = await fetch(`https://provinces.open-api.vn/api/v2/d/${code}?depth=2`)
-            const data = await res.json()
-            setWards(data.wards || [])
-        } catch { setWards([]) }
-    }
-
-    const handleWardChange = (code: string) => {
-        const w = wards.find((wd: any) => String(wd.code) === code)
-        setForm(f => ({ ...f, ward: w?.name || '' }))
+    const fillFromCustomer = () => {
+        setForm(f => ({
+            ...f,
+            recipient_name: order.customer_name || f.recipient_name,
+            recipient_phone: order.customer_phone || f.recipient_phone,
+        }))
     }
 
     const handleSave = async () => {
@@ -299,10 +266,6 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
         setIsSaving(false)
     }
 
-    const selectedProvinceCode = provinces.find((p: any) => p.name === form.province)?.code
-    const selectedDistrictCode = districts.find((d: any) => d.name === form.district)?.code
-    const selectedWardCode = wards.find((w: any) => w.name === form.ward)?.code
-
     return (
         <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
             <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
@@ -322,6 +285,15 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
                 )}
             </div>
             <div className="p-5 space-y-4">
+                <button
+                    type="button"
+                    onClick={fillFromCustomer}
+                    className="w-full text-left px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-colors text-xs font-medium text-zinc-600 flex items-center gap-2"
+                >
+                    <User className="h-3.5 w-3.5" />
+                    Cùng thông tin khách hàng ({order.customer_name})
+                </button>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                         <Label className="text-xs font-semibold text-zinc-600">Tên người nhận</Label>
@@ -344,55 +316,13 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
                 </div>
 
                 <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-zinc-600">Tỉnh / Thành phố</Label>
-                    <Select value={selectedProvinceCode ? String(selectedProvinceCode) : undefined} onValueChange={handleProvinceChange}>
-                        <SelectTrigger className="h-10 text-sm w-full">
-                            <SelectValue placeholder="Chọn tỉnh/TP" />
-                        </SelectTrigger>
-                        <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
-                            {provinces.map((p: any) => (
-                                <SelectItem key={p.code} value={String(p.code)}>{p.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-zinc-600">Quận / Huyện</Label>
-                        <Select value={selectedDistrictCode ? String(selectedDistrictCode) : undefined} onValueChange={handleDistrictChange} disabled={districts.length === 0}>
-                            <SelectTrigger className="h-10 text-sm w-full">
-                                <SelectValue placeholder="Chọn quận/huyện" />
-                            </SelectTrigger>
-                            <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
-                                {districts.map((d: any) => (
-                                    <SelectItem key={d.code} value={String(d.code)}>{d.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-zinc-600">Phường / Xã</Label>
-                        <Select value={selectedWardCode ? String(selectedWardCode) : undefined} onValueChange={handleWardChange} disabled={wards.length === 0}>
-                            <SelectTrigger className="h-10 text-sm w-full">
-                                <SelectValue placeholder="Chọn phường/xã" />
-                            </SelectTrigger>
-                            <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
-                                {wards.map((w: any) => (
-                                    <SelectItem key={w.code} value={String(w.code)}>{w.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-zinc-600">Địa chỉ chi tiết</Label>
-                    <Input
+                    <Label className="text-xs font-semibold text-zinc-600">Địa chỉ giao hàng</Label>
+                    <textarea
                         value={form.address}
                         onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                        placeholder="Số nhà, tên đường, tòa nhà..."
-                        className="h-10 text-sm"
+                        placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                        rows={2}
+                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 resize-none"
                     />
                 </div>
 
