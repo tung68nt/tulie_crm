@@ -58,12 +58,16 @@ export default function PrintLayoutsPage() {
         </div>
 
         {/* CTA */}
-        <div className="text-center py-6">
+        <div className="text-center py-8">
           <a 
             href="/anhthe" 
-            className="inline-flex items-center justify-center rounded-xl font-bold tracking-tight text-[13px] h-12 px-10 bg-zinc-900 hover:bg-zinc-800 text-white shadow-lg shadow-black/10 transition-all"
+            className="group relative inline-flex flex-col items-center justify-center rounded-2xl font-bold tracking-tight h-auto py-4 px-12 bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 hover:from-zinc-800 hover:via-zinc-700 hover:to-zinc-800 text-white shadow-xl shadow-black/20 hover:shadow-2xl hover:shadow-black/30 transition-all duration-300 hover:-translate-y-0.5"
           >
-            Đặt ảnh thẻ ngay
+            <span className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-zinc-400/20 via-zinc-300/10 to-zinc-400/20 opacity-0 group-hover:opacity-100 transition-opacity blur-sm" />
+            <span className="relative flex items-center gap-2 text-[15px]">
+              ✦ Đặt ảnh thẻ ngay
+            </span>
+            <span className="relative text-[11px] font-medium text-zinc-400 mt-0.5">Chỉ từ 29.000đ — Giao tận nhà</span>
           </a>
         </div>
       </main>
