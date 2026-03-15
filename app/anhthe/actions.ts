@@ -16,14 +16,14 @@ const FREE_PRINTS_BY_PRICE: Record<number, number> = {
 const orderSchema = z.object({
   customerName: z.string().min(2, 'Tên quá ngắn'),
   customerPhone: z.string().min(10, 'Số điện thoại không hợp lệ'),
-  notes: z.string().optional(),
+  notes: z.string().optional().nullable().transform(v => v ?? undefined),
   packages: z.string(),
-  viSizes: z.string().optional(),
+  viSizes: z.string().optional().nullable().transform(v => v ?? undefined),
   printQuantity: z.coerce.number().default(0),
-  photoUrls: z.string().optional(),
-  shippingName: z.string().optional(),
-  shippingPhone: z.string().optional(),
-  shippingAddress: z.string().optional(),
+  photoUrls: z.string().optional().nullable().transform(v => v ?? undefined),
+  shippingName: z.string().optional().nullable().transform(v => v ?? undefined),
+  shippingPhone: z.string().optional().nullable().transform(v => v ?? undefined),
+  shippingAddress: z.string().optional().nullable().transform(v => v ?? undefined),
 })
 
 export async function submitPhotoOrder(formData: FormData) {
@@ -31,14 +31,14 @@ export async function submitPhotoOrder(formData: FormData) {
     const rawData = {
       customerName: formData.get('customerName') as string,
       customerPhone: formData.get('customerPhone') as string,
-      notes: formData.get('notes') as string,
+      notes: formData.get('notes') ?? undefined,
       packages: formData.get('packages') as string,
-      viSizes: formData.get('viSizes') as string,
+      viSizes: formData.get('viSizes') ?? undefined,
       printQuantity: formData.get('printQuantity') as string,
-      photoUrls: formData.get('photoUrls') as string,
-      shippingName: formData.get('shippingName') as string,
-      shippingPhone: formData.get('shippingPhone') as string,
-      shippingAddress: formData.get('shippingAddress') as string,
+      photoUrls: formData.get('photoUrls') ?? undefined,
+      shippingName: formData.get('shippingName') ?? undefined,
+      shippingPhone: formData.get('shippingPhone') ?? undefined,
+      shippingAddress: formData.get('shippingAddress') ?? undefined,
     }
 
     const val = orderSchema.parse(rawData)
