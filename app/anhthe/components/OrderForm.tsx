@@ -314,91 +314,94 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 </div>
               </div>
 
-              {/* Photo section title */}
-              <div className="pt-2">
-                <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Ảnh gốc cần sửa</p>
-                <p className="text-[11px] text-zinc-400 mt-0.5">Khách có thể tải lên hoặc chèn link ở đây, hoặc gửi ảnh qua Zalo cho shop</p>
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="notes" className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                  Link ảnh gốc / Ghi chú <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn)</span>
-                </Label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-zinc-300">
-                    <Link2 className="size-4" />
-                  </div>
-                  <Input
-                    id="notes"
-                    name="notes"
-                    className="pl-9 h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
-                    placeholder="Dán link Google Drive hoặc nhập yêu cầu đặc biệt..."
-                  />
+              {/* Photo section — grouped under one container */}
+              <div className="rounded-xl border border-zinc-200 overflow-hidden">
+                <div className="px-4 py-3 bg-zinc-50 border-b border-zinc-100">
+                  <p className="text-xs font-semibold text-zinc-700">📷 Ảnh gốc cần sửa</p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">Khách có thể tải lên hoặc chèn link ở đây, hoặc gửi ảnh qua Zalo cho shop</p>
                 </div>
-                <p className="text-[11px] text-zinc-400 font-medium">Bạn cũng có thể nhắn ảnh & yêu cầu qua Zalo cho shop để thuận tiện hơn</p>
-              </div>
-
-              {/* Photo Upload */}
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                  Tải ảnh gốc lên <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn — hoặc gửi qua Zalo cho shop)</span>
-                </Label>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileUpload}
-                />
-
-                {/* Upload zone */}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className={cn(
-                    "w-full flex flex-col items-center justify-center gap-2 py-6 px-4 rounded-xl border-2 border-dashed transition-all cursor-pointer",
-                    isUploading
-                      ? "border-zinc-300 bg-zinc-50 cursor-wait"
-                      : "border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50/50 active:bg-zinc-100",
-                  )}
-                >
-                  {isUploading ? (
-                    <Loader2 className="size-6 text-zinc-400 animate-spin" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center">
-                      <ImagePlus className="size-5 text-zinc-500" />
-                    </div>
-                  )}
-                  <div className="text-center">
-                    <p className="text-xs font-semibold text-zinc-700">
-                      {isUploading ? 'Đang tải lên...' : 'Chụp ảnh hoặc chọn từ thư viện'}
-                    </p>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">JPG, PNG, HEIC — tối đa 10MB/ảnh</p>
-                  </div>
-                </button>
-
-                {/* Uploaded files preview */}
-                {uploadedFiles.length > 0 && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2">
-                    {uploadedFiles.map((file) => (
-                      <div key={file.path} className="relative group rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50 aspect-square">
-                        <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => removeFile(file.path)}
-                          className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="size-3.5" />
-                        </button>
-                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent px-1.5 py-1">
-                          <p className="text-[9px] text-white font-medium truncate">{file.name}</p>
-                        </div>
+                <div className="p-4 space-y-4">
+                  {/* Link input */}
+                  <div className="space-y-1.5">
+                    <Label htmlFor="notes" className="text-[11px] font-medium text-zinc-500">
+                      Link ảnh gốc / Ghi chú <span className="text-zinc-400">(tuỳ chọn)</span>
+                    </Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-zinc-300">
+                        <Link2 className="size-4" />
                       </div>
-                    ))}
+                      <Input
+                        id="notes"
+                        name="notes"
+                        className="pl-9 h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300"
+                        placeholder="Dán link Google Drive hoặc nhập yêu cầu đặc biệt..."
+                      />
+                    </div>
                   </div>
-                )}
+
+                  {/* Upload zone */}
+                  <div className="space-y-2">
+                    <Label className="text-[11px] font-medium text-zinc-500">
+                      Tải ảnh gốc lên <span className="text-zinc-400">(tuỳ chọn)</span>
+                    </Label>
+
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
+                      multiple
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className={cn(
+                        "w-full flex flex-col items-center justify-center gap-2 py-6 px-4 rounded-xl border-2 border-dashed transition-all cursor-pointer",
+                        isUploading
+                          ? "border-zinc-300 bg-zinc-50 cursor-wait"
+                          : "border-zinc-200 hover:border-zinc-400 hover:bg-zinc-50/50 active:bg-zinc-100",
+                      )}
+                    >
+                      {isUploading ? (
+                        <Loader2 className="size-6 text-zinc-400 animate-spin" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center">
+                          <ImagePlus className="size-5 text-zinc-500" />
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <p className="text-xs font-semibold text-zinc-700">
+                          {isUploading ? 'Đang tải lên...' : 'Chụp ảnh hoặc chọn từ thư viện'}
+                        </p>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">JPG, PNG, HEIC — tối đa 10MB/ảnh</p>
+                      </div>
+                    </button>
+
+                    {/* Uploaded files preview */}
+                    {uploadedFiles.length > 0 && (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2">
+                        {uploadedFiles.map((file) => (
+                          <div key={file.path} className="relative group rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50 aspect-square">
+                            <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => removeFile(file.path)}
+                              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="size-3.5" />
+                            </button>
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent px-1.5 py-1">
+                              <p className="text-[9px] text-white font-medium truncate">{file.name}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </section>
