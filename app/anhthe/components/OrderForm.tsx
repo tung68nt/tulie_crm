@@ -541,6 +541,8 @@ export default function OrderForm({ products }: { products: Product[] }) {
                   </Label>
                   <p className="text-[11px] text-zinc-400 font-medium">
                     {totalFreePrints > 0 ? `Bạn đang được tặng ${totalFreePrints} vỉ miễn phí từ các gói đã chọn` : 'Chọn gói dịch vụ để nhận vỉ in miễn phí'}
+                    {' · '}
+                    <a href="/anhthe/layouts" target="_blank" className="text-blue-500 hover:text-blue-600 underline underline-offset-2">Xem mẫu vỉ in</a>
                   </p>
                 </div>
                 <Switch
