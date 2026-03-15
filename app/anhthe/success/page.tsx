@@ -135,9 +135,9 @@ function SuccessContent() {
                     <p className="text-xs text-zinc-400 leading-relaxed">
                         Nếu cần hỗ trợ, vui lòng liên hệ
                     </p>
-                    <a href="tel:0966070809" className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 mt-1 hover:text-primary transition-colors">
+                    <a href="tel:0979684731" className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 mt-1 hover:text-primary transition-colors">
                         <Phone className="h-3.5 w-3.5" />
-                        0966 070 809
+                        0979 684 731
                     </a>
                 </div>
             </div>

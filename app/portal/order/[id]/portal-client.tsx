@@ -379,8 +379,8 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     )
 }
 
-export default function RetailOrderPortalContent({ order, brandConfig, token }: { order: any, brandConfig: any, token: string }) {
-    const bankInfo = order.metadata?.bank_info || {
+export default function RetailOrderPortalContent({ order, brandConfig, token, bankInfo: propBankInfo }: { order: any, brandConfig: any, token: string, bankInfo?: any }) {
+    const bankInfo = propBankInfo || order.metadata?.bank_info || {
         bank_name: brandConfig?.studio_bank_name || brandConfig?.bank_name || 'VietinBank',
         account_no: brandConfig?.studio_bank_account_no || brandConfig?.bank_account_no || '104002106705',
         account_name: brandConfig?.studio_bank_account_name || brandConfig?.bank_account_name || 'Nghiem Thi Lien'

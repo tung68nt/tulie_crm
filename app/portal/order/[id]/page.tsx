@@ -1,5 +1,5 @@
 import { getRetailOrderByToken, getRetailOrderById } from '@/lib/supabase/services/retail-order-service'
-import { getBrandConfig } from '@/lib/supabase/services/settings-service'
+import { getBrandConfig, getBankAccounts } from '@/lib/supabase/services/settings-service'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import RetailOrderPortalContent from './portal-client'
@@ -42,11 +42,21 @@ async function findOrder(id: string) {
 
 export default async function RetailOrderPortalPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const order = await findOrder(id)
+    const [order, brandConfig, bankAccounts] = await Promise.all([
+        findOrder(id),
+        getBrandConfig(),
+        getBankAccounts()
+    ])
 
     if (!order) notFound()
 
-    const brandConfig = await getBrandConfig()
+    // Find bank account configured as default for Studio B2C
+    const defaultB2CBank = bankAccounts.find((b: any) => (b.default_for || []).includes('retail_order'))
+    const bankInfo = order.metadata?.bank_info || (defaultB2CBank ? {
+        bank_name: defaultB2CBank.bank_name,
+        account_no: defaultB2CBank.account_no,
+        account_name: defaultB2CBank.account_name
+    } : null)
 
-    return <RetailOrderPortalContent order={order} brandConfig={brandConfig} token={order.public_token || id} />
+    return <RetailOrderPortalContent order={order} brandConfig={brandConfig} token={order.public_token || id} bankInfo={bankInfo} />
 }

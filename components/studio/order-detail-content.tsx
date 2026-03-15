@@ -71,10 +71,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
     const remainingAmount = order.total_amount - (order.paid_amount || 0)
 
-    const bankInfo = (order as any).metadata?.bank_info || (availableBanks.length > 0 ? {
-        bank_name: availableBanks[0].bank_name,
-        account_no: availableBanks[0].account_no,
-        account_name: availableBanks[0].account_name
+    // Find the bank account configured as default for Studio B2C (retail_order)
+    const defaultB2CBank = availableBanks.find((b: any) => (b.default_for || []).includes('retail_order'))
+    const fallbackBank = defaultB2CBank || availableBanks[0]
+    const bankInfo = (order as any).metadata?.bank_info || (fallbackBank ? {
+        bank_name: fallbackBank.bank_name,
+        account_no: fallbackBank.account_no,
+        account_name: fallbackBank.account_name
     } : {
         bank_name: 'ICB',
         account_no: '104002106705',
@@ -484,7 +487,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </div>
                                     <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                                         <span className="text-muted-foreground font-medium">Ngân hàng:</span>
-                                        <span className="font-bold">Vietinbank (VietinBank)</span>
+                                        <span className="font-bold">{bankInfo.bank_name}</span>
                                         <span className="text-muted-foreground font-medium">Số TK:</span>
                                         <span className="font-bold font-mono tracking-wider flex items-center gap-1.5">
                                             {bankInfo.account_no}
