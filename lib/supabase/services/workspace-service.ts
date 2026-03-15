@@ -102,6 +102,89 @@ export async function deleteWorkspaceTask(id: string) {
 }
 
 // ============================================
+// SINGLE TASK WITH DETAILS
+// ============================================
+
+export async function getWorkspaceTask(id: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('workspace_tasks')
+            .select('*, assigned_user:users!workspace_tasks_assigned_to_fkey(*), creator:users!workspace_tasks_created_by_fkey(*)')
+            .eq('id', id)
+            .single()
+
+        if (error) throw error
+        return data as WorkspaceTask
+    } catch (err) {
+        console.error('Error fetching workspace task:', err)
+        return null
+    }
+}
+
+// ============================================
+// TASK COMMENTS
+// ============================================
+
+export async function getTaskComments(taskId: string) {
+    try {
+        const supabase = await createClient()
+        const { data, error } = await supabase
+            .from('task_comments')
+            .select('*, user:users!task_comments_user_id_fkey(*)')
+            .eq('task_id', taskId)
+            .eq('task_type', 'workspace')
+            .order('created_at', { ascending: true })
+
+        if (error) throw error
+        return data || []
+    } catch (err) {
+        console.error('Error fetching comments:', err)
+        return []
+    }
+}
+
+export async function createTaskComment(taskId: string, content: string) {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        const { data, error } = await supabase
+            .from('task_comments')
+            .insert([{
+                task_id: taskId,
+                task_type: 'workspace',
+                user_id: user?.id,
+                content,
+            }])
+            .select('*, user:users!task_comments_user_id_fkey(*)')
+            .single()
+
+        if (error) throw error
+        return data
+    } catch (err) {
+        console.error('Error creating comment:', err)
+        throw err
+    }
+}
+
+export async function deleteTaskComment(commentId: string) {
+    try {
+        const supabase = await createClient()
+        const { error } = await supabase
+            .from('task_comments')
+            .delete()
+            .eq('id', commentId)
+
+        if (error) throw error
+        return true
+    } catch (err) {
+        console.error('Error deleting comment:', err)
+        throw err
+    }
+}
+
+// ============================================
 // WORKSPACE DASHBOARD QUERIES
 // ============================================
 
