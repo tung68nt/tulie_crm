@@ -118,6 +118,10 @@ export async function submitPhotoOrder(formData: FormData) {
       val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
 
+    // Generate public_token explicitly so we can use it for redirect
+    // (DB default may not be returned by .select() in unauthenticated context)
+    const publicToken = crypto.randomUUID()
+
     const newOrder = await createRetailOrder({
       customer_name: val.customerName,
       customer_phone: val.customerPhone,
@@ -129,6 +133,7 @@ export async function submitPhotoOrder(formData: FormData) {
       source_system: 'website',
       brand: 'studio',
       notes: orderNotes,
+      public_token: publicToken,
       metadata: {
         form_type: 'id_photo',
         packages: pkgSelections.filter(p => p.qty > 0),
@@ -143,7 +148,7 @@ export async function submitPhotoOrder(formData: FormData) {
       items,
     })
 
-    return { success: true, orderId: newOrder.id, token: newOrder.public_token }
+    return { success: true, orderId: newOrder.id, token: publicToken }
   } catch (error: any) {
     console.error('Submit photo order error:', error)
     return { success: false, error: error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.' }
