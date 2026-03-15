@@ -334,13 +334,14 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     '3.5x4.5': '3.5×4.5 cm', '3.3x4.8': '3.3×4.8 cm',
                                     '4.5x4.5': '4.5×4.5 cm', '5x5': '5×5 cm',
                                 }
+                                const viLabels = (order as any).metadata?.vi_labels || []
                                 return (
                                     <div className="space-y-2 mt-3">
                                         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">🖨️ Kích thước in từng vỉ</p>
                                         <div className="flex flex-wrap gap-2">
                                             {(order as any).metadata.vi_sizes.map((sizeId: string, idx: number) => (
                                                 <div key={idx} className="px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-700">
-                                                    Vỉ {idx + 1}: {SIZE_NAMES[sizeId] || sizeId}
+                                                    Vỉ {idx + 1}{viLabels[idx] ? ` (${viLabels[idx]})` : ''}: {SIZE_NAMES[sizeId] || sizeId}
                                                 </div>
                                             ))}
                                         </div>

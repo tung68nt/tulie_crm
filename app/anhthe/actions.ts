@@ -19,6 +19,7 @@ const orderSchema = z.object({
   notes: z.string().optional().nullable().transform(v => v ?? undefined),
   packages: z.string(),
   viSizes: z.string().optional().nullable().transform(v => v ?? undefined),
+  viLabels: z.string().optional().nullable().transform(v => v ?? undefined),
   printQuantity: z.coerce.number().default(0),
   photoUrls: z.string().optional().nullable().transform(v => v ?? undefined),
   shippingName: z.string().optional().nullable().transform(v => v ?? undefined),
@@ -34,6 +35,7 @@ export async function submitPhotoOrder(formData: FormData) {
       notes: formData.get('notes') ?? undefined,
       packages: formData.get('packages') as string,
       viSizes: formData.get('viSizes') ?? undefined,
+      viLabels: formData.get('viLabels') ?? undefined,
       printQuantity: formData.get('printQuantity') as string,
       photoUrls: formData.get('photoUrls') ?? undefined,
       shippingName: formData.get('shippingName') ?? undefined,
@@ -79,6 +81,7 @@ export async function submitPhotoOrder(formData: FormData) {
     // Print items
     const printQty = val.printQuantity
     const viSizes: string[] = val.viSizes ? JSON.parse(val.viSizes) : []
+    const viLabels: string[] = val.viLabels ? JSON.parse(val.viLabels) : []
 
     if (printQty > 0 && viSizes.length > 0) {
       const freeIncluded = Math.min(printQty, totalFreePrints)
@@ -124,7 +127,11 @@ export async function submitPhotoOrder(formData: FormData) {
     const orderNotes = [
       val.notes ? `Link Drive/Ghi chú: ${val.notes}` : null,
       packageSummary.length > 0 ? `Gói: ${packageSummary.join(', ')}` : null,
-      viSizes.length > 0 ? `In vỉ: ${viSizes.map((s: string, i: number) => `Vỉ ${i + 1}: ${({'mix':'Mix','2x3':'2×3cm','3x4':'3×4cm','4x6':'4×6cm','3.5x4.5':'3.5×4.5cm','3.3x4.8':'3.3×4.8cm','4.5x4.5':'4.5×4.5cm','5x5':'5×5cm'} as any)[s] || s}`).join(', ')}` : null,
+      viSizes.length > 0 ? `In vỉ: ${viSizes.map((s: string, i: number) => {
+        const label = viLabels[i] || ''
+        const sizeName = ({'mix':'Mix','2x3':'2×3cm','3x4':'3×4cm','4x6':'4×6cm','3.5x4.5':'3.5×4.5cm','3.3x4.8':'3.3×4.8cm','4.5x4.5':'4.5×4.5cm','5x5':'5×5cm'} as any)[s] || s
+        return `Vỉ ${i + 1}${label ? ` (${label})` : ''}: ${sizeName}`
+      }).join(', ')}` : null,
       photoUrls.length > 0 ? `Ảnh đã upload: ${photoUrls.length} ảnh` : null,
       val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
@@ -149,6 +156,7 @@ export async function submitPhotoOrder(formData: FormData) {
         form_type: 'id_photo',
         packages: pkgSelections.filter(p => p.qty > 0),
         vi_sizes: viSizes,
+        vi_labels: viLabels,
         photo_urls: photoUrls,
         shipping: val.shippingName ? {
           name: val.shippingName,

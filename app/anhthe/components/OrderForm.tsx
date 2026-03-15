@@ -113,6 +113,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
   const [wantPrint, setWantPrint] = useState(false)
   const [viSizes, setViSizes] = useState<string[]>([])
   const [extraViCount, setExtraViCount] = useState(0)
+  const [showAllLayouts, setShowAllLayouts] = useState(false)
 
   // Shipping state (shown when print is on — no separate toggle)
   const [shippingName, setShippingName] = useState('')
@@ -177,6 +178,26 @@ export default function OrderForm({ products }: { products: Product[] }) {
   const totalPrice = packageTotal + printExtraCost
   const totalPkgCount = Object.values(pkgQuantities).reduce((a, b) => a + b, 0)
 
+  // Compute viLabels: which package each vỉ belongs to
+  const viLabels = useMemo(() => {
+    const labels: string[] = []
+    for (const pkg of PACKAGES) {
+      const qty = pkgQuantities[pkg.id] || 0
+      if (qty <= 0 || pkg.freePrints <= 0) continue
+      const priceK = Math.round(pkg.price / 1000)
+      for (let q = 0; q < qty; q++) {
+        for (let v = 0; v < pkg.freePrints; v++) {
+          labels.push(`Gói ${priceK}k`)
+        }
+      }
+    }
+    // Extra paid vỉ
+    for (let i = 0; i < extraViCount; i++) {
+      labels.push('In thêm')
+    }
+    return labels
+  }, [pkgQuantities, extraViCount, PACKAGES])
+
   // Sync viSizes array when totalFreePrints or extraViCount changes
   const totalViSlots = totalFreePrints + extraViCount
   if (viSizes.length !== totalViSlots) {
@@ -214,6 +235,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
 
     formData.set('packages', JSON.stringify(pkgArray))
     formData.set('viSizes', wantPrint ? JSON.stringify(viSizes) : '[]')
+    formData.set('viLabels', wantPrint ? JSON.stringify(viLabels) : '[]')
     formData.set('printQuantity', wantPrint ? totalPrintQty.toString() : '0')
     formData.set('photoUrls', JSON.stringify(uploadedFiles.map(f => f.url)))
 
@@ -540,6 +562,9 @@ export default function OrderForm({ products }: { products: Product[] }) {
                         )}>
                           {idx + 1}
                         </span>
+                        <span className="text-[10px] text-zinc-400 font-medium shrink-0 min-w-[52px]">
+                          {viLabels[idx] || ''}
+                        </span>
                         <Select value={sizeId} onValueChange={(v) => updateViSize(idx, v)}>
                           <SelectTrigger className="h-9 rounded-lg border-zinc-200 bg-zinc-50/50 text-xs flex-1">
                             <SelectValue />
@@ -577,12 +602,32 @@ export default function OrderForm({ products }: { products: Product[] }) {
                     </div>
                   </div>
 
-                  {/* Layout Preview — show first vỉ's size */}
-                  {viSizes.length > 0 && (
-                    <div className="bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden">
-                      <PrintLayoutPreview sizeId={viSizes[0]} />
-                    </div>
-                  )}
+                  {/* Layout Preview — show all vỉ with collapse */}
+                  {viSizes.length > 0 && (() => {
+                    const visibleSizes = showAllLayouts ? viSizes : viSizes.slice(0, 1)
+                    return (
+                      <div className="space-y-2">
+                        {visibleSizes.map((sizeId, idx) => (
+                          <div key={idx} className="bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden">
+                            <div className="px-3 py-1.5 bg-zinc-100/50 border-b border-zinc-100 flex items-center gap-2">
+                              <span className="text-[10px] font-bold text-zinc-500">Vỉ {idx + 1}</span>
+                              {viLabels[idx] && <span className="text-[10px] font-medium text-zinc-400">({viLabels[idx]})</span>}
+                            </div>
+                            <PrintLayoutPreview sizeId={sizeId} />
+                          </div>
+                        ))}
+                        {viSizes.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setShowAllLayouts(!showAllLayouts)}
+                            className="w-full text-center py-2 text-[11px] font-semibold text-zinc-400 hover:text-zinc-600 transition-colors"
+                          >
+                            {showAllLayouts ? '▲ Thu gọn' : `▼ Xem tất cả ${viSizes.length} vỉ`}
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })()}
 
                   {/* Cost breakdown */}
                   <div className="bg-zinc-50 rounded-lg p-3 sm:p-4 border border-zinc-100 text-[12px] sm:text-[13px] space-y-2">
