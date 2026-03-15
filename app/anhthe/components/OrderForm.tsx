@@ -314,6 +314,11 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 </div>
               </div>
 
+              {/* Photo section title */}
+              <div className="pt-2">
+                <p className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Ảnh gốc cần sửa</p>
+                <p className="text-[11px] text-zinc-400 mt-0.5">Khách có thể tải lên hoặc chèn link ở đây, hoặc gửi ảnh qua Zalo cho shop</p>
+              </div>
               <div className="space-y-1.5">
                 <Label htmlFor="notes" className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                   Link ảnh gốc / Ghi chú <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn)</span>
@@ -653,6 +658,19 @@ export default function OrderForm({ products }: { products: Product[] }) {
                       <Package className="size-4 text-zinc-500" />
                       <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Thông tin nhận hàng</Label>
                     </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nameEl = document.getElementById('customerName') as HTMLInputElement
+                        const phoneEl = document.getElementById('customerPhone') as HTMLInputElement
+                        if (nameEl?.value) setShippingName(nameEl.value)
+                        if (phoneEl?.value) setShippingPhone(phoneEl.value)
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-colors text-xs font-medium text-zinc-600 flex items-center gap-2"
+                    >
+                      <User className="h-3.5 w-3.5" />
+                      Cùng thông tin khách hàng bên trên
+                    </button>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
