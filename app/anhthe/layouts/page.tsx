@@ -67,7 +67,7 @@ export default function PrintLayoutsPage() {
             <span className="relative flex items-center gap-2 text-[15px]">
               ✦ Đặt ảnh thẻ ngay
             </span>
-            <span className="relative text-[11px] font-medium text-zinc-400 mt-0.5">Chỉ từ 29.000đ — Giao tận nhà</span>
+            <span className="relative text-[11px] font-medium text-zinc-400 mt-0.5">Chỉ từ 79.000đ — Giao tận nhà</span>
           </a>
         </div>
       </main>
