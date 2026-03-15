@@ -317,8 +317,8 @@ export default function OrderForm({ products }: { products: Product[] }) {
               {/* Photo section — grouped under one container */}
               <div className="rounded-xl border border-zinc-200 overflow-hidden">
                 <div className="px-4 py-3 bg-zinc-50 border-b border-zinc-100">
-                  <p className="text-xs font-semibold text-zinc-700 flex items-center gap-1.5"><Camera className="size-3.5" /> Ảnh gốc cần sửa</p>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">Khách có thể tải lên hoặc chèn link ở đây, hoặc gửi ảnh qua Zalo cho shop</p>
+                  <p className="text-xs font-semibold text-zinc-700 flex items-center gap-1.5"><Camera className="size-3.5" /> Ảnh gốc để sửa</p>
+                  <p className="text-[11px] text-zinc-400 mt-0.5">Quý khách có thể tải lên hoặc chèn link ở đây, hoặc gửi ảnh qua Zalo/Messenger cho shop</p>
                 </div>
                 <div className="p-4 space-y-4">
                   {/* Link input */}
