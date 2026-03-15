@@ -9,6 +9,8 @@ import {
     Kanban,
     Calendar,
     GanttChart,
+    Users,
+    BarChart3,
 } from 'lucide-react'
 
 const workspaceTabs = [
@@ -17,6 +19,8 @@ const workspaceTabs = [
     { title: 'Board', href: '/workspace/board', icon: Kanban },
     { title: 'Calendar', href: '/workspace/calendar', icon: Calendar },
     { title: 'Timeline', href: '/workspace/timeline', icon: GanttChart },
+    { title: 'Team', href: '/workspace/team', icon: Users },
+    { title: 'Analytics', href: '/workspace/analytics', icon: BarChart3 },
 ]
 
 export default function WorkspaceLayout({
