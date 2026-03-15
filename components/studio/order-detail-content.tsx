@@ -26,7 +26,8 @@ import {
     Copy,
     Truck,
     MapPin,
-    ImageIcon
+    ImageIcon,
+    Printer
 } from 'lucide-react'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
@@ -337,7 +338,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 const viLabels = (order as any).metadata?.vi_labels || []
                                 return (
                                     <div className="space-y-2 mt-3">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">🖨️ Kích thước in từng vỉ</p>
+                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1"><Printer className="size-3" /> Kích thước in từng vỉ</p>
                                         <div className="flex flex-wrap gap-2">
                                             {(order as any).metadata.vi_sizes.map((sizeId: string, idx: number) => (
                                                 <div key={idx} className="px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-700">
