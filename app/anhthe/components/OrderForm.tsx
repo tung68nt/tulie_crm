@@ -294,7 +294,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
 
               <div className="space-y-1.5">
                 <Label htmlFor="notes" className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                  Link ảnh gốc / Ghi chú
+                  Link ảnh gốc / Ghi chú <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn)</span>
                 </Label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-zinc-300">
@@ -307,13 +307,13 @@ export default function OrderForm({ products }: { products: Product[] }) {
                     placeholder="Dán link Google Drive hoặc nhập yêu cầu đặc biệt..."
                   />
                 </div>
-                <p className="text-[11px] text-zinc-400 font-medium">Hoặc mở quyền truy cập link Google Drive nếu có</p>
+                <p className="text-[11px] text-zinc-400 font-medium">Bạn cũng có thể nhắn ảnh & yêu cầu qua Zalo cho shop để thuận tiện hơn</p>
               </div>
 
               {/* Photo Upload */}
               <div className="space-y-2">
                 <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
-                  Tải ảnh gốc lên <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn)</span>
+                  Tải ảnh gốc lên <span className="normal-case tracking-normal font-normal text-zinc-400">(tuỳ chọn — hoặc gửi qua Zalo cho shop)</span>
                 </Label>
 
                 <input
