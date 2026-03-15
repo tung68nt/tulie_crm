@@ -16,16 +16,21 @@ import {
     PRODUCT_STATUS_LABELS,
     PRODUCT_STATUS_COLORS,
     BRAND_LABELS,
-    BRAND_COLORS
+    BRAND_COLORS,
+    TICKET_STATUS_LABELS,
+    TICKET_STATUS_COLORS,
+    TICKET_PRIORITY_LABELS,
+    TICKET_PRIORITY_COLORS,
 } from '@/lib/constants/status'
 
-type EntityType = 'customer' | 'quotation' | 'contract' | 'invoice' | 'deal' | 'project' | 'product' | 'brand' | 'none'
+type EntityType = 'customer' | 'quotation' | 'contract' | 'invoice' | 'deal' | 'project' | 'product' | 'brand' | 'ticket' | 'ticket_priority' | 'none'
 
 interface StatusBadgeProps {
     status: string
     label?: string
     entityType?: EntityType
     className?: string
+    showDot?: boolean
 }
 
 const MAPPINGS: Record<Exclude<EntityType, 'none'>, { labels: any, colors: any }> = {
@@ -37,9 +42,11 @@ const MAPPINGS: Record<Exclude<EntityType, 'none'>, { labels: any, colors: any }
     project: { labels: PROJECT_STATUS_LABELS, colors: PROJECT_STATUS_COLORS },
     product: { labels: PRODUCT_STATUS_LABELS, colors: PRODUCT_STATUS_COLORS },
     brand: { labels: BRAND_LABELS, colors: BRAND_COLORS },
+    ticket: { labels: TICKET_STATUS_LABELS, colors: TICKET_STATUS_COLORS },
+    ticket_priority: { labels: TICKET_PRIORITY_LABELS, colors: TICKET_PRIORITY_COLORS },
 }
 
-export function StatusBadge({ status, label, entityType = 'none', className }: StatusBadgeProps) {
+export function StatusBadge({ status, label, entityType = 'none', className, showDot = true }: StatusBadgeProps) {
     let displayLabel = label || status
     let colorClass = ''
 
@@ -49,16 +56,41 @@ export function StatusBadge({ status, label, entityType = 'none', className }: S
         colorClass = mapping.colors[status as keyof typeof mapping.colors] || ''
     }
 
+    // Determine dot color from the semantic color class
+    const dotColor = getDotColor(colorClass)
+
     return (
         <Badge
             variant="secondary"
             className={cn(
-                'font-normal tracking-tight whitespace-nowrap px-3 h-6 flex items-center rounded-full text-[11px]',
+                'font-normal tracking-tight whitespace-nowrap px-3 h-6 flex items-center gap-1.5 rounded-full text-[11px]',
                 colorClass,
                 className
             )}
         >
+            {showDot && dotColor && (
+                <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', dotColor)} />
+            )}
             {displayLabel}
         </Badge>
     )
+}
+
+/**
+ * Map semantic color class → dot color
+ * Matches components.html dot colors
+ */
+function getDotColor(colorClass: string): string {
+    if (!colorClass) return 'bg-zinc-400'
+    if (colorClass.includes('line-through')) return 'bg-zinc-400'
+    if (colorClass.includes('emerald')) return 'bg-emerald-500'
+    if (colorClass.includes('blue-')) return 'bg-blue-500'
+    if (colorClass.includes('sky-')) return 'bg-sky-500'
+    if (colorClass.includes('amber')) return 'bg-amber-500'
+    if (colorClass.includes('rose')) return 'bg-rose-500'
+    if (colorClass.includes('violet')) return 'bg-violet-500'
+    if (colorClass.includes('orange')) return 'bg-orange-500'
+    if (colorClass.includes('indigo')) return 'bg-indigo-500'
+    if (colorClass.includes('border border-zinc')) return 'bg-zinc-500'
+    return 'bg-zinc-400'
 }
