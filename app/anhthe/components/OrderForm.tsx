@@ -504,6 +504,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                           <Label className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
                             Ghi chú gói này (size in, yêu cầu đặc biệt…)
                           </Label>
+                          <p className="text-[11px] text-zinc-400 font-normal">Với size in, khách hàng có thể chọn cụ thể ở mục bên dưới</p>
                           <Textarea
                             value={pkgNotes[pkg.id] || ''}
                             onChange={(e) => setPkgNotes(prev => ({ ...prev, [pkg.id]: e.target.value }))}
