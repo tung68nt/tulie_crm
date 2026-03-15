@@ -84,8 +84,18 @@ export async function submitPhotoOrder(formData: FormData) {
       const freeIncluded = Math.min(printQty, totalFreePrints)
       const extraPaid = Math.max(0, printQty - totalFreePrints)
 
-      // Group sizes for summary
-      const sizeSummary = viSizes.join(', ')
+      // Map size IDs to readable names for notes
+      const SIZE_NAMES: Record<string, string> = {
+        'mix': 'Mix (3×4×6 + 5×3×4 + 3×2×3)',
+        '2x3': '2×3 cm',
+        '3x4': '3×4 cm',
+        '4x6': '4×6 cm',
+        '3.5x4.5': '3.5×4.5 cm',
+        '3.3x4.8': '3.3×4.8 cm',
+        '4.5x4.5': '4.5×4.5 cm',
+        '5x5': '5×5 cm',
+      }
+      const sizeSummary = viSizes.map((s, i) => `Vỉ ${i + 1}: ${SIZE_NAMES[s] || s}`).join(', ')
 
       if (freeIncluded > 0) {
         items.push({
@@ -114,6 +124,7 @@ export async function submitPhotoOrder(formData: FormData) {
     const orderNotes = [
       val.notes ? `Link Drive/Ghi chú: ${val.notes}` : null,
       packageSummary.length > 0 ? `Gói: ${packageSummary.join(', ')}` : null,
+      viSizes.length > 0 ? `In vỉ: ${viSizes.map((s: string, i: number) => `Vỉ ${i + 1}: ${({'mix':'Mix','2x3':'2×3cm','3x4':'3×4cm','4x6':'4×6cm','3.5x4.5':'3.5×4.5cm','3.3x4.8':'3.3×4.8cm','4.5x4.5':'4.5×4.5cm','5x5':'5×5cm'} as any)[s] || s}`).join(', ')}` : null,
       photoUrls.length > 0 ? `Ảnh đã upload: ${photoUrls.length} ảnh` : null,
       val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
