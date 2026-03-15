@@ -30,7 +30,13 @@ body { background: var(--bg); color: var(--fg); font-size:14px; line-height:1.5;
 a { color: inherit; text-decoration: none; }
 
 /* Showcase Layout */
-.showcase { max-width:1200px; margin:0 auto; padding:0 40px; }
+.page-layout { display:flex; min-height:100vh; }
+.toc-sidebar { position:fixed; top:0; left:0; width:200px; height:100vh; overflow-y:auto; padding:20px 0; border-right:1px solid var(--border); background:var(--card); z-index:50; }
+.toc-sidebar .toc-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted-fg); padding:0 16px; margin-bottom:8px; }
+.toc-sidebar a { display:block; padding:6px 16px; font-size:12px; color:var(--muted-fg); text-decoration:none; border-left:2px solid transparent; transition:all .15s; }
+.toc-sidebar a:hover { color:var(--fg); background:var(--accent); }
+.toc-sidebar a.active { color:var(--fg); border-left-color:var(--fg); font-weight:500; }
+.showcase { max-width:1200px; margin:0 auto; padding:0 40px; margin-left:200px; }
 .showcase-header { text-align:center; padding:56px 0 36px; border-bottom:1px solid var(--border); margin-bottom:48px; }
 .showcase-header h1 { font-size:1.8rem; font-weight:700; letter-spacing:-0.03em; margin-bottom:8px; }
 .showcase-header p { font-size:0.85rem; color:var(--muted-fg); max-width:480px; margin:0 auto; }
@@ -184,12 +190,19 @@ a { color: inherit; text-decoration: none; }
 .card-footer { padding:0 24px 24px; display:flex; align-items:center; gap:8px; }
 
 /* Alert */
-.alert { position:relative; width:100%; border:1px solid var(--border); border-radius:8px; padding:12px 16px 12px 44px; font-size:14px; }
-.alert-icon { position:absolute; left:16px; top:12px; width:16px; height:16px; }
-.alert-title { font-weight:500; margin-bottom:4px; }
-.alert-desc { font-size:14px; }
-.alert-destructive { border-color:rgba(239,68,68,.5); color:var(--destructive); }
-.alert-destructive .alert-icon { color:var(--destructive); }
+/* Alert — 4 semantic variants */
+.alert { position:relative; width:100%; border-radius:8px; padding:12px 16px 12px 44px; font-size:13px; border-left:3px solid var(--border); background:var(--card); }
+.alert-icon { position:absolute; left:14px; top:13px; width:16px; height:16px; display:flex; align-items:center; justify-content:center; }
+.alert-title { font-weight:600; margin-bottom:2px; font-size:13px; }
+.alert-desc { font-size:13px; color:var(--muted-fg); }
+.alert-info { background:#eff6ff; border-left-color:#3b82f6; color:#1e40af; }
+.alert-info .alert-desc { color:#1e40af; opacity:.8; }
+.alert-success { background:#ecfdf5; border-left-color:#10b981; color:#065f46; }
+.alert-success .alert-desc { color:#065f46; opacity:.8; }
+.alert-warning { background:#fffbeb; border-left-color:#f59e0b; color:#92400e; }
+.alert-warning .alert-desc { color:#92400e; opacity:.8; }
+.alert-destructive { background:#fef2f2; border-left-color:#ef4444; color:#991b1b; }
+.alert-destructive .alert-desc { color:#991b1b; opacity:.8; }
 
 /* Table */
 .table-wrap { overflow-x:auto; }
@@ -337,6 +350,24 @@ td.right { text-align:right; font-weight:500; }
 
 <!-- Dark mode toggle -->
 <button class="dark-toggle" onclick="document.body.classList.toggle('dark');this.textContent=document.body.classList.contains('dark')?'☀':'☾'">☾</button>
+
+<!-- Sidebar TOC -->
+<nav class="toc-sidebar" id="toc">
+  <div class="toc-title">Contents</div>
+  <a href="#colors">1. Color System</a>
+  <a href="#elevation">2. Elevation</a>
+  <a href="#typography">3. Typography</a>
+  <a href="#spacing">4. Spacing & Size</a>
+  <a href="#buttons">5. Buttons</a>
+  <a href="#badges">6. Badges & Status</a>
+  <a href="#forms">7. Forms</a>
+  <a href="#cards">8. Cards & Stat</a>
+  <a href="#alerts">9. Alerts</a>
+  <a href="#tables">10. Tables</a>
+  <a href="#dialogs">11. Dialogs</a>
+  <a href="#dropdowns">12. Dropdowns</a>
+  <a href="#misc">13. Misc</a>
+</nav>
 
 <div class="showcase">
   <header class="showcase-header">
@@ -583,10 +614,10 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content">
       <div class="flex-wrap">
         <button class="btn btn-default">＋ Tạo mới</button>
-        <button class="btn btn-outline">⬇ Tải xuống</button>
-        <button class="btn btn-secondary">🔍 Tìm kiếm</button>
-        <button class="btn btn-destructive">🗑 Xoá</button>
-        <button class="btn btn-ghost">✏ Sửa</button>
+        <button class="btn btn-outline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Tải xuống</button>
+        <button class="btn btn-secondary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Tìm kiếm</button>
+        <button class="btn btn-destructive"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Xoá</button>
+        <button class="btn btn-ghost"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Sửa</button>
       </div>
     </div>
   </div>
@@ -627,9 +658,9 @@ td.right { text-align:right; font-weight:500; }
     <h3 class="block-title">StatusBadge — Customer</h3>
     <div class="block-content"><div class="flex-wrap">
       <span class="status-badge sb-ghost"><span class="dot"></span>Tiềm năng</span>
-      <span class="status-badge sb-outline"><span class="dot"></span>Đang theo dõi</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>Khách hàng</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>VIP</span>
+      <span class="status-badge sb-blue"><span class="dot"></span>Đang theo dõi</span>
+      <span class="status-badge sb-emerald"><span class="dot"></span>Khách hàng</span>
+      <span class="status-badge sb-violet"><span class="dot"></span>VIP</span>
       <span class="status-badge sb-cancelled"><span class="dot"></span>Đã rời bỏ</span>
     </div></div>
   </div>
@@ -641,9 +672,9 @@ td.right { text-align:right; font-weight:500; }
       <span class="status-badge sb-outline"><span class="dot"></span>Đã gửi</span>
       <span class="status-badge sb-blue"><span class="dot"></span>Đã xem</span>
       <span class="status-badge sb-emerald"><span class="dot"></span>Đã chấp nhận</span>
-      <span class="status-badge sb-cancelled"><span class="dot"></span>Từ chối</span>
-      <span class="status-badge sb-ghost"><span class="dot"></span>Hết hạn</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>Đã chuyển HĐ</span>
+      <span class="status-badge sb-danger"><span class="dot"></span>Từ chối</span>
+      <span class="status-badge sb-amber"><span class="dot"></span>Hết hạn</span>
+      <span class="status-badge sb-violet"><span class="dot"></span>Đã chuyển HĐ</span>
     </div></div>
   </div>
 
@@ -652,12 +683,12 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content"><div class="flex-wrap">
       <span class="status-badge sb-ghost"><span class="dot"></span>Bản nháp</span>
       <span class="status-badge sb-outline"><span class="dot"></span>Đã gửi</span>
-      <span class="status-badge sb-blue"><span class="dot"></span>Đã xem</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>Đã ký</span>
-      <span class="status-badge sb-emerald"><span class="dot"></span>Đang thực hiện</span>
-      <span class="status-badge sb-outline"><span class="dot"></span>Hoàn thành</span>
+      <span class="status-badge sb-sky"><span class="dot"></span>Đã xem</span>
+      <span class="status-badge sb-emerald"><span class="dot"></span>Đã ký</span>
+      <span class="status-badge sb-blue"><span class="dot"></span>Đang thực hiện</span>
+      <span class="status-badge sb-emerald"><span class="dot"></span>Hoàn thành</span>
       <span class="status-badge sb-cancelled"><span class="dot"></span>Đã hủy</span>
-      <span class="status-badge sb-ghost"><span class="dot"></span>Tạm dừng</span>
+      <span class="status-badge sb-amber"><span class="dot"></span>Tạm dừng</span>
     </div></div>
   </div>
 
@@ -666,7 +697,7 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content"><div class="flex-wrap">
       <span class="status-badge sb-ghost"><span class="dot"></span>Bản nháp</span>
       <span class="status-badge sb-outline"><span class="dot"></span>Đã gửi</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>Đã thanh toán</span>
+      <span class="status-badge sb-emerald"><span class="dot"></span>Đã thanh toán</span>
       <span class="status-badge sb-amber"><span class="dot"></span>Thanh toán một phần</span>
       <span class="status-badge sb-danger"><span class="dot"></span>Quá hạn</span>
       <span class="status-badge sb-cancelled"><span class="dot"></span>Đã hủy</span>
@@ -678,7 +709,7 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content"><div class="flex-wrap">
       <span class="status-badge sb-ghost"><span class="dot"></span>Mới tạo</span>
       <span class="status-badge sb-blue"><span class="dot"></span>Đang lấy Brief</span>
-      <span class="status-badge sb-outline"><span class="dot"></span>Đã gửi báo giá</span>
+      <span class="status-badge sb-sky"><span class="dot"></span>Đã gửi báo giá</span>
       <span class="status-badge sb-emerald"><span class="dot"></span>Đã ký (Thành công)</span>
       <span class="status-badge sb-cancelled"><span class="dot"></span>Đã hủy (Thất bại)</span>
     </div></div>
@@ -689,8 +720,8 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content"><div class="flex-wrap">
       <span class="status-badge sb-ghost"><span class="dot"></span>Chờ triển khai</span>
       <span class="status-badge sb-blue"><span class="dot"></span>Đang thực hiện</span>
-      <span class="status-badge sb-violet"><span class="dot"></span>Đang nghiệm thu</span>
-      <span class="status-badge sb-solid"><span class="dot"></span>Đã hoàn thành</span>
+      <span class="status-badge sb-amber"><span class="dot"></span>Đang nghiệm thu</span>
+      <span class="status-badge sb-emerald"><span class="dot"></span>Đã hoàn thành</span>
     </div></div>
   </div>
 
@@ -719,9 +750,9 @@ td.right { text-align:right; font-weight:500; }
   <div class="block">
     <h3 class="block-title">StatusBadge — Retail Order</h3>
     <div class="block-content"><div class="flex-wrap">
-      <span class="status-badge sb-outline"><span class="dot"></span>Chờ xử lý</span>
+      <span class="status-badge sb-ghost"><span class="dot"></span>Chờ xử lý</span>
       <span class="status-badge sb-blue"><span class="dot"></span>Đang chỉnh sửa</span>
-      <span class="status-badge sb-violet"><span class="dot"></span>Hoàn thành CS</span>
+      <span class="status-badge sb-sky"><span class="dot"></span>Hoàn thành CS</span>
       <span class="status-badge sb-amber"><span class="dot"></span>Chờ giao hàng</span>
       <span class="status-badge sb-orange"><span class="dot"></span>Đang giao hàng</span>
       <span class="status-badge sb-emerald"><span class="dot"></span>Hoàn thành</span>
@@ -884,26 +915,33 @@ td.right { text-align:right; font-weight:500; }
 <hr class="section-divider">
 <section class="section" id="alerts">
   <h2 class="section-title">9. Alerts</h2>
-  <p class="section-desc">Alert default + destructive.</p>
+  <p class="section-desc">4 semantic alert variants — info, success, warning, destructive.</p>
   
 
   <div class="block">
-    <h3 class="block-title">Default Alert</h3>
+    <h3 class="block-title">Alert Variants</h3>
     <div class="block-content">
-      <div class="alert">
-        <span class="alert-icon">ℹ</span>
-        <div class="alert-title">Thông báo</div>
-        <div class="alert-desc">Có 3 báo giá mới cần duyệt trong hôm nay.</div>
-      </div>
-    </div>
-  </div>
-  <div class="block">
-    <h3 class="block-title">Destructive Alert</h3>
-    <div class="block-content">
-      <div class="alert alert-destructive">
-        <span class="alert-icon">⚠</span>
-        <div class="alert-title">Lỗi</div>
-        <div class="alert-desc">Không thể kết nối đến server. Vui lòng thử lại sau.</div>
+      <div class="space-y">
+        <div class="alert alert-info">
+          <span class="alert-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+          <div class="alert-title">Thông báo</div>
+          <div class="alert-desc">Có 3 báo giá mới cần duyệt trong hôm nay.</div>
+        </div>
+        <div class="alert alert-success">
+          <span class="alert-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+          <div class="alert-title">Thành công</div>
+          <div class="alert-desc">Hợp đồng đã được ký thành công.</div>
+        </div>
+        <div class="alert alert-warning">
+          <span class="alert-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+          <div class="alert-title">Cảnh báo</div>
+          <div class="alert-desc">Còn 2 hoá đơn sắp quá hạn thanh toán.</div>
+        </div>
+        <div class="alert alert-destructive">
+          <span class="alert-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span>
+          <div class="alert-title">Lỗi</div>
+          <div class="alert-desc">Không thể kết nối đến server. Vui lòng thử lại sau.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -924,8 +962,8 @@ td.right { text-align:right; font-weight:500; }
           <th>Tên khách hàng</th><th>Email</th><th>Trạng thái</th><th>Brand</th><th style="text-align:right">Doanh thu</th>
         </tr></thead>
         <tbody>
-          <tr><td style="font-weight:500">Nguyễn Văn A</td><td class="muted">a@example.com</td><td><span class="status-badge sb-solid"><span class="dot"></span>Khách hàng</span></td><td><span class="status-badge sb-brand-agency">Tulie Agency</span></td><td class="right">120,000,000đ</td></tr>
-          <tr><td style="font-weight:500">Trần Thị B</td><td class="muted">b@example.com</td><td><span class="status-badge sb-solid"><span class="dot"></span>VIP</span></td><td><span class="status-badge sb-brand-studio">Tulie Studio</span></td><td class="right">350,000,000đ</td></tr>
+          <tr><td style="font-weight:500">Nguyễn Văn A</td><td class="muted">a@example.com</td><td><span class="status-badge sb-blue"><span class="dot"></span>Khách hàng</span></td><td><span class="status-badge sb-brand-agency">Tulie Agency</span></td><td class="right">120,000,000đ</td></tr>
+          <tr><td style="font-weight:500">Trần Thị B</td><td class="muted">b@example.com</td><td><span class="status-badge sb-violet"><span class="dot"></span>VIP</span></td><td><span class="status-badge sb-brand-studio">Tulie Studio</span></td><td class="right">350,000,000đ</td></tr>
           <tr><td style="font-weight:500">Lê Văn C</td><td class="muted">c@example.com</td><td><span class="status-badge sb-ghost"><span class="dot"></span>Tiềm năng</span></td><td><span class="status-badge sb-brand-academy">Tulie Academy</span></td><td class="right">0đ</td></tr>
           <tr><td style="font-weight:500">Phạm Thị D</td><td class="muted">d@example.com</td><td><span class="status-badge sb-outline"><span class="dot"></span>Đang theo dõi</span></td><td><span class="status-badge sb-brand-agency">Tulie Agency</span></td><td class="right">15,000,000đ</td></tr>
           <tr><td style="font-weight:500">Hoàng Văn E</td><td class="muted">e@example.com</td><td><span class="status-badge sb-cancelled"><span class="dot"></span>Đã rời bỏ</span></td><td><span class="status-badge sb-brand-studio">Tulie Studio</span></td><td class="right">80,000,000đ</td></tr>
@@ -980,11 +1018,11 @@ td.right { text-align:right; font-weight:500; }
       <div class="dropdown" id="demo-dropdown">
         <button class="btn btn-outline dropdown-trigger" onclick="this.parentElement.classList.toggle('open')">⋯ Actions</button>
         <div class="dropdown-menu">
-          <button class="dropdown-item">✏️ Sửa</button>
-          <button class="dropdown-item">📋 Sao chép</button>
+          <button class="dropdown-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Sửa</button>
+          <button class="dropdown-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Sao chép</button>
           <button class="dropdown-item">📤 Xuất PDF</button>
           <div class="dropdown-sep"></div>
-          <button class="dropdown-item" style="color:var(--destructive)">🗑 Xoá</button>
+          <button class="dropdown-item" style="color:var(--destructive)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Xoá</button>
         </div>
       </div>
     </div>
@@ -1012,7 +1050,7 @@ td.right { text-align:right; font-weight:500; }
     <div class="block-content">
       <div class="cmd">
         <div class="cmd-input">
-          <span style="color:var(--muted-fg)">🔍</span>
+          <span style="color:var(--muted-fg)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
           <input placeholder="Tìm kiếm..." value="">
         </div>
         <div class="cmd-group">
@@ -1020,7 +1058,7 @@ td.right { text-align:right; font-weight:500; }
           <div class="cmd-item">📊 Bảng điều khiển <span class="cmd-shortcut">⌘D</span></div>
           <div class="cmd-item">👥 Khách hàng <span class="cmd-shortcut">⌘K</span></div>
           <div class="cmd-item">📄 Báo giá <span class="cmd-shortcut">⌘Q</span></div>
-          <div class="cmd-item">📋 Hợp đồng <span class="cmd-shortcut">⌘C</span></div>
+          <div class="cmd-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Hợp đồng <span class="cmd-shortcut">⌘C</span></div>
         </div>
         <div class="cmd-group">
           <div class="cmd-group-label">Hành động</div>
@@ -1076,7 +1114,7 @@ td.right { text-align:right; font-weight:500; }
     <h3 class="block-title">Tooltip (hover)</h3>
     <div class="block-content">
       <div class="flex-wrap">
-        <div class="tip"><button class="btn btn-outline btn-icon">📋</button><span class="tip-text">Sao chép</span></div>
+        <div class="tip"><button class="btn btn-outline btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button><span class="tip-text">Sao chép</span></div>
         <div class="tip"><button class="btn btn-outline btn-icon">✉</button><span class="tip-text">Gửi email</span></div>
         <div class="tip"><button class="btn btn-outline btn-icon">⚙</button><span class="tip-text">Cài đặt</span></div>
       </div>
@@ -1156,9 +1194,10 @@ td.right { text-align:right; font-weight:500; }
   <div class="block">
     <h3 class="block-title">Toast / Notification</h3>
     <div class="block-content space-y">
-      <div class="toast-demo"><span class="toast-icon">✅</span><span class="toast-msg">Đã lưu thay đổi thành công</span><span class="toast-close">✕</span></div>
-      <div class="toast-demo" style="border-color:#fecaca"><span class="toast-icon">❌</span><span class="toast-msg" style="color:var(--destructive)">Lỗi khi xóa đơn hàng</span><span class="toast-close">✕</span></div>
-      <div class="toast-demo" style="border-color:#bfdbfe"><span class="toast-icon">ℹ️</span><span class="toast-msg">Đã copy link Portal cho khách</span><span class="toast-close">✕</span></div>
+      <div class="toast-demo" style="border-color:#a7f3d0"><span class="toast-icon" style="color:#059669"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><span class="toast-msg">Đã lưu thay đổi thành công</span><span class="toast-close">✕</span></div>
+      <div class="toast-demo" style="border-color:#fecaca"><span class="toast-icon" style="color:#dc2626"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span><span class="toast-msg" style="color:var(--destructive)">Lỗi khi xóa đơn hàng</span><span class="toast-close">✕</span></div>
+      <div class="toast-demo" style="border-color:#bfdbfe"><span class="toast-icon" style="color:#2563eb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span><span class="toast-msg">Đã copy link Portal cho khách</span><span class="toast-close">✕</span></div>
+      <div class="toast-demo" style="border-color:#fde68a"><span class="toast-icon" style="color:#d97706"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="toast-msg">Phiên làm việc sắp hết hạn</span><span class="toast-close">✕</span></div>
     </div>
   </div>
 
@@ -1166,7 +1205,7 @@ td.right { text-align:right; font-weight:500; }
     <h3 class="block-title">Empty State</h3>
     <div class="block-content">
       <div class="empty-state">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
         <div class="empty-title">Chưa có đơn hàng nào</div>
         <div class="empty-desc">Tạo đơn hàng đầu tiên để bắt đầu quản lý</div>
         <button class="btn btn-default btn-sm">＋ Tạo đơn hàng</button>
@@ -1257,6 +1296,26 @@ document.addEventListener('click', function(e) {
     if (!el.contains(e.target)) el.classList.remove('open');
   });
 });
+
+// Scroll-spy for TOC sidebar 
+var tocLinks = document.querySelectorAll('.toc-sidebar a');
+var sections = [];
+tocLinks.forEach(function(link) {
+  var id = link.getAttribute('href').slice(1);
+  var el = document.getElementById(id);
+  if (el) sections.push({ id: id, el: el, link: link });
+});
+function updateToc() {
+  var scrollY = window.scrollY + 100;
+  var active = sections[0];
+  sections.forEach(function(s) {
+    if (s.el.offsetTop <= scrollY) active = s;
+  });
+  tocLinks.forEach(function(l) { l.classList.remove('active'); });
+  if (active) active.link.classList.add('active');
+}
+window.addEventListener('scroll', updateToc);
+updateToc();
 </script>
 
 </body>
