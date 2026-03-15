@@ -27,7 +27,7 @@ import {
     Layout,
     Contact,
     Headphones,
-    LayoutDashboard
+    Briefcase
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -140,7 +140,7 @@ export function Sidebar({ className, isMobile }: { className?: string; isMobile?
                                     isCollapsed && 'justify-center px-0'
                                 )}
                             >
-                                <LayoutDashboard className={cn(
+                                <Briefcase className={cn(
                                     "h-4 w-4 shrink-0 transition-colors",
                                     pathname === '/workspace' || pathname.startsWith('/workspace/') ? "text-zinc-950" : "opacity-70 group-hover:opacity-100"
                                 )} />

@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { getMyTodayOverview, getMyWeekOverview, getRevenueProgress, getWorkspaceAlerts, getMonthSummary } from '@/lib/supabase/services/workspace-service'
 import TodayTaskList from '@/components/workspace/TodayTaskList'
@@ -6,7 +7,7 @@ import WeeklyTimeline from '@/components/workspace/WeeklyTimeline'
 import RevenueProgressCard from '@/components/workspace/RevenueProgressCard'
 import AlertPanel from '@/components/workspace/AlertPanel'
 import MonthSummaryCard from '@/components/workspace/MonthSummaryCard'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ListTodo, Kanban, Calendar, GanttChart, ArrowRight } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,6 +59,32 @@ export default async function WorkspacePage() {
                         )}
                     </div>
                 )}
+            </div>
+
+            {/* Quick Access */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                    { title: 'Tasks', desc: 'Danh sách công việc', href: '/workspace/tasks', icon: ListTodo, color: 'bg-blue-50 text-blue-600 group-hover:bg-blue-100' },
+                    { title: 'Board', desc: 'Kanban board', href: '/workspace/board', icon: Kanban, color: 'bg-purple-50 text-purple-600 group-hover:bg-purple-100' },
+                    { title: 'Calendar', desc: 'Lịch deadline', href: '/workspace/calendar', icon: Calendar, color: 'bg-amber-50 text-amber-600 group-hover:bg-amber-100' },
+                    { title: 'Timeline', desc: 'Gantt chart', href: '/workspace/timeline', icon: GanttChart, color: 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100' },
+                ].map((item) => {
+                    const Icon = item.icon
+                    return (
+                        <Link key={item.href} href={item.href}>
+                            <div className="group flex items-center gap-3 p-3 rounded-xl border bg-background hover:shadow-sm transition-all cursor-pointer">
+                                <div className={`h-9 w-9 rounded-lg flex items-center justify-center transition-colors ${item.color}`}>
+                                    <Icon className="h-4.5 w-4.5" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold">{item.title}</p>
+                                    <p className="text-[11px] text-muted-foreground truncate">{item.desc}</p>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                        </Link>
+                    )
+                })}
             </div>
 
             {/* Top row: Revenue + Month Summary */}
