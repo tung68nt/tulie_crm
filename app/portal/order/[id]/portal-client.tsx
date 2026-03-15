@@ -244,7 +244,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     const [saved, setSaved] = useState(false)
 
     useEffect(() => {
-        fetch('https://provinces.open-api.vn/api/p/')
+        fetch('https://provinces.open-api.vn/api/v2/p/')
             .then(r => r.json())
             .then(setProvinces)
             .catch(() => {})
@@ -256,7 +256,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
         setDistricts([])
         setWards([])
         try {
-            const res = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+            const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
             const data = await res.json()
             setDistricts(data.districts || [])
         } catch { setDistricts([]) }
@@ -267,7 +267,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
         setForm(f => ({ ...f, district: dist?.name || '', ward: '' }))
         setWards([])
         try {
-            const res = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+            const res = await fetch(`https://provinces.open-api.vn/api/v2/d/${code}?depth=2`)
             const data = await res.json()
             setWards(data.wards || [])
         } catch { setWards([]) }
