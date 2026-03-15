@@ -524,7 +524,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                         variant="outline"
                                         className="h-10 rounded-lg font-bold text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
                                         onClick={() => {
-                                            const portalUrl = `${window.location.origin}/portal/order/${order.id}`
+                                            const portalUrl = `${window.location.origin}/portal/order/${order.public_token}`
                                             const amount = new Intl.NumberFormat('vi-VN').format(remainingAmount)
                                             const msg = [
                                                 `💳 THÔNG TIN CHUYỂN KHOẢN`,

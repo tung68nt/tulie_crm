@@ -298,7 +298,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={() => {
-                                    const portalUrl = `${window.location.origin}/portal/order/${order.id}`
+                                    const portalUrl = `${window.location.origin}/portal/order/${order.public_token}`
                                     navigator.clipboard.writeText(portalUrl)
                                     toast.success('Đã copy link Portal gửi khách!')
                                 }}
@@ -307,7 +307,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                                 <Copy className="mr-2 h-4 w-4" /> Copy Portal Link
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild className="rounded-lg">
-                                <Link href={`/portal/order/${order.id}`} target="_blank">
+                                <Link href={`/portal/order/${order.public_token}`} target="_blank">
                                     <ExternalLink className="mr-2 h-4 w-4" /> Xem Portal (Khách)
                                 </Link>
                             </DropdownMenuItem>

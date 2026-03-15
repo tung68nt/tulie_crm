@@ -68,7 +68,7 @@ const DIGITAL_FLOW: RetailOrderStatus[] = ['pending', 'editing', 'edit_done', 'c
 const PHYSICAL_FLOW: RetailOrderStatus[] = ['pending', 'editing', 'edit_done', 'waiting_ship', 'shipping', 'completed']
 
 export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
-    const portalUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/portal/order/${order.id}`
+    const portalUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/portal/order/${order.public_token}`
     const router = useRouter()
     const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
 
@@ -164,7 +164,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     asChild
                     className="h-9 rounded-lg font-medium text-xs bg-zinc-100 text-zinc-700 hover:bg-primary/5 hover:text-primary transition-all border border-zinc-200/50"
                 >
-                    <Link href={`/portal/order/${order.id}`} target="_blank">
+                    <Link href={`/portal/order/${order.public_token}`} target="_blank">
                         <ExternalLink className="mr-2 h-3.5 w-3.5" />
                         Gửi portal cho khách
                     </Link>
