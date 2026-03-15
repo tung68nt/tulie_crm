@@ -1,5 +1,36 @@
 import { CustomerStatus, QuotationStatus, ContractStatus, InvoiceStatus, DealStatus, ProjectStatus, SupportTicketStatus, SupportTicketPriority } from '@/types'
 
+// ═══════════════════════════════════════════════════════════════
+// Unified Semantic Status Color System
+// Matches components.html — See @doc/guides/ui-guidelines
+//
+// Semantic palette:
+//   ghost    = draft, pending, initial
+//   outline  = sent, waiting
+//   blue     = active, in-progress
+//   sky      = acknowledged, intermediate
+//   emerald  = success, completed, paid, signed
+//   amber    = warning, expired, paused, review
+//   danger   = urgent, overdue, rejected
+//   violet   = special, premium, VIP, converted
+//   orange   = shipping, delivery
+//   cancelled = inactive, churned (line-through)
+// ═══════════════════════════════════════════════════════════════
+
+// — Reusable color tokens —
+const C = {
+    ghost:     'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
+    outline:   'bg-white text-zinc-600 border border-zinc-200 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-700',
+    blue:      'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    sky:       'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
+    emerald:   'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    amber:     'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+    danger:    'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
+    violet:    'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+    orange:    'bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
+    cancelled: 'bg-zinc-100 text-zinc-400 line-through dark:bg-zinc-800 dark:text-zinc-500',
+} as const
+
 // Customer Status
 export const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
     lead: 'Tiềm năng',
@@ -10,11 +41,11 @@ export const CUSTOMER_STATUS_LABELS: Record<CustomerStatus, string> = {
 }
 
 export const CUSTOMER_STATUS_COLORS: Record<CustomerStatus, string> = {
-    lead: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
-    prospect: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200',
-    customer: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-950',
-    vip: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold',
-    churned: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
+    lead: C.ghost,
+    prospect: C.blue,
+    customer: C.emerald,
+    vip: C.violet,
+    churned: C.cancelled,
 }
 
 // Quotation Status
@@ -29,13 +60,13 @@ export const QUOTATION_STATUS_LABELS: Record<QuotationStatus, string> = {
 }
 
 export const QUOTATION_STATUS_COLORS: Record<QuotationStatus, string> = {
-    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
-    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    viewed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    accepted: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
-    rejected: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
-    expired: 'bg-zinc-100 text-zinc-400',
-    converted: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900',
+    draft: C.ghost,
+    sent: C.outline,
+    viewed: C.blue,
+    accepted: C.emerald,
+    rejected: C.danger,
+    expired: C.amber,
+    converted: C.violet,
 }
 
 // Contract Status
@@ -51,14 +82,14 @@ export const CONTRACT_STATUS_LABELS: Record<ContractStatus, string> = {
 }
 
 export const CONTRACT_STATUS_COLORS: Record<ContractStatus, string> = {
-    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
-    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    viewed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    signed: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
-    active: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
-    completed: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
-    cancelled: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
-    suspended: 'bg-zinc-100 text-zinc-600',
+    draft: C.ghost,
+    sent: C.outline,
+    viewed: C.sky,
+    signed: C.emerald,
+    active: C.blue,
+    completed: C.emerald,
+    cancelled: C.cancelled,
+    suspended: C.amber,
 }
 
 // Invoice Status
@@ -72,12 +103,12 @@ export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
 }
 
 export const INVOICE_STATUS_COLORS: Record<InvoiceStatus, string> = {
-    draft: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
-    sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    paid: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
-    partial: 'bg-zinc-100 text-zinc-800 border-zinc-200',
-    overdue: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-bold',
-    cancelled: 'bg-zinc-100 text-zinc-400 line-through opacity-50',
+    draft: C.ghost,
+    sent: C.outline,
+    paid: C.emerald,
+    partial: C.amber,
+    overdue: C.danger,
+    cancelled: C.cancelled,
 }
 
 // Deal Status
@@ -90,19 +121,19 @@ export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
 }
 
 export const DEAL_CHART_COLORS: Record<DealStatus, string> = {
-    new: '#d4d4d8',          // zinc-300
-    briefing: '#a1a1aa',     // zinc-400
-    proposal_sent: '#71717a', // zinc-500
-    closed_won: '#18181b',    // zinc-900
-    closed_lost: '#f4f4f5'    // zinc-100
+    new: '#a1a1aa',          // zinc-400
+    briefing: '#3b82f6',     // blue-500
+    proposal_sent: '#0ea5e9', // sky-500
+    closed_won: '#10b981',    // emerald-500
+    closed_lost: '#d4d4d8'    // zinc-300
 }
 
 export const DEAL_STATUS_COLORS: Record<DealStatus, string> = {
-    new: 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400',
-    briefing: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    proposal_sent: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    closed_won: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
-    closed_lost: 'bg-zinc-100 text-zinc-400',
+    new: C.ghost,
+    briefing: C.blue,
+    proposal_sent: C.sky,
+    closed_won: C.emerald,
+    closed_lost: C.cancelled,
 }
 
 // Project Status
@@ -114,10 +145,10 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
 }
 
 export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-    todo: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
-    in_progress: 'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-200 font-medium',
-    review: 'bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900',
-    completed: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950 font-bold',
+    todo: C.ghost,
+    in_progress: C.blue,
+    review: C.amber,
+    completed: C.emerald,
 }
 
 // Product Status (Boolean mapping)
@@ -127,8 +158,8 @@ export const PRODUCT_STATUS_LABELS = {
 }
 
 export const PRODUCT_STATUS_COLORS = {
-    active: 'bg-zinc-950 text-white dark:bg-zinc-50 dark:text-zinc-950 font-bold',
-    inactive: 'bg-zinc-100 text-zinc-400 border border-zinc-200',
+    active: C.emerald,
+    inactive: C.ghost,
 }
 
 // Brand Labels
@@ -139,9 +170,9 @@ export const BRAND_LABELS = {
 }
 
 export const BRAND_COLORS = {
-    agency: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold',
-    studio: 'bg-zinc-500 text-white dark:bg-zinc-400 dark:text-zinc-900',
-    academy: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-medium',
+    agency: 'bg-zinc-100 text-zinc-700 border border-zinc-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600',
+    studio: 'bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-800',
+    academy: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800',
 }
 
 // Ticket Status
@@ -154,11 +185,11 @@ export const TICKET_STATUS_LABELS: Record<SupportTicketStatus, string> = {
 }
 
 export const TICKET_STATUS_COLORS: Record<SupportTicketStatus, string> = {
-    open: 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 font-bold',
-    in_progress: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200 dark:text-zinc-900',
-    waiting: 'bg-zinc-100 text-zinc-600 border border-zinc-200',
-    resolved: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300',
-    closed: 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500',
+    open: C.blue,
+    in_progress: C.blue,
+    waiting: C.amber,
+    resolved: C.emerald,
+    closed: C.ghost,
 }
 
 export const TICKET_PRIORITY_LABELS: Record<SupportTicketPriority, string> = {
@@ -169,10 +200,10 @@ export const TICKET_PRIORITY_LABELS: Record<SupportTicketPriority, string> = {
 }
 
 export const TICKET_PRIORITY_COLORS: Record<SupportTicketPriority, string> = {
-    low: 'bg-zinc-100 text-zinc-500',
-    medium: 'bg-zinc-100 text-zinc-800',
-    high: 'bg-zinc-100 text-zinc-900 border border-zinc-300 font-medium',
-    urgent: 'bg-zinc-100 text-zinc-900 border border-zinc-900 font-bold',
+    low: C.ghost,
+    medium: C.outline,
+    high: C.amber,
+    urgent: C.danger,
 }
 
 export const TICKET_CATEGORY_LABELS: Record<string, string> = {
