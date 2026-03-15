@@ -234,15 +234,17 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
         recipient_phone: existing.recipient_phone || order.customer_phone || '',
         address: existing.address || '',
         ward: existing.ward || '',
+        district: existing.district || '',
         province: existing.province || '',
     })
     const [provinces, setProvinces] = useState<any[]>([])
+    const [districts, setDistricts] = useState<any[]>([])
     const [wards, setWards] = useState<any[]>([])
     const [isSaving, setIsSaving] = useState(false)
     const [saved, setSaved] = useState(false)
 
     useEffect(() => {
-        fetch('https://provinces.open-api.vn/api/v2/p/')
+        fetch('https://provinces.open-api.vn/api/p/')
             .then(r => r.json())
             .then(setProvinces)
             .catch(() => {})
@@ -250,9 +252,22 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
 
     const handleProvinceChange = async (code: string) => {
         const prov = provinces.find((p: any) => String(p.code) === code)
-        setForm(f => ({ ...f, province: prov?.name || '', ward: '' }))
+        setForm(f => ({ ...f, province: prov?.name || '', district: '', ward: '' }))
+        setDistricts([])
+        setWards([])
         try {
-            const res = await fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
+            const res = await fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+            const data = await res.json()
+            setDistricts(data.districts || [])
+        } catch { setDistricts([]) }
+    }
+
+    const handleDistrictChange = async (code: string) => {
+        const dist = districts.find((d: any) => String(d.code) === code)
+        setForm(f => ({ ...f, district: dist?.name || '', ward: '' }))
+        setWards([])
+        try {
+            const res = await fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
             const data = await res.json()
             setWards(data.wards || [])
         } catch { setWards([]) }
@@ -285,6 +300,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     }
 
     const selectedProvinceCode = provinces.find((p: any) => p.name === form.province)?.code
+    const selectedDistrictCode = districts.find((d: any) => d.name === form.district)?.code
     const selectedWardCode = wards.find((w: any) => w.name === form.ward)?.code
 
     return (
@@ -327,16 +343,30 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
                     </div>
                 </div>
 
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-zinc-600">Tỉnh / Thành phố</Label>
+                    <Select value={selectedProvinceCode ? String(selectedProvinceCode) : undefined} onValueChange={handleProvinceChange}>
+                        <SelectTrigger className="h-10 text-sm w-full">
+                            <SelectValue placeholder="Chọn tỉnh/TP" />
+                        </SelectTrigger>
+                        <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
+                            {provinces.map((p: any) => (
+                                <SelectItem key={p.code} value={String(p.code)}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-zinc-600">Tỉnh / Thành phố</Label>
-                        <Select value={selectedProvinceCode ? String(selectedProvinceCode) : undefined} onValueChange={handleProvinceChange}>
+                        <Label className="text-xs font-semibold text-zinc-600">Quận / Huyện</Label>
+                        <Select value={selectedDistrictCode ? String(selectedDistrictCode) : undefined} onValueChange={handleDistrictChange} disabled={districts.length === 0}>
                             <SelectTrigger className="h-10 text-sm w-full">
-                                <SelectValue placeholder="Chọn tỉnh/TP" />
+                                <SelectValue placeholder="Chọn quận/huyện" />
                             </SelectTrigger>
                             <SelectContent position="popper" className="max-h-[280px] w-[var(--radix-select-trigger-width)]">
-                                {provinces.map((p: any) => (
-                                    <SelectItem key={p.code} value={String(p.code)}>{p.name}</SelectItem>
+                                {districts.map((d: any) => (
+                                    <SelectItem key={d.code} value={String(d.code)}>{d.name}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
