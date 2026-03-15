@@ -65,28 +65,33 @@ interface PortalContentProps {
     token: string
 }
 
-const STATUS_MAP: Record<string, { label: string; color: string }> = {
-    'pending': { label: 'Chờ xử lý', color: 'bg-zinc-100 text-zinc-500' },
-    'in_progress': { label: 'Đang thực hiện', color: 'bg-zinc-900 text-white' },
-    'delivered': { label: 'Đã bàn giao', color: 'bg-zinc-200 text-zinc-800' },
-    'accepted': { label: 'Đã nghiệm thu', color: 'bg-zinc-900 text-white' },
-    'rejected': { label: 'Từ chối', color: 'bg-zinc-100 text-zinc-500' },
-    'draft': { label: 'Nháp', color: 'bg-zinc-100 text-zinc-400' },
-    'sent': { label: 'Đã gửi', color: 'bg-zinc-200 text-zinc-700' },
-    'viewed': { label: 'Đã xem', color: 'bg-zinc-100 text-zinc-500' },
-    'active': { label: 'Đang triển khai', color: 'bg-zinc-900 text-white' },
-    'completed': { label: 'Hoàn thành', color: 'bg-zinc-900 text-white' },
-    'signed': { label: 'Đã ký', color: 'bg-zinc-200 text-zinc-800' },
-    'paid': { label: 'Đã thanh toán', color: 'bg-zinc-900 text-white' },
-    'todo': { label: 'Cần làm', color: 'bg-zinc-100 text-zinc-500' },
-    'blocked': { label: 'Bị chặn', color: 'bg-zinc-100 text-zinc-500' },
-    'upcoming': { label: 'Sắp tới', color: 'bg-zinc-100 text-zinc-400' },
-    'overdue': { label: 'Trễ hạn', color: 'bg-zinc-200 text-zinc-700' },
+const STATUS_MAP: Record<string, { label: string; bg: string; text: string; dot: string; border: string }> = {
+    'pending': { label: 'Chờ xử lý', bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' },
+    'in_progress': { label: 'Đang thực hiện', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500', border: 'border-blue-200' },
+    'delivered': { label: 'Đã bàn giao', bg: 'bg-sky-50', text: 'text-sky-700', dot: 'bg-sky-500', border: 'border-sky-200' },
+    'accepted': { label: 'Đã nghiệm thu', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', border: 'border-emerald-200' },
+    'rejected': { label: 'Từ chối', bg: 'bg-rose-50', text: 'text-rose-700', dot: 'bg-rose-500', border: 'border-rose-200' },
+    'draft': { label: 'Nháp', bg: 'bg-zinc-50', text: 'text-zinc-400', dot: 'bg-zinc-300', border: 'border-zinc-200' },
+    'sent': { label: 'Đã gửi', bg: 'bg-white', text: 'text-zinc-600', dot: 'bg-zinc-500', border: 'border-zinc-200' },
+    'viewed': { label: 'Đã xem', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500', border: 'border-blue-200' },
+    'active': { label: 'Đang triển khai', bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500', border: 'border-blue-200' },
+    'completed': { label: 'Hoàn thành', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', border: 'border-emerald-200' },
+    'signed': { label: 'Đã ký', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', border: 'border-emerald-200' },
+    'paid': { label: 'Đã thanh toán', bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', border: 'border-emerald-200' },
+    'todo': { label: 'Cần làm', bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' },
+    'blocked': { label: 'Bị chặn', bg: 'bg-rose-50', text: 'text-rose-700', dot: 'bg-rose-500', border: 'border-rose-200' },
+    'upcoming': { label: 'Sắp tới', bg: 'bg-zinc-50', text: 'text-zinc-400', dot: 'bg-zinc-300', border: 'border-zinc-200' },
+    'overdue': { label: 'Trễ hạn', bg: 'bg-rose-50', text: 'text-rose-700', dot: 'bg-rose-500', border: 'border-rose-200' },
 }
 
 function StatusBadge({ status }: { status: string }) {
-    const s = STATUS_MAP[status] || { label: status, color: 'bg-zinc-100 text-muted-foreground border-zinc-200' }
-    return <Badge className={cn("text-xs font-semibold border-none px-3 py-1.5 rounded-lg", s.color)}>{s.label}</Badge>
+    const s = STATUS_MAP[status] || { label: status, bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' }
+    return (
+        <div className={cn("flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border", s.bg, s.border)}>
+            <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", s.dot)} />
+            <span className={cn("text-[11px] font-normal", s.text)}>{s.label}</span>
+        </div>
+    )
 }
 
 export default function PortalContent({ data, token }: PortalContentProps) {
@@ -212,9 +217,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 
                     <div className="flex flex-col items-center md:items-end">
                         <h2 className="text-2xl font-bold text-zinc-950 tracking-tighter">{customer?.company_name || customer?.full_name || 'Khách hàng'}</h2>
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-zinc-100/50 rounded-full border border-zinc-200 mt-3">
-                            <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-zinc-900" : "bg-zinc-400")} />
-                            <span className="text-xs font-semibold text-zinc-600">{projectStatusLabel}</span>
+                        <div className={cn(
+                            "flex items-center gap-1.5 px-3 py-1 rounded-full border mt-3",
+                            hasContracts ? "bg-blue-50 border-blue-200" : "bg-zinc-50 border-zinc-200"
+                        )}>
+                            <span className={cn("w-1.5 h-1.5 rounded-full", hasContracts ? "bg-blue-500" : "bg-zinc-400")} />
+                            <span className={cn("text-[11px] font-normal", hasContracts ? "text-blue-700" : "text-zinc-500")}>{projectStatusLabel}</span>
                         </div>
                     </div>
                 </div>
@@ -837,13 +845,14 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                 <div className="flex items-center gap-2.5">
                                     <span className="text-xs font-bold text-zinc-400 tabular-nums">{completedCount}/{totalCount}</span>
                                     {isAllDone ? (
-                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-900 text-white rounded-full text-xs font-bold uppercase tracking-wide">
-                                            <Check className="w-3 h-3" />
-                                            Đủ hồ sơ
+                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-50 rounded-full border border-emerald-200">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                            <span className="text-[11px] font-normal text-emerald-700">Đủ hồ sơ</span>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-1 px-2 py-0.5 bg-zinc-100 text-zinc-500 rounded-full border border-zinc-200 text-xs font-bold uppercase tracking-wide">
-                                            Đang xử lý
+                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 rounded-full border border-blue-200">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                            <span className="text-[11px] font-normal text-blue-700">Đang xử lý</span>
                                         </div>
                                     )}
                                 </div>
