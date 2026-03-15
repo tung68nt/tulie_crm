@@ -228,12 +228,12 @@ export default function OrderForm({ products }: { products: Product[] }) {
     setIsSubmitting(false)
 
     if (res.success) {
-      toast.success('Đặt đơn thành công!', { description: 'Chúng tôi sẽ sớm liên hệ với bạn.' })
-      if (res.token) {
-        router.push(`/portal/order/${res.token}`)
-      } else {
-        router.push('/')
-      }
+      toast.success('Đặt đơn thành công!', { description: 'Đang chuyển đến trang theo dõi đơn hàng...' })
+      // Redirect to success page which handles portal loading with retries
+      const params = new URLSearchParams()
+      if (res.token) params.set('token', res.token)
+      if (res.orderId) params.set('order', res.orderId)
+      router.push(`/anhthe/success?${params.toString()}`)
     } else {
       toast.error('Lỗi đặt đơn', { description: res.error })
     }
