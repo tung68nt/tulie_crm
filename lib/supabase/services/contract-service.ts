@@ -3,7 +3,7 @@
 import { createClient } from '../server'
 import { Contract, ContractMilestone } from '@/types'
 import { revalidatePath } from 'next/cache'
-import { logActivity } from './activity-service'
+import { logActivity, logDestructiveAction } from './activity-service'
 
 export async function getContracts(customerId?: string, type?: 'contract' | 'order', brand?: string) {
     try {
@@ -161,6 +161,14 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
 
         revalidatePath('/contracts')
         revalidatePath(`/contracts/${id}`)
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'contract',
+            entity_id: id,
+            description: `Cập nhật hợp đồng: ${contract.title || id}`
+        })
+
         return true
     } catch (err: any) {
         console.error('Fatal error in updateContract:', err)
@@ -182,6 +190,7 @@ export async function deleteContract(id: string) {
         }
 
         revalidatePath('/contracts')
+        await logDestructiveAction('contract', id, 'delete')
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteContract:', err)
@@ -203,6 +212,7 @@ export async function deleteContracts(ids: string[]) {
         }
 
         revalidatePath('/contracts')
+        await logDestructiveAction('contract', ids[0], 'bulk_delete', { affected_count: ids.length })
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteContracts:', err)

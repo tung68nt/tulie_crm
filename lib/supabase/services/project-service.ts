@@ -3,6 +3,7 @@
 import { createClient } from '../server'
 import { Project, ProjectStatus } from '@/types'
 import { revalidatePath } from 'next/cache'
+import { logActivity, logDestructiveAction } from './activity-service'
 
 export async function getProjects(customerId?: string) {
     try {
@@ -78,6 +79,14 @@ export async function createProject(project: Partial<Project>) {
         }
 
         revalidatePath('/projects')
+
+        await logActivity({
+            action: 'create',
+            entity_type: 'project',
+            entity_id: data.id,
+            description: `Tạo dự án mới: ${data.title}`
+        })
+
         return data as Project
     } catch (err) {
         console.error('Service error creating project:', err)
@@ -100,6 +109,14 @@ export async function updateProject(id: string, project: Partial<Project>) {
 
         revalidatePath('/projects')
         revalidatePath(`/projects/${id}`)
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'project',
+            entity_id: id,
+            description: `Cập nhật dự án: ${project.title || id}`
+        })
+
         return true
     } catch (err) {
         console.error('Service error updating project:', err)
@@ -126,6 +143,7 @@ export async function deleteProject(id: string) {
         }
 
         revalidatePath('/projects')
+        await logDestructiveAction('project', id, 'delete')
         return true
     } catch (err) {
         console.error('Service error deleting project:', err)

@@ -3,7 +3,7 @@
 import { createClient } from '../server'
 import { Deal, DealStatus } from '@/types'
 import { revalidatePath } from 'next/cache'
-import { logActivity } from './activity-service'
+import { logActivity, logDestructiveAction } from './activity-service'
 
 export async function getDeals(customerId?: string, brand?: string) {
     try {
@@ -142,6 +142,7 @@ export async function deleteDeal(id: string) {
         }
 
         revalidatePath('/deals')
+        await logDestructiveAction('deal', id, 'delete')
         return true
     } catch (err) {
         console.error('Service error deleting deal:', err)

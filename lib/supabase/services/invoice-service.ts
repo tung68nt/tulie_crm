@@ -8,6 +8,7 @@ import {
     formatNewInvoice,
     formatPaymentReceived
 } from './telegram-service'
+import { logActivity, logDestructiveAction } from './activity-service'
 
 export async function getInvoices() {
     try {
@@ -87,6 +88,14 @@ export async function createInvoice(invoice: Partial<Invoice>, items: Partial<In
     }
 
     revalidatePath('/invoices')
+
+    await logActivity({
+        action: 'create',
+        entity_type: 'invoice',
+        entity_id: invoiceData.id,
+        description: `Tạo hóa đơn mới: ${invoice.invoice_number || invoiceData.id}`
+    })
+
     return invoiceData
 }
 
@@ -131,6 +140,15 @@ export async function recordInvoicePayment(id: string, amount: number, notes?: s
 
         revalidatePath('/invoices')
         revalidatePath(`/invoices/${id}`)
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'invoice',
+            entity_id: id,
+            description: `Ghi nhận thanh toán hóa đơn: ${invoice.invoice_number || id} — ${amount.toLocaleString()}đ`,
+            metadata: { new_values: { amount, status, paid_amount: newPaidAmount } }
+        })
+
         return true
     } catch (err) {
         console.error('Error recording invoice payment:', err)
@@ -152,6 +170,7 @@ export async function deleteInvoice(id: string) {
         }
 
         revalidatePath('/invoices')
+        await logDestructiveAction('invoice', id, 'delete')
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteInvoice:', err)
@@ -173,6 +192,7 @@ export async function deleteInvoices(ids: string[]) {
         }
 
         revalidatePath('/invoices')
+        await logDestructiveAction('invoice', ids[0], 'bulk_delete', { affected_count: ids.length })
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteInvoices:', err)

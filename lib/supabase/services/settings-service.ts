@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '../server'
+import { logActivity } from './activity-service'
 
 export async function getProductCategories() {
     try {
@@ -80,6 +81,14 @@ export async function updateSystemSetting(key: string, value: any) {
             )
 
         if (error) throw error
+
+        await logActivity({
+            action: 'update',
+            entity_type: 'settings',
+            entity_id: key,
+            description: `Cập nhật cài đặt hệ thống: ${key}`
+        })
+
         return true
     } catch (err) {
         console.error('Error updating system setting:', err)

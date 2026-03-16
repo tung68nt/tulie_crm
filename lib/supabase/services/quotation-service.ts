@@ -8,7 +8,7 @@ import {
     formatQuotationViewed,
     formatQuotationAccepted
 } from './telegram-service'
-import { logActivity } from './activity-service'
+import { logActivity, logDestructiveAction } from './activity-service'
 import { getDealById } from './deal-service'
 import { getCustomerById } from './customer-service'
 
@@ -389,6 +389,7 @@ export async function deleteQuotation(id: string) {
         }
 
         revalidatePath('/quotations')
+        await logDestructiveAction('quotation', id, 'delete')
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteQuotation:', err)
@@ -410,6 +411,7 @@ export async function deleteQuotations(ids: string[]) {
         }
 
         revalidatePath('/quotations')
+        await logDestructiveAction('quotation', ids[0], 'bulk_delete', { affected_count: ids.length })
         return true
     } catch (err: any) {
         console.error('Fatal error in deleteQuotations:', err)
