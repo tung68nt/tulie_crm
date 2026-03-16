@@ -409,7 +409,7 @@ export default function QuotationDetailPage() {
                                                                         )}
                                                                     </div>
                                                                     {item.description && (
-                                                                        <p className="text-xs text-muted-foreground leading-relaxed mt-1 whitespace-pre-line">
+                                                                        <p className={cn("text-xs text-muted-foreground leading-relaxed mt-1 whitespace-pre-line", sectionName && "pl-8")}>
                                                                             {item.description}
                                                                         </p>
                                                                     )}

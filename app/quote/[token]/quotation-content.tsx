@@ -540,7 +540,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             isSelected && "hover:bg-slate-50/50"
                                                         )}>
                                                             <td className="w-10 text-center py-2 align-top print:hidden">
-                                                                <div className="flex items-center justify-center pt-0.5">
+                                                                <div className="flex items-center justify-center">
                                                                     <Checkbox
                                                                         checked={isSelected}
                                                                         onCheckedChange={() => toggleItem(item.id, item.alternative_group)}
