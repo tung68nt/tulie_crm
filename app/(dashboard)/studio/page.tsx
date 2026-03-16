@@ -17,7 +17,7 @@ export default async function StudioPage() {
                         <Camera className="h-6 w-6 text-zinc-900" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-zinc-950 tracking-tight italic">Đơn hàng Studio</h1>
+                        <h1 className="text-2xl font-bold tracking-tight">Đơn hàng Studio</h1>
                         <p className="text-sm font-medium text-muted-foreground mt-1">Quản lý đơn hàng chụp ảnh cá nhân & Studio.</p>
                     </div>
                 </div>
@@ -47,7 +47,7 @@ async function OrderListWrapper() {
             <div className="grid gap-4 md:grid-cols-3">
                 <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Đang thực hiện
                         </CardTitle>
                         <Clock className="h-4 w-4 text-muted-foreground" />
@@ -58,7 +58,7 @@ async function OrderListWrapper() {
                 </Card>
                 <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Đã hoàn thành
                         </CardTitle>
                         <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -69,7 +69,7 @@ async function OrderListWrapper() {
                 </Card>
                 <Card className="rounded-xl border-border/50 shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-bold text-muted-foreground tracking-tight uppercase">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                             Tổng giá trị
                         </CardTitle>
                         <ShoppingCart className="h-4 w-4 text-muted-foreground" />

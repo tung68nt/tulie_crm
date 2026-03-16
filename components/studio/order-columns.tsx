@@ -2,10 +2,10 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { RetailOrder } from '@/types'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { formatCurrency } from '@/lib/utils/format'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { MoreHorizontal, ExternalLink, QrCode, Phone, Mail, Link as LinkIcon, Camera, Copy, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -41,15 +41,6 @@ const STATUS_LABELS: Record<string, string> = {
     cancelled: 'Đã hủy',
 }
 
-const STATUS_VARIANTS: Record<string, 'default' | 'secondary' | 'outline' | 'destructive'> = {
-    pending: 'secondary',
-    editing: 'outline',
-    edit_done: 'default',
-    waiting_ship: 'secondary',
-    shipping: 'outline',
-    completed: 'default',
-    cancelled: 'destructive',
-}
 
 const BRAND_LABELS: Record<string, string> = {
     agency: 'Agency',
@@ -92,7 +83,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
                     >
                         {order.order_number}
                     </Link>
-                    <span className="text-[10px] text-muted-foreground">STT: #{order.stt}</span>
+                    <span className="text-[11px] text-muted-foreground">STT: #{order.stt}</span>
                 </div>
             )
         },
@@ -105,9 +96,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
         cell: ({ row }) => {
             const brand = row.original.brand || 'studio'
             return (
-                <Badge variant="secondary" className="text-[10px]">
-                    {BRAND_LABELS[brand] || brand}
-                </Badge>
+                <StatusBadge status={brand} entityType="brand" />
             )
         },
     },
@@ -121,7 +110,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
             return (
                 <div className="flex flex-col gap-0.5">
                     <span className="font-medium text-sm">{order.customer_name}</span>
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                         {order.customer_phone && (
                             <div className="flex items-center gap-1">
                                 <Phone className="h-3 w-3" />
@@ -157,13 +146,8 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
 
             return (
                 <div className="flex flex-col gap-0.5">
-                    <Badge
-                        variant={status === 'paid' ? 'default' : status === 'partial' ? 'secondary' : 'outline'}
-                        className="text-[10px] w-fit"
-                    >
-                        {status === 'paid' ? 'Đã xong' : status === 'partial' ? 'Một phần' : 'Chưa cọc'}
-                    </Badge>
-                    <span className="text-[10px] text-muted-foreground">Đã thu: {formatCurrency(paid)}</span>
+                    <StatusBadge status={status || 'unpaid'} entityType="retail_payment" />
+                    <span className="text-[11px] text-muted-foreground">Đã thu: {formatCurrency(paid)}</span>
                 </div>
             )
         },
@@ -176,9 +160,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
         cell: ({ row }) => {
             const status = row.original.order_status
             return (
-                <Badge variant={STATUS_VARIANTS[status] || 'secondary'}>
-                    {STATUS_LABELS[status] || status}
-                </Badge>
+                <StatusBadge status={status} entityType="retail_order" />
             )
         },
     },

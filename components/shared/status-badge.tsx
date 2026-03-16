@@ -21,9 +21,13 @@ import {
     TICKET_STATUS_COLORS,
     TICKET_PRIORITY_LABELS,
     TICKET_PRIORITY_COLORS,
+    RETAIL_ORDER_STATUS_LABELS,
+    RETAIL_ORDER_STATUS_COLORS,
+    RETAIL_PAYMENT_STATUS_LABELS,
+    RETAIL_PAYMENT_STATUS_COLORS,
 } from '@/lib/constants/status'
 
-type EntityType = 'customer' | 'quotation' | 'contract' | 'invoice' | 'deal' | 'project' | 'product' | 'brand' | 'ticket' | 'ticket_priority' | 'none'
+type EntityType = 'customer' | 'quotation' | 'contract' | 'invoice' | 'deal' | 'project' | 'product' | 'brand' | 'ticket' | 'ticket_priority' | 'retail_order' | 'retail_payment' | 'none'
 
 interface StatusBadgeProps {
     status: string
@@ -44,6 +48,8 @@ const MAPPINGS: Record<Exclude<EntityType, 'none'>, { labels: any, colors: any }
     brand: { labels: BRAND_LABELS, colors: BRAND_COLORS },
     ticket: { labels: TICKET_STATUS_LABELS, colors: TICKET_STATUS_COLORS },
     ticket_priority: { labels: TICKET_PRIORITY_LABELS, colors: TICKET_PRIORITY_COLORS },
+    retail_order: { labels: RETAIL_ORDER_STATUS_LABELS, colors: RETAIL_ORDER_STATUS_COLORS },
+    retail_payment: { labels: RETAIL_PAYMENT_STATUS_LABELS, colors: RETAIL_PAYMENT_STATUS_COLORS },
 }
 
 export function StatusBadge({ status, label, entityType = 'none', className, showDot = true }: StatusBadgeProps) {

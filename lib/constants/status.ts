@@ -213,3 +213,37 @@ export const TICKET_CATEGORY_LABELS: Record<string, string> = {
     warranty: 'Bảo hành',
     other: 'Khác',
 }
+
+// Retail Order Status
+export const RETAIL_ORDER_STATUS_LABELS: Record<string, string> = {
+    pending: 'Chờ xử lý',
+    editing: 'Đang chỉnh sửa',
+    edit_done: 'Xong chỉnh sửa',
+    waiting_ship: 'Chờ giao hàng',
+    shipping: 'Đang giao hàng',
+    completed: 'Hoàn thành',
+    cancelled: 'Đã hủy',
+}
+
+export const RETAIL_ORDER_STATUS_COLORS: Record<string, string> = {
+    pending: C.ghost,
+    editing: C.blue,
+    edit_done: C.sky,
+    waiting_ship: C.orange,
+    shipping: C.orange,
+    completed: C.emerald,
+    cancelled: C.cancelled,
+}
+
+// Retail Payment Status
+export const RETAIL_PAYMENT_STATUS_LABELS: Record<string, string> = {
+    unpaid: 'Chưa cọc',
+    partial: 'Một phần',
+    paid: 'Đã xong',
+}
+
+export const RETAIL_PAYMENT_STATUS_COLORS: Record<string, string> = {
+    unpaid: C.ghost,
+    partial: C.amber,
+    paid: C.emerald,
+}
