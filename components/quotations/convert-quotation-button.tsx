@@ -8,7 +8,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ShoppingCart, FileSignature, Loader2, ChevronDown } from 'lucide-react'
+import { ShoppingCart, FileSignature, ChevronDown } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { convertQuotationToOrder } from '@/lib/supabase/services/contract-service'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -40,7 +41,7 @@ export function ConvertQuotationButton({ quotationId }: { quotationId: string })
                 <Button
                     className="h-9 px-4 font-medium flex items-center gap-2"
                 >
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShoppingCart className="h-4 w-4" />}
+                    {isLoading ? <LoadingSpinner size="sm" /> : <ShoppingCart className="h-4 w-4" />}
                     Chuyển thành Đơn hàng / Hợp đồng
                     <ChevronDown className="h-4 w-4 ml-1 opacity-50" />
                 </Button>

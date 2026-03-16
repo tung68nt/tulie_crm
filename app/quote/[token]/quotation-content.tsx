@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { CheckCircle, CheckCircle2, XCircle, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import {
     Dialog,
     DialogContent,
@@ -19,7 +20,8 @@ import { toast } from 'sonner'
 import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
+
 import { Checkbox } from '@/components/ui/checkbox'
 
 // Add missing types for PDF libs
@@ -547,7 +549,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                 </div>
                                                             </td>
                                                             <td className="w-10 text-center py-2 align-top">
-                                                                <span className="text-xs font-medium text-slate-400 tabular-nums leading-[1.75rem]">{sectionName ? `${sectionIndex + 1}.${displayNumber ?? (index + 1)}` : displayNumber ?? (index + 1)}</span>
+                                                                <span className="text-xs font-medium text-slate-400 tabular-nums leading-tight">{sectionName ? `${sectionIndex + 1}.${displayNumber ?? (index + 1)}` : displayNumber ?? (index + 1)}</span>
                                                             </td>
                                                             <td className="px-3 align-top py-2">
                                                                 <div className="flex flex-col gap-1">
@@ -794,7 +796,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 onClick={() => setShowConfirm(true)}
                                 disabled={isSubmitting || ['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                                {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : <CheckCircle className="mr-2 h-4 w-4" />}
                                 {currentQuotation.status === 'accepted' ? 'Đã chấp nhận' : 'Xác nhận ngay'}
                             </Button>
                         </div>
@@ -1055,7 +1057,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 onClick={handleConfirm}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                                {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
                                 Xác nhận chấp nhận ngay
                             </Button>
                             <Button
@@ -1098,7 +1100,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 onClick={handleRejectSubmit}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <XCircle className="mr-2 h-4 w-4" />}
+                                {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : <XCircle className="mr-2 h-4 w-4" />}
                                 Gửi phản hồi từ chối
                             </Button>
                             <Button

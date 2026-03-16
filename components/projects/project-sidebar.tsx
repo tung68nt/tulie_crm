@@ -20,8 +20,9 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import {
-    Users, Calendar, AlertCircle, FileCheck, Plus, Loader2, CheckCircle, Clock, Play, Eye, Save
+    Users, Calendar, AlertCircle, FileCheck, Plus, CheckCircle, Clock, Play, Eye, Save
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { formatDate } from '@/lib/utils/format'
 import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/status'
 import { AcceptancePDFButton } from '@/components/projects/acceptance-pdf-button'
@@ -241,7 +242,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                         onClick={handleSaveDetails}
                         disabled={saving}
                     >
-                        {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                        {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                         Lưu thay đổi
                     </Button>
 
@@ -308,7 +309,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                         disabled={reportLoading}
                     >
                         {reportLoading ? (
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <LoadingSpinner size="sm" className="mr-2" />
                         ) : (
                             <Plus className="h-4 w-4 mr-2" />
                         )}

@@ -13,7 +13,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Send, CheckCircle2, AlertCircle } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 
 interface SendEmailDialogProps {
@@ -191,7 +192,7 @@ export function SendEmailDialog({
                             <Button onClick={handleSend} disabled={loading}>
                                 {loading ? (
                                     <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        <LoadingSpinner size="sm" className="mr-2" />
                                         Đang gửi...
                                     </>
                                 ) : (

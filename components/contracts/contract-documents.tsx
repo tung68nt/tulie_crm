@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Download, Printer, Loader2, Check, ChevronRight } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 
 const DOCUMENT_TYPES = [
@@ -140,7 +141,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                     onClick={() => handleGenerate(doc.type, 'preview')}
                                     disabled={isActive}
                                 >
-                                    {isActive ? <Loader2 className="h-3 w-3 animate-spin" /> : <ChevronRight className="h-3 w-3" />}
+                                    {isActive ? <LoadingSpinner size="sm" /> : <ChevronRight className="h-3 w-3" />}
                                     Xem
                                 </Button>
                                 <Button

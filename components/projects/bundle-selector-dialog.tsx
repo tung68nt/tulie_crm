@@ -18,7 +18,8 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from '@/components/ui/label'
-import { Loader2, BookOpen, CheckCircle2 } from 'lucide-react'
+import { BookOpen, CheckCircle2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { getDocumentBundles, getTemplateById, generateDocument, saveGeneratedDocument } from '@/lib/supabase/services/document-template-service'
 import { updateWorkItem } from '@/lib/supabase/services/work-item-service'
 import { DocumentBundle, RequiredDocument } from '@/types'
@@ -136,7 +137,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                         <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             {isLoading ? (
                                 <div className="flex flex-col items-center justify-center py-12 gap-3">
-                                    <Loader2 className="w-6 h-6 animate-spin text-zinc-300" />
+                                    <LoadingSpinner size="md" />
                                     <p className="text-xs text-zinc-400">Đang tải danh sách...</p>
                                 </div>
                             ) : bundles.length === 0 ? (
@@ -199,7 +200,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                     >
                         {isSaving ? (
                             <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <LoadingSpinner size="sm" className="mr-2" />
                                 Đang khởi tạo...
                             </>
                         ) : (

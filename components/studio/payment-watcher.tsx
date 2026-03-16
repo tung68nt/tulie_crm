@@ -11,11 +11,12 @@ import {
     CheckCircle2,
     Clock,
     RefreshCw,
-    Loader2,
+
     Zap,
     Banknote,
     AlertCircle
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 
 interface PaymentWatcherProps {
@@ -307,7 +308,7 @@ export function PaymentWatcher({
                     className="w-full h-9 text-xs font-medium"
                 >
                     {isManualChecking ? (
-                        <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                        <LoadingSpinner size="sm" className="mr-1.5" />
                     ) : (
                         <RefreshCw className="h-3 w-3 mr-1.5" />
                     )}

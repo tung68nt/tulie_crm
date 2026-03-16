@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Camera, CheckCircle2, ImagePlus, Link2, Loader2, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Upload, User, X } from 'lucide-react'
+import { Camera, CheckCircle2, ImagePlus, Link2, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Upload, User, X } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { PrintLayoutPreview } from './PrintLayoutPreview'
@@ -366,7 +367,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                       )}
                     >
                       {isUploading ? (
-                        <Loader2 className="size-6 text-zinc-400 animate-spin" />
+                        <LoadingSpinner size="md" />
                       ) : (
                         <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center">
                           <ImagePlus className="size-5 text-zinc-500" />
@@ -753,7 +754,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 disabled={isSubmitting || totalPkgCount === 0}
                 className="w-full sm:w-auto rounded-xl font-bold tracking-tight text-[13px] h-12 px-10 bg-zinc-900 hover:bg-zinc-800 shadow-lg shadow-black/10 transition-all disabled:opacity-40"
               >
-                {isSubmitting ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
+                {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                 {isSubmitting ? 'Đang gửi...' : 'Gửi đơn hàng'}
               </Button>
             </div>

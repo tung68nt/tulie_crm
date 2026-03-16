@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Loader2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { createTaskAction } from '@/app/(dashboard)/workspace/actions'
 
 const priorities = [
@@ -165,7 +166,7 @@ export function QuickAddTaskDialog({ defaultStatus, trigger, teamMembers = [] }:
                             Huỷ
                         </Button>
                         <Button type="submit" disabled={loading}>
-                            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            {loading && <LoadingSpinner size="sm" className="mr-2" />}
                             Tạo task
                         </Button>
                     </div>

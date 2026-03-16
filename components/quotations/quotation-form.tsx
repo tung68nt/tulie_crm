@@ -34,7 +34,8 @@ import {
 } from '@/components/ui/table'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency, formatNumber } from '@/lib/utils/format'
-import { ArrowLeft, Loader2, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet, Check, AlertCircle, RotateCcw, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, Send, ArrowUp, ArrowDown, X, FolderPlus, FileJson, Copy, Upload, Wallet, Check, AlertCircle, RotateCcw, ChevronDown } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -1500,7 +1501,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     disabled={isLoading}
                                     className="font-semibold"
                                 >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                                    {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Send className="h-4 w-4 mr-2" />}
                                     Lưu & Gửi
                                 </Button>
                                 <Button
@@ -1508,7 +1509,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     disabled={isLoading}
                                     className="bg-zinc-950 hover:bg-zinc-800 text-white font-semibold"
                                 >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+                                    {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                                     Lưu thay đổi
                                 </Button>
                             </div>

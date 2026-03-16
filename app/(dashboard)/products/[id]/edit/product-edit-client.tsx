@@ -23,7 +23,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { ArrowLeft, Loader2, Save, Trash2, Files } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Files } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { PriceInput } from '@/components/ui/price-input'
 import { Product, DocumentTemplate } from '@/types'
 import { updateProduct, deleteProduct } from '@/lib/supabase/services/product-service'
@@ -137,7 +138,7 @@ export default function ProductEditClient({ product, categories, units }: Produc
                     disabled={isDeleting || isLoading}
                     className="text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg h-9"
                 >
-                    {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                    {isDeleting ? <LoadingSpinner size="sm" className="mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
                     Xóa sản phẩm
                 </Button>
             </div>
@@ -299,7 +300,7 @@ export default function ProductEditClient({ product, categories, units }: Produc
                         <Link href={`/products/${product.id}`}>Hủy</Link>
                     </Button>
                     <Button type="submit" disabled={isLoading || isDeleting} className="rounded-lg h-10 px-6 font-medium bg-zinc-900 text-white hover:bg-zinc-800">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         <Save className="mr-2 h-4 w-4" />
                         Lưu thay đổi
                     </Button>

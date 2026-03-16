@@ -1,7 +1,8 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart3, CheckCircle2, Loader2, ListTodo } from 'lucide-react'
+import { BarChart3, CheckCircle2, ListTodo } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 interface MonthSummaryCardProps {
     summary: {
@@ -61,7 +62,7 @@ export default function MonthSummaryCard({ summary }: MonthSummaryCardProps) {
                             {completed} xong
                         </span>
                         <span className="flex items-center gap-1">
-                            <Loader2 className="h-3 w-3 text-blue-500" />
+                            <LoadingSpinner size="sm" />
                             {in_progress} đang làm
                         </span>
                         <span className="flex items-center gap-1">

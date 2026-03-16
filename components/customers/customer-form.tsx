@@ -23,7 +23,8 @@ import {
  CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Loader2, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Save, Trash2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Customer, User } from '@/types'
@@ -330,7 +331,7 @@ export function CustomerForm({ customer }: CustomerFormProps) {
  <Link href={`/customers/${customer.id}`}>Hủy</Link>
  </Button>
  <Button type="submit" disabled={isLoading}>
- {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+ {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
  <Save className="mr-2 h-4 w-4" />
  Lưu thay đổi
  </Button>

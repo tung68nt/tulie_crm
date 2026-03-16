@@ -4,7 +4,8 @@ import { Project, AcceptanceReport, Customer } from '@/types'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { AcceptanceReportPDF } from './acceptance-report-pdf'
 import { Button } from '@/components/ui/button'
-import { FileDown, Loader2 } from 'lucide-react'
+import { FileDown } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 interface AcceptancePDFButtonProps {
     project: Project
@@ -21,7 +22,7 @@ export function AcceptancePDFButton({ project, report, customer }: AcceptancePDF
             {({ loading }: any) => (
                 <Button variant="outline" size="sm" className="h-8 group hover:border-primary transition-all">
                     {loading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <LoadingSpinner size="sm" className="mr-2" />
                     ) : (
                         <FileDown className="mr-2 h-4 w-4" />
                     )}

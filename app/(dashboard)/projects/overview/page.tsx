@@ -6,7 +6,8 @@ import ProjectPipeline from '@/components/projects/ProjectPipeline'
 import StaleProjectsPanel from '@/components/projects/StaleProjectsPanel'
 import InvoiceTrackerPanel from '@/components/projects/InvoiceTrackerPanel'
 import UpcomingMilestonesPanel from '@/components/projects/UpcomingMilestonesPanel'
-import { Loader2, Rocket } from 'lucide-react'
+import { Rocket } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -15,7 +16,7 @@ export const dynamic = 'force-dynamic'
 function Loading() {
     return (
         <div className="flex items-center justify-center h-32">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <LoadingSpinner size="md" />
         </div>
     )
 }

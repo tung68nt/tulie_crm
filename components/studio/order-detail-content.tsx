@@ -15,7 +15,6 @@ import {
     ExternalLink,
     CreditCard,
     Save,
-    Loader2,
     CheckCircle2,
     Sparkles,
     Download,
@@ -29,6 +28,7 @@ import {
     ImageIcon,
     Printer
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { useState } from 'react'
 import { updateRetailOrder, recordRetailPayment } from '@/lib/supabase/services/retail-order-service'
 import { getBankAccounts } from '@/lib/supabase/services/settings-service'
@@ -147,7 +147,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 size="sm"
                                 className="h-8 rounded-lg font-medium"
                             >
-                                {isSavingLinks ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+                                {isSavingLinks ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
                                 Lưu thay đổi
                             </Button>
                         </div>
@@ -427,7 +427,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     }
                                 }}
                             >
-                                {isSavingShipping ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-2" /> : <Save className="h-3.5 w-3.5 mr-2" />}
+                                {isSavingShipping ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-3.5 w-3.5 mr-2" />}
                                 Lưu thông tin nhận hàng
                             </Button>
                         </CardContent>
@@ -636,7 +636,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     "bg-zinc-900 text-white hover:bg-zinc-800"
                                 )}
                             >
-                                {isRecordingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {isRecordingPayment ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                                 Ghi nhận & Bắn Telegram
                             </Button>
                             <div className="flex gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-100">

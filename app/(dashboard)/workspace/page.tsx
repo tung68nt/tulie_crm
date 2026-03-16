@@ -7,14 +7,15 @@ import WeeklyTimeline from '@/components/workspace/WeeklyTimeline'
 import RevenueProgressCard from '@/components/workspace/RevenueProgressCard'
 import AlertPanel from '@/components/workspace/AlertPanel'
 import MonthSummaryCard from '@/components/workspace/MonthSummaryCard'
-import { Loader2, ListTodo, Kanban, Calendar, GanttChart, ArrowRight } from 'lucide-react'
+import { ListTodo, Kanban, Calendar, GanttChart, ArrowRight } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 export const dynamic = 'force-dynamic'
 
 function LoadingFallback() {
     return (
         <div className="flex items-center justify-center h-32">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <LoadingSpinner size="md" />
         </div>
     )
 }

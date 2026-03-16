@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, Trash2, Calendar, User, Tag, AlertTriangle, CheckSquare, MessageSquare, Plus, X, Send, Square, CheckSquare2 } from 'lucide-react'
+import { Trash2, Calendar, User, Tag, AlertTriangle, CheckSquare, MessageSquare, Plus, X, Send, Square, CheckSquare2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import {
     updateTaskAction,
     deleteTaskAction,
@@ -339,7 +340,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                 ) : (
                                     <div className="flex items-center gap-2">
                                         <Button type="button" variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
-                                            {deleting && <Loader2 className="h-4 w-4 mr-1 animate-spin" />} Xác nhận
+                                            {deleting && <LoadingSpinner size="sm" className="mr-1" />} Xác nhận
                                         </Button>
                                         <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmDelete(false)}>Huỷ</Button>
                                     </div>
@@ -347,7 +348,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                 <div className="flex gap-2">
                                     <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)}>Đóng</Button>
                                     <Button type="submit" size="sm" disabled={loading}>
-                                        {loading && <Loader2 className="h-4 w-4 mr-1 animate-spin" />} Lưu
+                                        {loading && <LoadingSpinner size="sm" className="mr-1" />} Lưu
                                     </Button>
                                 </div>
                             </div>
@@ -429,7 +430,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                         <div className="space-y-4">
                             {loadingComments ? (
                                 <div className="flex items-center justify-center py-8">
-                                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                                    <LoadingSpinner size="md" />
                                 </div>
                             ) : (
                                 <>
@@ -484,7 +485,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                     }}
                                 />
                                 <Button type="button" size="sm" className="self-end h-8 px-3" onClick={handleAddComment} disabled={!newComment.trim() || sending}>
-                                    {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                                    {sending ? <LoadingSpinner size="sm" /> : <Send className="h-3.5 w-3.5" />}
                                 </Button>
                             </div>
                             <p className="text-[11px] text-muted-foreground">⌘+Enter để gửi</p>

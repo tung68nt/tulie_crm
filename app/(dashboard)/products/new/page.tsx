@@ -24,7 +24,8 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
-import { ArrowLeft, Loader2, Save, Files } from 'lucide-react'
+import { ArrowLeft, Save, Files } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { PriceInput } from '@/components/ui/price-input'
@@ -315,7 +316,7 @@ export default function NewProductPage() {
                         <Link href="/products">Hủy</Link>
                     </Button>
                     <Button type="submit" disabled={isLoading} className="rounded-lg h-10 px-6 font-medium bg-zinc-900 text-white hover:bg-zinc-800">
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         <Save className="mr-2 h-4 w-4" />
                         Lưu sản phẩm
                     </Button>

@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { CalendarIcon, Plus, Save, Trash2, Loader2, Wallet, FileText } from 'lucide-react'
+import { CalendarIcon, Plus, Save, Trash2, Wallet, FileText } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { ContractMilestone, Project } from '@/types'
@@ -91,7 +92,7 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
                         Thêm mốc
                     </Button>
                     <Button size="sm" onClick={handleSave} disabled={isLoading}>
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                         Lưu lịch trình
                     </Button>
                 </div>

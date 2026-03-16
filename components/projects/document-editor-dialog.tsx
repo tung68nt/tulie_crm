@@ -10,7 +10,8 @@ import {
 import { DocumentEditor } from './document-editor'
 import { getGeneratedDocumentById } from '@/lib/supabase/services/document-template-service'
 import { GeneratedDocument } from '@/types'
-import { Loader2 } from 'lucide-react'
+
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 interface DocumentEditorDialogProps {
     docId: string | null
@@ -45,7 +46,7 @@ export function DocumentEditorDialog({ docId, onClose }: DocumentEditorDialogPro
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
                 {isLoading ? (
                     <div className="flex items-center justify-center p-20">
-                        <Loader2 className="w-8 h-8 animate-spin text-zinc-400" />
+                        <LoadingSpinner size="lg" />
                     </div>
                 ) : doc ? (
                     <DocumentEditor document={doc} onBack={onClose} />

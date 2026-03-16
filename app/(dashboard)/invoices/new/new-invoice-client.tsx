@@ -27,7 +27,8 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, CalendarIcon, Loader2, Save, FileUp, Search } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, Save, FileUp, Search } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { createInvoice } from '@/lib/supabase/services/invoice-service'
@@ -305,7 +306,7 @@ function NewInvoiceForm({ initialCustomers, initialContracts, initialProjects = 
 
                         <div className="flex flex-col gap-2">
                             <Button type="submit" disabled={isLoading} className="w-full">
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                                 <Save className="mr-2 h-4 w-4" />
                                 Tạo hoá đơn
                             </Button>

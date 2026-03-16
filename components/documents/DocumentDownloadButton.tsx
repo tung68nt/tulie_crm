@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { Button } from '@/components/ui/button';
-import { Download, Loader2 } from 'lucide-react';
+import { Download } from 'lucide-react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import UnifiedDocumentPdf from './UnifiedDocumentPdf';
 import { getDocumentData } from '@/lib/supabase/services/document-template-service';
 
@@ -72,7 +73,7 @@ export default function DocumentDownloadButton({
                     disabled={loading}
                     className={className}
                 >
-                    {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                    {loading ? <LoadingSpinner size="sm" className="mr-2" /> : <Download className="h-4 w-4 mr-2" />}
                     <span>{label}</span>
                 </Button>
             ) : (
@@ -88,7 +89,7 @@ export default function DocumentDownloadButton({
                             className={className}
                         >
                             {pdfLoading ? (
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                <LoadingSpinner size="sm" className="mr-2" />
                             ) : (
                                 <Download className="h-4 w-4 mr-2" />
                             )}

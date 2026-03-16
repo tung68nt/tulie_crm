@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, Loader2, MapPin, Save, FileText, Smartphone } from 'lucide-react'
+import { Download, CheckCircle2, Sparkles, ExternalLink, Copy, Check, Package, CalendarDays, User, CreditCard, QrCode, ShieldCheck, MessageCircle, Truck, Clock, RefreshCw, MapPin, Save, FileText, Smartphone } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -217,7 +218,7 @@ function PortalPaymentWatcher({ token, remainingAmount }: { token: string; remai
                 className="w-full h-9 text-xs font-medium rounded-lg"
             >
                 {isChecking ? (
-                    <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+                    <LoadingSpinner size="sm" className="mr-1.5" />
                 ) : (
                     <RefreshCw className="h-3 w-3 mr-1.5" />
                 )}
@@ -331,7 +332,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
                     disabled={isSaving}
                     className="w-full h-10 rounded-lg font-semibold text-sm"
                 >
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                     Lưu thông tin nhận hàng
                 </Button>
             </div>

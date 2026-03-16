@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft, Save, Loader2, Info } from 'lucide-react'
+import { ArrowLeft, Save, Info } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { getTemplateById, updateDocumentTemplate } from '@/lib/supabase/services/document-template-service'
@@ -69,7 +70,7 @@ export default function EditTemplatePage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <LoadingSpinner size="lg" />
             </div>
         )
     }
@@ -100,7 +101,7 @@ export default function EditTemplatePage() {
                     </div>
                 </div>
                 <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                     Lưu thay đổi
                 </Button>
             </div>

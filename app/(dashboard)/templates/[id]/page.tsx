@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, FileText, Download, Send, Loader2 } from 'lucide-react'
+import { ArrowLeft, FileText, Download, Send } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 
 interface Template {
@@ -173,7 +174,7 @@ export default function TemplateDetailPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <LoadingSpinner size="lg" />
             </div>
         )
     }

@@ -28,7 +28,8 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, CalendarIcon, Loader2, Save, Plus, Trash2, FileSignature } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, Save, Plus, Trash2, FileSignature } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { createContract } from '@/lib/supabase/services/contract-service'
@@ -341,7 +342,7 @@ function NewContractForm({ initialCustomers, initialQuotations }: NewContractCli
                         <Link href="/contracts">Hủy</Link>
                     </Button>
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         <Save className="mr-2 h-4 w-4" />
                         Tạo hợp đồng
                     </Button>

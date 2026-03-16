@@ -11,9 +11,9 @@ import {
     Pencil,
     Trash2,
     Calendar,
-    Loader2,
     Circle
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'

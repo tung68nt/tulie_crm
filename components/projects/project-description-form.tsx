@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Project } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Edit, Save, X, Loader2 } from 'lucide-react'
+import { Edit, Save, X } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { updateProject } from '@/lib/supabase/services/project-service'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -64,7 +65,7 @@ export function ProjectDescriptionForm({ project }: ProjectDescriptionFormProps)
                 </Button>
                 <Button size="sm" onClick={handleSave} disabled={isSaving}>
                     {isSaving ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <LoadingSpinner size="sm" className="mr-2" />
                     ) : (
                         <Save className="mr-2 h-4 w-4" />
                     )}

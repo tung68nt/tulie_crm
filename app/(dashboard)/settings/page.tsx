@@ -12,7 +12,8 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Loader2, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
@@ -741,7 +742,7 @@ export default function SettingsPage() {
                                 <Separator className="bg-border/50" />
                                 <div className="flex justify-end pt-2">
                                     <Button onClick={handleSaveCompanySettings} disabled={isSavingCompany} className="rounded-xl px-8 font-bold shadow-md shadow-zinc-200">
-                                        {isSavingCompany && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {isSavingCompany && <LoadingSpinner size="sm" className="mr-2" />}
                                         Lưu thay đổi
                                     </Button>
                                 </div>
@@ -1055,11 +1056,11 @@ export default function SettingsPage() {
                                         disabled={isTestingTelegram || !telegramConfig.bot_token || !telegramConfig.chat_id}
                                         className="font-bold h-11 px-6 rounded-xl border-zinc-300"
                                     >
-                                        {isTestingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        {isTestingTelegram ? <LoadingSpinner size="sm" className="mr-2" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi tin nhắn thử
                                     </Button>
                                     <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
-                                        {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        {isSavingTelegram ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                                         Lưu cấu hình
                                     </Button>
                                 </div>
@@ -1161,7 +1162,7 @@ export default function SettingsPage() {
 
                                 <div className="pt-6 border-t border-border/50 flex justify-end">
                                     <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
-                                        {isSavingTelegram ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        {isSavingTelegram ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                                         Lưu cấu hình
                                     </Button>
                                 </div>
@@ -1258,11 +1259,11 @@ export default function SettingsPage() {
                                         disabled={isTestingSmtp || !smtpConfig.host || !smtpConfig.user}
                                         className="font-bold h-11 px-6 rounded-xl border-zinc-300"
                                     >
-                                        {isTestingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                                        {isTestingSmtp ? <LoadingSpinner size="sm" className="mr-2" /> : <Send className="mr-2 h-4 w-4" />}
                                         Gửi email thử
                                     </Button>
                                     <Button onClick={handleSaveSmtp} disabled={isSavingSmtp} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
-                                        {isSavingSmtp ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                        {isSavingSmtp ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                                         Lưu cấu hình SMTP
                                     </Button>
                                 </div>
@@ -1504,7 +1505,7 @@ export default function SettingsPage() {
                                     </div>
 
                                     <Button onClick={handleCreateBundle} disabled={isSavingBundle} className="w-full h-12 rounded-xl font-bold shadow-lg shadow-zinc-200 text-base">
-                                        {isSavingBundle ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Plus className="mr-2 h-5 w-5" />}
+                                        {isSavingBundle ? <LoadingSpinner size="sm" className="mr-2" /> : <Plus className="mr-2 h-5 w-5" />}
                                         Lưu bộ mẫu chứng từ
                                     </Button>
                                 </div>
@@ -1674,7 +1675,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="flex justify-end pt-4">
                                     <Button onClick={() => handleSaveBankAccounts(bankAccounts)} disabled={isSavingBankAccounts} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
-                                        {isSavingBankAccounts && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {isSavingBankAccounts && <LoadingSpinner size="sm" className="mr-2" />}
                                         Lưu danh sách
                                     </Button>
                                 </div>
@@ -1775,7 +1776,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="flex justify-end pt-4">
                                     <Button onClick={() => handleSaveNoteTemplates(noteTemplates)} disabled={isSavingNoteTemplates} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
-                                        {isSavingNoteTemplates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        {isSavingNoteTemplates && <LoadingSpinner size="sm" className="mr-2" />}
                                         Lưu danh sách
                                     </Button>
                                 </div>

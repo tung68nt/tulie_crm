@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowDownLeft, ArrowUpRight, Search, RefreshCw, Loader2, CheckCircle2, XCircle, ArrowLeft, ExternalLink, Filter, ArrowDownToLine } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, Search, RefreshCw, CheckCircle2, XCircle, ArrowLeft, ExternalLink, Filter, ArrowDownToLine } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { syncTransactionsAction, loadTransactionsAction } from './actions'
@@ -95,7 +96,7 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                     </div>
                 </div>
                 <Button onClick={handleSync} disabled={isSyncing} className="font-bold rounded-xl shadow-md">
-                    {isSyncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                    {isSyncing ? <LoadingSpinner size="sm" className="mr-2" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                     Đồng bộ SePay
                 </Button>
             </div>
@@ -165,7 +166,7 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                             </SelectContent>
                         </Select>
                         <Button variant="outline" onClick={() => applyFilters()} disabled={isFiltering} className="h-10 rounded-xl font-bold">
-                            {isFiltering ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Filter className="mr-2 h-4 w-4" />}
+                            {isFiltering ? <LoadingSpinner size="sm" className="mr-2" /> : <Filter className="mr-2 h-4 w-4" />}
                             Lọc
                         </Button>
                     </div>

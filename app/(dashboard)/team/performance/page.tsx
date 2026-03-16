@@ -3,14 +3,15 @@ import { getTeamOverview, getWorkloadDistribution } from '@/lib/supabase/service
 import TeamStatsCards from '@/components/team/TeamStatsCards'
 import TeamMemberTable from '@/components/team/TeamMemberTable'
 import WorkloadChart from '@/components/team/WorkloadChart'
-import { Loader2, Users } from 'lucide-react'
+import { Users } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 export const dynamic = 'force-dynamic'
 
 function Loading() {
     return (
         <div className="flex items-center justify-center h-32">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <LoadingSpinner size="md" />
         </div>
     )
 }

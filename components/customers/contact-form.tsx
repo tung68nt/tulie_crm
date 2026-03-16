@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Contact } from '@/types'
 import { createContact, updateContact } from '@/lib/supabase/services/contact-service'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { format } from 'date-fns'
@@ -192,7 +192,7 @@ export function ContactForm({ customerId, contact, open, onOpenChange, onSuccess
                             Hủy
                         </Button>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                             {contact ? 'Cập nhật' : 'Thêm mới'}
                         </Button>
                     </DialogFooter>

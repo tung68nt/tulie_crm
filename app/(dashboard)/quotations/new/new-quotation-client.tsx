@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { QuotationForm } from '@/components/quotations/quotation-form'
 import QuotationPreview from '@/components/quotations/quotation-preview'
-import { ArrowLeft, Eye, Save, Send, Loader2 } from 'lucide-react'
+import { ArrowLeft, Eye, Save, Send } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { createQuotation } from '@/lib/supabase/services/quotation-service'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -130,11 +131,11 @@ export default function NewQuotationClient({ initialCustomers, initialProducts, 
                         Xem trước PDF
                     </Button>
                     <Button variant="outline" onClick={() => handleSave(false)} disabled={isLoading} className="font-medium">
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                        {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                         Lưu nháp
                     </Button>
                     <Button onClick={() => handleSave(true)} disabled={isLoading} className="font-semibold">
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                        {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Send className="mr-2 h-4 w-4" />}
                         Lưu & Gửi
                     </Button>
                 </div>

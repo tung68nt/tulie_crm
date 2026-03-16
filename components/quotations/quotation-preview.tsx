@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer'
 import PdfTemplate from './pdf-template'
 import { Button } from '@/components/ui/button'
-import { Loader2, Download, Eye } from 'lucide-react'
+import { Download, Eye } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { Quotation } from '@/types'
 
@@ -55,7 +56,7 @@ export default function QuotationPreview({ data, open, onOpenChange }: Quotation
                         >
                             {({ blob, url, loading, error }) => (
                                 <Button disabled={loading} size="sm">
-                                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                                    {loading ? <LoadingSpinner size="sm" className="mr-2" /> : <Download className="mr-2 h-4 w-4" />}
                                     Tải PDF
                                 </Button>
                             )}

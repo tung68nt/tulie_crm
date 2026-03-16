@@ -5,7 +5,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Globe, FolderArchive, Link2, Layout, Save, Loader2, ExternalLink } from 'lucide-react'
+import { Globe, FolderArchive, Link2, Layout, Save, ExternalLink } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { updateProjectMetadata } from '@/lib/supabase/services/project-service'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -110,7 +111,7 @@ export function ProjectMetadataForm({ project }: ProjectMetadataFormProps) {
             <div className="flex justify-end">
                 <Button onClick={handleSave} disabled={isLoading}>
                     {isLoading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <LoadingSpinner size="sm" className="mr-2" />
                     ) : (
                         <Save className="mr-2 h-4 w-4" />
                     )}

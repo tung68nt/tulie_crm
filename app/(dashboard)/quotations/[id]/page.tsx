@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils'
 import {
     Plus, LayoutGrid, List, FileText, Share2, Copy, ExternalLink, Edit, Printer, Clock, FileDown,
     CheckCircle, XCircle, Layout, ArrowLeft, Target, ClipboardList, Lightbulb, Package, Users,
-    Shield, Award, BookOpen, User, Phone, Mail, MapPin, Globe, CreditCard, Building2, Loader2,
+    Shield, Award, BookOpen, User, Phone, Mail, MapPin, Globe, CreditCard, Building2,
     Eye, Info, Receipt, FileSignature
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card'
@@ -91,7 +92,7 @@ export default function QuotationDetailPage() {
     if (loading) {
         return (
             <div className="flex h-[400px] items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <LoadingSpinner size="lg" />
             </div>
         )
     }
@@ -148,6 +149,11 @@ export default function QuotationDetailPage() {
         // Find first item of each section to compare their sort_order
         return (a[1][0]?.sort_order || 0) - (b[1][0]?.sort_order || 0);
     });
+
+    // Calculate discount totals (matching portal view)
+    const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0)
+    const subtotalNet = items.reduce((sum: number, item: any) => sum + (item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))), 0)
+    const totalDiscount = subtotalRaw - subtotalNet
 
     const publicUrl = quotation.public_token ? `${baseUrl}/quote/${quotation.public_token}` : null
     const portalUrl = quotation.public_token ? `${baseUrl}/portal/${quotation.public_token}` : null
@@ -383,13 +389,20 @@ export default function QuotationDetailPage() {
                                                     {sectionItems.map((item: any, idx: number) => (
                                                         <TableRow key={item.id} className="hover:bg-muted/30 group last:border-0 align-top">
                                                             <TableCell className="text-center w-12 py-3">
-                                                                <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                                                                    {sectionName ? `${sectionIdx + 1}.${idx + 1}` : idx + 1}
-                                                                </span>
+                                                                {!sectionName && (
+                                                                    <span className="text-xs font-medium text-muted-foreground tabular-nums">
+                                                                        {idx + 1}
+                                                                    </span>
+                                                                )}
                                                             </TableCell>
                                                             <TableCell className="py-3">
                                                                 <div className="space-y-1">
-                                                                    <div className="flex items-center gap-2">
+                                                                    <div className="flex items-baseline gap-2">
+                                                                        {sectionName && (
+                                                                            <span className="text-xs font-medium text-muted-foreground tabular-nums shrink-0">
+                                                                                {`${sectionIdx + 1}.${idx + 1}`}
+                                                                            </span>
+                                                                        )}
                                                                         <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
                                                                         {item.is_optional && (
                                                                             <Badge variant="outline" className="h-4 px-1 text-[11px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
@@ -415,9 +428,21 @@ export default function QuotationDetailPage() {
                                     <div className="border-t bg-zinc-50/30 px-8 py-6 flex justify-end">
                                         <div className="w-full max-w-sm space-y-4">
                                             <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
-                                                <span>Tạm tính (Subtotal):</span>
-                                                <span className="text-foreground text-sm font-bold">{formatCurrency(quotation.subtotal || 0)}</span>
+                                                <span>Tạm tính:</span>
+                                                <span className="text-foreground text-sm font-bold">{formatCurrency(subtotalRaw)}</span>
                                             </div>
+                                            {totalDiscount > 0 && (
+                                                <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
+                                                    <span>Chiết khấu:</span>
+                                                    <span className="text-foreground text-sm font-bold">-{formatCurrency(totalDiscount)}</span>
+                                                </div>
+                                            )}
+                                            {totalDiscount > 0 && (
+                                                <div className="flex justify-between items-center text-xs font-medium text-foreground">
+                                                    <span className="font-semibold">Thành tiền sau CK:</span>
+                                                    <span className="text-sm font-bold">{formatCurrency(subtotalNet)}</span>
+                                                </div>
+                                            )}
                                             <div className="flex justify-between items-center text-xs font-medium text-muted-foreground">
                                                 <span>Thuế VAT ({quotation.vat_percent || 0}%):</span>
                                                 <span className="text-foreground text-sm font-bold">{formatCurrency(quotation.vat_amount || 0)}</span>

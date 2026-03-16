@@ -1,7 +1,8 @@
 'use client'
 import { useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
-import { Trash2, Loader2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { deleteProject } from '@/lib/supabase/services/project-service'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -56,7 +57,7 @@ export function DeleteProjectButton({ projectId }: { projectId: string }) {
                         onClick={handleDelete}
                         disabled={isPending}
                     >
-                        {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                        {isPending ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                         Xác nhận xóa
                     </Button>
                 </DialogFooter>

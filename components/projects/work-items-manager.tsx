@@ -40,7 +40,6 @@ import {
     ListTodo,
     ClipboardCheck,
     GripVertical,
-    Loader2,
     ExternalLink,
     Circle,
     CheckCircle,
@@ -50,6 +49,7 @@ import {
     ArrowUp,
     ArrowDown,
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
@@ -58,6 +58,7 @@ import { useRouter } from 'next/navigation'
 import { BundleSelectorDialog } from './bundle-selector-dialog'
 import { DocumentEditorDialog } from './document-editor-dialog'
 import { FileEdit, Eye } from 'lucide-react'
+
 import { useConfirm } from '@/components/ui/confirm-dialog'
 
 interface WorkItemsManagerProps {
@@ -310,7 +311,7 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
                         <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Hủy</Button>
                             <Button onClick={handleCreate} disabled={isPending}>
-                                {isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
+                                {isPending && <LoadingSpinner size="sm" className="mr-1" />}
                                 Tạo hạng mục
                             </Button>
                         </div>
@@ -704,7 +705,7 @@ function WorkItemRow({
                                                 disabled={isPending}
                                                 onClick={handleSaveQuotations}
                                             >
-                                                {isPending && <Loader2 className="w-3 h-3 mr-1 animate-spin" />}
+                                                {isPending && <LoadingSpinner size="sm" className="mr-1" />}
                                                 Lưu
                                             </Button>
                                         </div>

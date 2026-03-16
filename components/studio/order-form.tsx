@@ -11,7 +11,8 @@ import { Switch } from '@/components/ui/switch'
 import { createRetailOrder, getNextStt, updateRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { toast } from 'sonner'
 import { getBankAccounts, getNoteTemplates } from '@/lib/supabase/services/settings-service'
-import { Loader2, User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy, AlertCircle } from 'lucide-react'
+import { User, CircleDollarSign, CheckCircle2, Trash2, Calendar as CalendarIcon, Package, Truck, Link as LinkIcon, QrCode, Hash, CreditCard, FileText, Clock, CircleCheck, CircleDashed, Plus, Copy, AlertCircle } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 import { buildVietQrUrl } from '@/lib/utils/vietqr'
@@ -710,7 +711,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                             disabled={isLoading}
                         >
                             {isLoading ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <LoadingSpinner size="sm" className="mr-2" />
                             ) : (
                                 <CheckCircle2 className="mr-2 h-4 w-4" />
                             )}

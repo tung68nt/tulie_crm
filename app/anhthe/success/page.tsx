@@ -2,7 +2,8 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense, useEffect, useState } from 'react'
-import { CheckCircle2, Loader2, ExternalLink, Copy, ArrowRight, Phone } from 'lucide-react'
+import { CheckCircle2, ExternalLink, Copy, ArrowRight, Phone } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -97,7 +98,7 @@ function SuccessContent() {
                     <div className="space-y-3">
                         {checking ? (
                             <div className="flex items-center justify-center gap-2 text-sm text-zinc-500 py-3">
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <LoadingSpinner size="sm" />
                                 <span>Đang tải trang theo dõi đơn hàng...</span>
                             </div>
                         ) : portalReady ? (
@@ -149,7 +150,7 @@ export default function OrderSuccessPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-zinc-300" />
+                <LoadingSpinner size="lg" />
             </div>
         }>
             <SuccessContent />

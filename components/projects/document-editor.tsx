@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { Save, X, Loader2, Eye, FileEdit, ArrowLeft } from 'lucide-react'
+import { Save, X, Eye, FileEdit, ArrowLeft } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { saveGeneratedDocument } from '@/lib/supabase/services/document-template-service'
 import { GeneratedDocument } from '@/types'
 import { toast } from 'sonner'
@@ -65,7 +66,7 @@ export function DocumentEditor({ document: initialDoc, onBack }: DocumentEditorP
                             className="bg-zinc-900 text-white"
                         >
                             {isSaving ? (
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                <LoadingSpinner size="sm" className="mr-2" />
                             ) : (
                                 <Save className="w-4 h-4 mr-2" />
                             )}

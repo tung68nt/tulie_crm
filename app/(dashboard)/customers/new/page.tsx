@@ -23,7 +23,8 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, Loader2, Save } from 'lucide-react'
+import { ArrowLeft, Save } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -335,7 +336,7 @@ export default function NewCustomerPage() {
                         <Link href="/customers">Hủy</Link>
                     </Button>
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         <Save className="mr-2 h-4 w-4" />
                         Lưu khách hàng
                     </Button>

@@ -17,10 +17,10 @@ import {
     Copy,
     ExternalLink,
     CheckCircle,
-    Loader2,
     Briefcase,
     FileText
 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -114,7 +114,7 @@ export default function NewBundlePage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <LoadingSpinner size="lg" />
             </div>
         )
     }
@@ -270,7 +270,7 @@ export default function NewBundlePage() {
                                     onClick={handleCreateBundle}
                                     disabled={isSaving || !selectedCustomerId || selectedTemplateIds.length === 0}
                                 >
-                                    {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    {isSaving && <LoadingSpinner size="sm" className="mr-2" />}
                                     <LinkIcon className="mr-2 h-4 w-4" />
                                     Tạo bộ hồ sơ & Lấy link chia sẻ
                                 </Button>

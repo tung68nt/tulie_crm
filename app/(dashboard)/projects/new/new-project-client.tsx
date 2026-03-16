@@ -10,7 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createProject } from '@/lib/supabase/services/project-service'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, Save, Rocket } from 'lucide-react'
+import { ArrowLeft, Save, Rocket } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
 
 export default function NewProjectClient({ customers }: { customers: any[] }) {
@@ -111,7 +112,7 @@ export default function NewProjectClient({ customers }: { customers: any[] }) {
                                 <Link href="/projects">Hủy</Link>
                             </Button>
                             <Button type="submit" disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
                                 Tạo dự án
                             </Button>
                         </div>

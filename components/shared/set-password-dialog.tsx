@@ -14,7 +14,8 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { Lock, Loader2, Eye, EyeOff, RefreshCw, Copy, Check } from 'lucide-react'
+import { Lock, Eye, EyeOff, RefreshCw, Copy, Check } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { setEntityPassword, getEntityPasswordPlain } from '@/lib/supabase/services/portal-actions'
 
@@ -179,7 +180,7 @@ export function SetPasswordDialog({
                             <Label className="text-xs text-muted-foreground">Mật khẩu hiện tại</Label>
                             {loadingCurrent ? (
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                    <LoadingSpinner size="sm" />
                                     Đang tải...
                                 </div>
                             ) : currentPassword ? (
@@ -195,7 +196,7 @@ export function SetPasswordDialog({
                         Hủy
                     </Button>
                     <Button onClick={handleSave} disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         {password ? 'Lưu mật khẩu' : (hasPassword ? 'Gỡ mật khẩu' : 'Lưu')}
                     </Button>
                 </DialogFooter>

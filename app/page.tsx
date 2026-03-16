@@ -16,8 +16,9 @@ import {
 import {
     Users, FileText, FileSignature, Camera, BarChart3, Globe,
     ArrowRight, CheckCircle2, Zap, Shield, Headphones, ChevronRight,
-    MessageCircle, Sparkles, Layers, Monitor, Send, Phone, Mail, Building2, Loader2
+    MessageCircle, Sparkles, Layers, Monitor, Send, Phone, Mail, Building2
 } from "lucide-react"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { toast } from "sonner"
 
 const ZALO_PHONE = "098.898.4554"
@@ -259,7 +260,7 @@ function ConsultationForm() {
                 className="w-full h-12 rounded-xl font-bold text-base gap-2 shadow-lg shadow-zinc-200"
             >
                 {loading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Đang gửi...</>
+                    <><LoadingSpinner size="sm" /> Đang gửi...</>
                 ) : (
                     <><Send className="w-4 h-4" /> Gửi yêu cầu tư vấn</>
                 )}

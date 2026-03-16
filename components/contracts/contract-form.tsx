@@ -28,7 +28,8 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, CalendarIcon, Loader2, Save, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, Save, Plus, Trash2 } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { Contract, ContractMilestone, Customer, Quotation } from '@/types'
@@ -446,7 +447,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                         <Link href={`/contracts/${contract.id}`}>Hủy</Link>
                     </Button>
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isLoading && <LoadingSpinner size="sm" className="mr-2" />}
                         <Save className="mr-2 h-4 w-4" />
                         Lưu thay đổi
                     </Button>

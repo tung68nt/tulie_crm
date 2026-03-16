@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/select'
 import { createDeal } from '@/lib/supabase/services/deal-service'
 import { toast } from 'sonner'
-import { Loader2, Save } from 'lucide-react'
+import { Save } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Card, CardContent } from '@/components/ui/card'
 
 interface DealFormProps {
@@ -189,7 +190,7 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                         </Button>
                         <Button type="submit" disabled={isLoading}>
                             {isLoading ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                <LoadingSpinner size="sm" className="mr-2" />
                             ) : (
                                 <Save className="mr-2 h-4 w-4" />
                             )}

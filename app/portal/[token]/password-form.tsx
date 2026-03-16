@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Lock, Loader2, AlertCircle } from 'lucide-react'
+import { Lock, AlertCircle } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { verifyPortalPassword } from '@/lib/supabase/services/portal-actions'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label' // Added Label import
@@ -123,7 +124,7 @@ export default function PortalPasswordForm({ token, companyName }: { token: stri
                                 disabled={isLoading || !password || !captchaValue}
                             >
                                 {isLoading ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <LoadingSpinner size="sm" className="mr-2" />
                                 ) : null}
                                 {isLoading ? 'Đang xác thực...' : 'Truy cập Portal'}
                             </Button>

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { updateCustomer } from '@/lib/supabase/services/customer-service'
-import { Unlock, Lock, Loader2 } from 'lucide-react'
+import { Unlock, Lock } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -39,7 +40,7 @@ export function UnlockPortalButton({ customerId, isUnlocked }: UnlockPortalButto
             disabled={isLoading}
         >
             {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <LoadingSpinner size="sm" className="mr-2" />
             ) : isUnlocked ? (
                 <Lock className="mr-2 h-4 w-4" />
             ) : (
