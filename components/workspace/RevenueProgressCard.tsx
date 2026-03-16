@@ -13,17 +13,17 @@ export default function RevenueProgressCard({ progress }: RevenueProgressCardPro
     const targetAmount = target?.target_amount || 0
 
     const getProgressColor = () => {
-        if (percentage >= 100) return 'bg-green-500'
+        if (percentage >= 100) return 'bg-emerald-500'
         if (percentage >= 75) return 'bg-blue-500'
-        if (percentage >= 50) return 'bg-yellow-500'
-        return 'bg-red-500'
+        if (percentage >= 50) return 'bg-amber-500'
+        return 'bg-rose-500'
     }
 
     const getProgressBg = () => {
-        if (percentage >= 100) return 'bg-green-100'
+        if (percentage >= 100) return 'bg-emerald-100'
         if (percentage >= 75) return 'bg-blue-100'
-        if (percentage >= 50) return 'bg-yellow-100'
-        return 'bg-red-100'
+        if (percentage >= 50) return 'bg-amber-100'
+        return 'bg-rose-100'
     }
 
     return (

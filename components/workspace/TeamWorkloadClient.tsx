@@ -103,7 +103,7 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                     <Card>
                         <CardContent className="p-4">
                             <p className="text-xs text-muted-foreground">Quá hạn</p>
-                            <p className={`text-2xl font-bold mt-1 ${totalOverdue > 0 ? 'text-red-600' : 'text-emerald-600'}`}>{totalOverdue}</p>
+                            <p className={`text-2xl font-bold mt-1 ${totalOverdue > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>{totalOverdue}</p>
                         </CardContent>
                     </Card>
                     <Card>
@@ -156,9 +156,9 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                                         </div>
                                         <span className="text-xs font-medium text-muted-foreground w-6 text-right">{member.totalActive}</span>
                                         {member.totalOverdue > 0 && (
-                                            <div className="flex items-center gap-0.5 text-red-500 ml-1" title={`${member.totalOverdue} quá hạn`}>
+                                            <div className="flex items-center gap-0.5 text-rose-500 ml-1" title={`${member.totalOverdue} quá hạn`}>
                                                 <AlertTriangle className="h-3 w-3" />
-                                                <span className="text-[10px] font-bold">{member.totalOverdue}</span>
+                                                <span className="text-[11px] font-bold">{member.totalOverdue}</span>
                                             </div>
                                         )}
                                     </div>
@@ -169,7 +169,7 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                             )}
                         </div>
                         {/* Legend */}
-                        <div className="flex items-center gap-4 mt-4 pt-3 border-t text-[10px] text-muted-foreground">
+                        <div className="flex items-center gap-4 mt-4 pt-3 border-t text-[11px] text-muted-foreground">
                             <div className="flex items-center gap-1"><div className="h-2 w-5 rounded bg-blue-500" />Đang làm</div>
                             <div className="flex items-center gap-1"><div className="h-2 w-5 rounded bg-amber-500" />Review</div>
                             <div className="flex items-center gap-1"><div className="h-2 w-5 rounded bg-zinc-300" />Cần làm</div>
@@ -187,12 +187,12 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                                 </div>
                                 <div>
                                     <p className="text-sm font-semibold">{member.full_name}</p>
-                                    <p className="text-[10px] text-muted-foreground">{member.role || ''} {member.department ? `· ${member.department}` : ''}</p>
+                                    <p className="text-[11px] text-muted-foreground">{member.role || ''} {member.department ? `· ${member.department}` : ''}</p>
                                 </div>
                                 <div className="ml-auto flex items-center gap-2">
-                                    <Badge variant="secondary" className="text-[10px]">{member.totalActive} hoạt động</Badge>
-                                    <Badge variant="outline" className="text-[10px]">{member.totalCompleted} xong</Badge>
-                                    {member.totalOverdue > 0 && <Badge variant="destructive" className="text-[10px]">{member.totalOverdue} quá hạn</Badge>}
+                                    <Badge variant="secondary" className="text-[11px]">{member.totalActive} hoạt động</Badge>
+                                    <Badge variant="outline" className="text-[11px]">{member.totalCompleted} xong</Badge>
+                                    {member.totalOverdue > 0 && <Badge variant="destructive" className="text-[11px]">{member.totalOverdue} quá hạn</Badge>}
                                 </div>
                             </div>
 
@@ -209,15 +209,15 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                                                 <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${statusDots[task.status] || 'bg-zinc-400'}`} />
                                                 <span className="text-xs flex-1 truncate">{task.title}</span>
                                                 {task.priority && priorityConfig[task.priority] && (
-                                                    <Badge variant={priorityConfig[task.priority].variant} className="text-[9px] px-1 py-0 h-4">{priorityConfig[task.priority].label}</Badge>
+                                                    <Badge variant={priorityConfig[task.priority].variant} className="text-[11px] px-1 py-0 h-4">{priorityConfig[task.priority].label}</Badge>
                                                 )}
-                                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                                                    task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                                                <span className={`text-[11px] px-1.5 py-0.5 rounded-full ${
+                                                    task.status === 'in_progress' ? 'bg-blue-50 text-blue-700' :
                                                     task.status === 'in_review' ? 'bg-amber-100 text-amber-700' :
                                                     'bg-zinc-100 text-zinc-700'
                                                 }`}>{statusLabels[task.status] || task.status}</span>
                                                 {task.due_date && (
-                                                    <span className={`text-[10px] shrink-0 ${isOverdue ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+                                                    <span className={`text-[11px] shrink-0 ${isOverdue ? 'text-rose-600 font-medium' : 'text-muted-foreground'}`}>
                                                         {new Date(task.due_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                                     </span>
                                                 )}
@@ -225,7 +225,7 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                                         )
                                     })}
                                     {member.activeTasks.length > 8 && (
-                                        <p className="text-[10px] text-muted-foreground px-2">+{member.activeTasks.length - 8} task khác</p>
+                                        <p className="text-[11px] text-muted-foreground px-2">+{member.activeTasks.length - 8} task khác</p>
                                     )}
                                 </div>
                             )}
@@ -251,7 +251,7 @@ export function TeamWorkloadClient({ tasks, teamMembers }: TeamWorkloadClientPro
                                         <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${statusDots[task.status] || 'bg-zinc-400'}`} />
                                         <span className="text-xs flex-1 truncate">{task.title}</span>
                                         {task.priority && priorityConfig[task.priority] && (
-                                            <Badge variant={priorityConfig[task.priority].variant} className="text-[9px] px-1 py-0 h-4">{priorityConfig[task.priority].label}</Badge>
+                                            <Badge variant={priorityConfig[task.priority].variant} className="text-[11px] px-1 py-0 h-4">{priorityConfig[task.priority].label}</Badge>
                                         )}
                                     </div>
                                 ))}

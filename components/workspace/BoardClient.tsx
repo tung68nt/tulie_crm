@@ -4,9 +4,9 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { WorkspaceTask } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { QuickAddTaskDialog } from './QuickAddTaskDialog'
 import { TaskDetailPanel } from './TaskDetailPanel'
 import { updateTaskStatusAction } from '@/app/(dashboard)/workspace/actions'
@@ -18,12 +18,6 @@ const columns = [
     { key: 'completed', title: 'Hoàn thành', color: 'bg-emerald-500' },
 ]
 
-const priorityConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-    urgent: { label: 'Khẩn cấp', variant: 'destructive' },
-    high: { label: 'Cao', variant: 'destructive' },
-    medium: { label: 'Tb', variant: 'default' },
-    low: { label: 'Thấp', variant: 'secondary' },
-}
 
 interface BoardClientProps {
     tasks: WorkspaceTask[]
@@ -121,23 +115,21 @@ export function BoardClient({ tasks, teamMembers }: BoardClientProps) {
                                                 <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
                                             )}
                                             <div className="flex items-center gap-2 justify-between">
-                                                {task.priority && priorityConfig[task.priority] && (
-                                                    <Badge variant={priorityConfig[task.priority].variant} className="text-[10px] px-1.5 py-0 h-5">
-                                                        {priorityConfig[task.priority].label}
-                                                    </Badge>
+                                                {task.priority && (
+                                                    <StatusBadge status={task.priority} entityType="ticket_priority" />
                                                 )}
                                                 <div className="flex items-center gap-1.5 ml-auto">
                                                     {task.due_date && (
-                                                        <span className={`text-[10px] ${
+                                                        <span className={`text-[11px] ${
                                                             new Date(task.due_date) < new Date() && task.status !== 'completed'
-                                                                ? 'text-red-600 font-medium'
+                                                                ? 'text-rose-600 font-medium'
                                                                 : 'text-muted-foreground'
                                                         }`}>
                                                             {new Date(task.due_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                                         </span>
                                                     )}
                                                     {task.assigned_user && (
-                                                        <div className="h-5 w-5 rounded-full bg-zinc-200 flex items-center justify-center text-[9px] font-medium text-zinc-600" title={(task.assigned_user as any).full_name || ''}>
+                                                        <div className="h-5 w-5 rounded-full bg-zinc-200 flex items-center justify-center text-[11px] font-medium text-zinc-600" title={(task.assigned_user as any).full_name || ''}>
                                                             {((task.assigned_user as any).full_name || '?').charAt(0).toUpperCase()}
                                                         </div>
                                                     )}

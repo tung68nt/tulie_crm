@@ -11,7 +11,7 @@ const statusColors: Record<string, string> = {
     in_progress: 'bg-blue-500',
     in_review: 'bg-amber-500',
     completed: 'bg-emerald-500',
-    cancelled: 'bg-red-300',
+    cancelled: 'bg-rose-300',
 }
 
 const statusLabels: Record<string, string> = {
@@ -137,7 +137,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                             <span className="text-xs text-muted-foreground">Tổng task</span>
                         </div>
                         <p className="text-2xl font-bold">{totalTasks}</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">{activeTasks.length} đang hoạt động</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">{activeTasks.length} đang hoạt động</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -147,7 +147,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                             <span className="text-xs text-muted-foreground">Hoàn thành</span>
                         </div>
                         <p className="text-2xl font-bold text-emerald-600">{completionRate}%</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">{completedTasks.length}/{totalTasks} tasks</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">{completedTasks.length}/{totalTasks} tasks</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -157,17 +157,17 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                             <span className="text-xs text-muted-foreground">TB hoàn thành</span>
                         </div>
                         <p className="text-2xl font-bold text-blue-600">{avgCompletionDays}</p>
-                        <p className="text-[10px] text-muted-foreground mt-1">ngày / task</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">ngày / task</p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-2">
-                            {monthTrend >= 0 ? <TrendingUp className="h-4 w-4 text-emerald-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
+                            {monthTrend >= 0 ? <TrendingUp className="h-4 w-4 text-emerald-500" /> : <TrendingDown className="h-4 w-4 text-rose-500" />}
                             <span className="text-xs text-muted-foreground">Tháng này</span>
                         </div>
                         <p className="text-2xl font-bold">{completedThisMonth}</p>
-                        <p className={`text-[10px] mt-1 font-medium ${monthTrend >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        <p className={`text-[11px] mt-1 font-medium ${monthTrend >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {monthTrend >= 0 ? '+' : ''}{monthTrend}% so với tháng trước
                         </p>
                     </CardContent>
@@ -196,7 +196,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                                     <div className={`h-2.5 w-2.5 rounded-full ${statusColors[status]}`} />
                                     <span className="text-xs flex-1">{statusLabels[status]}</span>
                                     <span className="text-xs font-semibold">{count}</span>
-                                    <span className="text-[10px] text-muted-foreground w-10 text-right">
+                                    <span className="text-[11px] text-muted-foreground w-10 text-right">
                                         {Math.round((count / statusTotal) * 100)}%
                                     </span>
                                 </div>
@@ -222,7 +222,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                                         <div className="h-2 rounded-full bg-muted overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full transition-all ${
-                                                    priority === 'urgent' || priority === 'high' ? 'bg-red-500' :
+                                                    priority === 'urgent' || priority === 'high' ? 'bg-rose-500' :
                                                     priority === 'medium' ? 'bg-blue-500' : 'bg-zinc-400'
                                                 }`}
                                                 style={{ width: `${percent}%` }}
@@ -242,7 +242,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                         <div className="flex items-end gap-1 h-[120px]">
                             {weeklyData.map((week, i) => (
                                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                                    <span className="text-[9px] text-muted-foreground font-medium">{week.count}</span>
+                                    <span className="text-[11px] text-muted-foreground font-medium">{week.count}</span>
                                     <div
                                         className={`w-full rounded-t transition-all ${
                                             i === weeklyData.length - 1 ? 'bg-blue-500' : 'bg-blue-200'
@@ -297,8 +297,8 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                                         {member.full_name.charAt(0).toUpperCase()}
                                     </div>
                                     <span className="text-sm font-medium flex-1">{member.full_name}</span>
-                                    <Badge variant="secondary" className="text-[10px]">{member.completed} xong</Badge>
-                                    <Badge variant="outline" className="text-[10px]">{member.active} đang làm</Badge>
+                                    <Badge variant="secondary" className="text-[11px]">{member.completed} xong</Badge>
+                                    <Badge variant="outline" className="text-[11px]">{member.active} đang làm</Badge>
                                 </div>
                             ))}
                         </div>
@@ -308,17 +308,17 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
 
             {/* Overdue Alert */}
             {overdueTasks.length > 0 && (
-                <Card className="border-red-200">
+                <Card className="border-rose-200">
                     <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-3">
-                            <AlertTriangle className="h-4 w-4 text-red-500" />
-                            <h3 className="text-sm font-semibold text-red-700">{overdueTasks.length} task quá hạn</h3>
+                            <AlertTriangle className="h-4 w-4 text-rose-500" />
+                            <h3 className="text-sm font-semibold text-rose-700">{overdueTasks.length} task quá hạn</h3>
                         </div>
                         <div className="space-y-1">
                             {overdueTasks.slice(0, 5).map(task => (
                                 <div key={task.id} className="flex items-center gap-2 py-1 text-xs">
                                     <span className="flex-1 truncate font-medium">{task.title}</span>
-                                    <span className="text-red-600 shrink-0">
+                                    <span className="text-rose-600 shrink-0">
                                         {task.due_date && new Date(task.due_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                     </span>
                                     <span className="text-muted-foreground shrink-0">
@@ -327,7 +327,7 @@ export function AnalyticsClient({ tasks, teamMembers }: AnalyticsClientProps) {
                                 </div>
                             ))}
                             {overdueTasks.length > 5 && (
-                                <p className="text-[10px] text-muted-foreground">+{overdueTasks.length - 5} task khác</p>
+                                <p className="text-[11px] text-muted-foreground">+{overdueTasks.length - 5} task khác</p>
                             )}
                         </div>
                     </CardContent>

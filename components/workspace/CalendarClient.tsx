@@ -9,7 +9,7 @@ import { QuickAddTaskDialog } from './QuickAddTaskDialog'
 import { TaskDetailPanel } from './TaskDetailPanel'
 
 const priorityColors: Record<string, string> = {
-    urgent: 'bg-red-500',
+    urgent: 'bg-rose-500',
     high: 'bg-orange-500',
     medium: 'bg-blue-500',
     low: 'bg-zinc-400',
@@ -175,13 +175,13 @@ export function CalendarClient({ tasks, teamMembers }: CalendarClientProps) {
                                                         isTodayCell
                                                             ? 'bg-foreground text-background'
                                                             : isSelected
-                                                                ? 'bg-blue-100 text-blue-700'
+                                                                ? 'bg-blue-50 text-blue-700'
                                                                 : 'text-muted-foreground'
                                                     }`}>
                                                         {day}
                                                     </span>
                                                     {dayTasks.length > 0 && (
-                                                        <span className="text-[9px] text-muted-foreground font-medium">
+                                                        <span className="text-[11px] text-muted-foreground font-medium">
                                                             {dayTasks.length}
                                                         </span>
                                                     )}
@@ -190,7 +190,7 @@ export function CalendarClient({ tasks, teamMembers }: CalendarClientProps) {
                                                     {dayTasks.slice(0, 3).map((task) => (
                                                         <div
                                                             key={task.id}
-                                                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] truncate cursor-pointer transition-colors ${
+                                                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] truncate cursor-pointer transition-colors ${
                                                                 task.status === 'completed'
                                                                     ? 'bg-emerald-50 text-emerald-700 line-through opacity-70'
                                                                     : 'bg-muted/50 hover:bg-muted text-foreground'
@@ -202,7 +202,7 @@ export function CalendarClient({ tasks, teamMembers }: CalendarClientProps) {
                                                         </div>
                                                     ))}
                                                     {dayTasks.length > 3 && (
-                                                        <span className="text-[10px] text-muted-foreground px-1 font-medium">
+                                                        <span className="text-[11px] text-muted-foreground px-1 font-medium">
                                                             +{dayTasks.length - 3} khác
                                                         </span>
                                                     )}
@@ -250,9 +250,9 @@ export function CalendarClient({ tasks, teamMembers }: CalendarClientProps) {
                                             <span className={`text-sm flex-1 truncate ${task.status === 'completed' ? 'line-through opacity-60' : ''}`}>
                                                 {task.title}
                                             </span>
-                                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                                            <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                                                 task.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                                                task.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
+                                                task.status === 'in_progress' ? 'bg-blue-50 text-blue-700' :
                                                 task.status === 'in_review' ? 'bg-amber-100 text-amber-700' :
                                                 'bg-zinc-100 text-zinc-700'
                                             }`}>
@@ -261,7 +261,7 @@ export function CalendarClient({ tasks, teamMembers }: CalendarClientProps) {
                                                  task.status === 'in_review' ? 'Review' : 'Cần làm'}
                                             </span>
                                             {task.assigned_user && (
-                                                <div className="h-5 w-5 rounded-full bg-zinc-200 flex items-center justify-center text-[9px] font-medium text-zinc-600 shrink-0">
+                                                <div className="h-5 w-5 rounded-full bg-zinc-200 flex items-center justify-center text-[11px] font-medium text-zinc-600 shrink-0">
                                                     {((task.assigned_user as any).full_name || '?').charAt(0).toUpperCase()}
                                                 </div>
                                             )}

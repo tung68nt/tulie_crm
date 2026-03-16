@@ -48,12 +48,12 @@ export default async function WorkspacePage() {
                 {(dangerAlerts > 0 || warningAlerts > 0) && (
                     <div className="flex gap-2">
                         {dangerAlerts > 0 && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <span className="inline-flex items-center gap-1.5 px-3 h-6 rounded-full text-[11px] font-normal bg-rose-50 text-rose-700">
                                 {dangerAlerts} cảnh báo
                             </span>
                         )}
                         {warningAlerts > 0 && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <span className="inline-flex items-center gap-1.5 px-3 h-6 rounded-full text-[11px] font-normal bg-amber-50 text-amber-700">
                                 {warningAlerts} chú ý
                             </span>
                         )}

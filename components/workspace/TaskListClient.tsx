@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ListTodo, Plus, Filter, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { QuickAddTaskDialog } from './QuickAddTaskDialog'
 import { TaskDetailPanel } from './TaskDetailPanel'
 
@@ -19,19 +20,12 @@ const statusLabels: Record<string, string> = {
     cancelled: 'Đã huỷ',
 }
 
-const priorityConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-    urgent: { label: 'Khẩn cấp', variant: 'destructive' },
-    high: { label: 'Cao', variant: 'destructive' },
-    medium: { label: 'Tb', variant: 'default' },
-    low: { label: 'Thấp', variant: 'secondary' },
-}
-
 const statusColors: Record<string, string> = {
-    todo: 'bg-zinc-100 text-zinc-700',
-    in_progress: 'bg-blue-100 text-blue-700',
-    in_review: 'bg-amber-100 text-amber-700',
-    completed: 'bg-emerald-100 text-emerald-700',
-    cancelled: 'bg-red-100 text-red-700',
+    todo: 'bg-zinc-100 text-zinc-500',
+    in_progress: 'bg-blue-50 text-blue-700',
+    in_review: 'bg-amber-50 text-amber-700',
+    completed: 'bg-emerald-50 text-emerald-700',
+    cancelled: 'bg-zinc-100 text-zinc-400 line-through',
 }
 
 const statusDots: Record<string, string> = {
@@ -39,7 +33,7 @@ const statusDots: Record<string, string> = {
     in_progress: 'bg-blue-500',
     in_review: 'bg-amber-500',
     completed: 'bg-emerald-500',
-    cancelled: 'bg-red-400',
+    cancelled: 'bg-zinc-400',
 }
 
 interface TaskListClientProps {
@@ -169,27 +163,26 @@ export function TaskListClient({ tasks, teamMembers }: TaskListClientProps) {
                                             </div>
 
                                             {/* Priority */}
-                                            {task.priority && priorityConfig[task.priority] && (
-                                                <Badge variant={priorityConfig[task.priority].variant} className="text-[10px] px-1.5 py-0 h-5 shrink-0">
-                                                    {priorityConfig[task.priority].label}
-                                                </Badge>
+                                            {task.priority && (
+                                                <StatusBadge status={task.priority} entityType="ticket_priority" className="shrink-0" />
                                             )}
 
                                             {/* Status */}
-                                            <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full shrink-0 ${statusColors[task.status] || ''}`}>
+                                            <span className={`text-[11px] font-normal px-3 h-6 inline-flex items-center gap-1.5 rounded-full shrink-0 ${statusColors[task.status] || ''}`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${statusDots[task.status] || 'bg-zinc-400'}`} />
                                                 {statusLabels[task.status] || task.status}
                                             </span>
 
                                             {/* Due date */}
                                             {task.due_date && (
-                                                <span className={`text-xs whitespace-nowrap shrink-0 ${isOverdue ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+                                                <span className={`text-xs whitespace-nowrap shrink-0 ${isOverdue ? 'text-rose-600 font-medium' : 'text-muted-foreground'}`}>
                                                     {new Date(task.due_date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
                                                 </span>
                                             )}
 
                                             {/* Assignee avatar */}
                                             {task.assigned_user && (
-                                                <div className="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-[10px] font-medium text-zinc-600 shrink-0" title={(task.assigned_user as any).full_name || ''}>
+                                                <div className="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-[11px] font-medium text-zinc-600 shrink-0" title={(task.assigned_user as any).full_name || ''}>
                                                     {((task.assigned_user as any).full_name || '?').charAt(0).toUpperCase()}
                                                 </div>
                                             )}

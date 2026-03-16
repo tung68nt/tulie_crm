@@ -36,7 +36,7 @@ export default function MonthSummaryCard({ summary }: MonthSummaryCardProps) {
                     <div className="w-full h-3 rounded-full bg-gray-100 flex overflow-hidden">
                         {completed > 0 && (
                             <div
-                                className="h-3 bg-green-500 transition-all"
+                                className="h-3 bg-emerald-500 transition-all"
                                 style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }}
                             />
                         )}
@@ -57,7 +57,7 @@ export default function MonthSummaryCard({ summary }: MonthSummaryCardProps) {
                     {/* Legend */}
                     <div className="flex justify-between text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
-                            <CheckCircle2 className="h-3 w-3 text-green-500" />
+                            <CheckCircle2 className="h-3 w-3 text-emerald-500" />
                             {completed} xong
                         </span>
                         <span className="flex items-center gap-1">

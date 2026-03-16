@@ -13,7 +13,7 @@ const statusColors: Record<string, string> = {
     in_progress: 'bg-blue-500',
     in_review: 'bg-amber-500',
     completed: 'bg-emerald-500',
-    cancelled: 'bg-red-300',
+    cancelled: 'bg-rose-300',
 }
 
 const statusLabels: Record<string, string> = {
@@ -173,7 +173,7 @@ export function TimelineClient({ tasks, teamMembers }: TimelineClientProps) {
                                         {dayMarkers.map((marker, i) => (
                                             <div
                                                 key={i}
-                                                className={`flex-1 flex items-end justify-center pb-1 text-[9px] font-medium border-r ${
+                                                className={`flex-1 flex items-end justify-center pb-1 text-[11px] font-medium border-r ${
                                                     marker.isMonday
                                                         ? 'text-foreground border-r-zinc-300'
                                                         : 'text-muted-foreground/40 border-r-zinc-100'
@@ -211,14 +211,14 @@ export function TimelineClient({ tasks, teamMembers }: TimelineClientProps) {
                                                 <div className={`h-2 w-2 rounded-full shrink-0 ${statusColors[task.status] || 'bg-zinc-400'}`} />
                                                 <span className="text-[11px] font-medium truncate flex-1">{task.title}</span>
                                                 {task.priority && (
-                                                    <span className="text-[10px] shrink-0">{priorityLabels[task.priority] || ''}</span>
+                                                    <span className="text-[11px] shrink-0">{priorityLabels[task.priority] || ''}</span>
                                                 )}
                                             </div>
                                             <div className="flex-1 relative">
                                                 {/* Today marker */}
                                                 {todayPercent >= 0 && todayPercent <= 100 && (
                                                     <div
-                                                        className="absolute top-0 bottom-0 w-px bg-red-400 z-10"
+                                                        className="absolute top-0 bottom-0 w-px bg-rose-400 z-10"
                                                         style={{ left: `${todayPercent}%` }}
                                                     />
                                                 )}
@@ -226,7 +226,7 @@ export function TimelineClient({ tasks, teamMembers }: TimelineClientProps) {
                                                 <div
                                                     className={`absolute top-2 h-[18px] rounded-md transition-all group-hover:brightness-110 ${
                                                         isOverdue
-                                                            ? 'bg-red-200 border border-red-400'
+                                                            ? 'bg-rose-200 border border-rose-400'
                                                             : statusColors[task.status] || 'bg-zinc-300'
                                                     } ${task.status === 'completed' ? 'opacity-40' : 'opacity-80'}`}
                                                     style={{
@@ -238,7 +238,7 @@ export function TimelineClient({ tasks, teamMembers }: TimelineClientProps) {
                                                 >
                                                     {/* Task title on bar if wide enough */}
                                                     {barWidthPercent > 8 && (
-                                                        <span className="absolute inset-0 flex items-center px-1.5 text-[9px] font-medium text-white truncate">
+                                                        <span className="absolute inset-0 flex items-center px-1.5 text-[11px] font-medium text-white truncate">
                                                             {task.title}
                                                         </span>
                                                     )}
@@ -270,11 +270,11 @@ export function TimelineClient({ tasks, teamMembers }: TimelineClientProps) {
                         </div>
                     ))}
                     <div className="flex items-center gap-1.5 ml-2">
-                        <div className="w-3 h-px bg-red-400" />
+                        <div className="w-3 h-px bg-rose-400" />
                         <span>Hôm nay</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="h-2.5 w-6 rounded-md bg-red-200 border border-red-400" />
+                        <div className="h-2.5 w-6 rounded-md bg-rose-200 border border-rose-400" />
                         <span>Quá hạn</span>
                     </div>
                 </div>

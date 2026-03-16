@@ -24,10 +24,10 @@ import { WorkspaceTask } from '@/types'
 
 const statusOptions = [
     { value: 'todo', label: 'Cần làm', color: 'bg-zinc-100 text-zinc-700' },
-    { value: 'in_progress', label: 'Đang làm', color: 'bg-blue-100 text-blue-700' },
+    { value: 'in_progress', label: 'Đang làm', color: 'bg-blue-50 text-blue-700' },
     { value: 'in_review', label: 'Đang review', color: 'bg-amber-100 text-amber-700' },
     { value: 'completed', label: 'Hoàn thành', color: 'bg-emerald-100 text-emerald-700' },
-    { value: 'cancelled', label: 'Đã huỷ', color: 'bg-red-100 text-red-700' },
+    { value: 'cancelled', label: 'Đã huỷ', color: 'bg-rose-50 text-rose-700' },
 ]
 
 const priorityOptions = [
@@ -225,7 +225,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                     </div>
 
                     {isOverdue && (
-                        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg mt-3">
+                        <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mt-3">
                             <AlertTriangle className="h-4 w-4" />
                             Task đã quá hạn!
                         </div>
@@ -252,7 +252,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
 
                 <div className="p-6 pt-4">
                     {error && (
-                        <div className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg mb-4">
+                        <div className="text-sm text-rose-600 bg-rose-50 px-3 py-2 rounded-lg mb-4">
                             {error}
                         </div>
                     )}
@@ -333,7 +333,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
 
                             <div className="flex items-center justify-between pt-3 border-t">
                                 {!confirmDelete ? (
-                                    <Button type="button" variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setConfirmDelete(true)}>
+                                    <Button type="button" variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700 hover:bg-rose-50" onClick={() => setConfirmDelete(true)}>
                                         <Trash2 className="h-4 w-4 mr-1" /> Xoá
                                     </Button>
                                 ) : (
@@ -396,7 +396,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                             onClick={() => handleRemoveItem(item.id)}
                                             className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                                         >
-                                            <X className="h-3.5 w-3.5 text-muted-foreground hover:text-red-500" />
+                                            <X className="h-3.5 w-3.5 text-muted-foreground hover:text-rose-500" />
                                         </button>
                                     </div>
                                 ))}
@@ -443,20 +443,20 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                         {comments.map((comment) => (
                                             <div key={comment.id} className="group">
                                                 <div className="flex items-start gap-2">
-                                                    <div className="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-[10px] font-medium text-zinc-600 shrink-0 mt-0.5">
+                                                    <div className="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-[11px] font-medium text-zinc-600 shrink-0 mt-0.5">
                                                         {(comment.user?.full_name || '?').charAt(0).toUpperCase()}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-xs font-semibold">{comment.user?.full_name || 'Ẩn danh'}</span>
-                                                            <span className="text-[10px] text-muted-foreground">
+                                                            <span className="text-[11px] text-muted-foreground">
                                                                 {new Date(comment.created_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                                             </span>
                                                             <button
                                                                 onClick={() => handleDeleteComment(comment.id)}
                                                                 className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto"
                                                             >
-                                                                <X className="h-3 w-3 text-muted-foreground hover:text-red-500" />
+                                                                <X className="h-3 w-3 text-muted-foreground hover:text-rose-500" />
                                                             </button>
                                                         </div>
                                                         <p className="text-sm text-foreground mt-0.5 whitespace-pre-wrap">{comment.content}</p>
@@ -487,7 +487,7 @@ export function TaskDetailPanel({ task, open, onOpenChange, teamMembers = [] }: 
                                     {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                                 </Button>
                             </div>
-                            <p className="text-[10px] text-muted-foreground">⌘+Enter để gửi</p>
+                            <p className="text-[11px] text-muted-foreground">⌘+Enter để gửi</p>
                         </div>
                     )}
                 </div>

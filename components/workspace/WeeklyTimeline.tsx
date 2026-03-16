@@ -70,14 +70,14 @@ export default function WeeklyTimeline({ overview }: WeeklyTimelineProps) {
                                             {dayTasks.slice(0, 3).map(task => (
                                                 <div
                                                     key={task.id}
-                                                    className="text-[10px] leading-tight p-1 rounded bg-white border truncate"
+                                                    className="text-[11px] leading-tight p-1 rounded bg-white border truncate"
                                                     title={task.title}
                                                 >
                                                     {task.title}
                                                 </div>
                                             ))}
                                             {dayTasks.length > 3 && (
-                                                <div className="text-[10px] text-muted-foreground text-center">
+                                                <div className="text-[11px] text-muted-foreground text-center">
                                                     +{dayTasks.length - 3} khác
                                                 </div>
                                             )}
