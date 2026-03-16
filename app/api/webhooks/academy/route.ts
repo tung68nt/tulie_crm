@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createRetailOrder, recordRetailPayment, generateRetailOrderId } from '@/lib/supabase/services/retail-order-service'
 import { getSystemSetting } from '@/lib/supabase/services/settings-service'
 import { validateBody, academyWebhookSchema } from '@/lib/security/validation'
@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'Ignored: Not an order paid event' }, { status: 200 })
         }
 
-        const supabase = await createClient()
+        // SECURITY: Use admin client — webhooks have no user session, RLS would block
+        const supabase = createAdminClient()
 
         // 2. Check if already exists by external_id
         const { data: existing } = await supabase
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
 
 async function logWebhookTransaction(externalId: string, type: string, internalId: string, amount: number, content: string) {
     try {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
         await supabase.from('activity_log').insert([{
             entity_type: 'customer',
             entity_id: internalId,
