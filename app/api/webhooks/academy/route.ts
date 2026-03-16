@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createRetailOrder, recordRetailPayment, generateRetailOrderId } from '@/lib/supabase/services/retail-order-service'
 import { getSystemSetting } from '@/lib/supabase/services/settings-service'
+import { validateBody, academyWebhookSchema } from '@/lib/security/validation'
 
 /**
  * Academy Webhook Receiver
@@ -9,7 +10,13 @@ import { getSystemSetting } from '@/lib/supabase/services/settings-service'
  */
 export async function POST(req: NextRequest) {
     try {
-        const payload = await req.json()
+        const raw = await req.json()
+        const validation = validateBody(raw, academyWebhookSchema)
+        if (!validation.success) {
+            console.warn('[Academy Webhook] Invalid payload:', validation.error)
+            return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
+        }
+        const payload = validation.data
         const apiKey = req.headers.get('x-academy-api-key')
 
         // 1. Validate API Key — MANDATORY

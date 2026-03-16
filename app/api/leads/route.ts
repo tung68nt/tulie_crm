@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitize'
+import { validateBody, createLeadSchema, updateLeadSchema } from '@/lib/security/validation'
 import { applyScopeFilter } from '@/lib/security/permissions'
 
 
@@ -21,33 +22,16 @@ export async function POST(req: Request) {
         })
         if (rateLimitResult) return rateLimitResult
 
-        const body = await req.json()
-        const { full_name, company_name, phone, email, business_type, message } = body
+        const raw = await req.json()
+        const validation = validateBody(raw, createLeadSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
+        }
+        const { full_name, company_name, phone, email, business_type, message } = validation.data
 
-        // Input validation
+        // Additional sanitization
         const cleanName = sanitizeText(full_name, 200)
         const cleanPhone = sanitizeText(phone, 20)
-
-        if (!cleanName || !cleanPhone) {
-            return NextResponse.json(
-                { error: 'Vui lòng điền họ tên và số điện thoại' },
-                { status: 400 }
-            )
-        }
-
-        if (!isValidPhone(cleanPhone)) {
-            return NextResponse.json(
-                { error: 'Số điện thoại không hợp lệ' },
-                { status: 400 }
-            )
-        }
-
-        if (email && !isValidEmail(email)) {
-            return NextResponse.json(
-                { error: 'Email không hợp lệ' },
-                { status: 400 }
-            )
-        }
 
         // SECURITY: Use admin client for public form inserts (no user session available)
         const supabase = createAdminClient()
@@ -56,11 +40,11 @@ export async function POST(req: Request) {
             .from('leads')
             .insert({
                 full_name: cleanName,
-                company_name: sanitizeText(company_name, 200) || null,
+                company_name: sanitizeText(company_name || '', 200) || null,
                 phone: cleanPhone,
                 email: email ? sanitizeText(email, 320) : null,
-                business_type: sanitizeText(business_type, 100) || null,
-                message: sanitizeText(message, 2000) || null,
+                business_type: sanitizeText(business_type || '', 100) || null,
+                message: sanitizeText(message || '', 2000) || null,
                 status: 'new',
                 source: 'landing_page',
             })
@@ -122,18 +106,12 @@ export async function PATCH(req: Request) {
 
         const { supabase } = authResult
 
-        const body = await req.json()
-        const { id, status, notes } = body
-
-        if (!id) {
-            return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+        const raw = await req.json()
+        const validation = validateBody(raw, updateLeadSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
         }
-
-        // Validate status if provided
-        const validStatuses = ['new', 'contacted', 'qualified', 'converted', 'lost']
-        if (status && !validStatuses.includes(status)) {
-            return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
-        }
+        const { id, status, notes } = validation.data
 
         const updates: Record<string, any> = { updated_at: new Date().toISOString() }
         if (status) updates.status = status

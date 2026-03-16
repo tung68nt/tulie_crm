@@ -63,7 +63,7 @@ export const updateLeadSchema = z.object({
 export const sendEmailSchema = z.object({
     type: z.enum(['quotation', 'invoice', 'contract', 'notification']),
     to: z.string().email(),
-    data: z.record(z.string(), z.unknown()),
+    data: z.record(z.string(), z.any()),
 })
 
 /** PATCH /api/projects/[id] */
@@ -89,6 +89,58 @@ export const syncTransactionsSchema = z.object({
     dateMin: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     dateMax: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 })
+
+/** POST /api/studio/shipping-info */
+export const shippingInfoSchema = z.object({
+    token: z.string().min(1, 'Token is required'),
+    shipping_info: z.object({
+        recipient_name: z.string().max(200).optional().default(''),
+        recipient_phone: z.string().max(20).optional().default(''),
+        address: z.string().max(500).optional().default(''),
+        ward: z.string().max(100).optional().default(''),
+        province: z.string().max(100).optional().default(''),
+    }),
+})
+
+/** POST /api/contracts/[id]/generate-document */
+export const generateDocumentSchema = z.object({
+    type: z.enum(['contract', 'order', 'payment_request', 'delivery_minutes', 'acceptance_report']),
+    additionalVariables: z.record(z.string(), z.string()).optional(),
+})
+
+/** POST /api/webhooks/sepay */
+export const sepayWebhookSchema = z.object({
+    id: z.number().int(),
+    gateway: z.string(),
+    transactionDate: z.string(),
+    accountNumber: z.string(),
+    code: z.string().nullable().optional(),
+    content: z.string(),
+    transferType: z.enum(['in', 'out']),
+    transferAmount: z.number(),
+    accumulated: z.number(),
+    subAccount: z.string().nullable().optional(),
+    referenceCode: z.string(),
+    description: z.string(),
+})
+
+/** POST /api/webhooks/academy */
+export const academyWebhookSchema = z.object({
+    event: z.string().min(1),
+    order: z.object({
+        id: z.string(),
+        code: z.string(),
+        amount: z.number().positive(),
+        user: z.object({
+            email: z.string().email().optional(),
+            profile: z.object({
+                name: z.string().optional(),
+                phone: z.string().optional(),
+            }).optional(),
+        }).optional(),
+        items: z.array(z.any()).optional(),
+    }),
+}).passthrough() // Allow additional fields from external system
 
 // ============================================
 // HELPER

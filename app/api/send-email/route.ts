@@ -9,6 +9,7 @@ import {
     contractEmailTemplate,
     notificationEmailTemplate,
 } from '@/lib/email'
+import { validateBody, sendEmailSchema } from '@/lib/security/validation'
 
 /**
  * POST /api/send-email — Authenticated endpoint for sending emails
@@ -29,15 +30,12 @@ export async function POST(request: NextRequest) {
         })
         if (rateLimitResult) return rateLimitResult
 
-        const body = await request.json()
-        const { type, to, data } = body
-
-        if (!to || !type) {
-            return NextResponse.json(
-                { error: 'Missing required fields: to, type' },
-                { status: 400 }
-            )
+        const raw = await request.json()
+        const validation = validateBody(raw, sendEmailSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
         }
+        const { type, to, data } = validation.data
 
         let subject = ''
         let html = ''

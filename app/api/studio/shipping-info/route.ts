@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText } from '@/lib/security/sanitize'
+import { validateBody, shippingInfoSchema } from '@/lib/security/validation'
 
 /**
  * POST /api/studio/shipping-info — Public endpoint for saving shipping info
@@ -20,16 +21,12 @@ export async function POST(req: NextRequest) {
         })
         if (rateLimitResult) return rateLimitResult
 
-        const { token, shipping_info } = await req.json()
-
-        // SECURITY: Require public_token for all requests (no order_id fallback to prevent IDOR)
-        if (!token) {
-            return NextResponse.json({ error: 'Missing token' }, { status: 400 })
+        const raw = await req.json()
+        const validation = validateBody(raw, shippingInfoSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
         }
-
-        if (!shipping_info || typeof shipping_info !== 'object') {
-            return NextResponse.json({ error: 'Invalid shipping_info' }, { status: 400 })
-        }
+        const { token, shipping_info } = validation.data
 
         // Sanitize all shipping info fields
         const sanitized = {

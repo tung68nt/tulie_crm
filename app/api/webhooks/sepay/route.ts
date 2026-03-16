@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { processWebhookPayment, SepayWebhookPayload } from '@/lib/supabase/services/payment-service'
 import { getSystemSetting, verifySepaySignature } from '@/lib/supabase/services/settings-service'
+import { validateBody, sepayWebhookSchema } from '@/lib/security/validation'
 
 /**
  * SePay Webhook Handler
@@ -18,7 +19,13 @@ import { getSystemSetting, verifySepaySignature } from '@/lib/supabase/services/
  */
 export async function POST(req: NextRequest) {
     try {
-        const payload: SepayWebhookPayload = await req.json()
+        const raw = await req.json()
+        const validation = validateBody(raw, sepayWebhookSchema)
+        if (!validation.success) {
+            console.warn('[SePay Webhook] Invalid payload:', validation.error)
+            return NextResponse.json({ success: false, message: 'Invalid payload' }, { status: 400 })
+        }
+        const payload = validation.data as SepayWebhookPayload
         const authHeader = req.headers.get('authorization') || req.headers.get('x-api-key')
         const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
 

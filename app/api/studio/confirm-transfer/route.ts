@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { sendTelegramNotification } from '@/lib/supabase/services/telegram-service'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText, escapeHtmlEntities } from '@/lib/security/sanitize'
+import { validateBody, confirmTransferSchema } from '@/lib/security/validation'
 
 /**
  * Manual Payment Confirmation API
@@ -25,19 +26,12 @@ export async function POST(req: NextRequest) {
         })
         if (rateLimitResult) return rateLimitResult
 
-        const body = await req.json()
-        const { order_id, order_number, customer_name, customer_phone, amount, note } = body
-
-        // Input validation
-        if (!order_id || !order_number) {
-            return NextResponse.json({ error: 'Missing order_id or order_number' }, { status: 400 })
+        const raw = await req.json()
+        const validation = validateBody(raw, confirmTransferSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
         }
-
-        // Validate order_id format (UUID)
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-        if (!uuidRegex.test(order_id)) {
-            return NextResponse.json({ error: 'Invalid order_id format' }, { status: 400 })
-        }
+        const { order_id, order_number, customer_name, customer_phone, amount, note } = validation.data
 
         const supabase = await createClient()
 

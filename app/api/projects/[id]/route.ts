@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { updateProjectStatus, updateProject, createAcceptanceReport } from '@/lib/supabase/services/project-service'
+import { validateBody, updateProjectSchema, projectActionSchema } from '@/lib/security/validation'
 
 /**
  * PATCH /api/projects/[id] — Requires 'edit' permission on projects
@@ -12,12 +13,18 @@ export async function PATCH(req: NextRequest, { params }: any) {
         if (isAuthError(authResult)) return authResult
 
         const { id } = await params
-        const body = await req.json()
+        const raw = await req.json()
 
-        if (body.status) {
-            await updateProjectStatus(id, body.status)
+        if (raw.status && !raw.title && !raw.description) {
+            // Status-only update (legacy path)
+            await updateProjectStatus(id, raw.status)
         } else {
-            await updateProject(id, body)
+            // Full field update — validate with Zod
+            const validation = validateBody(raw, updateProjectSchema)
+            if (!validation.success) {
+                return NextResponse.json({ error: validation.error }, { status: 400 })
+            }
+            await updateProject(id, validation.data)
         }
 
         return NextResponse.json({ success: true })
@@ -37,7 +44,12 @@ export async function POST(req: NextRequest, { params }: any) {
         if (isAuthError(authResult)) return authResult
 
         const { id } = await params
-        const body = await req.json()
+        const raw = await req.json()
+        const validation = validateBody(raw, projectActionSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
+        }
+        const body = validation.data
 
         if (body.action === 'create_acceptance_report') {
             // Generate report number: BBNT-YYYYMMDD-XXX

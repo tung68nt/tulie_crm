@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { generateDocument } from '@/lib/supabase/services/document-template-service'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
+import { validateBody, generateDocumentSchema } from '@/lib/security/validation'
 
 /**
  * POST /api/contracts/[id]/generate-document — Authenticated endpoint
@@ -18,13 +19,12 @@ export async function POST(
 
         const { supabase } = authResult
         const { id: contractId } = await params
-        const body = await request.json()
-        const { type, additionalVariables } = body
-        // type: 'contract' | 'order' | 'payment_request' | 'delivery_minutes'
-
-        if (!type) {
-            return NextResponse.json({ error: 'Missing document type' }, { status: 400 })
+        const raw = await request.json()
+        const validation = validateBody(raw, generateDocumentSchema)
+        if (!validation.success) {
+            return NextResponse.json({ error: validation.error }, { status: 400 })
         }
+        const { type, additionalVariables } = validation.data
 
         // Find the template matching the type
         const templates = await getDocumentTemplates()
