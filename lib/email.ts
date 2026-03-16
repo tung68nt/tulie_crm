@@ -12,6 +12,19 @@ function getResend() {
 // Nếu chưa verify domain, dùng onboarding@resend.dev để test
 const FROM_EMAIL = process.env.EMAIL_FROM || 'Tulie CRM <onboarding@resend.dev>'
 
+/**
+ * SECURITY: Escape HTML entities to prevent XSS in email templates.
+ * All user-controlled values MUST be escaped before interpolation.
+ */
+function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+}
+
 export interface SendEmailOptions {
     to: string | string[]
     subject: string
@@ -91,14 +104,14 @@ export function quotationEmailTemplate({
                 <p>Mã báo giá: ${quotationNumber}</p>
             </div>
             <div class="content">
-                <p>Xin chào <strong>${customerName}</strong>,</p>
+                <p>Xin chào <strong>${escapeHtml(customerName)}</strong>,</p>
                 <p>Cảm ơn Quý khách đã quan tâm đến dịch vụ của chúng tôi. Dưới đây là thông tin báo giá:</p>
                 
                 <div class="info-box">
                     <table width="100%" cellpadding="4" cellspacing="0" style="border-collapse: collapse;">
                         <tr>
                             <td style="color: #6b7280; font-size: 14px;">Mã báo giá:</td>
-                            <td style="color: #111827; font-weight: 600; text-align: right;">${quotationNumber}</td>
+                            <td style="color: #111827; font-weight: 600; text-align: right;">${escapeHtml(quotationNumber)}</td>
                         </tr>
                         <tr>
                             <td style="color: #6b7280; font-size: 14px;">Tổng giá trị:</td>
@@ -117,7 +130,7 @@ export function quotationEmailTemplate({
 
                 <p>Nếu có bất kỳ thắc mắc nào, Quý khách vui lòng liên hệ trực tiếp với chúng tôi.</p>
 
-                <p>Trân trọng,<br><strong>${senderName}</strong><br>Tulie Agency</p>
+                <p>Trân trọng,<br><strong>${escapeHtml(senderName)}</strong><br>Tulie Agency</p>
             </div>
             <div class="footer">
                 <p>© ${new Date().getFullYear()} Tulie Agency. All rights reserved.</p>
@@ -170,7 +183,7 @@ export function invoiceEmailTemplate({
                 <p>Mã hoá đơn: ${invoiceNumber}</p>
             </div>
             <div class="content">
-                <p>Xin chào <strong>${customerName}</strong>,</p>
+                <p>Xin chào <strong>${escapeHtml(customerName)}</strong>,</p>
                 <p>Chúng tôi gửi đến Quý khách đề nghị thanh toán cho dịch vụ đã cung cấp:</p>
                 
                 <div class="info-box">
@@ -252,7 +265,7 @@ export function contractEmailTemplate({
                 <p>Mã hợp đồng: ${contractNumber}</p>
             </div>
             <div class="content">
-                <p>Xin chào <strong>${customerName}</strong>,</p>
+                <p>Xin chào <strong>${escapeHtml(customerName)}</strong>,</p>
                 <p>Chúng tôi gửi đến Quý khách thông tin hợp đồng như sau:</p>
                 
                 <div class="info-box">
@@ -334,8 +347,8 @@ export function notificationEmailTemplate({
                 <h1>🔔 ${subject}</h1>
             </div>
             <div class="content">
-                <p>Xin chào <strong>${customerName}</strong>,</p>
-                <div style="white-space: pre-line;">${message}</div>
+                <p>Xin chào <strong>${escapeHtml(customerName)}</strong>,</p>
+                <div style="white-space: pre-line;">${escapeHtml(message)}</div>
 
                 ${ctaText && ctaUrl ? `
                 <p style="text-align: center;">

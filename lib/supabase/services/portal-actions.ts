@@ -7,14 +7,27 @@ import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
 // HMAC helper for portal auth cookie signing
-const PORTAL_SECRET = process.env.PORTAL_SECRET || process.env.NEXTAUTH_SECRET || 'tulie-portal-default-secret'
+const PORTAL_SECRET = process.env.PORTAL_SECRET || process.env.NEXTAUTH_SECRET
+if (!PORTAL_SECRET && process.env.NODE_ENV === 'production') {
+    throw new Error('CRITICAL: PORTAL_SECRET environment variable is not set in production!')
+}
+const EFFECTIVE_PORTAL_SECRET = PORTAL_SECRET || 'dev-only-portal-secret'
 
 export function signPortalToken(token: string): string {
-    return crypto.createHmac('sha256', PORTAL_SECRET).update(token).digest('hex')
+    return crypto.createHmac('sha256', EFFECTIVE_PORTAL_SECRET).update(token).digest('hex')
 }
+
+// SECURITY: Only these tables support password protection
+const ALLOWED_PASSWORD_TABLES = ['quotations', 'projects', 'contracts'] as const
+type PasswordTable = typeof ALLOWED_PASSWORD_TABLES[number]
 
 export async function setEntityPassword(tableName: string, entityId: string, password: string) {
     try {
+        // SECURITY: Whitelist table names to prevent arbitrary table writes
+        if (!ALLOWED_PASSWORD_TABLES.includes(tableName as PasswordTable)) {
+            return { success: false, error: 'Table không được hỗ trợ' }
+        }
+
         const supabase = await createClient()
 
         let passwordHash = null
@@ -22,7 +35,7 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
             passwordHash = await bcrypt.hash(password, 10)
         }
 
-        const updateData: any = { password_hash: passwordHash }
+        const updateData: Record<string, unknown> = { password_hash: passwordHash }
 
         const { error } = await supabase
             .from(tableName)
@@ -41,21 +54,13 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
     }
 }
 
-export async function getEntityPasswordPlain(tableName: string, entityId: string) {
-    try {
-        const supabase = await createClient()
-        const { data, error } = await supabase
-            .from(tableName)
-            .select('metadata')
-            .eq('id', entityId)
-            .single()
-
-        if (error) throw error
-        return { password: data?.metadata?.password_plain || null }
-    } catch (err: any) {
-        console.error('Error getting password plain:', err)
-        return { password: null }
-    }
+/**
+ * @deprecated SECURITY: Plaintext password retrieval is disabled.
+ * Passwords are stored as hashes only. This function always returns null.
+ */
+export async function getEntityPasswordPlain(_tableName: string, _entityId: string) {
+    // SECURITY: Never return plaintext passwords — hash-only storage
+    return { password: null }
 }
 
 // Deprecated: use setEntityPassword

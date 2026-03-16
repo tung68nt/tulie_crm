@@ -22,10 +22,11 @@ export async function getPortalDataByToken(token: string) {
         if (primaryQuotation.created_by) {
             const { data: creatorData } = await supabase
                 .from('users')
-                .select('id, full_name, email, phone')
+                .select('id, full_name')
                 .eq('id', primaryQuotation.created_by)
                 .single()
-            if (creatorData) primaryQuotation.creator = creatorData
+            // SECURITY: Only expose name to portal clients
+            if (creatorData) primaryQuotation.creator = { full_name: creatorData.full_name }
         }
 
         const projectId = primaryQuotation.project_id
@@ -43,7 +44,7 @@ export async function getPortalDataByToken(token: string) {
             // Get Project details with assigned manager
             const { data: pDetail } = await supabase
                 .from('projects')
-                .select('*, manager:users!assigned_to(id, full_name, email, phone)')
+                .select('*, manager:users!assigned_to(id, full_name)')
                 .eq('id', projectId)
                 .single()
 
@@ -233,7 +234,7 @@ export async function getPortalDataByToken(token: string) {
             if (projectId) {
                 const { data: actData } = await supabase
                     .from('activity_log')
-                    .select('*, user:users(*)')
+                    .select('id, entity_type, entity_id, action, details, created_at, user:users(id, full_name)')
                     .or(`entity_id.eq.${projectId},metadata->>project_id.eq.${projectId}`)
                     .order('created_at', { ascending: false })
                     .limit(20)
@@ -241,7 +242,7 @@ export async function getPortalDataByToken(token: string) {
             } else {
                 const { data: actData } = await supabase
                     .from('activity_log')
-                    .select('*, user:users(*)')
+                    .select('id, entity_type, entity_id, action, details, created_at, user:users(id, full_name)')
                     .eq('entity_id', primaryQuotation.id)
                     .order('created_at', { ascending: false })
                     .limit(20)

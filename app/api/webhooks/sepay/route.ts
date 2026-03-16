@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         const authHeader = req.headers.get('authorization') || req.headers.get('x-api-key')
         const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
 
-        console.log(`[SePay Webhook] Received: txn_id=${payload?.id}, type=${payload?.transferType}`)
+        console.log(`[SePay Webhook] Received: type=${payload?.transferType}`)
 
         // 1. Verify API Key — MANDATORY
         const telegramConfig = await getSystemSetting('telegram_config')
@@ -33,9 +33,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Webhook not configured' }, { status: 503 })
         }
 
-        // Auth is optional — SePay may be configured with "Không chứng thực"
+        // SECURITY: Require auth when API key is configured
         if (!authHeader && !signature) {
-            console.log('[SePay Webhook] No auth header (SePay configured without authentication)')
+            console.warn('[SePay Webhook] Rejected: No auth header or signature provided')
+            return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
         }
 
         if (authHeader && storedApiKey) {
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
         // 3. Process payment via service
         const result = await processWebhookPayment(payload)
 
-        console.log(`[SePay Webhook] Processed: matched=${result.matched}, order=${result.orderNumber}, system=${result.sourceSystem}`)
+        console.log(`[SePay Webhook] Processed: matched=${result.matched}, system=${result.sourceSystem}`)
 
         // SePay requires: {"success": true} + HTTP 200
         return NextResponse.json({
