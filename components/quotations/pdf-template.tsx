@@ -228,6 +228,10 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
     const pc = quotation.proposal_content || {};
     const hasProposal = pc && Object.values(pc).some(v => v && String(v).trim().length > 0);
 
+    // Calculate discount totals
+    const subtotalRaw = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price), 0);
+    const totalDiscount = items.reduce((sum: number, item: any) => sum + (item.quantity * item.unit_price * ((item.discount || 0) / 100)), 0);
+
     items.forEach((item: any) => {
         const sectionName = item.section_name || DEFAULT_SECTION;
         if (!sections[sectionName]) {
@@ -385,8 +389,20 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                     <View style={{ width: '40%', gap: 4 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ fontSize: 9 }}>Tạm tính:</Text>
-                            <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(quotation.subtotal || 0)}</Text>
+                            <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(subtotalRaw)}</Text>
                         </View>
+                        {totalDiscount > 0 && (
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text style={{ fontSize: 9 }}>Chiết khấu / Discount:</Text>
+                                <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold', color: '#666' }}>-{formatCurrency(totalDiscount)}</Text>
+                            </View>
+                        )}
+                        {totalDiscount > 0 && (
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', borderTopWidth: 0.5, borderTopColor: '#ddd', paddingTop: 4 }}>
+                                <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>Thành tiền sau CK:</Text>
+                                <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(subtotalRaw - totalDiscount)}</Text>
+                            </View>
+                        )}
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ fontSize: 9 }}>VAT ({quotation.vat_percent || 0}%):</Text>
                             <Text style={{ fontSize: 9, fontFamily: 'Roboto-Bold' }}>{formatCurrency(quotation.vat_amount || 0)}</Text>
