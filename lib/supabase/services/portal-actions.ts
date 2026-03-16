@@ -4,6 +4,14 @@ import { createClient } from '../server'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
+import crypto from 'crypto'
+
+// HMAC helper for portal auth cookie signing
+const PORTAL_SECRET = process.env.PORTAL_SECRET || process.env.NEXTAUTH_SECRET || 'tulie-portal-default-secret'
+
+export function signPortalToken(token: string): string {
+    return crypto.createHmac('sha256', PORTAL_SECRET).update(token).digest('hex')
+}
 
 export async function setEntityPassword(tableName: string, entityId: string, password: string) {
     try {
@@ -14,19 +22,7 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
             passwordHash = await bcrypt.hash(password, 10)
         }
 
-        // Save hash + plaintext (for admin view). Use metadata JSON to avoid schema changes.
         const updateData: any = { password_hash: passwordHash }
-        
-        // Try to update metadata with plaintext (for tables that support metadata column)
-        try {
-            const { data: existing } = await supabase.from(tableName).select('metadata').eq('id', entityId).single()
-            updateData.metadata = {
-                ...(existing?.metadata || {}),
-                password_plain: password || null
-            }
-        } catch {
-            // Table may not have metadata column — ignore
-        }
 
         const { error } = await supabase
             .from(tableName)
@@ -96,11 +92,13 @@ export async function verifyPortalPassword(token: string, password: string) {
             return { success: false, error: 'Mật khẩu không chính xác' }
         }
 
-        // Set secure cookie
+        // Set HMAC-signed secure cookie
         const cookieStore = await cookies()
-        cookieStore.set(`portal_auth_${token}`, 'true', {
+        const signedValue = signPortalToken(token)
+        cookieStore.set(`portal_auth_${token}`, signedValue, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 1 week
             path: '/'
         })

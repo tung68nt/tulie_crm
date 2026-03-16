@@ -40,8 +40,11 @@ export default async function PublicPortalPage({ params }: Props) {
         const passwordHash = data.quotation.password_hash || data.project?.password_hash
 
         if (passwordHash) {
+            const { signPortalToken } = await import('@/lib/supabase/services/portal-actions')
             const cookieStore = await cookies()
-            const isAuthenticated = cookieStore.get(`portal_auth_${token}`)?.value === 'true'
+            const cookieValue = cookieStore.get(`portal_auth_${token}`)?.value
+            const expectedValue = signPortalToken(token)
+            const isAuthenticated = cookieValue === expectedValue
 
             if (!isAuthenticated) {
                 return <PortalPasswordForm token={token} companyName={data.customer?.company_name} />

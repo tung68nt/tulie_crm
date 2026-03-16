@@ -122,7 +122,7 @@ export async function getQuotationByToken(token: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('quotations')
-            .select('*, customer:customers!customer_id(*), creator:users!created_by(*), items:quotation_items(*)')
+            .select('*, customer:customers!customer_id(*), creator:users!created_by(id, full_name), items:quotation_items(*)')
             .eq('public_token', token)
             .order('sort_order', { foreignTable: 'quotation_items', ascending: true })
             .single()
