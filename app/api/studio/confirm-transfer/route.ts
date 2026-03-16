@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendTelegramNotification } from '@/lib/supabase/services/telegram-service'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
-import { sanitizeText } from '@/lib/security/sanitize'
+import { sanitizeText, escapeHtmlEntities } from '@/lib/security/sanitize'
 
 /**
  * Manual Payment Confirmation API
@@ -63,20 +63,22 @@ export async function POST(req: NextRequest) {
         const remainingAmount = order.total_amount - (order.paid_amount || 0)
         const transferAmount = amount || remainingAmount
 
-        // Sanitize user input
+        // Sanitize and escape user input for Telegram HTML
         const cleanNote = note ? sanitizeText(note, 500) : ''
+        const escapedName = escapeHtmlEntities(order.customer_name || sanitizeText(customer_name || '', 100))
+        const escapedPhone = escapeHtmlEntities(order.customer_phone || sanitizeText(customer_phone || '', 20) || 'N/A')
 
-        // Send Telegram notification to team
+        // Send Telegram notification to team 
         await sendTelegramNotification(`
 <b>💸 YÊU CẦU XÁC NHẬN CHUYỂN KHOẢN</b>
 ━━━━━━━━━━━━━━━━━━
-📋 Đơn hàng: <b>${order.order_number}</b>
-👤 Khách: <b>${order.customer_name || sanitizeText(customer_name || '', 100)}</b>
-📱 SĐT: ${order.customer_phone || sanitizeText(customer_phone || '', 20) || 'N/A'}
+📋 Đơn hàng: <b>${escapeHtmlEntities(order.order_number)}</b>
+👤 Khách: <b>${escapedName}</b>
+📱 SĐT: ${escapedPhone}
 💰 Số tiền báo chuyển: <b>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(transferAmount)}</b>
 💳 Còn thiếu: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(remainingAmount)}
 📌 Trạng thái: ${order.payment_status === 'paid' ? '✅ Đã thanh toán đủ' : order.payment_status === 'partial' ? '⚠️ Thanh toán 1 phần' : '🔴 Chưa thanh toán'}
-${cleanNote ? `📝 Ghi chú: ${cleanNote}` : ''}
+${cleanNote ? `📝 Ghi chú: ${escapeHtmlEntities(cleanNote)}` : ''}
 ━━━━━━━━━━━━━━━━━━
 <i>⚡ Khách bấm "Tôi đã chuyển khoản". Vui lòng kiểm tra sao kê ngân hàng và ghi nhận thanh toán nếu đúng.</i>`, 'notify_retail_payment')
 

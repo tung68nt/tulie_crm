@@ -65,11 +65,10 @@ export async function POST(req: NextRequest) {
 
         console.log(`[SePay Webhook] Processed: matched=${result.matched}, system=${result.sourceSystem}`)
 
-        // SePay requires: {"success": true} + HTTP 200
+        // SECURITY: SePay only requires {"success": true} + HTTP 200
+        // Don't leak internal order matching details
         return NextResponse.json({
             success: true,
-            matched: result.matched,
-            order: result.orderNumber,
         })
 
     } catch (err: any) {

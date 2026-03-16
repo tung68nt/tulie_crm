@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
 import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitize'
 import { applyScopeFilter } from '@/lib/security/permissions'
 
-// Use anon key for public form submissions only
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 /**
  * POST /api/leads — Public endpoint for landing page form
@@ -52,7 +49,8 @@ export async function POST(req: Request) {
             )
         }
 
-        const supabase = createClient(supabaseUrl, supabaseKey)
+        // SECURITY: Use admin client for public form inserts (no user session available)
+        const supabase = createAdminClient()
 
         const { data, error } = await supabase
             .from('leads')

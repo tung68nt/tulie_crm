@@ -7,13 +7,15 @@ import { createClient } from '@/lib/supabase/server'
  * 
  * Use for monitoring/uptime checks
  */
+/**
+ * GET /api/health — Public endpoint
+ * Returns system health status (minimal info to prevent reconnaissance)
+ * 
+ * Use for monitoring/uptime checks
+ */
 export async function GET() {
     const start = Date.now()
-    const checks: Record<string, any> = {
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-    }
+    let dbStatus = 'ok'
 
     // Check DB connectivity
     try {
@@ -23,22 +25,19 @@ export async function GET() {
             .select('id')
             .limit(1)
 
-        checks.database = error ? { status: 'error', message: error.message } : { status: 'ok' }
-    } catch (e: any) {
-        checks.database = { status: 'error', message: e.message }
-        checks.status = 'degraded'
+        if (error) dbStatus = 'error'
+    } catch {
+        dbStatus = 'error'
     }
 
-    // Memory usage
-    const mem = process.memoryUsage()
-    checks.memory = {
-        heapUsedMB: Math.round(mem.heapUsed / 1024 / 1024),
-        heapTotalMB: Math.round(mem.heapTotal / 1024 / 1024),
-        rssMB: Math.round(mem.rss / 1024 / 1024),
-    }
+    const status = dbStatus === 'ok' ? 'ok' : 'degraded'
+    const httpStatus = status === 'ok' ? 200 : 503
 
-    checks.responseTimeMs = Date.now() - start
-
-    const status = checks.status === 'ok' ? 200 : 503
-    return NextResponse.json(checks, { status })
+    // SECURITY: Only expose minimal info publicly
+    // Detailed metrics (memory, uptime) should require auth
+    return NextResponse.json({
+        status,
+        timestamp: new Date().toISOString(),
+        responseTimeMs: Date.now() - start,
+    }, { status: httpStatus })
 }

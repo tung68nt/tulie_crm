@@ -22,7 +22,8 @@ export async function PATCH(req: NextRequest, { params }: any) {
 
         return NextResponse.json({ success: true })
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        console.error('Error updating project:', error)
+        return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
     }
 }
 
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest, { params }: any) {
             // Generate report number: BBNT-YYYYMMDD-XXX
             const now = new Date()
             const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
-            const reportNumber = `BBNT-${dateStr}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`
+            const reportNumber = `BBNT-${dateStr}-${crypto.randomUUID().substring(0, 5).toUpperCase()}`
 
             const report = await createAcceptanceReport({
                 project_id: id,
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest, { params }: any) {
 
         return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        console.error('Error in project action:', error)
+        return NextResponse.json({ error: 'Failed to perform project action' }, { status: 500 })
     }
 }

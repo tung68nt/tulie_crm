@@ -6,6 +6,8 @@ import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
 
+import { sanitizeText } from '../../security/sanitize'
+
 // HMAC helper for portal auth cookie signing
 const PORTAL_SECRET = process.env.PORTAL_SECRET || process.env.NEXTAUTH_SECRET
 if (!PORTAL_SECRET && process.env.NODE_ENV === 'production') {
@@ -13,7 +15,7 @@ if (!PORTAL_SECRET && process.env.NODE_ENV === 'production') {
 }
 const EFFECTIVE_PORTAL_SECRET = PORTAL_SECRET || 'dev-only-portal-secret'
 
-export function signPortalToken(token: string): string {
+export async function signPortalToken(token: string): Promise<string> {
     return crypto.createHmac('sha256', EFFECTIVE_PORTAL_SECRET).update(token).digest('hex')
 }
 
@@ -99,13 +101,13 @@ export async function verifyPortalPassword(token: string, password: string) {
 
         // Set HMAC-signed secure cookie
         const cookieStore = await cookies()
-        const signedValue = signPortalToken(token)
+        const signedValue = await signPortalToken(token)
         cookieStore.set(`portal_auth_${token}`, signedValue, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7, // 1 week
-            path: '/'
+            path: '/portal'  // SECURITY: Scoped to portal paths only, not entire domain
         })
 
         revalidatePath(`/portal/${token}`)
@@ -157,10 +159,10 @@ export async function updateQuotationStatus(quotationId: string, status: string,
                 accepted_at: new Date().toISOString(),
                 status: 'accepted',
                 confirmer_info: {
-                    name: metadata.name,
-                    phone: metadata.phone,
-                    email: metadata.email,
-                    position: metadata.position
+                    name: sanitizeText(metadata.name || '', 200),
+                    phone: sanitizeText(metadata.phone || '', 20),
+                    email: sanitizeText(metadata.email || '', 320),
+                    position: sanitizeText(metadata.position || '', 200)
                 },
                 // Append (Xác nhận) to number or just same? User said "tạo version mới"
                 // Usually CRM shows version trail.
@@ -239,7 +241,7 @@ export async function updateQuotationStatus(quotationId: string, status: string,
                 .update({
                     status: 'rejected',
                     rejected_at: new Date().toISOString(),
-                    rejection_reason: metadata.reason || null,
+                    rejection_reason: metadata.reason ? sanitizeText(metadata.reason, 2000) : null,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', quotationId)

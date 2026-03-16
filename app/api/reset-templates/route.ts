@@ -2,10 +2,12 @@ import { NextResponse } from 'next/server'
 import { requireAdmin, isAuthError } from '@/lib/security/auth-guard'
 
 /**
- * GET /api/reset-templates — Admin-only endpoint
+ * POST /api/reset-templates — Admin-only endpoint
  * Deletes all custom document templates (dangerous operation)
+ * SECURITY: Uses POST instead of GET to prevent accidental triggering via
+ * browser prefetch, link previews, or injected img/link tags.
  */
-export async function GET() {
+export async function POST() {
     try {
         const authResult = await requireAdmin()
         if (isAuthError(authResult)) return authResult

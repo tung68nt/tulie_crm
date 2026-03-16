@@ -20,11 +20,11 @@ export async function POST(req: NextRequest) {
         })
         if (rateLimitResult) return rateLimitResult
 
-        const { token, order_id, shipping_info } = await req.json()
+        const { token, shipping_info } = await req.json()
 
-        // Require token for auth (preferred), fallback to order_id for backward compat
-        if (!token && !order_id) {
-            return NextResponse.json({ error: 'Missing token or order_id' }, { status: 400 })
+        // SECURITY: Require public_token for all requests (no order_id fallback to prevent IDOR)
+        if (!token) {
+            return NextResponse.json({ error: 'Missing token' }, { status: 400 })
         }
 
         if (!shipping_info || typeof shipping_info !== 'object') {
@@ -42,18 +42,12 @@ export async function POST(req: NextRequest) {
 
         const supabase = await createClient()
 
-        // Verify order exists using token (secure) or order_id (legacy)
-        let query = supabase
+        // SECURITY: Token-based lookup only (prevents IDOR via order_id guessing)
+        const { data: order, error: findError } = await supabase
             .from('retail_orders')
             .select('id')
-
-        if (token) {
-            query = query.eq('public_token', token)
-        } else {
-            query = query.eq('id', order_id)
-        }
-
-        const { data: order, error: findError } = await query.single()
+            .eq('public_token', token)
+            .single()
 
         if (findError || !order) {
             return NextResponse.json({ error: 'Đơn hàng không tồn tại' }, { status: 404 })

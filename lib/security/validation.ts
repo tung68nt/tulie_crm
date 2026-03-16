@@ -69,7 +69,13 @@ export const sendEmailSchema = z.object({
 /** PATCH /api/projects/[id] */
 export const updateProjectSchema = z.object({
     status: z.enum(['todo', 'in_progress', 'review', 'completed']).optional(),
-}).passthrough() // Allow other fields for general project updates
+    title: z.string().max(500).optional(),
+    description: z.string().max(5000).optional(),
+    start_date: z.string().optional(),
+    end_date: z.string().optional(),
+    priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+    notes: z.string().max(5000).optional(),
+}).strict() // SECURITY: Reject unknown fields to prevent field injection
 
 /** POST /api/projects/[id] */
 export const projectActionSchema = z.object({

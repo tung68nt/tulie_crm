@@ -1,42 +1,57 @@
 /**
- * Input Sanitizer — lightweight, zero-dependency
+ * Input Sanitizer — uses sanitize-html library for robust XSS protection
  * 
- * Uses DOMParser-free approach suitable for server-side (Node.js).
- * For HTML content: strips dangerous tags/attributes via allowlist regex.
- * For text input: strips angle brackets and trims.
+ * SECURITY: Replaces previous regex-based approach which was bypassable.
+ * sanitize-html uses a proper HTML parser with allowlist approach.
  */
 
+import sanitizeHtmlLib from 'sanitize-html'
+
 // ============================================
-// ALLOWED TAGS & ATTRIBUTES
+// ALLOWED TAGS & ATTRIBUTES (for document templates / rich content)
 // ============================================
 
-const ALLOWED_TAGS = new Set([
-    // Structure
-    'div', 'span', 'p', 'br', 'hr',
-    // Headings
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    // Text formatting
-    'b', 'i', 'u', 'strong', 'em', 's', 'small', 'sub', 'sup', 'mark',
-    // Lists
-    'ul', 'ol', 'li',
-    // Tables
-    'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption', 'colgroup', 'col',
-    // Links & media
-    'a', 'img',
-    // Semantic
-    'blockquote', 'pre', 'code', 'address', 'section', 'article', 'header', 'footer',
-    'nav', 'main', 'aside', 'figure', 'figcaption', 'details', 'summary',
-    // Style (for document templates)
-    'style',
-])
+const SANITIZE_OPTIONS: sanitizeHtmlLib.IOptions = {
+    allowedTags: [
+        // Structure
+        'div', 'span', 'p', 'br', 'hr',
+        // Headings
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        // Text formatting
+        'b', 'i', 'u', 'strong', 'em', 's', 'small', 'sub', 'sup', 'mark',
+        // Lists
+        'ul', 'ol', 'li',
+        // Tables
+        'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption', 'colgroup', 'col',
+        // Links & media
+        'a', 'img',
+        // Semantic
+        'blockquote', 'pre', 'code', 'address', 'section', 'article', 'header', 'footer',
+        'nav', 'main', 'aside', 'figure', 'figcaption', 'details', 'summary',
+        // Style (for document templates — needed for print CSS)
+        'style',
+    ],
+    allowedAttributes: {
+        '*': ['class', 'id', 'style', 'title', 'lang', 'dir'],
+        'a': ['href', 'target', 'rel'],
+        'img': ['src', 'alt', 'width', 'height', 'loading'],
+        'th': ['colspan', 'rowspan', 'align', 'valign', 'scope'],
+        'td': ['colspan', 'rowspan', 'align', 'valign'],
+        'col': ['span'],
+        'table': ['border', 'cellpadding', 'cellspacing'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    // Block javascript:, data:, vbscript: URIs
+    disallowedTagsMode: 'discard',
+    // Allow style tags (needed for document templates print CSS)
+    allowVulnerableTags: false,
+}
 
-const ALLOWED_ATTRIBUTES = new Set([
-    'class', 'id', 'style', 'title', 'lang', 'dir',
-    'href', 'target', 'rel',
-    'src', 'alt', 'width', 'height', 'loading',
-    'colspan', 'rowspan', 'align', 'valign', 'scope', 'span',
-    'border', 'cellpadding', 'cellspacing',
-])
+// Strict options for user-facing content (no style tags, fewer elements)
+const STRICT_SANITIZE_OPTIONS: sanitizeHtmlLib.IOptions = {
+    ...SANITIZE_OPTIONS,
+    allowedTags: (SANITIZE_OPTIONS.allowedTags as string[]).filter(t => t !== 'style'),
+}
 
 // ============================================
 // SANITIZE HTML 
@@ -44,34 +59,14 @@ const ALLOWED_ATTRIBUTES = new Set([
 
 /**
  * Sanitize HTML content to prevent XSS attacks.
- * Uses allowlist approach — only safe HTML tags and attributes pass through.
+ * Uses sanitize-html library with allowlist approach.
+ * 
+ * @param html - Raw HTML string
+ * @param strict - If true, disallows style tags (use for user-facing content)
  */
-export function sanitizeHtml(html: string): string {
+export function sanitizeHtml(html: string, strict: boolean = false): string {
     if (!html) return ''
-
-    // 1. Remove script tags and their content
-    let clean = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-
-    // 2. Remove event handlers (onclick, onerror, etc.)  
-    clean = clean.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '')
-
-    // 3. Remove javascript: and data: URIs in attributes
-    clean = clean.replace(/(href|src|action)\s*=\s*["']?\s*(?:javascript|data|vbscript):/gi, '$1="')
-
-    // 4. Strip disallowed tags (keep content, remove tag)
-    clean = clean.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (match, tag) => {
-        const lowerTag = tag.toLowerCase()
-        if (ALLOWED_TAGS.has(lowerTag)) {
-            // Keep tag but strip disallowed attributes
-            return match.replace(/\s+([a-zA-Z\-]+)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/g, (attrMatch, attrName) => {
-                return ALLOWED_ATTRIBUTES.has(attrName.toLowerCase()) ? attrMatch : ''
-            })
-        }
-        // Strip the tag entirely (discard)
-        return ''
-    })
-
-    return clean
+    return sanitizeHtmlLib(html, strict ? STRICT_SANITIZE_OPTIONS : SANITIZE_OPTIONS)
 }
 
 // ============================================
@@ -87,6 +82,24 @@ export function sanitizeText(input: string, maxLength: number = 1000): string {
         .trim()
         .slice(0, maxLength)
         .replace(/[<>]/g, '') // Strip angle brackets
+}
+
+// ============================================
+// HTML ENTITY ESCAPING (for Telegram, etc.)
+// ============================================
+
+/**
+ * Escape HTML entities to prevent injection in HTML-formatted messages
+ * Use for Telegram notifications, email subjects, etc.
+ */
+export function escapeHtmlEntities(text: string): string {
+    if (!text) return ''
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
 }
 
 // ============================================

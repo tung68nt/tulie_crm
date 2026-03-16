@@ -43,7 +43,7 @@ export default async function PublicPortalPage({ params }: Props) {
             const { signPortalToken } = await import('@/lib/supabase/services/portal-actions')
             const cookieStore = await cookies()
             const cookieValue = cookieStore.get(`portal_auth_${token}`)?.value
-            const expectedValue = signPortalToken(token)
+            const expectedValue = await signPortalToken(token)
             const isAuthenticated = cookieValue === expectedValue
 
             if (!isAuthenticated) {
