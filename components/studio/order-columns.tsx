@@ -145,7 +145,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
             const paid = row.original.paid_amount
 
             return (
-                <div className="flex flex-col items-center gap-0.5">
+                <div className="flex flex-col gap-0.5">
                     <StatusBadge status={status || 'unpaid'} entityType="retail_payment" />
                     <span className="text-[11px] text-muted-foreground">Đã thu: {formatCurrency(paid)}</span>
                 </div>
@@ -160,9 +160,7 @@ export const retailOrderColumns: ColumnDef<RetailOrder>[] = [
         cell: ({ row }) => {
             const status = row.original.order_status
             return (
-                <div className="flex justify-center">
-                    <StatusBadge status={status} entityType="retail_order" />
-                </div>
+                <StatusBadge status={status} entityType="retail_order" />
             )
         },
     },
