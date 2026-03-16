@@ -98,7 +98,7 @@ export function DocumentEditor({ document: initialDoc, onBack }: DocumentEditorP
             </Card>
 
             <div className="flex justify-end gap-2 py-4">
-                <p className="text-[10px] text-muted-foreground flex items-center italic">
+                <p className="text-[11px] text-muted-foreground flex items-center italic">
                     Lưu ý: Nội dung sẽ được cập nhật trực tiếp trên trang Portal của khách hàng sau khi lưu.
                 </p>
             </div>

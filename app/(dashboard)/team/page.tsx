@@ -159,8 +159,8 @@ export default async function TeamPage() {
                                                     </div>
                                                     <div className="h-2 bg-muted rounded-full overflow-hidden">
                                                         <div
-                                                            className={`h-full rounded-full ${progress >= 100 ? 'bg-green-500' :
-                                                                progress >= 70 ? 'bg-yellow-500' : 'bg-blue-500'
+                                                            className={`h-full rounded-full ${progress >= 100 ? 'bg-emerald-500' :
+                                                                progress >= 70 ? 'bg-amber-500' : 'bg-blue-500'
                                                                 }`}
                                                             style={{ width: `${progress}%` }}
                                                         />

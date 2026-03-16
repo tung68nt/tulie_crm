@@ -2,8 +2,7 @@
 
 import { Project } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/status'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { formatDate } from '@/lib/utils/format'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
 import Link from 'next/link'
@@ -39,11 +38,9 @@ export const projectColumns: ColumnDef<Project>[] = [
             <DataTableColumnHeader column={column} title="Trạng thái" />
         ),
         cell: ({ row }) => {
-            const status = row.getValue('status') as keyof typeof PROJECT_STATUS_LABELS
+            const status = row.getValue('status') as string
             return (
-                <Badge className={PROJECT_STATUS_COLORS[status] || 'bg-gray-100'}>
-                    {PROJECT_STATUS_LABELS[status] || status}
-                </Badge>
+                <StatusBadge status={status} entityType="project" />
             )
         },
     },

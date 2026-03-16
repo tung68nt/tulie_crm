@@ -85,7 +85,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
         switch (status) {
             case 'completed': return 'bg-emerald-500'
             case 'in_progress': return 'bg-blue-500'
-            case 'blocked': return 'bg-red-500'
+            case 'blocked': return 'bg-rose-500'
             default: return 'bg-zinc-400'
         }
     }
@@ -123,7 +123,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                         {/* Month Row */}
                         <div className="flex border-b border-zinc-100/50">
                             <div className="w-[240px] shrink-0 bg-zinc-50/80 border-r border-zinc-100 flex items-center px-4 sticky left-0 z-50">
-                                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Lịch trình</span>
+                                <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Lịch trình</span>
                             </div>
                             <div className="flex-1 flex overflow-hidden">
                                 {monthSegments.map((seg, i) => (
@@ -147,7 +147,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                 {/* Today Line Header Marker */}
                                 {todayLinePosition !== null && (
                                     <div
-                                        className="absolute top-0 bottom-[-5000px] w-[2px] bg-red-500 z-[60] pointer-events-none"
+                                        className="absolute top-0 bottom-[-5000px] w-[2px] bg-rose-500 z-[60] pointer-events-none"
                                         style={{
                                             left: `${todayLinePosition}%`,
                                         }}
@@ -165,18 +165,18 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                             key={i}
                                             className={cn(
                                                 "flex-1 p-2 text-center border-r border-zinc-100 last:border-r-0 flex flex-col items-center justify-center min-h-[60px] min-w-[45px] gap-1 transition-colors",
-                                                isSameDay(date, today) ? "bg-red-50/30" : isWeekend ? "bg-zinc-50/30" : "bg-white"
+                                                isSameDay(date, today) ? "bg-rose-50/30" : isWeekend ? "bg-zinc-50/30" : "bg-white"
                                             )}
                                         >
                                             <p className={cn(
-                                                "text-[9px] font-bold uppercase tracking-tight",
+                                                "text-[11px] font-bold uppercase tracking-tight",
                                                 isSameDay(date, today) ? "text-red-500" : isWeekend ? "text-zinc-400" : "text-zinc-500"
                                             )}>
                                                 {dayOfWeek === '7' ? 'CN' : `T${Number(dayOfWeek) + 1}`}
                                             </p>
                                             <p className={cn(
                                                 "text-[13px] font-bold tabular-nums tracking-tight",
-                                                isSameDay(date, today) ? "text-red-600" : isWeekend ? "text-zinc-500" : "text-zinc-900"
+                                                isSameDay(date, today) ? "text-rose-600" : isWeekend ? "text-zinc-500" : "text-zinc-900"
                                             )}>
                                                 {format(date, 'dd')}
                                             </p>
@@ -219,7 +219,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                                                 style={style}
                                             >
                                                 <p className={cn(
-                                                    "text-[9px] font-semibold truncate tracking-tight",
+                                                    "text-[11px] font-semibold truncate tracking-tight",
                                                     task.status === 'completed' || task.status === 'active' || task.status === 'in_progress' ? "text-white" : "text-zinc-100"
                                                 )}>
                                                     {task.title}
@@ -243,7 +243,7 @@ export function ProjectGanttChart({ tasks }: ProjectGanttChartProps) {
                     <span className="text-[11px] font-semibold text-zinc-500">Đang triển khai</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
                     <span className="text-[11px] font-semibold text-zinc-500">Đang vướng</span>
                 </div>
                 <div className="flex items-center gap-2">

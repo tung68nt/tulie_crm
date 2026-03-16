@@ -63,7 +63,7 @@ export default async function DealDetailPage({ params }: any) {
                         <CardContent className="space-y-4">
                             <div className="grid gap-4 sm:grid-cols-3">
                                 <div className="p-4 bg-muted/20 rounded-xl border flex flex-col items-center justify-center text-center">
-                                    <Wallet className="h-5 w-5 mb-2 text-green-600" />
+                                    <Wallet className="h-5 w-5 mb-2 text-emerald-600" />
                                     <p className="text-xs text-muted-foreground">Ngân sách dự kiến</p>
                                     <p className="text-lg font-bold">{formatCurrency(deal.budget || 0)}</p>
                                 </div>
@@ -155,10 +155,10 @@ export default async function DealDetailPage({ params }: any) {
                                     <Button variant="outline" size="sm" className="justify-start">
                                         <FileText className="mr-2 h-4 w-4" /> Lên báo giá
                                     </Button>
-                                    <Button variant="secondary" size="sm" className="justify-start text-green-600 bg-green-50 hover:bg-green-100 border-green-200">
+                                    <Button variant="secondary" size="sm" className="justify-start text-emerald-600 bg-emerald-50 hover:bg-green-100 border-green-200">
                                         <CheckCircle2 className="mr-2 h-4 w-4" /> Chốt thành công
                                     </Button>
-                                    <Button variant="secondary" size="sm" className="justify-start text-red-600 bg-red-50 hover:bg-red-100 border-red-200">
+                                    <Button variant="secondary" size="sm" className="justify-start text-rose-600 bg-rose-50 hover:bg-rose-100 border-rose-200">
                                         <XCircle className="mr-2 h-4 w-4" /> Thất bại
                                     </Button>
                                 </div>

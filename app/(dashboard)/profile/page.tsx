@@ -29,7 +29,7 @@ export default async function ProfilePage() {
                 <div className="h-12 w-12 rounded-xl bg-zinc-100 flex items-center justify-center shadow-sm border border-border/50">
                     <Avatar className="h-8 w-8">
                         <AvatarImage src={avatarUrl} />
-                        <AvatarFallback className="text-[10px] bg-zinc-950 text-white font-bold">
+                        <AvatarFallback className="text-[11px] bg-zinc-950 text-white font-bold">
                             {fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>

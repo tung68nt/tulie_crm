@@ -111,7 +111,7 @@ export default async function ProductDetailPage({ params }: any) {
                                     </p>
                                     {product.cost_price && <p className="text-sm text-muted-foreground">/{product.unit}</p>}
                                 </div>
-                                <div className="p-4 rounded-lg bg-green-500/10">
+                                <div className="p-4 rounded-lg bg-emerald-500/10">
                                     <p className="text-sm text-muted-foreground">Biên lợi nhuận</p>
                                     <p className="text-2xl font-semibold text-green-500">{formatPercent(margin)}</p>
                                     <p className="text-sm text-muted-foreground">Margin</p>

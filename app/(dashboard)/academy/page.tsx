@@ -118,8 +118,8 @@ export default function LabPage() {
                                     <span className="text-sm font-medium">thelab.tulie.vn</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase">Trực tuyến</span>
+                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-green-400 uppercase">Trực tuyến</span>
                                 </div>
                             </div>
 

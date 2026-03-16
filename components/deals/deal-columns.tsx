@@ -2,14 +2,11 @@
 
 import { Deal } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import { DEAL_STATUS_LABELS, DEAL_STATUS_COLORS } from '@/lib/constants/status'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
 import Link from 'next/link'
 import { MoreHorizontal, ExternalLink, TrendingUp } from 'lucide-react'
-import { BRAND_LABELS, BRAND_COLORS, BRAND_BADGE_CLASS } from '@/lib/constants/brand'
-import { cn } from '@/lib/utils'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -51,14 +48,7 @@ export const dealColumns: ColumnDef<Deal>[] = [
         cell: ({ row }) => {
             const brand = row.original.brand || 'agency'
             return (
-                <Badge
-                    className={cn(
-                        BRAND_BADGE_CLASS,
-                        BRAND_COLORS[brand] || 'bg-gray-500'
-                    )}
-                >
-                    {BRAND_LABELS[brand] || brand}
-                </Badge>
+                <StatusBadge status={brand} entityType="brand" />
             )
         },
     },
@@ -68,11 +58,9 @@ export const dealColumns: ColumnDef<Deal>[] = [
             <DataTableColumnHeader column={column} title="Giai đoạn" />
         ),
         cell: ({ row }) => {
-            const status = row.getValue('status') as keyof typeof DEAL_STATUS_LABELS
+            const status = row.getValue('status') as string
             return (
-                <Badge className={DEAL_STATUS_COLORS[status] || 'bg-gray-100'}>
-                    {DEAL_STATUS_LABELS[status] || status}
-                </Badge>
+                <StatusBadge status={status} entityType="deal" />
             )
         },
     },
@@ -93,15 +81,8 @@ export const dealColumns: ColumnDef<Deal>[] = [
         ),
         cell: ({ row }) => {
             const priority = row.getValue('priority') as string
-            const colors: any = {
-                high: 'text-zinc-100 bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 font-bold border-zinc-900',
-                medium: 'text-zinc-700 bg-zinc-100 border-zinc-200',
-                low: 'text-zinc-500 bg-zinc-50 border-zinc-200',
-            }
             return (
-                <Badge variant="outline" className={colors[priority] || ''}>
-                    {priority === 'high' ? '🔥 Cao' : priority === 'medium' ? '⚡ Trung bình' : '🧊 Thấp'}
-                </Badge>
+                <StatusBadge status={priority} entityType="ticket_priority" />
             )
         },
     },

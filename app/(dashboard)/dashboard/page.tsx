@@ -178,7 +178,7 @@ export default async function DashboardPage() {
                                                 }}
                                             />
                                         </div>
-                                        <p className="text-[10px] text-muted-foreground text-right">{metric.value}/{metric.max} điểm</p>
+                                        <p className="text-[11px] text-muted-foreground text-right">{metric.value}/{metric.max} điểm</p>
                                     </div>
                                 ))}
                             </div>

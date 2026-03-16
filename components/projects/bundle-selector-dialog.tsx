@@ -164,7 +164,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                             </div>
                                         </div>
                                         <p className={cn(
-                                            "text-[10px] mb-3 leading-relaxed",
+                                            "text-[11px] mb-3 leading-relaxed",
                                             selectedBundleId === b.id ? "text-primary-foreground/70" : "text-muted-foreground"
                                         )}>
                                             {b.description || `Gồm ${b.templates.length} loại giấy tờ chuẩn cho dự án.`}
@@ -177,7 +177,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                                                 )} />
                                             ))}
                                             <span className={cn(
-                                                "text-[9px] font-medium ml-1",
+                                                "text-[11px] font-medium ml-1",
                                                 selectedBundleId === b.id ? "text-primary-foreground/60" : "text-muted-foreground"
                                             )}>
                                                 {b.templates.length} FILES

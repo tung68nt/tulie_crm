@@ -105,8 +105,8 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                 <div className={cn(
                     "p-4 rounded-xl border text-sm font-medium flex items-center gap-3",
                     syncResult.error
-                        ? "bg-red-50 border-red-200 text-red-700"
-                        : "bg-green-50 border-green-200 text-green-700"
+                        ? "bg-rose-50 border-rose-200 text-rose-700"
+                        : "bg-emerald-50 border-green-200 text-green-700"
                 )}>
                     {syncResult.error ? (
                         <><XCircle className="h-4 w-4 shrink-0" /> {syncResult.error}</>
@@ -212,17 +212,17 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                                             <div className="text-xs font-medium">
                                                 {tx.transaction_date ? new Date(tx.transaction_date).toLocaleDateString('vi-VN') : '—'}
                                             </div>
-                                            <div className="text-[10px] text-muted-foreground">
+                                            <div className="text-[11px] text-muted-foreground">
                                                 {tx.transaction_date ? new Date(tx.transaction_date).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
                                             </div>
                                         </td>
                                         <td className="px-4 py-3">
                                             {isIn ? (
-                                                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50 gap-1 text-[10px] font-bold">
+                                                <Badge variant="outline" className="text-emerald-600 border-green-200 bg-emerald-50 gap-1 text-[11px] font-bold">
                                                     <ArrowDownLeft className="h-3 w-3" /> Vào
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="outline" className="text-red-500 border-red-200 bg-red-50 gap-1 text-[10px] font-bold">
+                                                <Badge variant="outline" className="text-red-500 border-rose-200 bg-rose-50 gap-1 text-[11px] font-bold">
                                                     <ArrowUpRight className="h-3 w-3" /> Ra
                                                 </Badge>
                                             )}
@@ -230,7 +230,7 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                                         <td className="px-4 py-3 text-right whitespace-nowrap">
                                             <span className={cn(
                                                 "font-bold tabular-nums",
-                                                isIn ? "text-green-600" : "text-red-500"
+                                                isIn ? "text-emerald-600" : "text-red-500"
                                             )}>
                                                 {isIn ? '+' : '-'}{formatCurrency(amount)}
                                             </span>
@@ -250,27 +250,27 @@ export function TransactionsClient({ initialData, initialTotal }: TransactionsCl
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             {matchedOrder ? (
                                                 <Link href={`/studio/${matchedOrder.id}`} className="group">
-                                                    <Badge variant="secondary" className="text-[10px] font-bold gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 transition-colors">
+                                                    <Badge variant="secondary" className="text-[11px] font-bold gap-1 bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 transition-colors">
                                                         <CheckCircle2 className="h-3 w-3" />
                                                         {matchedOrder.order_number || 'Đơn hàng'}
                                                     </Badge>
                                                 </Link>
                                             ) : matchedInvoice ? (
                                                 <Link href={`/invoices/${matchedInvoice.id}`} className="group">
-                                                    <Badge variant="secondary" className="text-[10px] font-bold gap-1 bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100 transition-colors">
+                                                    <Badge variant="secondary" className="text-[11px] font-bold gap-1 bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100 transition-colors">
                                                         <CheckCircle2 className="h-3 w-3" />
                                                         {matchedInvoice.invoice_number || 'Hóa đơn'}
                                                     </Badge>
                                                 </Link>
                                             ) : (
-                                                <Badge variant="outline" className="text-[10px] font-bold text-amber-600 border-amber-200 bg-amber-50 gap-1">
+                                                <Badge variant="outline" className="text-[11px] font-bold text-amber-600 border-amber-200 bg-amber-50 gap-1">
                                                     <XCircle className="h-3 w-3" /> Chưa khớp
                                                 </Badge>
                                             )}
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap">
                                             <Badge variant="outline" className={cn(
-                                                "text-[10px] font-bold",
+                                                "text-[11px] font-bold",
                                                 tx.source_system === 'studio' && "text-violet-600 border-violet-200 bg-violet-50",
                                                 tx.source_system === 'lab' && "text-cyan-600 border-cyan-200 bg-cyan-50",
                                                 tx.source_system === 'unknown' && "text-zinc-400 border-zinc-200 bg-zinc-50",

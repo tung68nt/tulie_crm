@@ -144,7 +144,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                             <FileTextIcon className="h-4 w-4 text-muted-foreground" />
                                             Danh sách Báo giá
                                         </h4>
-                                        <Badge variant="outline" className="text-[10px]">{quotations.length} bản</Badge>
+                                        <Badge variant="outline" className="text-[11px]">{quotations.length} bản</Badge>
                                     </div>
                                     <div className="grid gap-2">
                                         {quotations.length > 0 ? quotations.map((q: any) => (
@@ -159,13 +159,13 @@ export default async function ProjectDetailPage({ params }: any) {
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-semibold">{q.quotation_number}</p>
-                                                        <p className="text-[10px] text-muted-foreground">{formatDate(q.created_at)}</p>
+                                                        <p className="text-[11px] text-muted-foreground">{formatDate(q.created_at)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right flex items-center gap-4">
                                                     <div>
                                                         <p className="text-sm font-semibold">{formatCurrency(q.total_amount)}</p>
-                                                        <Badge variant="secondary" className="text-[9px] h-4 px-1 opacity-80">
+                                                        <Badge variant="secondary" className="text-[11px] h-4 px-1 opacity-80">
                                                             {q.status}
                                                         </Badge>
                                                     </div>
@@ -187,7 +187,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                             <FileCheck className="h-4 w-4 text-muted-foreground" />
                                             Danh sách Hợp đồng / Đơn hàng
                                         </h4>
-                                        <Badge variant="outline" className="text-[10px]">{contracts.length} bản</Badge>
+                                        <Badge variant="outline" className="text-[11px]">{contracts.length} bản</Badge>
                                     </div>
                                     <div className="grid gap-2">
                                         {contracts.length > 0 ? contracts.map((c: any) => (
@@ -202,13 +202,13 @@ export default async function ProjectDetailPage({ params }: any) {
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-semibold">{c.contract_number}</p>
-                                                        <p className="text-[10px] text-muted-foreground">{formatDate(c.created_at)}</p>
+                                                        <p className="text-[11px] text-muted-foreground">{formatDate(c.created_at)}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right flex items-center gap-4">
                                                     <div>
                                                         <p className="text-sm font-semibold">{formatCurrency(c.total_amount)}</p>
-                                                        <Badge variant="secondary" className="text-[9px] h-4 px-1 opacity-80">
+                                                        <Badge variant="secondary" className="text-[11px] h-4 px-1 opacity-80">
                                                             {c.status}
                                                         </Badge>
                                                     </div>

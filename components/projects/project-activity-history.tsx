@@ -83,7 +83,7 @@ export function ProjectActivityHistory({ projectId, activities: initialActivitie
                                                 {activity.user?.full_name || 'Hệ thống'}
                                                 <span className="font-normal text-muted-foreground ml-1">{activity.description}</span>
                                             </p>
-                                            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                                            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                                                 {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true, locale: vi })}
                                             </span>
                                         </div>

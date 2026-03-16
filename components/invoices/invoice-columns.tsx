@@ -2,15 +2,13 @@
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Invoice } from '@/types'
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
     INVOICE_STATUS_LABELS,
     INVOICE_STATUS_COLORS
 } from '@/lib/constants/status'
 import { formatCurrency, formatDate } from '@/lib/utils/format'
-import { BRAND_LABELS, BRAND_COLORS, BRAND_BADGE_CLASS } from '@/lib/constants/brand'
-import { cn } from '@/lib/utils'
+import { StatusBadge } from '@/components/shared/status-badge'
 import { DataTableColumnHeader } from '@/components/shared/data-table-column-header'
 import { InvoiceCellAction } from './invoice-cell-action'
 
@@ -52,14 +50,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] = [
         cell: ({ row }) => {
             const brand = row.original.brand || 'agency'
             return (
-                <Badge
-                    className={cn(
-                        BRAND_BADGE_CLASS,
-                        BRAND_COLORS[brand] || 'bg-gray-500'
-                    )}
-                >
-                    {BRAND_LABELS[brand] || brand}
-                </Badge>
+                <StatusBadge status={brand} entityType="brand" />
             )
         },
     },
@@ -95,9 +86,7 @@ export const invoiceColumns: ColumnDef<Invoice>[] = [
         cell: ({ row }) => {
             const status = row.getValue('status') as Invoice['status']
             return (
-                <Badge className={INVOICE_STATUS_COLORS[status]}>
-                    {INVOICE_STATUS_LABELS[status]}
-                </Badge>
+                <StatusBadge status={status} entityType="invoice" />
             )
         },
     },

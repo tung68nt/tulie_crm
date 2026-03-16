@@ -132,8 +132,8 @@ export default async function ContractDetailPage({ params }: any) {
                         <CardContent className="space-y-4">
                             {contract.milestones?.map((milestone: any, index: number) => (
                                 <div key={milestone.id} className="flex items-start gap-4">
-                                    <div className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${milestone.status === 'completed' ? 'bg-green-500 text-white' :
-                                        milestone.status === 'overdue' ? 'bg-red-500 text-white' :
+                                    <div className={`mt-1 h-8 w-8 rounded-full flex items-center justify-center ${milestone.status === 'completed' ? 'bg-emerald-500 text-white' :
+                                        milestone.status === 'overdue' ? 'bg-rose-500 text-white' :
                                             'bg-muted text-muted-foreground'
                                         }`}>
                                         {milestone.status === 'completed' ? (

@@ -76,12 +76,12 @@ export default function ProjectPipeline({ pipeline }: ProjectPipelineProps) {
                                         </Link>
                                     ))}
                                     {projects.length > 5 && (
-                                        <div className="text-[10px] text-center opacity-70">
+                                        <div className="text-[11px] text-center opacity-70">
                                             +{projects.length - 5} khác
                                         </div>
                                     )}
                                     {projects.length === 0 && (
-                                        <div className="text-[10px] text-center opacity-50 py-2">Trống</div>
+                                        <div className="text-[11px] text-center opacity-50 py-2">Trống</div>
                                     )}
                                 </div>
                             </div>

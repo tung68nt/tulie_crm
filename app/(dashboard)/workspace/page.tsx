@@ -66,7 +66,7 @@ export default async function WorkspacePage() {
                 {[
                     { title: 'Tasks', desc: 'Danh sách công việc', href: '/workspace/tasks', icon: ListTodo, color: 'bg-blue-50 text-blue-600 group-hover:bg-blue-100' },
                     { title: 'Board', desc: 'Kanban board', href: '/workspace/board', icon: Kanban, color: 'bg-purple-50 text-purple-600 group-hover:bg-purple-100' },
-                    { title: 'Calendar', desc: 'Lịch deadline', href: '/workspace/calendar', icon: Calendar, color: 'bg-amber-50 text-amber-600 group-hover:bg-amber-100' },
+                    { title: 'Calendar', desc: 'Lịch deadline', href: '/workspace/calendar', icon: Calendar, color: 'bg-amber-50 text-amber-600 group-hover:bg-amber-50' },
                     { title: 'Timeline', desc: 'Gantt chart', href: '/workspace/timeline', icon: GanttChart, color: 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100' },
                 ].map((item) => {
                     const Icon = item.icon

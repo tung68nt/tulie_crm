@@ -47,7 +47,7 @@ export default async function EditQuotationPage({ params }: EditQuotationPagePro
         console.error('Fatal error rendering EditQuotationPage:', err)
         return (
             <div className="p-8 space-y-4">
-                <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-200">
+                <div className="p-4 bg-rose-50 text-rose-600 rounded-md border border-rose-200">
                     <h2 className="font-semibold text-lg">Đã có lỗi xảy ra khi tải dữ liệu</h2>
                     <p>Vui lòng thử lại hoặc liên hệ quản trị viên.</p>
                 </div>

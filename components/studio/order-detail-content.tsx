@@ -157,7 +157,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             <div className="flex items-center justify-between">
                                 <Label className="text-sm font-semibold text-zinc-700">Link bàn giao</Label>
                                 {order.resource_link && (
-                                    <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5 border-primary/20 text-primary">
+                                    <Badge variant="outline" className="font-normal text-[11px] bg-zinc-50 py-0 h-5 border-primary/20 text-primary">
                                         <a href={order.resource_link} target="_blank" className="flex items-center gap-1">
                                             Mở link <ExternalLink className="h-3 w-3" />
                                         </a>
@@ -170,7 +170,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 onChange={(e) => setLinks({ ...links, resource_link: e.target.value })}
                                 className="h-10 border-zinc-200 focus-visible:ring-primary/20 bg-white shadow-none"
                             />
-                            <p className="text-[10px] text-muted-foreground font-normal italic">Chỉ hiển thị sau khi khách thanh toán 100%.</p>
+                            <p className="text-[11px] text-muted-foreground font-normal italic">Chỉ hiển thị sau khi khách thanh toán 100%.</p>
                         </div>
 
                         <div className="space-y-2">
@@ -180,7 +180,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     Mã vận đơn / Link tra cứu
                                 </Label>
                                 {order.tracking_number && /^https?:\/\//.test(order.tracking_number) && (
-                                    <Badge variant="outline" className="font-normal text-[10px] bg-zinc-50 py-0 h-5">
+                                    <Badge variant="outline" className="font-normal text-[11px] bg-zinc-50 py-0 h-5">
                                         <a href={order.tracking_number} target="_blank" className="flex items-center gap-1 hover:text-primary">
                                             Tra cứu <ExternalLink className="h-3 w-3" />
                                         </a>
@@ -218,7 +218,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                         <div className="relative aspect-square rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50 hover:ring-2 hover:ring-primary/30 transition-all">
                                             <img src={url} alt={`Ảnh ${idx + 1}`} className="w-full h-full object-cover" />
                                             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/40 to-transparent px-2 py-1">
-                                                <p className="text-[9px] text-white font-medium">Ảnh {idx + 1}</p>
+                                                <p className="text-[11px] text-white font-medium">Ảnh {idx + 1}</p>
                                             </div>
                                         </div>
                                     </a>
@@ -242,7 +242,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
-                                <thead className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-50/30 border-b border-zinc-100">
+                                <thead className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 bg-zinc-50/30 border-b border-zinc-100">
                                     <tr>
                                         <th className="px-6 py-3 font-bold">STT</th>
                                         <th className="px-6 py-3 font-bold">Tên sản phẩm/dịch vụ</th>
@@ -259,7 +259,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                                 <td className="px-6 py-4">
                                                     <div className="font-semibold text-zinc-900 group-hover:text-primary transition-colors">{item.product_name}</div>
                                                     {item.product_id && (
-                                                        <div className="text-[10px] text-muted-foreground mt-0.5 font-medium">SKU: {item.product_id.split('-')[0].toUpperCase()}</div>
+                                                        <div className="text-[11px] text-muted-foreground mt-0.5 font-medium">SKU: {item.product_id.split('-')[0].toUpperCase()}</div>
                                                     )}
                                                 </td>
                                                 <td className="px-6 py-4 text-center font-bold text-zinc-700 tabular-nums">{item.quantity}</td>
@@ -305,7 +305,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     <Phone className="h-4 w-4 text-zinc-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">Điện thoại</p>
+                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">Điện thoại</p>
                                     <p className="text-sm font-semibold text-zinc-900">{order.customer_phone || 'Chưa cập nhật'}</p>
                                 </div>
                             </div>
@@ -314,13 +314,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     <Mail className="h-4 w-4 text-zinc-500" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">Email</p>
+                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">Email</p>
                                     <p className="text-sm font-semibold text-zinc-900 truncate max-w-[180px]">{order.customer_email || 'Chưa cập nhật'}</p>
                                 </div>
                             </div>
                             <Separator className="bg-zinc-100" />
                             <div className="space-y-2">
-                                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Ghi chú nghiệp vụ</p>
+                                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ghi chú nghiệp vụ</p>
                                 <div className="p-3 bg-zinc-50/50 rounded-lg border border-dashed border-zinc-200">
                                     <p className="text-sm text-zinc-600 leading-relaxed font-normal whitespace-pre-line">
                                         {order.notes || "Không có ghi chú nào từ khách hàng hoặc tư vấn viên."}
@@ -338,7 +338,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 const viLabels = (order as any).metadata?.vi_labels || []
                                 return (
                                     <div className="space-y-2 mt-3">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1"><Printer className="size-3" /> Kích thước in từng vỉ</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1"><Printer className="size-3" /> Kích thước in từng vỉ</p>
                                         <div className="flex flex-wrap gap-2">
                                             {(order as any).metadata.vi_sizes.map((sizeId: string, idx: number) => (
                                                 <div key={idx} className="px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-xs font-semibold text-blue-700">
@@ -364,7 +364,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                         <CardContent className="px-6 pb-6 space-y-3">
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Người nhận</Label>
+                                    <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Người nhận</Label>
                                     <Input
                                         value={shippingInfo.recipient_name}
                                         onChange={e => setShippingInfo({ ...shippingInfo, recipient_name: e.target.value })}
@@ -373,7 +373,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">SĐT nhận hàng</Label>
+                                    <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">SĐT nhận hàng</Label>
                                     <Input
                                         value={shippingInfo.recipient_phone}
                                         onChange={e => setShippingInfo({ ...shippingInfo, recipient_phone: e.target.value })}
@@ -384,7 +384,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Tỉnh / TP</Label>
+                                    <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Tỉnh / TP</Label>
                                     <Input
                                         value={shippingInfo.province}
                                         onChange={e => setShippingInfo({ ...shippingInfo, province: e.target.value })}
@@ -393,7 +393,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Phường / Xã</Label>
+                                    <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Phường / Xã</Label>
                                     <Input
                                         value={shippingInfo.ward}
                                         onChange={e => setShippingInfo({ ...shippingInfo, ward: e.target.value })}
@@ -403,7 +403,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Địa chỉ chi tiết</Label>
+                                <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Địa chỉ chi tiết</Label>
                                 <Input
                                     value={shippingInfo.address}
                                     onChange={e => setShippingInfo({ ...shippingInfo, address: e.target.value })}
@@ -439,7 +439,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                 {/* Payment Card */}
                 <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
                     <CardHeader className="bg-zinc-50/50 border-b pb-3">
-                        <Badge variant="outline" className="w-fit mb-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                        <Badge variant="outline" className="w-fit mb-2 text-[11px] font-bold uppercase tracking-widest px-3 py-1">
                             Thanh toán
                         </Badge>
                         <CardTitle className="text-3xl font-bold tracking-tighter tabular-nums">
@@ -453,7 +453,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                         <div className="space-y-3">
                             <div className="flex justify-between items-end">
                                 <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                                    <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                                         Tiến độ thanh toán
                                     </p>
                                     <p className="text-2xl font-bold tabular-nums tracking-tight">
@@ -467,7 +467,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                         order.payment_status === 'paid'
                                             ? "bg-emerald-100 text-emerald-700 border-emerald-200"
                                             : order.payment_status === 'partial'
-                                                ? "bg-amber-100 text-amber-700 border-amber-200"
+                                                ? "bg-amber-50 text-amber-700 border-amber-200"
                                                 : "bg-zinc-100 text-zinc-600 border-zinc-200"
                                     )}
                                     variant="outline"
@@ -504,7 +504,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
                                 {/* Bank Info */}
                                 <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-100 space-y-1.5">
-                                    <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-blue-600">
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-blue-600">
                                         <Building2 className="h-3 w-3" />
                                         Thông tin chuyển khoản
                                     </div>
@@ -539,7 +539,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     <div className="p-2 bg-white rounded-xl border">
                                         <img src={qrUrl} alt="QR Code" className="w-44 h-auto" />
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground text-center leading-relaxed font-medium">
+                                    <p className="text-[11px] text-muted-foreground text-center leading-relaxed font-medium">
                                         Gửi mã này cho khách để quét bằng app Ngân hàng.
                                     </p>
                                 </div>
@@ -641,9 +641,9 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                             </Button>
                             <div className="flex gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-100">
                                 <div className="h-4 w-4 rounded-full bg-zinc-900 flex items-center justify-center shrink-0 mt-0.5">
-                                    <span className="text-[10px] text-white">!</span>
+                                    <span className="text-[11px] text-white">!</span>
                                 </div>
-                                <p className="text-[10px] text-zinc-500 font-medium leading-normal italic">Hệ thống sẽ ngay lập tức gửi một tin nhắn báo biến động số dư lên Telegram Group của team Tulie Studio.</p>
+                                <p className="text-[11px] text-zinc-500 font-medium leading-normal italic">Hệ thống sẽ ngay lập tức gửi một tin nhắn báo biến động số dư lên Telegram Group của team Tulie Studio.</p>
                             </div>
                         </CardContent>
                     </Card>

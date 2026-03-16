@@ -2,7 +2,7 @@
 
 import { RetailOrder, RetailOrderStatus } from '@/types'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/shared/status-badge'
 import {
     ArrowLeft,
     MoreVertical,
@@ -49,7 +49,7 @@ export const STATUS_COLORS: Record<string, string> = {
     waiting_ship: 'bg-amber-50 text-amber-600 border-amber-200',
     shipping: 'bg-orange-50 text-orange-600 border-orange-200',
     completed: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-    cancelled: 'bg-red-50 text-red-600 border-red-200',
+    cancelled: 'bg-rose-50 text-rose-600 border-rose-200',
 }
 
 const STATUS_DOT_COLORS: Record<string, string> = {
@@ -113,14 +113,9 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                                 <Copy className="h-4 w-4" />
                             </button>
                         </h1>
-                        <Badge variant="outline" className={cn("px-2.5 py-0.5 font-medium text-[10px] uppercase tracking-wider rounded-md", STATUS_COLORS[order.order_status])}>
-                            {isUpdatingStatus && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
-                            {STATUS_LABELS[order.order_status]}
-                        </Badge>
+                        <StatusBadge status={order.order_status} entityType="retail_order" />
                         {isPhysical && (
-                            <Badge variant="outline" className="px-2 py-0.5 text-[10px] font-medium text-orange-600 border-orange-200 bg-orange-50 rounded-md">
-                                Ship
-                            </Badge>
+                            <StatusBadge status="shipping" entityType="retail_order" label="Ship" />
                         )}
                     </div>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground font-normal">
@@ -180,7 +175,7 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 rounded-xl border-zinc-200 shadow-lg p-1">
                         <div className="px-3 py-2">
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
                                 Chuyển trạng thái {isPhysical ? '(có ship)' : '(file mềm)'}
                             </p>
                         </div>
@@ -196,12 +191,12 @@ export function OrderDetailHeader({ order }: OrderDetailHeaderProps) {
                             >
                                 <Circle className={cn("h-3 w-3 fill-current shrink-0", STATUS_DOT_COLORS[status])} />
                                 <span className="font-medium text-sm">{STATUS_LABELS[status]}</span>
-                                {status === order.order_status && <span className="ml-auto text-[10px] text-zinc-400 font-medium">Hiện tại</span>}
+                                {status === order.order_status && <span className="ml-auto text-[11px] text-zinc-400 font-medium">Hiện tại</span>}
                             </DropdownMenuItem>
                         ))}
                         <DropdownMenuSeparator className="bg-zinc-100 my-1" />
                         <div className="px-3 py-2">
-                            <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tác vụ đơn hàng</p>
+                            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Tác vụ đơn hàng</p>
                         </div>
                         <DropdownMenuItem asChild className="rounded-lg h-10 cursor-pointer px-3">
                             <Link href={`/studio/${order.id}/edit`} className="flex items-center gap-3 w-full">

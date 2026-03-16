@@ -228,7 +228,7 @@ export default async function InvoiceDetailPage({ params }: any) {
                         <CardContent className="space-y-4">
                             {invoice.payments?.map((payment: any) => (
                                 <div key={payment.id} className="flex items-center gap-4 p-4 rounded-lg border">
-                                    <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                                    <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
                                         <CheckCircle className="h-5 w-5 text-green-500" />
                                     </div>
                                     <div className="flex-1">

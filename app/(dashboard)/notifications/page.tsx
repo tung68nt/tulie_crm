@@ -21,9 +21,9 @@ const getAlertIcon = (type: AlertItem['type']) => {
 const getSeverityColors = (severity: AlertItem['severity']) => {
     switch (severity) {
         case 'danger':
-            return 'bg-red-500/10 text-red-600 border-red-500/20'
+            return 'bg-rose-500/10 text-rose-600 border-red-500/20'
         case 'warning':
-            return 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+            return 'bg-amber-500/10 text-yellow-600 border-yellow-500/20'
         case 'info':
             return 'bg-blue-500/10 text-blue-600 border-blue-500/20'
     }
@@ -34,7 +34,7 @@ const getSeverityBadge = (severity: AlertItem['severity']) => {
         case 'danger':
             return <Badge variant="destructive">Khẩn cấp</Badge>
         case 'warning':
-            return <Badge className="bg-yellow-500 hover:bg-yellow-600">Cảnh báo</Badge>
+            return <Badge className="bg-amber-500 hover:bg-yellow-600">Cảnh báo</Badge>
         case 'info':
             return <Badge variant="secondary">Thông tin</Badge>
     }
@@ -67,7 +67,7 @@ export default async function NotificationsPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-full ${alerts.filter(a => a.severity === 'danger').length > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                            <div className={`p-3 rounded-full ${alerts.filter(a => a.severity === 'danger').length > 0 ? 'bg-rose-100 text-rose-600' : 'bg-green-100 text-emerald-600'}`}>
                                 {alerts.filter(a => a.severity === 'danger').length > 0 ? <AlertTriangle className="h-6 w-6" /> : <CheckCircle className="h-6 w-6" />}
                             </div>
                             <div>
@@ -80,7 +80,7 @@ export default async function NotificationsPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-full ${alerts.filter(a => a.severity === 'warning').length > 0 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-green-600'}`}>
+                            <div className={`p-3 rounded-full ${alerts.filter(a => a.severity === 'warning').length > 0 ? 'bg-yellow-100 text-yellow-600' : 'bg-green-100 text-emerald-600'}`}>
                                 {alerts.filter(a => a.severity === 'warning').length > 0 ? <AlertTriangle className="h-6 w-6" /> : <CheckCircle className="h-6 w-6" />}
                             </div>
                             <div>

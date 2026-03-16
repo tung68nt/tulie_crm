@@ -63,13 +63,13 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                 <div className="flex items-center gap-4 flex-1">
                                     <div className={cn(
                                         "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                                        doc.status === 'signed' ? "bg-emerald-500 text-white" : "bg-amber-100 text-amber-600 font-bold text-xs"
+                                        doc.status === 'signed' ? "bg-emerald-500 text-white" : "bg-amber-50 text-amber-600 font-bold text-xs"
                                     )}>
                                         {doc.status === 'signed' ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
                                     </div>
                                     <div className="min-w-0">
                                         <p className="font-semibold text-sm truncate">{doc.title}</p>
-                                        <p className="text-[10px] text-muted-foreground truncate font-medium mt-0.5">
+                                        <p className="text-[11px] text-muted-foreground truncate font-medium mt-0.5">
                                             {doc.workItemTitle}
                                         </p>
                                     </div>
@@ -79,7 +79,7 @@ export function ProjectDocumentationSet({ project, workItems }: ProjectDocumenta
                                     {doc.date && (
                                         <div className="space-y-0.5">
                                             <p className="text-[11px] font-semibold text-muted-foreground">{formatDate(doc.date)}</p>
-                                            <p className="text-[9px] font-medium text-muted-foreground">HẠN HOÀN THÀNH</p>
+                                            <p className="text-[11px] font-medium text-muted-foreground">HẠN HOÀN THÀNH</p>
                                         </div>
                                     )}
                                     <Badge variant="secondary" className={cn(

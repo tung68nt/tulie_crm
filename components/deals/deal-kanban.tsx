@@ -73,7 +73,7 @@ export function DealKanban({ deals }: DealKanbanProps) {
                             <h3 className="font-bold text-sm text-foreground">
                                 {DEAL_STATUS_LABELS[status]}
                             </h3>
-                            <Badge variant="secondary" className="rounded-full px-2 py-0 h-5 text-[10px]">
+                            <Badge variant="secondary" className="rounded-full px-2 py-0 h-5 text-[11px]">
                                 {deals.filter(d => d.status === status).length}
                             </Badge>
                         </div>
@@ -133,12 +133,12 @@ export function DealKanban({ deals }: DealKanbanProps) {
                                                 {formatCurrency(deal.budget || 0)}
                                             </div>
                                             {deal.priority === 'high' && (
-                                                <Badge variant="outline" className="text-[10px] text-red-600 bg-red-50 border-red-200">Gấp</Badge>
+                                                <Badge variant="outline" className="text-[11px] text-rose-600 bg-rose-50 border-rose-200">Gấp</Badge>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-2 border-t mt-2 text-[10px] text-muted-foreground">
+                                    <div className="flex items-center justify-between pt-2 border-t mt-2 text-[11px] text-muted-foreground">
                                         <div className="flex items-center gap-1">
                                             <Calendar className="h-3 w-3" />
                                             {new Date(deal.created_at).toLocaleDateString('vi-VN')}

@@ -23,7 +23,7 @@ export default function StaleProjectsPanel({ projects }: StaleProjectsPanelProps
                     <AlertTriangle className={`h-4 w-4 ${projects.length > 0 ? 'text-amber-600' : 'text-muted-foreground'}`} />
                     Dự án chưa cập nhật
                     {projects.length > 0 && (
-                        <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                        <Badge variant="secondary" className="bg-amber-50 text-amber-700">
                             {projects.length}
                         </Badge>
                     )}

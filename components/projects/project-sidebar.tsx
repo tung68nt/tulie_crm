@@ -255,7 +255,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                             )}>
                                 <div className="flex items-center gap-2">
                                     <AlertCircle className={cn("h-4 w-4", isOverdue ? "text-destructive" : "text-muted-foreground")} />
-                                    <span className={cn("text-[10px] font-semibold", isOverdue ? "text-destructive" : "text-muted-foreground")}>
+                                    <span className={cn("text-[11px] font-semibold", isOverdue ? "text-destructive" : "text-muted-foreground")}>
                                         {isOverdue ? 'TRỄ HẠN DỰ KIẾN' : 'HẠN HOÀN THÀNH'}
                                     </span>
                                 </div>
@@ -284,7 +284,7 @@ export function ProjectSidebar({ project, teamMembers = [] }: ProjectSidebarProp
                                         <p className="text-xs text-muted-foreground">{formatDate(report.created_at)}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Badge variant={report.is_signed ? "default" : "secondary"} className="text-[10px]">
+                                        <Badge variant={report.is_signed ? "default" : "secondary"} className="text-[11px]">
                                             {report.is_signed ? "Đã ký" : "Chờ ký"}
                                         </Badge>
                                         {project.customer && (

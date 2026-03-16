@@ -53,7 +53,7 @@ export default async function ReportsPage() {
                         <div className="text-2xl font-bold">{formatCurrency(stats.revenue.total)}</div>
                         <p className="text-xs text-muted-foreground flex items-center mt-1">
                             <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
-                            <span className="text-green-600 font-medium">Dữ liệu từ hệ thống</span>
+                            <span className="text-emerald-600 font-medium">Dữ liệu từ hệ thống</span>
                         </p>
                     </CardContent>
                 </Card>
@@ -89,7 +89,7 @@ export default async function ReportsPage() {
                         <div className="text-2xl font-bold">{stats.contracts.active}</div>
                         <p className="text-xs text-muted-foreground flex items-center mt-1">
                             <ArrowUpRight className="h-3 w-3 mr-1 text-green-500" />
-                            <span className="text-green-600 font-medium">Trạng thái Active</span>
+                            <span className="text-emerald-600 font-medium">Trạng thái Active</span>
                         </p>
                     </CardContent>
                 </Card>

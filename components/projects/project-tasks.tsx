@@ -132,7 +132,7 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
                     {tasks.map((task, index) => (
                         <div key={task.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 p-3 border rounded-xl items-center bg-card transition-all hover:border-slate-300">
                             <div className="md:col-span-4 flex items-center gap-3">
-                                <span className="text-[10px] font-bold text-muted-foreground w-4">{index + 1}</span>
+                                <span className="text-[11px] font-bold text-muted-foreground w-4">{index + 1}</span>
                                 <div className="flex-1 space-y-1">
                                     <Input
                                         placeholder="Tên công việc..."
@@ -145,7 +145,7 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
                                             value={task.work_item_id || "none"}
                                             onValueChange={(v) => updateTask(task.id, 'work_item_id', v === "none" ? null : v)}
                                         >
-                                            <SelectTrigger className="h-6 text-[10px] w-auto border-none bg-muted/50 px-2 rounded-full">
+                                            <SelectTrigger className="h-6 text-[11px] w-auto border-none bg-muted/50 px-2 rounded-full">
                                                 <div className="flex items-center gap-1.5">
                                                     <Package className="h-3 w-3 text-muted-foreground" />
                                                     <SelectValue placeholder="Chọn hạng mục..." />
@@ -181,7 +181,7 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
                             <div className="md:col-span-4 grid grid-cols-2 gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant="outline" className="h-8 justify-start text-left font-normal text-[10px] rounded-lg border-zinc-100">
+                                        <Button variant="outline" className="h-8 justify-start text-left font-normal text-[11px] rounded-lg border-zinc-100">
                                             <CalendarIcon className="mr-1.5 h-3 w-3 text-muted-foreground" />
                                             {task.start_date ? format(task.start_date, 'dd/MM') : 'Bắt đầu'}
                                         </Button>
@@ -192,7 +192,7 @@ export function ProjectTasks({ project, workItems }: ProjectTasksProps) {
                                 </Popover>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant="outline" className="h-8 justify-start text-left font-normal text-[10px] rounded-lg border-zinc-100">
+                                        <Button variant="outline" className="h-8 justify-start text-left font-normal text-[11px] rounded-lg border-zinc-100">
                                             <CalendarIcon className="mr-1.5 h-3 w-3 text-muted-foreground" />
                                             {task.end_date ? format(task.end_date, 'dd/MM') : 'Kết thúc'}
                                         </Button>

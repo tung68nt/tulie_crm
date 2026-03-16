@@ -8,8 +8,8 @@ import type { InvoiceReconciliationItem } from '@/lib/supabase/services/invoice-
 
 const statusConfig = {
     ok: { label: 'OK', color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle2 },
-    missing_output: { label: 'Chưa xuất HĐ', color: 'bg-red-100 text-red-800 border-red-200', icon: AlertTriangle },
-    unpaid: { label: 'Chưa thu tiền', color: 'bg-amber-100 text-amber-800 border-amber-200', icon: AlertTriangle },
+    missing_output: { label: 'Chưa xuất HĐ', color: 'bg-rose-100 text-rose-800 border-rose-200', icon: AlertTriangle },
+    unpaid: { label: 'Chưa thu tiền', color: 'bg-amber-50 text-amber-700 border-amber-200', icon: AlertTriangle },
     gap: { label: 'Chênh lệch', color: 'bg-orange-100 text-orange-800 border-orange-200', icon: AlertTriangle },
     missing_input: { label: 'Thiếu HĐ đầu vào', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: AlertTriangle },
 }
@@ -38,9 +38,9 @@ export default function InvoiceTrackerPanel({ reconciliation, unissuedInvoices }
         <div className="space-y-4">
             {/* Unissued Invoices */}
             {unissuedInvoices.length > 0 && (
-                <Card className="border-red-200">
+                <Card className="border-rose-200">
                     <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2 text-red-700">
+                        <CardTitle className="text-base flex items-center gap-2 text-rose-700">
                             <AlertTriangle className="h-4 w-4" />
                             Hợp đồng B2B chưa xuất hoá đơn ({unissuedInvoices.length})
                         </CardTitle>
@@ -51,7 +51,7 @@ export default function InvoiceTrackerPanel({ reconciliation, unissuedInvoices }
                                 <Link
                                     key={inv.id}
                                     href={`/contracts/${inv.id}`}
-                                    className="flex items-center justify-between p-3 rounded-lg bg-red-50/50 border border-red-100 hover:bg-red-50 transition-colors"
+                                    className="flex items-center justify-between p-3 rounded-lg bg-rose-50/50 border border-red-100 hover:bg-rose-50 transition-colors"
                                 >
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium truncate">{inv.title}</p>
@@ -59,7 +59,7 @@ export default function InvoiceTrackerPanel({ reconciliation, unissuedInvoices }
                                             {inv.contract_number} — {inv.customer_name}
                                         </p>
                                     </div>
-                                    <span className="text-sm font-medium text-red-700 shrink-0 ml-2">
+                                    <span className="text-sm font-medium text-rose-700 shrink-0 ml-2">
                                         {formatVND(inv.total_amount)}₫
                                     </span>
                                 </Link>
@@ -76,7 +76,7 @@ export default function InvoiceTrackerPanel({ reconciliation, unissuedInvoices }
                         <Receipt className="h-4 w-4 text-blue-600" />
                         Đối soát hoá đơn
                         {problems.length > 0 && (
-                            <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                            <Badge variant="secondary" className="bg-amber-50 text-amber-700">
                                 {problems.length} cần xử lý
                             </Badge>
                         )}
@@ -114,7 +114,7 @@ export default function InvoiceTrackerPanel({ reconciliation, unissuedInvoices }
                                                 <td className="py-2 text-right">{formatVND(item.output_invoiced)}₫</td>
                                                 <td className="py-2 text-right font-medium text-green-700">{formatVND(item.output_paid)}₫</td>
                                                 <td className="py-2 text-right">{formatVND(item.input_invoiced)}₫</td>
-                                                <td className={`py-2 text-right font-medium ${item.gap > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                                                <td className={`py-2 text-right font-medium ${item.gap > 0 ? 'text-green-700' : 'text-rose-700'}`}>
                                                     {item.gap > 0 ? '+' : ''}{formatVND(item.gap)}₫
                                                 </td>
                                                 <td className="py-2 text-center">

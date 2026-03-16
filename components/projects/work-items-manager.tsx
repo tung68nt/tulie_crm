@@ -690,7 +690,7 @@ function WorkItemRow({
                                                             />
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-xs font-medium truncate">{q.quotation_number}</p>
-                                                                <p className="text-[10px] text-muted-foreground">{q.title || formatCurrency(q.total_amount)}</p>
+                                                                <p className="text-[11px] text-muted-foreground">{q.title || formatCurrency(q.total_amount)}</p>
                                                             </div>
                                                         </label>
                                                     )
@@ -722,12 +722,12 @@ function WorkItemRow({
                                                     <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                                                     <div>
                                                         <p className="text-xs font-semibold text-zinc-900">{q.quotation_number}</p>
-                                                        {q.title && <p className="text-[10px] text-muted-foreground">{q.title}</p>}
+                                                        {q.title && <p className="text-[11px] text-muted-foreground">{q.title}</p>}
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-xs font-semibold tabular-nums text-zinc-700">{formatCurrency(q.total_amount)}</span>
-                                                    <Badge variant="outline" className="text-[10px] h-5">{q.status === 'accepted' ? 'Đã duyệt' : q.status === 'sent' ? 'Đã gửi' : 'Nháp'}</Badge>
+                                                    <Badge variant="outline" className="text-[11px] h-5">{q.status === 'accepted' ? 'Đã duyệt' : q.status === 'sent' ? 'Đã gửi' : 'Nháp'}</Badge>
                                                 </div>
                                             </div>
                                         )
@@ -768,7 +768,7 @@ function WorkItemRow({
                                         </span>
                                         <button
                                             onClick={() => handleDeleteTask(task.id)}
-                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-50 rounded-lg transition-all"
+                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-rose-50 rounded-lg transition-all"
                                             disabled={isPending}
                                         >
                                             <Trash2 className="w-3.5 h-3.5 text-red-300 hover:text-red-500" />
@@ -812,11 +812,11 @@ function WorkItemRow({
                                             <a href={link.url} target="_blank" className="text-xs font-semibold block truncate hover:underline underline-offset-2">
                                                 {link.label}
                                             </a>
-                                            {link.date && <p className="text-[10px] text-zinc-400 mt-0.5">{formatDate(link.date)}</p>}
+                                            {link.date && <p className="text-[11px] text-zinc-400 mt-0.5">{formatDate(link.date)}</p>}
                                         </div>
                                         <button
                                             onClick={() => handleRemoveLink(lIdx)}
-                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-50 rounded-lg transition-all"
+                                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-rose-50 rounded-lg transition-all"
                                             disabled={isPending}
                                         >
                                             <Trash2 className="w-3.5 h-3.5 text-red-300 hover:text-red-500" />
@@ -893,11 +893,11 @@ function WorkItemRow({
                                                 {doc.title}
                                             </span>
                                             {doc.date ? (
-                                                <span className="text-[10px] font-medium text-muted-foreground">
+                                                <span className="text-[11px] font-medium text-muted-foreground">
                                                     {doc.status === 'signed' ? 'Đã ký:' : 'Dự kiến:'} {formatDate(doc.date)}
                                                 </span>
                                             ) : (
-                                                <span className="text-[10px] font-medium text-muted-foreground/50">Chưa có ngày</span>
+                                                <span className="text-[11px] font-medium text-muted-foreground/50">Chưa có ngày</span>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-1 opacity-0 group-hover/doc:opacity-100 transition-opacity">

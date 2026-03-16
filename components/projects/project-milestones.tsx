@@ -146,7 +146,7 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
                                             <SelectItem value="overdue" className="text-xs">Trễ hạn</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                    <Button variant="ghost" size="icon" onClick={() => removeMilestone(m.id)} className="h-9 w-9 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all">
+                                    <Button variant="ghost" size="icon" onClick={() => removeMilestone(m.id)} className="h-9 w-9 text-red-300 hover:text-red-500 hover:bg-rose-50 rounded-full transition-all">
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>

@@ -41,7 +41,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }>
     contacted: { label: 'Đã liên hệ', color: 'bg-amber-50 text-amber-700', icon: Phone },
     qualified: { label: 'Tiềm năng', color: 'bg-emerald-50 text-emerald-700', icon: UserCheck },
     converted: { label: 'Đã chuyển đổi', color: 'bg-zinc-900 text-white', icon: CheckCircle2 },
-    lost: { label: 'Mất', color: 'bg-red-50 text-red-700', icon: XCircle },
+    lost: { label: 'Mất', color: 'bg-rose-50 text-rose-700', icon: XCircle },
 }
 
 interface LeadsListProps {
@@ -202,7 +202,7 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                         <p className="text-xs font-medium text-zinc-600 truncate">{lead.company_name || '—'}</p>
                                     </div>
                                     <div className="col-span-2">
-                                        <Badge className={cn("text-[10px] font-semibold border-none px-2.5 py-1 rounded-lg", statusCfg.color)}>
+                                        <Badge className={cn("text-[11px] font-semibold border-none px-2.5 py-1 rounded-lg", statusCfg.color)}>
                                             {statusCfg.label}
                                         </Badge>
                                     </div>
@@ -229,7 +229,7 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                                 ))}
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem
-                                                    className="text-red-600"
+                                                    className="text-rose-600"
                                                     onClick={() => handleDelete(lead.id)}
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5 mr-2" />
@@ -254,7 +254,7 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                 <DialogHeader>
                                     <DialogTitle className="text-xl font-bold tracking-tight">{selectedLead.full_name}</DialogTitle>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <Badge className={cn("text-[10px] font-semibold border-none px-2.5 py-1 rounded-lg", STATUS_CONFIG[selectedLead.status]?.color)}>
+                                        <Badge className={cn("text-[11px] font-semibold border-none px-2.5 py-1 rounded-lg", STATUS_CONFIG[selectedLead.status]?.color)}>
                                             {STATUS_CONFIG[selectedLead.status]?.label}
                                         </Badge>
                                         <span className="text-xs text-zinc-400">{formatDate(selectedLead.created_at)}</span>
@@ -264,26 +264,26 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                             <div className="p-6 space-y-5">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Điện thoại</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Điện thoại</p>
                                         <p className="text-sm font-semibold text-zinc-950">{selectedLead.phone}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Email</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Email</p>
                                         <p className="text-sm font-semibold text-zinc-950">{selectedLead.email || '—'}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Công ty</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Công ty</p>
                                         <p className="text-sm font-semibold text-zinc-950">{selectedLead.company_name || '—'}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Lĩnh vực</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Lĩnh vực</p>
                                         <p className="text-sm font-semibold text-zinc-950">{selectedLead.business_type || '—'}</p>
                                     </div>
                                 </div>
 
                                 {selectedLead.message && (
                                     <div className="space-y-1.5">
-                                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Nhu cầu</p>
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nhu cầu</p>
                                         <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100">
                                             <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-line">{selectedLead.message}</p>
                                         </div>
@@ -291,7 +291,7 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                 )}
 
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Cập nhật trạng thái</p>
+                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Cập nhật trạng thái</p>
                                     <div className="flex gap-2 flex-wrap">
                                         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
                                             <Button

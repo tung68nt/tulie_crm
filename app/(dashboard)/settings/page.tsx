@@ -725,13 +725,13 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="flex gap-4 p-4 bg-muted/50 rounded-xl border border-border/50">
                                         <div className="space-y-1 flex-1">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Xem trước Logo:</p>
+                                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Xem trước Logo:</p>
                                             <div className="h-16 flex items-center bg-white p-3 rounded-xl border border-zinc-200">
                                                 <img src={companySettings.logo_url} alt="Logo Preview" className="h-full object-contain" />
                                             </div>
                                         </div>
                                         <div className="space-y-1 w-32">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Favicon:</p>
+                                            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Favicon:</p>
                                             <div className="h-16 w-16 flex items-center justify-center bg-white p-3 rounded-xl border border-zinc-200">
                                                 <img src={companySettings.favicon_url} alt="Favicon Preview" className="h-10 w-10 object-contain" />
                                             </div>
@@ -1032,7 +1032,7 @@ export default function SettingsPage() {
                                                         placeholder={item.placeholder}
                                                         className="min-h-[120px] text-xs font-mono whitespace-pre-wrap"
                                                     />
-                                                    <p className="text-[10px] text-muted-foreground mt-1">{item.placeholder}</p>
+                                                    <p className="text-[11px] text-muted-foreground mt-1">{item.placeholder}</p>
                                                 </div>
                                             </div>
                                         ))}
@@ -1117,7 +1117,7 @@ export default function SettingsPage() {
                                         <Badge variant="secondary">Realtime Sync</Badge>
                                     </div>
                                     <div className="flex gap-2">
-                                        <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
+                                        <div className="flex-1 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[11px] font-mono break-all opacity-70">
                                             {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/sepay` : '...'}
                                         </div>
                                         <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-zinc-300 shadow-sm" onClick={() => {
@@ -1126,7 +1126,7 @@ export default function SettingsPage() {
                                             toast.success('Đã copy Webhook URL')
                                         }}>Copy</Button>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
+                                    <p className="text-[11px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
                                 </div>
 
                                 <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
@@ -1136,7 +1136,7 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="flex gap-2 items-end">
                                         <div className="flex-1 space-y-3">
-                                            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[10px] font-mono break-all opacity-70">
+                                            <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-[11px] font-mono break-all opacity-70">
                                                 {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/academy` : '...'}
                                             </div>
                                             <div className="space-y-1.5">
@@ -1156,7 +1156,7 @@ export default function SettingsPage() {
                                             toast.success('Đã copy Academy Webhook URL')
                                         }}>Copy</Button>
                                     </div>
-                                    <p className="text-[10px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
+                                    <p className="text-[11px] text-muted-foreground italic leading-relaxed">Dùng khóa này cấu hình vào Tulie Academy để đẩy dữ liệu doanh thu về CRM.</p>
                                 </div>
 
                                 <div className="pt-6 border-t border-border/50 flex justify-end">

@@ -194,7 +194,7 @@ export function PaymentWatcher({
                     </div>
                     <div className="flex items-center gap-2">
                         {isPolling && (
-                            <span className="text-[10px] tabular-nums font-mono opacity-70">
+                            <span className="text-[11px] tabular-nums font-mono opacity-70">
                                 {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                             </span>
                         )}
@@ -217,7 +217,7 @@ export function PaymentWatcher({
             <div className="space-y-3">
                 <div className="flex justify-between items-end">
                     <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
                             Tiến độ thanh toán
                         </p>
                         <p className="text-2xl font-bold tabular-nums tracking-tight">
@@ -231,7 +231,7 @@ export function PaymentWatcher({
                             currentStatus === 'paid'
                                 ? "bg-emerald-100 text-emerald-700 border-emerald-200"
                                 : currentStatus === 'partial'
-                                    ? "bg-amber-100 text-amber-700 border-amber-200"
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
                                     : "bg-zinc-100 text-zinc-600 border-zinc-200"
                         )}
                         variant="outline"
@@ -267,7 +267,7 @@ export function PaymentWatcher({
                 <>
                     <Separator />
                     <div className="space-y-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                             <Zap className="h-3 w-3" />
                             Lịch sử giao dịch ({status.transactions.length})
                         </p>
@@ -285,7 +285,7 @@ export function PaymentWatcher({
                                             <p className="text-xs font-semibold text-emerald-800">
                                                 +{formatCurrency(tx.amount)}
                                             </p>
-                                            <p className="text-[10px] text-muted-foreground">
+                                            <p className="text-[11px] text-muted-foreground">
                                                 {tx.gateway || 'Chuyển khoản'} • {tx.date ? new Date(tx.date).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : ''}
                                             </p>
                                         </div>

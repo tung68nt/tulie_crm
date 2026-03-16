@@ -144,8 +144,8 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                             {recentTransactions.map((tx) => (
                                 <div key={tx.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
                                     <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${tx.type === 'income'
-                                        ? 'bg-green-50 text-green-600'
-                                        : 'bg-red-50 text-red-500'
+                                        ? 'bg-emerald-50 text-emerald-600'
+                                        : 'bg-rose-50 text-red-500'
                                         }`}>
                                         {tx.type === 'income' ? (
                                             <ArrowUpRight className="h-4 w-4" />
@@ -157,7 +157,7 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                         <p className="text-sm font-medium truncate">{tx.description}</p>
                                         <p className="text-xs text-muted-foreground">{tx.date}</p>
                                     </div>
-                                    <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-500'
+                                    <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'
                                         }`}>
                                         {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                                     </span>

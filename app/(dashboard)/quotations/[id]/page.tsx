@@ -392,7 +392,7 @@ export default function QuotationDetailPage() {
                                                                     <div className="flex items-center gap-2">
                                                                         <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
                                                                         {item.is_optional && (
-                                                                            <Badge variant="outline" className="h-4 px-1 text-[9px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
+                                                                            <Badge variant="outline" className="h-4 px-1 text-[11px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
                                                                         )}
                                                                     </div>
                                                                     {item.description && (

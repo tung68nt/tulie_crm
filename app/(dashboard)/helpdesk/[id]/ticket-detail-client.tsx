@@ -141,7 +141,7 @@ export function TicketDetailClient({ ticket, users }: TicketDetailClientProps) {
                                             <div className={`rounded-lg p-3 text-sm ${msg.sender_type === 'staff' ? 'bg-zinc-50 dark:bg-zinc-800' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
                                                 <p className="whitespace-pre-line">{msg.content}</p>
                                             </div>
-                                            <p className="text-[10px] text-muted-foreground mt-1">
+                                            <p className="text-[11px] text-muted-foreground mt-1">
                                                 {msg.sender_name} · {format(new Date(msg.created_at), 'dd/MM HH:mm', { locale: vi })}
                                             </p>
                                         </div>

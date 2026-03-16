@@ -389,7 +389,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                                             variant="ghost"
                                                             size="icon"
                                                             onClick={() => removeItem(index)}
-                                                            className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-all rounded-lg"
+                                                            className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-rose-50 transition-all rounded-lg"
                                                             type="button"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
@@ -508,7 +508,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                                 toast.info('Đã áp dụng mẫu ghi chú')
                                             }
                                         }}>
-                                            <SelectTrigger className="w-[180px] h-8 text-[10px] bg-muted/30">
+                                            <SelectTrigger className="w-[180px] h-8 text-[11px] bg-muted/30">
                                                 <SelectValue placeholder="Chọn từ mẫu có sẵn" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -590,7 +590,7 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                                 toast.info('Đã chọn tài khoản thanh toán')
                                             }
                                         }}>
-                                            <SelectTrigger className="w-[180px] h-8 text-[10px] bg-muted/30">
+                                            <SelectTrigger className="w-[180px] h-8 text-[11px] bg-muted/30">
                                                 <SelectValue placeholder="Đổi tài khoản nhận" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -603,14 +603,14 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                 </div>
                                 {formData.metadata?.bank_info ? (
                                     <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-100 space-y-1">
-                                        <p className="text-[10px] font-bold text-zinc-900 leading-none">{formData.metadata.bank_info.bank_name}</p>
+                                        <p className="text-[11px] font-bold text-zinc-900 leading-none">{formData.metadata.bank_info.bank_name}</p>
                                         <p className="text-xs font-bold text-primary tracking-tight">{formData.metadata.bank_info.account_no}</p>
-                                        <p className="text-[10px] text-zinc-500">{formData.metadata.bank_info.account_name}</p>
+                                        <p className="text-[11px] text-zinc-500">{formData.metadata.bank_info.account_name}</p>
                                     </div>
                                 ) : (
                                     <div className="p-3 rounded-lg bg-zinc-50 border border-zinc-100 flex items-center gap-2 text-zinc-500">
                                         <AlertCircle className="h-3 w-3" />
-                                        <p className="text-[10px]">Đang sử dụng tài khoản mặc định của Studio</p>
+                                        <p className="text-[11px]">Đang sử dụng tài khoản mặc định của Studio</p>
                                     </div>
                                 )}
                             </div>

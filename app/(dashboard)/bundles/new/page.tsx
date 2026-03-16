@@ -212,7 +212,7 @@ export default function NewBundlePage() {
                                             />
                                             <div>
                                                 <p className="font-medium text-sm">{t.name}</p>
-                                                <Badge variant="secondary" className="text-[10px] h-4">
+                                                <Badge variant="secondary" className="text-[11px] h-4">
                                                     {t.type}
                                                 </Badge>
                                             </div>
@@ -276,9 +276,9 @@ export default function NewBundlePage() {
                                 </Button>
                             ) : (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-                                    <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3">
+                                    <div className="p-4 bg-emerald-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3">
                                         <CheckCircle className="h-5 w-5 text-green-500" />
-                                        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                                        <p className="text-sm font-medium text-emerald-800 dark:text-green-300">
                                             Bộ hồ sơ đã sẵn sàng chia sẻ!
                                         </p>
                                     </div>

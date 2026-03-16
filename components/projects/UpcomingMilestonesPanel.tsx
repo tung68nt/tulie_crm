@@ -41,7 +41,7 @@ export default function UpcomingMilestonesPanel({ milestones }: UpcomingMileston
                                     key={ms.id}
                                     href={ms.project?.id ? `/projects/${ms.project.id}` : '/projects'}
                                     className={`flex items-center justify-between p-3 rounded-lg border transition-colors hover:opacity-80 ${
-                                        isUrgent ? 'bg-red-50/50 border-red-100' : 'bg-purple-50/30 border-purple-100'
+                                        isUrgent ? 'bg-rose-50/50 border-red-100' : 'bg-purple-50/30 border-purple-100'
                                     }`}
                                 >
                                     <div className="flex-1 min-w-0">
@@ -52,7 +52,7 @@ export default function UpcomingMilestonesPanel({ milestones }: UpcomingMileston
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0 ml-2">
-                                        <span className={`text-xs ${isUrgent ? 'text-red-600 font-medium' : 'text-muted-foreground'}`}>
+                                        <span className={`text-xs ${isUrgent ? 'text-rose-600 font-medium' : 'text-muted-foreground'}`}>
                                             {days <= 0 ? 'Hôm nay' : `${days} ngày`}
                                         </span>
                                         <Badge variant="outline" className={`text-xs ${

@@ -38,7 +38,7 @@ export function DeleteProjectButton({ projectId }: { projectId: string }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-red-600 hover:bg-red-50">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50">
                     <Trash2 className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
