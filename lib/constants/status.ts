@@ -237,9 +237,9 @@ export const RETAIL_ORDER_STATUS_COLORS: Record<string, string> = {
 
 // Retail Payment Status
 export const RETAIL_PAYMENT_STATUS_LABELS: Record<string, string> = {
-    unpaid: 'Chưa cọc',
-    partial: 'Một phần',
-    paid: 'Đã xong',
+    unpaid: 'Chưa thanh toán',
+    partial: 'Đã cọc',
+    paid: 'Đã thanh toán',
 }
 
 export const RETAIL_PAYMENT_STATUS_COLORS: Record<string, string> = {
