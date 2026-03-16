@@ -290,6 +290,12 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                     <span className="text-emerald-700 font-semibold">-{formatCurrency(totalDiscount)}</span>
                                 </div>
                             )}
+                            {totalDiscount > 0 && (
+                                <div className="flex justify-between text-[13px] border-t border-slate-200 pt-2">
+                                    <span className="text-slate-700 font-semibold">Thành tiền sau CK:</span>
+                                    <span className="font-semibold text-slate-950">{formatCurrency(subtotalNet)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between text-[13px]">
                                 <span className="text-slate-500 font-medium italic">VAT ({quotation.vat_percent}%):</span>
                                 <span className="font-semibold text-slate-950">{formatCurrency(vatAmount)}</span>

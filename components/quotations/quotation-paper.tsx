@@ -294,6 +294,12 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                             <span className="font-bold">-{formatCurrency(totalDiscount)}</span>
                         </div>
                     )}
+                    {totalDiscount > 0 && (
+                        <div className="flex justify-between items-center text-[11px] px-2 border-t border-slate-200 pt-2">
+                            <span className="text-zinc-950 font-bold uppercase tracking-tight">Thành tiền sau CK</span>
+                            <span className="text-zinc-950 font-bold">{formatCurrency(subtotal)}</span>
+                        </div>
+                    )}
                     <div className="flex justify-between items-center text-[11px] px-2">
                         <span className="text-slate-500 font-bold uppercase tracking-tight">VAT ({quotation.vat_rate || 0}%)</span>
                         <span className="text-zinc-950 font-bold">{formatCurrency(vatAmount)}</span>

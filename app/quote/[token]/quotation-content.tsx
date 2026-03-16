@@ -601,6 +601,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                             <span className="text-zinc-700">-{formatCurrency(totalDiscount)}</span>
                                         </div>
                                     )}
+                                    {totalDiscount > 0 && (
+                                        <div className="flex justify-between py-1.5 text-[12px]">
+                                            <span className="text-slate-700 font-medium">Thành tiền sau CK:</span>
+                                            <span className="font-medium text-slate-900">{formatCurrency(subtotalNet)}</span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between py-1.5 text-[12px]">
                                         <span className="text-slate-500 italic">VAT ({currentQuotation.vat_percent}%):</span>
                                         <span className="font-medium text-slate-900">{formatCurrency(vatAmount)}</span>
