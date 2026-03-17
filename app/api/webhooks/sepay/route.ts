@@ -95,13 +95,14 @@ export async function POST(req: NextRequest) {
                 try {
                     const { createAdminClient } = await import('@/lib/supabase/admin')
                     const supabase = createAdminClient()
-                    await supabase.from('activity_log').insert([{
-                        action: 'view',
-                        entity_type: 'settings',
-                        entity_id: 'sepay_webhook_401',
-                        description: 'SePay Webhook 401 Debug',
-                        metadata: { headers: headersObj },
-                        created_at: new Date().toISOString()
+                    
+                    // Since activity_log schema might be strict on uuid, let's create a temporary debugging table
+                    // We'll write to system_settings with a unique key
+                    const debugKey = 'sepay_debug_' + Date.now()
+                    await supabase.from('system_settings').insert([{
+                        key: debugKey,
+                        value: headersObj,
+                        updated_at: new Date().toISOString()
                     }])
                 } catch (e) {
                     console.error('Failed to log debug headers', e)
