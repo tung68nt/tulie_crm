@@ -396,66 +396,102 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
 
             {/* Revenue Drill-down Dialog */}
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-[520px] max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle className="flex items-center justify-between">
-                            <span>Chi tiết doanh thu — {selectedMonth?.date}</span>
-                            <span className="text-blue-600 font-bold text-lg">
-                                {formatCurrency((selectedMonth?.revenue || 0) * 1000000)}
-                            </span>
+                <DialogContent className="sm:max-w-[640px] max-h-[85vh] flex flex-col p-0 gap-0">
+                    <DialogHeader className="px-6 pt-6 pb-4 border-b">
+                        <DialogTitle className="text-lg font-semibold">
+                            Chi tiết doanh thu — {selectedMonth?.date}
                         </DialogTitle>
+                        <p className="text-sm text-muted-foreground mt-1">
+                            Tổng: <span className="font-bold text-foreground">{formatCurrency((selectedMonth?.revenue || 0) * 1000000)}</span>
+                            {' · '}
+                            {selectedMonth?.details?.length || 0} khoản thu
+                        </p>
                     </DialogHeader>
 
-                    <div className="space-y-4 mt-2">
-                        {Object.entries(groupedDetails).map(([source, items]) => {
-                            const config = SOURCE_CONFIG[source as RevenueDetailItem['source']]
-                            const Icon = config.icon
-                            const groupTotal = items.reduce((sum, i) => sum + i.amount, 0)
-
-                            return (
-                                <div key={source} className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`h-6 w-6 rounded-md flex items-center justify-center ${config.bg}`}>
-                                                <Icon className={`h-3.5 w-3.5 ${config.color}`} />
-                                            </div>
-                                            <span className="text-sm font-semibold">{config.label}</span>
-                                            <span className="text-xs text-muted-foreground">({items.length})</span>
+                    <div className="flex-1 overflow-y-auto">
+                        {/* Source summary pills */}
+                        {Object.keys(groupedDetails).length > 1 && (
+                            <div className="px-6 py-3 border-b bg-muted/30 flex items-center gap-2 flex-wrap">
+                                {Object.entries(groupedDetails).map(([source, items]) => {
+                                    const config = SOURCE_CONFIG[source as RevenueDetailItem['source']]
+                                    const groupTotal = items.reduce((sum, i) => sum + i.amount, 0)
+                                    return (
+                                        <div key={source} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${config.bg} ${config.color}`}>
+                                            <config.icon className="h-3 w-3" />
+                                            <span>{config.label}</span>
+                                            <span className="font-bold">{formatCurrency(groupTotal)}</span>
                                         </div>
-                                        <span className={`text-sm font-bold ${config.color}`}>
-                                            {formatCurrency(groupTotal)}
-                                        </span>
-                                    </div>
+                                    )
+                                })}
+                            </div>
+                        )}
 
-                                    <div className="ml-8 space-y-1">
-                                        {items.map((item, idx) => (
-                                            <div
-                                                key={`${item.reference_id || idx}`}
-                                                className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors"
-                                            >
-                                                <div className="flex-1 min-w-0 mr-3">
-                                                    <p className="text-xs font-medium truncate" title={item.description}>
-                                                        {item.description}
-                                                    </p>
-                                                    {item.date && (
-                                                        <p className="text-[11px] text-muted-foreground">
-                                                            {new Date(item.date).toLocaleDateString('vi-VN')}
-                                                        </p>
-                                                    )}
+                        {/* Detail table per source */}
+                        <div className="divide-y">
+                            {Object.entries(groupedDetails).map(([source, items]) => {
+                                const config = SOURCE_CONFIG[source as RevenueDetailItem['source']]
+                                const Icon = config.icon
+                                const groupTotal = items.reduce((sum, i) => sum + i.amount, 0)
+
+                                return (
+                                    <div key={source}>
+                                        {/* Source header */}
+                                        <div className="px-6 py-3 bg-muted/40 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`h-6 w-6 rounded-md flex items-center justify-center ${config.bg}`}>
+                                                    <Icon className={`h-3.5 w-3.5 ${config.color}`} />
                                                 </div>
-                                                <span className="text-xs font-semibold tabular-nums whitespace-nowrap">
-                                                    +{formatCurrency(item.amount)}
-                                                </span>
+                                                <span className="text-sm font-semibold">{config.label}</span>
+                                                <span className="text-xs text-muted-foreground font-medium">({items.length} khoản)</span>
                                             </div>
-                                        ))}
+                                            <span className={`text-sm font-bold ${config.color}`}>
+                                                {formatCurrency(groupTotal)}
+                                            </span>
+                                        </div>
+
+                                        {/* Items table */}
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="border-b">
+                                                    <th className="text-left px-6 py-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Mô tả</th>
+                                                    <th className="text-right px-6 py-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wider w-28">Ngày</th>
+                                                    <th className="text-right px-6 py-2 text-[11px] font-medium text-muted-foreground uppercase tracking-wider w-32">Số tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y">
+                                                {items.map((item, idx) => (
+                                                    <tr key={`${item.reference_id || idx}`} className="hover:bg-muted/30 transition-colors">
+                                                        <td className="px-6 py-2.5">
+                                                            <p className="text-sm font-medium truncate max-w-[280px]" title={item.description}>
+                                                                {item.description}
+                                                            </p>
+                                                            {item.customer_name && (
+                                                                <p className="text-xs text-muted-foreground truncate">{item.customer_name}</p>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-2.5 text-right text-xs text-muted-foreground whitespace-nowrap">
+                                                            {item.date
+                                                                ? new Date(item.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })
+                                                                : '—'}
+                                                        </td>
+                                                        <td className="px-6 py-2.5 text-right">
+                                                            <span className="text-sm font-semibold tabular-nums text-emerald-600">
+                                                                +{formatCurrency(item.amount)}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                </div>
-                            )
-                        })}
+                                )
+                            })}
+                        </div>
 
                         {(!selectedMonth?.details || selectedMonth.details.length === 0) && (
-                            <div className="text-center py-6 text-sm text-muted-foreground">
-                                Không có chi tiết doanh thu cho tháng này
+                            <div className="text-center py-12 text-sm text-muted-foreground">
+                                <p className="text-3xl mb-2">📭</p>
+                                <p>Không có chi tiết doanh thu cho tháng này</p>
                             </div>
                         )}
                     </div>
@@ -464,3 +500,4 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
         </>
     )
 }
+
