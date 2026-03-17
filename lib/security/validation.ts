@@ -73,6 +73,7 @@ export const updateProjectSchema = z.object({
     description: z.string().max(5000).optional(),
     start_date: z.string().optional(),
     end_date: z.string().optional(),
+    assigned_to: z.string().uuid().optional(),
     priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
     notes: z.string().max(5000).optional(),
 }).strict() // SECURITY: Reject unknown fields to prevent field injection
