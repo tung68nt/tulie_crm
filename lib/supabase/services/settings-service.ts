@@ -56,7 +56,10 @@ export async function deleteProductCategory(id: string) {
 
 export async function getSystemSetting(key: string) {
     try {
-        const supabase = await createClient()
+        // Use admin client — system settings are global and may be read
+        // from webhook/external contexts without user cookies
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('system_settings')
             .select('value')

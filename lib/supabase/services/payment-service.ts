@@ -1,6 +1,7 @@
 
 
 import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import { recordRetailPayment } from './retail-order-service'
 import { sendTelegramNotification } from './telegram-service'
 import { getSystemSetting } from './settings-service'
@@ -67,7 +68,8 @@ export async function processWebhookPayment(payload: SepayWebhookPayload): Promi
     sourceSystem: SourceSystem
     transactionId: string
 }> {
-    const supabase = await createClient()
+    // Use admin client — webhook has no user cookies, RLS blocks anon key
+    const supabase = createAdminClient()
     const transactionId = String(payload.id)
     const content = (payload.content || payload.description || '').trim()
     const amount = Number(payload.transferAmount) || 0
@@ -250,7 +252,8 @@ export async function syncTransactionsFromSePay(params: {
     dateMin?: string
     dateMax?: string
 } = {}): Promise<{ total: number; processed: number; matched: number; errors: number }> {
-    const supabase = await createClient()
+    // Use admin client — sync runs without user session
+    const supabase = createAdminClient()
     const { limit = 100, dateMin, dateMax } = params
 
     // Get SePay API key from system settings

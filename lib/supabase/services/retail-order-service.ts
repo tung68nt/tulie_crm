@@ -258,9 +258,17 @@ export async function cleanupOrderPhotos(orderId: string) {
 // Special function for payments
 export async function recordRetailPayment(id: string, amount: number) {
     try {
-        const supabase = await createClient()
-        const order = await getRetailOrderById(id)
-        if (!order) throw new Error('Order not found')
+        // Use admin client — this is called from webhook context (no auth cookies)
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
+
+        const { data: order, error: fetchError } = await supabase
+            .from('retail_orders')
+            .select('id, order_number, customer_name, customer_phone, total_amount, paid_amount, payment_status')
+            .eq('id', id)
+            .single()
+
+        if (fetchError || !order) throw new Error('Order not found')
 
         const newPaidAmount = (order.paid_amount || 0) + amount
         const paymentStatus: RetailPaymentStatus = newPaidAmount >= order.total_amount ? 'paid' : 'partial'
