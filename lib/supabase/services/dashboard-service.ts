@@ -203,9 +203,10 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
             // Collect detail items for this month
             const details: import('@/types').RevenueDetailItem[] = []
 
-            // SePay revenue (amount_in from bank)
+            // SePay revenue (only matched transactions — SePay is shared across websites)
             const sepayInTxns = paymentTxns?.filter(tx =>
                 isMonth(tx.transaction_date) && tx.transfer_type === 'in'
+                && (tx.matched_order_id || tx.matched_invoice_id)
             ) || []
             const sepayRevenue = sepayInTxns.reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0)
 
