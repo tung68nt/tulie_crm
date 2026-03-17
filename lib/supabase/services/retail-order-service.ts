@@ -292,7 +292,10 @@ export async function recordRetailPayment(id: string, amount: number) {
 
 export async function getRetailOrderByToken(token: string) {
     try {
-        const supabase = await createClient()
+        // Use admin client to bypass RLS — portal is public-facing,
+        // security is via unguessable public_token (UUID)
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('retail_orders')
             .select('*, items:retail_order_items(*)')
@@ -300,7 +303,6 @@ export async function getRetailOrderByToken(token: string) {
             .single()
 
         if (error) throw error
-        revalidatePath(`/portal/order/${token}`)
         return data as RetailOrder
     } catch (err) {
         console.error('Error fetching retail order by token:', err)
