@@ -295,11 +295,17 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
                 {/* Info & Notes */}
                 <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="rounded-xl border-zinc-200 shadow-sm">
-                        <CardHeader className="pb-3 px-6">
-                            <CardTitle className="text-sm font-semibold tracking-tight">Chi tiết khách hàng</CardTitle>
+                    <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
+                        <CardHeader className="bg-zinc-50/50 border-b">
+                            <div className="space-y-1">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <Phone className="h-4 w-4 text-primary" />
+                                    Chi tiết khách hàng
+                                </CardTitle>
+                                <CardDescription className="text-xs font-normal">Thông tin liên hệ và ghi chú đơn hàng</CardDescription>
+                            </div>
                         </CardHeader>
-                        <CardContent className="px-6 pb-6 space-y-4">
+                        <CardContent className="p-6 space-y-4">
                             <div className="flex items-start gap-4">
                                 <div className="h-9 w-9 rounded-lg bg-zinc-100 flex items-center justify-center shrink-0 border border-zinc-200/50">
                                     <Phone className="h-4 w-4 text-zinc-500" />
@@ -354,14 +360,37 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
 
                     {/* Shipping Info Card */}
                     <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
-                        <CardHeader className="pb-3 px-6">
-                            <CardTitle className="text-sm font-semibold tracking-tight flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-zinc-400" />
-                                Thông tin nhận hàng
-                            </CardTitle>
-                            <CardDescription className="text-[11px] font-normal">Người nhận có thể khác khách hàng</CardDescription>
+                        <CardHeader className="bg-zinc-50/50 border-b">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-1">
+                                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                        <MapPin className="h-4 w-4 text-primary" />
+                                        Thông tin nhận hàng
+                                    </CardTitle>
+                                    <CardDescription className="text-xs font-normal">Người nhận có thể khác khách hàng</CardDescription>
+                                </div>
+                                <Button
+                                    size="sm"
+                                    className="h-8 rounded-lg font-medium"
+                                    disabled={isSavingShipping}
+                                    onClick={async () => {
+                                        setIsSavingShipping(true)
+                                        try {
+                                            await updateRetailOrder(order.id, { shipping_info: shippingInfo } as any)
+                                            toast.success('Đã lưu thông tin nhận hàng')
+                                        } catch (e: any) {
+                                            toast.error(e.message || 'Lỗi khi lưu')
+                                        } finally {
+                                            setIsSavingShipping(false)
+                                        }
+                                    }}
+                                >
+                                    {isSavingShipping ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+                                    Lưu thay đổi
+                                </Button>
+                            </div>
                         </CardHeader>
-                        <CardContent className="px-6 pb-6 space-y-3">
+                        <CardContent className="p-6 space-y-3">
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
                                     <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Người nhận</Label>
@@ -411,25 +440,6 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     className="h-9 text-sm"
                                 />
                             </div>
-                            <Button
-                                size="sm"
-                                className="w-full h-9 mt-2 font-bold text-xs"
-                                disabled={isSavingShipping}
-                                onClick={async () => {
-                                    setIsSavingShipping(true)
-                                    try {
-                                        await updateRetailOrder(order.id, { shipping_info: shippingInfo } as any)
-                                        toast.success('Đã lưu thông tin nhận hàng')
-                                    } catch (e: any) {
-                                        toast.error(e.message || 'Lỗi khi lưu')
-                                    } finally {
-                                        setIsSavingShipping(false)
-                                    }
-                                }}
-                            >
-                                {isSavingShipping ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="h-3.5 w-3.5 mr-2" />}
-                                Lưu thông tin nhận hàng
-                            </Button>
                         </CardContent>
                     </Card>
                 </div>

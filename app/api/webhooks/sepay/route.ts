@@ -2,6 +2,52 @@ import { NextRequest, NextResponse } from 'next/server'
 import { processWebhookPayment, SepayWebhookPayload } from '@/lib/supabase/services/payment-service'
 import { getSystemSetting, verifySepaySignature } from '@/lib/supabase/services/settings-service'
 import { validateBody, sepayWebhookSchema } from '@/lib/security/validation'
+import { createClient } from '@/lib/supabase/server'
+
+/**
+ * GET /api/webhooks/sepay — Health check
+ * Kiểm tra webhook đã cấu hình đúng chưa
+ */
+export async function GET() {
+    try {
+        const telegramConfig = await getSystemSetting('telegram_config')
+        const hasApiKey = !!telegramConfig?.sepay_api_key
+        const hasSecretKey = !!telegramConfig?.sepay_secret_key
+
+        // Lấy giao dịch gần nhất
+        const supabase = await createClient()
+        const { data: lastTx } = await supabase
+            .from('payment_transactions')
+            .select('id, transaction_date, content, source_system')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+
+        const lastTxTime = lastTx?.transaction_date ? new Date(lastTx.transaction_date) : null
+        const minutesAgo = lastTxTime ? Math.round((Date.now() - lastTxTime.getTime()) / 60000) : null
+
+        return NextResponse.json({
+            status: 'ok',
+            webhook_url: '/api/webhooks/sepay',
+            config: {
+                api_key_configured: hasApiKey,
+                secret_key_configured: hasSecretKey,
+            },
+            last_transaction: lastTx ? {
+                id: lastTx.id,
+                date: lastTx.transaction_date,
+                minutes_ago: minutesAgo,
+                source: lastTx.source_system,
+                content_preview: lastTx.content?.substring(0, 50),
+            } : null,
+            help: !hasApiKey 
+                ? '⚠️ Chưa cấu hình SePay API Key. Vào Cài đặt → Cổng thanh toán để cấu hình.'
+                : '✅ Webhook đã sẵn sàng. Cấu hình URL này vào SePay Dashboard.',
+        })
+    } catch (err: any) {
+        return NextResponse.json({ status: 'error', message: err.message }, { status: 500 })
+    }
+}
 
 /**
  * SePay Webhook Handler
@@ -31,32 +77,32 @@ export async function POST(req: NextRequest) {
 
         console.log(`[SePay Webhook] Received: type=${payload?.transferType}`)
 
-        // 1. Verify API Key — MANDATORY
+        // 1. Verify API Key — Optional: only enforced if configured
         const telegramConfig = await getSystemSetting('telegram_config')
         const storedApiKey = telegramConfig?.sepay_api_key
 
-        if (!storedApiKey) {
-            console.error('[SePay Webhook] No API key configured in system settings')
-            return NextResponse.json({ success: false, message: 'Webhook not configured' }, { status: 503 })
-        }
-
-        // SECURITY: Require auth when API key is configured
-        if (!authHeader && !signature) {
-            console.warn('[SePay Webhook] Rejected: No auth header or signature provided')
-            return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
-        }
-
-        if (authHeader && storedApiKey) {
-            let receivedKey = ''
-            const match = authHeader.match(/^(?:Apikey|Bearer)\s+(.+)$/i)
-            receivedKey = match?.[1] ?? authHeader
-            const cleanReceivedKey = receivedKey.trim().replace(/^["']|["']$/g, '')
-            const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
-
-            if (cleanReceivedKey !== cleanStoredKey) {
-                console.warn('[SePay Webhook] API key mismatch — rejecting')
-                return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+        if (storedApiKey) {
+            // API key is configured → enforce authentication
+            if (!authHeader && !signature) {
+                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided')
+                return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
             }
+
+            if (authHeader) {
+                let receivedKey = ''
+                const match = authHeader.match(/^(?:Apikey|Bearer)\s+(.+)$/i)
+                receivedKey = match?.[1] ?? authHeader
+                const cleanReceivedKey = receivedKey.trim().replace(/^["']|["']$/g, '')
+                const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
+
+                if (cleanReceivedKey !== cleanStoredKey) {
+                    console.warn('[SePay Webhook] API key mismatch — rejecting')
+                    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
+                }
+            }
+        } else {
+            // No API key configured → accept without auth (backward compatible)
+            console.log('[SePay Webhook] No API key configured — accepting without auth')
         }
 
         // 2. Verify HMAC Signature (if provided)

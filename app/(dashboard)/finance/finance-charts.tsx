@@ -138,34 +138,50 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
 
                     <Card className="rounded-xl border shadow-sm overflow-hidden">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-base font-semibold">Giao dịch thực tế</CardTitle>
+                            <CardTitle className="text-base font-semibold">Giao dịch SePay</CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-2 space-y-3">
-                            {recentTransactions.map((tx) => (
-                                <div key={tx.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${tx.type === 'income'
-                                        ? 'bg-emerald-50 text-emerald-600'
-                                        : 'bg-rose-50 text-red-500'
-                                        }`}>
-                                        {tx.type === 'income' ? (
-                                            <ArrowUpRight className="h-4 w-4" />
-                                        ) : (
-                                            <ArrowDownRight className="h-4 w-4" />
-                                        )}
+                        <CardContent className="pt-2 space-y-1">
+                            {recentTransactions.map((tx: any) => {
+                                const isIn = tx.transfer_type === 'in'
+                                const amount = isIn ? tx.amount_in : tx.amount_out
+                                const isMatched = tx.matched_order_id || tx.matched_invoice_id
+                                return (
+                                    <div key={tx.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${isIn
+                                            ? 'bg-emerald-50 text-emerald-600'
+                                            : 'bg-rose-50 text-red-500'
+                                            }`}>
+                                            {isIn ? (
+                                                <ArrowUpRight className="h-4 w-4" />
+                                            ) : (
+                                                <ArrowDownRight className="h-4 w-4" />
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs font-medium truncate" title={tx.content || tx.code || '—'}>
+                                                {tx.code || tx.content?.substring(0, 30) || '—'}
+                                            </p>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-[11px] text-muted-foreground">
+                                                    {tx.transaction_date ? new Date(tx.transaction_date).toLocaleDateString('vi-VN') : '—'}
+                                                </span>
+                                                {isMatched ? (
+                                                    <span className="inline-flex items-center text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">✓ Khớp</span>
+                                                ) : (
+                                                    <span className="inline-flex items-center text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">Chưa khớp</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <span className={`text-sm font-semibold tabular-nums ${isIn ? 'text-emerald-600' : 'text-red-500'}`}>
+                                            {isIn ? '+' : '-'}{formatCurrency(amount)}
+                                        </span>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate">{tx.description}</p>
-                                        <p className="text-xs text-muted-foreground">{tx.date}</p>
-                                    </div>
-                                    <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-emerald-600' : 'text-red-500'
-                                        }`}>
-                                        {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
-                                    </span>
-                                </div>
-                            ))}
+                                )
+                            })}
                             {recentTransactions.length === 0 && (
                                 <div className="text-center py-8">
-                                    <p className="text-sm text-muted-foreground">Chưa có giao dịch gần đây</p>
+                                    <p className="text-sm text-muted-foreground">Chưa có giao dịch SePay</p>
+                                    <p className="text-xs text-muted-foreground mt-1">Nhấn &quot;Đồng bộ SePay&quot; ở trang giao dịch</p>
                                 </div>
                             )}
                         </CardContent>

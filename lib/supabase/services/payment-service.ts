@@ -315,11 +315,28 @@ export async function syncTransactionsFromSePay(params: {
 
             // Try to match order if Studio transaction
             if (orderCode && sourceSystem !== 'lab') {
-                const { data: order } = await supabase
+                const normalizedCode = normalizeOrderCode(orderCode)
+
+                // First try exact match
+                let { data: order } = await supabase
                     .from('retail_orders')
-                    .select('id, payment_status')
+                    .select('id, order_number, payment_status')
                     .eq('order_number', orderCode)
                     .single()
+
+                // If no exact match, try normalized match (SePay strips underscores)
+                if (!order) {
+                    const { data: orders } = await supabase
+                        .from('retail_orders')
+                        .select('id, order_number, payment_status')
+                        .ilike('order_number', 'DH_%')
+                        .limit(100)
+
+                    order = orders?.find(o => normalizeOrderCode(o.order_number) === normalizedCode) || null
+                    if (order) {
+                        console.log(`[SyncSePay] Normalized match: "${orderCode}" → "${order.order_number}"`)
+                    }
+                }
 
                 if (order) {
                     await supabase

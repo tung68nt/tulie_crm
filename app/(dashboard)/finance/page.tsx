@@ -10,13 +10,21 @@ import {
     ArrowRight,
 } from 'lucide-react'
 import Link from 'next/link'
-import { getDashboardStats, getRevenueChartData, getRecentTransactions } from '@/lib/supabase/services/dashboard-service'
+import { getDashboardStats, getRevenueChartData } from '@/lib/supabase/services/dashboard-service'
+import { createClient } from '@/lib/supabase/server'
 import { FinanceCharts } from './finance-charts'
 
 export default async function FinancePage() {
     const stats = await getDashboardStats()
     const chartData = await getRevenueChartData()
-    const recentTransactions = await getRecentTransactions()
+
+    // Fetch real SePay transactions from payment_transactions table
+    const supabase = await createClient()
+    const { data: sepayTransactions } = await supabase
+        .from('payment_transactions')
+        .select('id, transaction_date, transfer_type, amount_in, amount_out, content, code, gateway, source_system, matched_order_id, matched_invoice_id')
+        .order('transaction_date', { ascending: false })
+        .limit(10)
 
     const totalRevenue = stats.revenue.total
     const totalExpenses = chartData.reduce((sum, d) => sum + (d.expenses * 1000000), 0) // chartData is in millions
@@ -113,7 +121,7 @@ export default async function FinancePage() {
             </div>
 
             {/* Charts Component (Client Component) */}
-            <FinanceCharts monthlyData={chartData} recentTransactions={recentTransactions as any} />
+            <FinanceCharts monthlyData={chartData} recentTransactions={sepayTransactions || []} />
         </div>
     )
 }

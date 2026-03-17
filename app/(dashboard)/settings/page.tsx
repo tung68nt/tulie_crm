@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet, RefreshCw, Copy } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
@@ -1089,25 +1089,87 @@ export default function SettingsPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="sepay_api_key_pg">SePay API Key</Label>
-                                            <Input
-                                                id="sepay_api_key_pg"
-                                                type="password"
-                                                placeholder="Để trống nếu không dùng"
-                                                value={telegramConfig.sepay_api_key || ''}
-                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_api_key: e.target.value })}
-                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
-                                            />
+                                            <div className="flex gap-2">
+                                                <Input
+                                                    id="sepay_api_key_pg"
+                                                    type="text"
+                                                    placeholder="Để trống nếu không dùng"
+                                                    value={telegramConfig.sepay_api_key || ''}
+                                                    onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_api_key: e.target.value })}
+                                                    className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-mono flex-1"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-11 px-3 rounded-xl border-zinc-300 text-xs font-bold shrink-0"
+                                                    onClick={() => {
+                                                        const key = Array.from(crypto.getRandomValues(new Uint8Array(24)), b => b.toString(16).padStart(2, '0')).join('')
+                                                        setTelegramConfig({ ...telegramConfig, sepay_api_key: key })
+                                                        toast.success('Đã tạo API Key mới — nhớ Lưu cấu hình và copy sang SePay!')
+                                                    }}
+                                                >
+                                                    <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                                                    Tạo mới
+                                                </Button>
+                                                {telegramConfig.sepay_api_key && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-11 px-3 rounded-xl border-zinc-300 text-xs font-bold shrink-0"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(telegramConfig.sepay_api_key || '')
+                                                            toast.success('Đã copy API Key — dán vào SePay Dashboard → Webhook → API Key')
+                                                        }}
+                                                    >
+                                                        <Copy className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground">Dùng để xác thực webhook. Copy key này → SePay Dashboard → Webhook → mục API Key.</p>
                                         </div>
                                         <div className="space-y-2">
                                             <Label htmlFor="sepay_secret_key_pg">SePay Webhook Secret</Label>
-                                            <Input
-                                                id="sepay_secret_key_pg"
-                                                type="password"
-                                                placeholder="Mật khẩu Webhook"
-                                                value={telegramConfig.sepay_secret_key || ''}
-                                                onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_secret_key: e.target.value })}
-                                                className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs"
-                                            />
+                                            <div className="flex gap-2">
+                                                <Input
+                                                    id="sepay_secret_key_pg"
+                                                    type="text"
+                                                    placeholder="Mật khẩu Webhook (HMAC)"
+                                                    value={telegramConfig.sepay_secret_key || ''}
+                                                    onChange={(e) => setTelegramConfig({ ...telegramConfig, sepay_secret_key: e.target.value })}
+                                                    className="h-11 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-mono flex-1"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-11 px-3 rounded-xl border-zinc-300 text-xs font-bold shrink-0"
+                                                    onClick={() => {
+                                                        const secret = Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')
+                                                        setTelegramConfig({ ...telegramConfig, sepay_secret_key: secret })
+                                                        toast.success('Đã tạo Webhook Secret mới — nhớ Lưu cấu hình và copy sang SePay!')
+                                                    }}
+                                                >
+                                                    <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                                                    Tạo mới
+                                                </Button>
+                                                {telegramConfig.sepay_secret_key && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="h-11 px-3 rounded-xl border-zinc-300 text-xs font-bold shrink-0"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(telegramConfig.sepay_secret_key || '')
+                                                            toast.success('Đã copy Webhook Secret')
+                                                        }}
+                                                    >
+                                                        <Copy className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground">Tùy chọn: dùng cho xác thực HMAC signature từ SePay.</p>
                                         </div>
                                     </div>
                                 </div>
