@@ -396,23 +396,25 @@ export default function QuotationDetailPage() {
                                                                 )}
                                                             </TableCell>
                                                             <TableCell className="py-3">
-                                                                <div className="space-y-1">
-                                                                    <div className="flex items-baseline gap-2">
-                                                                        {sectionName && (
-                                                                            <span className="text-xs font-medium text-muted-foreground tabular-nums shrink-0">
-                                                                                {`${sectionIdx + 1}.${idx + 1}`}
-                                                                            </span>
-                                                                        )}
-                                                                        <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
-                                                                        {item.is_optional && (
-                                                                            <Badge variant="outline" className="h-4 px-1 text-[11px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
+                                                                <div className="flex items-baseline gap-2">
+                                                                    {sectionName && (
+                                                                        <span className="text-xs font-medium text-muted-foreground tabular-nums shrink-0">
+                                                                            {`${sectionIdx + 1}.${idx + 1}`}
+                                                                        </span>
+                                                                    )}
+                                                                    <div className="space-y-1 min-w-0">
+                                                                        <div className="flex items-baseline gap-2 flex-wrap">
+                                                                            <p className="font-semibold text-foreground text-sm leading-tight">{item.product_name}</p>
+                                                                            {item.is_optional && (
+                                                                                <Badge variant="outline" className="h-4 px-1 text-[11px] font-medium border-zinc-200 bg-zinc-50 text-zinc-600">Tùy chọn</Badge>
+                                                                            )}
+                                                                        </div>
+                                                                        {item.description && (
+                                                                            <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
+                                                                                {item.description}
+                                                                            </p>
                                                                         )}
                                                                     </div>
-                                                                    {item.description && (
-                                                                        <p className={cn("text-xs text-muted-foreground leading-relaxed mt-1 whitespace-pre-line", sectionName && "pl-8")}>
-                                                                            {item.description}
-                                                                        </p>
-                                                                    )}
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap py-3 align-top">{item.unit}</TableCell>
