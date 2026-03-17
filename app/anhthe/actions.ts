@@ -25,6 +25,8 @@ const orderSchema = z.object({
   shippingName: z.string().optional().nullable().transform(v => v ?? undefined),
   shippingPhone: z.string().optional().nullable().transform(v => v ?? undefined),
   shippingAddress: z.string().optional().nullable().transform(v => v ?? undefined),
+  shippingRegion: z.string().optional().nullable().transform(v => v ?? undefined),
+  shippingFee: z.coerce.number().default(0),
 })
 
 export async function submitPhotoOrder(formData: FormData) {
@@ -41,6 +43,8 @@ export async function submitPhotoOrder(formData: FormData) {
       shippingName: formData.get('shippingName') ?? undefined,
       shippingPhone: formData.get('shippingPhone') ?? undefined,
       shippingAddress: formData.get('shippingAddress') ?? undefined,
+      shippingRegion: formData.get('shippingRegion') ?? undefined,
+      shippingFee: formData.get('shippingFee') as string ?? '0',
     }
 
     const val = orderSchema.parse(rawData)
@@ -48,8 +52,8 @@ export async function submitPhotoOrder(formData: FormData) {
     // Parse packages — id is now real product UUID from DB
     const pkgSelections: { id: string; qty: number; note: string }[] = JSON.parse(val.packages)
     
-    if (pkgSelections.every(p => p.qty === 0)) {
-      return { success: false, error: 'Vui lòng chọn ít nhất 1 gói dịch vụ.' }
+    if (pkgSelections.every(p => p.qty === 0) && val.printQuantity === 0) {
+      return { success: false, error: 'Vui lòng chọn ít nhất 1 gói dịch vụ hoặc dịch vụ in ấn.' }
     }
 
     const items: any[] = []
@@ -122,6 +126,17 @@ export async function submitPhotoOrder(formData: FormData) {
     // Parse photo URLs if present
     const photoUrls: string[] = val.photoUrls ? JSON.parse(val.photoUrls) : []
 
+    // Shipping fee item
+    const shippingFee = val.shippingFee || 0
+    if (shippingFee > 0) {
+      items.push({
+        product_name: `Phí vận chuyển (${val.shippingRegion === 'hanoi' ? 'Hà Nội' : 'Tỉnh/Thành khác'})`,
+        quantity: 1,
+        unit_price: shippingFee,
+        total_price: shippingFee,
+      })
+    }
+
     const totalAmount = items.reduce((sum, item) => sum + item.total_price, 0)
 
     const orderNotes = [
@@ -134,6 +149,7 @@ export async function submitPhotoOrder(formData: FormData) {
       }).join(', ')}` : null,
       photoUrls.length > 0 ? `Ảnh đã upload: ${photoUrls.length} ảnh` : null,
       val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
+      shippingFee > 0 ? `Phí ship: ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ (${val.shippingRegion === 'hanoi' ? 'Hà Nội' : 'Tỉnh khác'})` : (val.shippingName ? 'Miễn phí vận chuyển' : null),
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
 
     // Generate public_token explicitly so we can use it for redirect
@@ -162,6 +178,8 @@ export async function submitPhotoOrder(formData: FormData) {
           name: val.shippingName,
           phone: val.shippingPhone,
           address: val.shippingAddress,
+          region: val.shippingRegion,
+          fee: shippingFee,
         } : null,
       },
       items,

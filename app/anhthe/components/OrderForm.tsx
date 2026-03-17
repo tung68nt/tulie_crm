@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Camera, CheckCircle2, ImagePlus, Link2, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Upload, User, X } from 'lucide-react'
+import { Camera, CheckCircle2, ImagePlus, Link2, MapPin, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Truck, Upload, User, X } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -18,6 +18,8 @@ import { createClient } from '@/lib/supabase/client'
 import type { Product } from '@/types'
 
 const EXTRA_PRINT_PRICE = 40000
+const SHIPPING_FEE_HANOI = 15000
+const SHIPPING_FEE_OTHER = 25000
 
 // Map product names to icons and metadata
 const PACKAGE_META: Record<string, { icon: typeof Camera; freePrints: number; popular?: boolean; features: string[] }> = {
@@ -116,6 +118,9 @@ export default function OrderForm({ products }: { products: Product[] }) {
   const [extraViCount, setExtraViCount] = useState(0)
   const [showAllLayouts, setShowAllLayouts] = useState(false)
 
+  // Shipping region state
+  const [shippingRegion, setShippingRegion] = useState<'hanoi' | 'other'>('hanoi')
+
   // Shipping state (shown when print is on — no separate toggle)
   const [shippingName, setShippingName] = useState('')
   const [shippingPhone, setShippingPhone] = useState('')
@@ -176,8 +181,18 @@ export default function OrderForm({ products }: { products: Product[] }) {
   const extraPrints = wantPrint ? extraViCount : 0
   const printExtraCost = extraPrints * EXTRA_PRINT_PRICE
   const totalPrintQty = wantPrint ? totalFreePrints + extraViCount : 0
-  const totalPrice = packageTotal + printExtraCost
   const totalPkgCount = Object.values(pkgQuantities).reduce((a, b) => a + b, 0)
+
+  // Shipping fee logic: free for 199k/339k packages
+  const hasFreeShipping = useMemo(() => {
+    return PACKAGES.some(pkg => {
+      const priceK = Math.floor(pkg.price / 1000)
+      return (priceK === 199 || priceK === 339) && (pkgQuantities[pkg.id] || 0) > 0
+    })
+  }, [pkgQuantities, PACKAGES])
+
+  const shippingFee = wantPrint ? (hasFreeShipping ? 0 : (shippingRegion === 'hanoi' ? SHIPPING_FEE_HANOI : SHIPPING_FEE_OTHER)) : 0
+  const totalPrice = packageTotal + printExtraCost + shippingFee
 
   // Compute viLabels: which package each vỉ belongs to
   const viLabels = useMemo(() => {
@@ -220,8 +235,9 @@ export default function OrderForm({ products }: { products: Product[] }) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (totalPkgCount === 0) {
-      toast.error('Vui lòng chọn ít nhất 1 gói dịch vụ')
+    const hasPrintOnly = wantPrint && (totalFreePrints + extraViCount) > 0
+    if (totalPkgCount === 0 && !hasPrintOnly) {
+      toast.error('Vui lòng chọn ít nhất 1 gói dịch vụ hoặc dịch vụ in ấn')
       return
     }
     setIsSubmitting(true)
@@ -245,6 +261,8 @@ export default function OrderForm({ products }: { products: Product[] }) {
       formData.set('shippingName', shippingName)
       formData.set('shippingPhone', shippingPhone)
       formData.set('shippingAddress', shippingAddress)
+      formData.set('shippingRegion', shippingRegion)
+      formData.set('shippingFee', shippingFee.toString())
     }
 
     const res = await submitPhotoOrder(formData)
@@ -658,9 +676,52 @@ export default function OrderForm({ products }: { products: Product[] }) {
                       <span className={cn("font-bold", extraPrints > 0 ? "text-zinc-900" : "text-zinc-400")}>{extraPrints} vỉ</span>
                     </div>
                     {extraPrints > 0 && (
-                      <div className="flex justify-between items-center pt-2 border-t border-zinc-200 text-zinc-900 font-bold">
+                      <div className="flex justify-between items-center text-zinc-500 font-medium">
                         <span>Phí in thêm</span>
-                        <span>+{new Intl.NumberFormat('vi-VN').format(printExtraCost)}đ</span>
+                        <span className="font-bold text-zinc-900">+{new Intl.NumberFormat('vi-VN').format(printExtraCost)}đ</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-zinc-500 font-medium">
+                      <span>Phí vận chuyển</span>
+                      <span className={cn("font-bold", hasFreeShipping ? "text-emerald-600" : "text-zinc-900")}>
+                        {hasFreeShipping ? 'Miễn phí' : `+${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Shipping fee — region selector */}
+                  <div className="space-y-3 pt-3 border-t border-zinc-100">
+                    <div className="flex items-center gap-2">
+                      <Truck className="size-4 text-zinc-500" />
+                      <Label className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">Phí vận chuyển</Label>
+                    </div>
+                    {hasFreeShipping ? (
+                      <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                        <span className="text-xs font-bold text-emerald-700">Miễn phí vận chuyển</span>
+                        <span className="text-[11px] text-emerald-600 font-medium">(gói 199k/339k)</span>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <Select value={shippingRegion} onValueChange={(v: 'hanoi' | 'other') => setShippingRegion(v)}>
+                          <SelectTrigger className="h-10 rounded-lg border-zinc-200 bg-zinc-50/50 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="hanoi">
+                              <span className="flex items-center gap-2">
+                                <MapPin className="size-3.5 text-zinc-400" />
+                                Hà Nội — {new Intl.NumberFormat('vi-VN').format(SHIPPING_FEE_HANOI)}đ
+                              </span>
+                            </SelectItem>
+                            <SelectItem value="other">
+                              <span className="flex items-center gap-2">
+                                <MapPin className="size-3.5 text-zinc-400" />
+                                Tỉnh/Thành khác — {new Intl.NumberFormat('vi-VN').format(SHIPPING_FEE_OTHER)}đ
+                              </span>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     )}
                   </div>
@@ -743,15 +804,17 @@ export default function OrderForm({ products }: { products: Product[] }) {
                 </div>
                 {totalPkgCount > 0 && (
                   <p className="text-[11px] text-zinc-400 font-medium mt-1">
-                    {totalPkgCount} gói
-                    {wantPrint && totalPrintQty > 0 && ` · ${totalPrintQty} vỉ in`}
+                    {totalPkgCount > 0 ? `${totalPkgCount} gói` : ''}
+                    {wantPrint && totalPrintQty > 0 && `${totalPkgCount > 0 ? ' · ' : ''}${totalPrintQty} vỉ in`}
+                    {wantPrint && shippingFee > 0 && ` · ship ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ`}
+                    {wantPrint && hasFreeShipping && ' · free ship'}
                   </p>
                 )}
               </div>
               <Button
                 type="submit"
                 size="lg"
-                disabled={isSubmitting || totalPkgCount === 0}
+                disabled={isSubmitting || (totalPkgCount === 0 && !(wantPrint && (totalFreePrints + extraViCount) > 0))}
                 className="w-full sm:w-auto rounded-xl font-bold tracking-tight text-[13px] h-12 px-10 bg-zinc-900 hover:bg-zinc-800 shadow-lg shadow-black/10 transition-all disabled:opacity-40"
               >
                 {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : null}
