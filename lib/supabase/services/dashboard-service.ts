@@ -13,6 +13,14 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
         if (invError) console.error('Error fetching invoices for stats:', invError)
 
+        // Fetch retail orders (Studio/Academy) for revenue
+        const { data: retailOrders, error: roError } = await supabase
+            .from('retail_orders')
+            .select('total_amount, paid_amount, payment_status, order_status')
+            .neq('order_status', 'cancelled')
+
+        if (roError) console.error('Error fetching retail orders for stats:', roError)
+
         // Fetch customers stats
         const { count: customerCount, error: custError } = await supabase
             .from('customers')
@@ -39,9 +47,16 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
         if (contError) console.error('Error fetching contract count:', contError)
 
-        const totalRevenue = invoices?.filter(i => i.type === 'output').reduce((sum, i) => sum + (i.paid_amount || 0), 0) || 0
-        const totalPendingRevenue = invoices?.filter(i => i.type === 'output' && i.status !== 'paid').reduce((sum, i) => sum + (i.total_amount - (i.paid_amount || 0)), 0) || 0
+        const invoiceRevenue = invoices?.filter(i => i.type === 'output').reduce((sum, i) => sum + (i.paid_amount || 0), 0) || 0
+        const invoicePending = invoices?.filter(i => i.type === 'output' && i.status !== 'paid').reduce((sum, i) => sum + (i.total_amount - (i.paid_amount || 0)), 0) || 0
         const pendingInvoicesCount = invoices?.filter(i => i.type === 'output' && i.status === 'sent').length || 0
+
+        // Retail orders revenue
+        const retailRevenue = retailOrders?.reduce((sum, o) => sum + (o.paid_amount || 0), 0) || 0
+        const retailPending = retailOrders?.filter(o => o.payment_status !== 'paid').reduce((sum, o) => sum + (o.total_amount - (o.paid_amount || 0)), 0) || 0
+
+        const totalRevenue = invoiceRevenue + retailRevenue
+        const totalPendingRevenue = invoicePending + retailPending
 
         // Fetch total value from active contracts
         const { data: activeContracts } = await supabase
