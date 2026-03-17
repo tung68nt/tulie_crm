@@ -72,7 +72,10 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Invalid payload' }, { status: 400 })
         }
         const payload = validation.data as SepayWebhookPayload
+        
+        // Vercel might proxy the Authorization header into x-vercel-proxy-signature or it might arrive in standard ways
         const authHeader = req.headers.get('authorization') || 
+                           req.headers.get('x-vercel-proxy-signature') ||
                            req.headers.get('x-api-key') || 
                            req.headers.get('api-key') || 
                            req.headers.get('apikey') || 
@@ -96,8 +99,6 @@ export async function POST(req: NextRequest) {
                     const { createAdminClient } = await import('@/lib/supabase/admin')
                     const supabase = createAdminClient()
                     
-                    // Since activity_log schema might be strict on uuid, let's create a temporary debugging table
-                    // We'll write to system_settings with a unique key
                     const debugKey = 'sepay_debug_' + Date.now()
                     await supabase.from('system_settings').insert([{
                         key: debugKey,
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
                         updated_at: new Date().toISOString()
                     }])
                 } catch (e) {
-                    console.error('Failed to log debug headers', e)
+                    // ignore
                 }
 
                 return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
