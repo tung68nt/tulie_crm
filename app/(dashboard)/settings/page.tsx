@@ -1121,10 +1121,21 @@ export default function SettingsPage() {
                                                 variant="outline"
                                                 size="sm"
                                                 className="h-11 px-3 rounded-xl border-zinc-300 text-xs font-bold shrink-0"
-                                                onClick={() => {
+                                                onClick={async () => {
                                                     const secret = Array.from(crypto.getRandomValues(new Uint8Array(32)), b => b.toString(16).padStart(2, '0')).join('')
-                                                    setTelegramConfig({ ...telegramConfig, sepay_secret_key: secret })
-                                                    toast.success('Đã tạo Webhook Secret mới — nhớ Lưu cấu hình và copy sang SePay!')
+                                                    const newConfig = { ...telegramConfig, sepay_secret_key: secret }
+                                                    setTelegramConfig(newConfig)
+                                                    
+                                                    // Auto save
+                                                    setIsSavingTelegram(true)
+                                                    try {
+                                                        await updateSystemSetting('telegram_config', newConfig)
+                                                        toast.success('Đã tạo và tự động lưu Webhook Secret mới!')
+                                                    } catch (error) {
+                                                        toast.error('Lỗi khi lưu Webhook Secret mới')
+                                                    } finally {
+                                                        setIsSavingTelegram(false)
+                                                    }
                                                 }}
                                             >
                                                 <RefreshCw className="h-3.5 w-3.5 mr-1" />
