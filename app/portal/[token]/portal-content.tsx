@@ -872,13 +872,13 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
                                                 isDone ? "hover:bg-zinc-50" : "hover:bg-zinc-50"
                                             )}
                                         >
-                                            <div className="flex items-center gap-3 min-w-0">
+                                            <div className="flex items-start gap-3 min-w-0">
                                                 {isDone ? (
-                                                    <CheckCircle className="w-[18px] h-[18px] text-zinc-900 shrink-0" />
+                                                    <CheckCircle className="w-[18px] h-[18px] text-zinc-900 shrink-0 mt-0.5" />
                                                 ) : isPending ? (
-                                                    <Clock className="w-[18px] h-[18px] text-zinc-400 shrink-0" />
+                                                    <Clock className="w-[18px] h-[18px] text-zinc-400 shrink-0 mt-0.5" />
                                                 ) : (
-                                                    <div className="w-[18px] h-[18px] rounded-full border-2 border-zinc-200 shrink-0" />
+                                                    <div className="w-[18px] h-[18px] rounded-full border-2 border-zinc-200 shrink-0 mt-0.5" />
                                                 )}
                                                 <span className={cn(
                                                     "text-sm font-medium truncate",
