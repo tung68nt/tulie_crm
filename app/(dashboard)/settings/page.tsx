@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet, RefreshCw, Copy } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet, RefreshCw, Copy, GraduationCap } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
@@ -589,6 +589,13 @@ export default function SettingsPage() {
                             Cổng thanh toán
                         </TabsTrigger>
                         <TabsTrigger
+                            value="academy"
+                            className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
+                        >
+                            <GraduationCap className="h-4 w-4" />
+                            Tulie Academy
+                        </TabsTrigger>
+                        <TabsTrigger
                             value="mail"
                             className="justify-start gap-3 px-3 py-2 h-10 data-[state=active]:bg-white data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm rounded-lg hover:bg-white/50 transition-all font-semibold border-none"
                         >
@@ -1162,6 +1169,33 @@ export default function SettingsPage() {
                                     <p className="text-[11px] text-muted-foreground italic leading-relaxed">Cấu hình URL này vào trang Dashboard SePay để tự động khớp tiền và gửi tin nhắn Telegram.</p>
                                 </div>
 
+                                <div className="pt-6 border-t border-border/50 flex justify-end">
+                                    <Button onClick={handleSaveTelegram} disabled={isSavingTelegram} className="font-bold h-11 px-8 rounded-xl shadow-md shadow-zinc-200">
+                                        {isSavingTelegram ? <LoadingSpinner size="sm" className="mr-2" /> : null}
+                                        Lưu cấu hình
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Academy Integration Settings */}
+                    <TabsContent value="academy">
+                        <Card className="rounded-xl shadow-sm border-border/50 overflow-hidden">
+                            <CardHeader className="bg-muted/30 border-b border-border/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-zinc-950 flex items-center justify-center shadow-md">
+                                        <GraduationCap className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-xl font-bold tracking-tight">Tulie Academy</CardTitle>
+                                        <CardDescription className="text-sm font-medium">
+                                            Cấu hình Webhook kết nối hệ thống học tập với CRM.
+                                        </CardDescription>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-8 pt-6">
                                 <div className="p-5 bg-muted/50 rounded-xl border space-y-4">
                                     <div className="flex items-center justify-between">
                                         <h4 className="text-sm font-medium">Academy Webhook URL</h4>
