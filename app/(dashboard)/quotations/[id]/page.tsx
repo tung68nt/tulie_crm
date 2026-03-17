@@ -49,7 +49,7 @@ import {
 import { toast } from 'sonner'
 import { getQuotationById } from '@/lib/supabase/services/quotation-service'
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 
 import { StatusBadge } from '@/components/shared/status-badge'
 
@@ -63,6 +63,9 @@ export default function QuotationDetailPage() {
     const [layout, setLayout] = useState<'modern' | 'basic'>('modern')
     const [activeTab, setActiveTab] = useState<'data' | 'preview'>('data')
     const [isDownloading, setIsDownloading] = useState(false)
+    const searchParams = useSearchParams()
+    const fromParam = searchParams.get('from')
+    const backHref = fromParam && fromParam.startsWith('/') ? fromParam : '/quotations'
     const printRef = React.useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -166,7 +169,7 @@ export default function QuotationDetailPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                     <div className="flex items-center gap-5">
                         <Button variant="ghost" size="icon" asChild className="rounded-full">
-                            <Link href="/quotations">
+                            <Link href={backHref}>
                                 <ArrowLeft className="h-5 w-5" />
                             </Link>
                         </Button>

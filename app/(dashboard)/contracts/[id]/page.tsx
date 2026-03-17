@@ -37,8 +37,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
     }
 }
 
-export default async function ContractDetailPage({ params }: any) {
+export default async function ContractDetailPage({ params, searchParams }: any) {
     const { id } = await params
+    const resolvedSearchParams = await searchParams
+    const fromParam = resolvedSearchParams?.from
+    const backHref = fromParam && typeof fromParam === 'string' && fromParam.startsWith('/') ? fromParam : '/contracts'
     const contract = await getContractById(id)
 
     if (!contract) {
@@ -58,7 +61,7 @@ export default async function ContractDetailPage({ params }: any) {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-muted/80">
-                        <Link href="/contracts">
+                        <Link href={backHref}>
                             <ArrowLeft className="h-5 w-5" />
                         </Link>
                     </Button>

@@ -150,7 +150,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                         {quotations.length > 0 ? quotations.map((q: any) => (
                                             <Link
                                                 key={q.id}
-                                                href={`/quotations/${q.id}`}
+                                                href={`/quotations/${q.id}?from=/projects/${id}`}
                                                 className="group flex items-center justify-between p-3 border rounded-xl hover:border-slate-300 hover:bg-muted/30 transition-all cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ export default async function ProjectDetailPage({ params }: any) {
                                         {contracts.length > 0 ? contracts.map((c: any) => (
                                             <Link
                                                 key={c.id}
-                                                href={`/contracts/${c.id}`}
+                                                href={`/contracts/${c.id}?from=/projects/${id}`}
                                                 className="group flex items-center justify-between p-3 border rounded-xl hover:border-slate-300 hover:bg-muted/30 transition-all font-sans cursor-pointer"
                                             >
                                                 <div className="flex items-center gap-3">
