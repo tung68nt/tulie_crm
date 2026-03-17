@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
             province: sanitizeText(shipping_info.province || '', 100),
         }
 
-        const supabase = await createClient()
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const supabase = createAdminClient()
 
         // SECURITY: Token-based lookup only (prevents IDOR via order_id guessing)
         const { data: order, error: findError } = await supabase

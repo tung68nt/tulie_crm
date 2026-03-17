@@ -28,7 +28,8 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Missing token parameter' }, { status: 400 })
         }
 
-        const supabase = await createClient()
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const supabase = createAdminClient()
 
         // Token-based lookup only (secure)
         const { data: order } = await supabase
