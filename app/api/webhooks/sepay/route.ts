@@ -88,7 +88,25 @@ export async function POST(req: NextRequest) {
         if (storedApiKey) {
             // API key is configured → enforce authentication
             if (!authHeader && !signature) {
-                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided. Headers received:', Object.fromEntries(req.headers.entries()))
+                const headersObj = Object.fromEntries(req.headers.entries())
+                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided. Headers received:', headersObj)
+                
+                // TEMP DEBUG: Log to database so we can see it
+                try {
+                    const { createAdminClient } = await import('@/lib/supabase/admin')
+                    const supabase = createAdminClient()
+                    await supabase.from('activity_log').insert([{
+                        action: 'view',
+                        entity_type: 'settings',
+                        entity_id: 'sepay_webhook_401',
+                        description: 'SePay Webhook 401 Debug',
+                        metadata: { headers: headersObj },
+                        created_at: new Date().toISOString()
+                    }])
+                } catch (e) {
+                    console.error('Failed to log debug headers', e)
+                }
+
                 return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
             }
 
