@@ -16,6 +16,7 @@ import {
     Banknote,
     FileText,
     ShoppingBag,
+    ChevronRight,
 } from 'lucide-react'
 import {
     AreaChart,
@@ -45,13 +46,10 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
     const [selectedMonth, setSelectedMonth] = useState<RevenueData | null>(null)
     const [dialogOpen, setDialogOpen] = useState(false)
 
-    const handleChartClick = (data: any) => {
-        if (data && data.activePayload && data.activePayload.length > 0) {
-            const monthData = data.activePayload[0].payload as RevenueData
-            if (monthData.details && monthData.details.length > 0) {
-                setSelectedMonth(monthData)
-                setDialogOpen(true)
-            }
+    const handleMonthClick = (month: RevenueData) => {
+        if (month.details && month.details.length > 0) {
+            setSelectedMonth(month)
+            setDialogOpen(true)
         }
     }
 
@@ -61,6 +59,9 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
         acc[item.source].push(item)
         return acc
     }, {} as Record<string, RevenueDetailItem[]>) || {}
+
+    // Monthly data with revenue > 0, sorted descending by revenue
+    const revenueMonths = monthlyData.filter(m => m.revenue > 0)
 
     return (
         <>
@@ -88,7 +89,7 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                 ) : (
                                     <div className="h-[350px]">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }} onClick={handleChartClick} style={{ cursor: 'pointer' }}>
+                                            <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                                         <stop offset="5%" stopColor="#2563eb" stopOpacity={0.12} />
@@ -118,8 +119,6 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                                     cursor={{ stroke: '#d1d5db', strokeWidth: 1, strokeDasharray: '4 4' }}
                                                     content={({ active, payload, label }) => {
                                                         if (active && payload && payload.length) {
-                                                            const monthData = payload[0].payload as RevenueData
-                                                            const hasDetails = monthData.details && monthData.details.length > 0
                                                             return (
                                                                 <div className="rounded-lg border bg-background p-3 shadow-lg">
                                                                     <p className="text-xs font-medium text-muted-foreground mb-2">Tháng {label}</p>
@@ -134,11 +133,6 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                                                             </div>
                                                                         ))}
                                                                     </div>
-                                                                    {hasDetails && (
-                                                                        <p className="text-[10px] text-blue-500 mt-2 pt-1.5 border-t font-medium">
-                                                                            👆 Bấm để xem chi tiết
-                                                                        </p>
-                                                                    )}
                                                                 </div>
                                                             )
                                                         }
@@ -161,7 +155,7 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                                     strokeWidth={2}
                                                     fillOpacity={1}
                                                     fill="url(#colorRevenue)"
-                                                    activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', cursor: 'pointer' }}
+                                                    activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
                                                 />
                                                 <Area
                                                     type="monotone"
@@ -233,15 +227,15 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                     </div>
                 </TabsContent>
 
-                <TabsContent value="revenue">
+                <TabsContent value="revenue" className="space-y-4">
                     <Card className="rounded-xl border shadow-sm overflow-hidden">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-base font-semibold">Biểu đồ doanh thu 12 tháng qua</CardTitle>
                         </CardHeader>
                         <CardContent className="pt-2">
-                            <div className="h-[400px]">
+                            <div className="h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }} onClick={handleChartClick} style={{ cursor: 'pointer' }}>
+                                    <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorRevenueOnly" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15} />
@@ -255,17 +249,10 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                             cursor={{ stroke: '#d1d5db', strokeWidth: 1, strokeDasharray: '4 4' }}
                                             content={({ active, payload, label }) => {
                                                 if (active && payload && payload.length) {
-                                                    const monthData = payload[0].payload as RevenueData
-                                                    const hasDetails = monthData.details && monthData.details.length > 0
                                                     return (
                                                         <div className="rounded-lg border bg-background p-3 shadow-lg">
                                                             <p className="text-xs font-medium text-muted-foreground mb-1">Tháng {label}</p>
                                                             <p className="text-sm font-bold">{payload[0].value} tr</p>
-                                                            {hasDetails && (
-                                                                <p className="text-[10px] text-blue-500 mt-1.5 pt-1.5 border-t font-medium">
-                                                                    👆 Bấm để xem chi tiết
-                                                                </p>
-                                                            )}
                                                         </div>
                                                     )
                                                 }
@@ -280,11 +267,79 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                                             strokeWidth={2}
                                             fillOpacity={1}
                                             fill="url(#colorRevenueOnly)"
-                                            activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff', cursor: 'pointer' }}
+                                            activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Clickable monthly revenue list */}
+                    <Card className="rounded-xl border shadow-sm overflow-hidden">
+                        <CardHeader className="pb-2">
+                            <CardTitle className="text-base font-semibold">Chi tiết doanh thu theo tháng</CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-2">
+                            {revenueMonths.length === 0 ? (
+                                <p className="text-sm text-muted-foreground text-center py-4">Chưa có doanh thu</p>
+                            ) : (
+                                <div className="space-y-1">
+                                    {revenueMonths.map((month) => {
+                                        const hasDetails = month.details && month.details.length > 0
+                                        // Count sources
+                                        const sourceCount = month.details?.reduce((acc, d) => {
+                                            acc[d.source] = (acc[d.source] || 0) + 1
+                                            return acc
+                                        }, {} as Record<string, number>) || {}
+
+                                        return (
+                                            <button
+                                                key={month.date}
+                                                onClick={() => handleMonthClick(month)}
+                                                disabled={!hasDetails}
+                                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left ${
+                                                    hasDetails
+                                                        ? 'hover:bg-blue-50/80 cursor-pointer group'
+                                                        : 'opacity-60 cursor-default'
+                                                }`}
+                                            >
+                                                <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                                                    <span className="text-xs font-bold text-blue-600">{month.date}</span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        {sourceCount['sepay'] && (
+                                                            <span className="inline-flex items-center text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                                                                SePay ({sourceCount['sepay']})
+                                                            </span>
+                                                        )}
+                                                        {sourceCount['invoice'] && (
+                                                            <span className="inline-flex items-center text-[10px] font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                                                                HĐ ({sourceCount['invoice']})
+                                                            </span>
+                                                        )}
+                                                        {sourceCount['retail_order'] && (
+                                                            <span className="inline-flex items-center text-[10px] font-medium text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded">
+                                                                ĐH ({sourceCount['retail_order']})
+                                                            </span>
+                                                        )}
+                                                        {!hasDetails && (
+                                                            <span className="text-[10px] text-muted-foreground">Không có chi tiết</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <span className="text-sm font-bold text-blue-600 tabular-nums whitespace-nowrap">
+                                                    {formatCurrency(month.revenue * 1000000)}
+                                                </span>
+                                                {hasDetails && (
+                                                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors shrink-0" />
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>
