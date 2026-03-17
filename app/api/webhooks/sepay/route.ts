@@ -72,7 +72,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'Invalid payload' }, { status: 400 })
         }
         const payload = validation.data as SepayWebhookPayload
-        const authHeader = req.headers.get('authorization') || req.headers.get('x-api-key')
+        const authHeader = req.headers.get('authorization') || 
+                           req.headers.get('x-api-key') || 
+                           req.headers.get('api-key') || 
+                           req.headers.get('apikey') || 
+                           req.headers.get('sepay-api-key')
         const signature = req.headers.get('x-sepay-signature') || req.headers.get('x-signature')
 
         console.log(`[SePay Webhook] Received: type=${payload?.transferType}`)
@@ -84,7 +88,7 @@ export async function POST(req: NextRequest) {
         if (storedApiKey) {
             // API key is configured → enforce authentication
             if (!authHeader && !signature) {
-                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided')
+                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided. Headers received:', Object.fromEntries(req.headers.entries()))
                 return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
             }
 
