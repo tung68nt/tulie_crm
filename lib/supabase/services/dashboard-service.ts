@@ -65,7 +65,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             .eq('transfer_type', 'in')
 
         if (sepayError) console.error('Error fetching SePay stats:', sepayError)
-        const sepayRevenue = sepayTxns?.reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0) || 0
+        // Only count SePay transactions matched to orders/invoices (SePay is shared across websites)
+        const matchedSepayTxns = sepayTxns?.filter(tx => tx.matched_order_id || tx.matched_invoice_id) || []
+        const sepayRevenue = matchedSepayTxns.reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0)
 
         // Deduct invoice/order revenue already counted via SePay match
         const matchedInvIds = new Set(sepayTxns?.filter(tx => tx.matched_invoice_id).map(tx => tx.matched_invoice_id) || [])
