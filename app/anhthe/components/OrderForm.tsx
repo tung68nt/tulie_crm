@@ -724,6 +724,10 @@ export default function OrderForm({ products }: { products: Product[] }) {
                         </Select>
                       </div>
                     )}
+                    <p className="text-[11px] text-zinc-400 leading-relaxed mt-1">
+                      ⏱ Hà Nội: 1–2 ngày · Tỉnh/Thành khác: 2–5 ngày.
+                      <br />Có thể chậm hơn trong các dịp lễ, Tết, săn sale.
+                    </p>
                   </div>
 
                   {/* Shipping info — inline, no separate toggle */}
