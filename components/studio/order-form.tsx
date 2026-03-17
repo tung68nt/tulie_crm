@@ -331,6 +331,17 @@ export function RetailOrderForm({ initialData, isEdit = false }: RetailOrderForm
                                     </Popover>
                                 </div>
                             </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="original_link" className="text-sm font-medium">Link ảnh gốc (Khách gửi)</Label>
+                                <Input
+                                    id="original_link"
+                                    placeholder="Dán link Drive/iCloud chứa ảnh gốc khách gửi..."
+                                    value={formData.metadata?.original_link || ''}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, metadata: { ...prev.metadata, original_link: e.target.value } }))}
+                                    className="h-9"
+                                />
+                            </div>
                         </CardContent>
                     </Card>
 

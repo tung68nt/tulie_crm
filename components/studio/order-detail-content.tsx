@@ -53,12 +53,13 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         resource_link: order.resource_link || '',
         tracking_number: order.tracking_number || ''
     })
+    const metaShipping = (order as any).metadata?.shipping || {}
     const [shippingInfo, setShippingInfo] = useState({
-        recipient_name: order.shipping_info?.recipient_name || '',
-        recipient_phone: order.shipping_info?.recipient_phone || '',
-        province: order.shipping_info?.province || '',
+        recipient_name: order.shipping_info?.recipient_name || metaShipping.name || '',
+        recipient_phone: order.shipping_info?.recipient_phone || metaShipping.phone || '',
+        province: order.shipping_info?.province || (metaShipping.region === 'hanoi' ? 'Hà Nội' : '') || '',
         ward: order.shipping_info?.ward || '',
-        address: order.shipping_info?.address || '',
+        address: order.shipping_info?.address || metaShipping.address || '',
     })
     const [isSavingShipping, setIsSavingShipping] = useState(false)
 
@@ -197,8 +198,8 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                     </CardContent>
                 </Card>
 
-                {/* Customer Photos */}
-                {(order as any).metadata?.photo_urls?.length > 0 && (
+                {/* Customer Photos & Original Link */}
+                {((order as any).metadata?.photo_urls?.length > 0 || (order as any).metadata?.original_link) && (
                     <Card className="rounded-xl border-zinc-200 shadow-sm overflow-hidden">
                         <CardHeader className="bg-zinc-50/50 border-b">
                             <div className="space-y-1">
@@ -207,7 +208,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     Ảnh gốc khách gửi
                                 </CardTitle>
                                 <CardDescription className="text-xs font-normal">
-                                    {(order as any).metadata.photo_urls.length} ảnh đã tải lên
+                                    {((order as any).metadata?.photo_urls?.length || 0)} ảnh tải lên {(order as any).metadata?.original_link && "• Có kèm theo link ảnh gốc"}
                                 </CardDescription>
                             </div>
                         </CardHeader>
@@ -224,6 +225,18 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                     </a>
                                 ))}
                             </div>
+                            
+                            {(order as any).metadata?.original_link && (
+                                <div className={cn("mt-4", (order as any).metadata?.photo_urls?.length > 0 ? "pt-4 border-t border-zinc-100" : "mt-0")}>
+                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Link Drive/iCloud</p>
+                                    <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 p-3 rounded-lg overflow-hidden group">
+                                        <ExternalLink className="h-4 w-4 text-zinc-400 shrink-0" />
+                                        <a href={(order as any).metadata.original_link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-blue-600 hover:underline truncate">
+                                            {(order as any).metadata.original_link}
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}

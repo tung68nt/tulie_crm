@@ -42,3 +42,15 @@ BEGIN
         RAISE NOTICE 'Fixed: support_tickets';
     END IF;
 END $$;
+
+-- 4. system_settings (fix RLS updates not working for settings)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'system_settings' AND table_schema = 'public') THEN
+        ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "auth_system_settings_all" ON system_settings;
+        CREATE POLICY "auth_system_settings_all" ON system_settings
+            FOR ALL TO authenticated USING (true) WITH CHECK (true);
+        RAISE NOTICE 'Fixed: system_settings';
+    END IF;
+END $$;

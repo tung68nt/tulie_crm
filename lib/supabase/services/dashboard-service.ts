@@ -9,14 +9,14 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         // Fetch all invoices to calculate revenue
         const { data: invoices, error: invError } = await supabase
             .from('invoices')
-            .select('paid_amount, total_amount, status, type')
+            .select('id, paid_amount, total_amount, status, type')
 
         if (invError) console.error('Error fetching invoices for stats:', invError)
 
         // Fetch retail orders (Studio/Academy) for revenue
         const { data: retailOrders, error: roError } = await supabase
             .from('retail_orders')
-            .select('total_amount, paid_amount, payment_status, order_status')
+            .select('id, total_amount, paid_amount, payment_status, order_status')
             .neq('order_status', 'cancelled')
 
         if (roError) console.error('Error fetching retail orders for stats:', roError)
@@ -55,8 +55,26 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         const retailRevenue = retailOrders?.reduce((sum, o) => sum + (o.paid_amount || 0), 0) || 0
         const retailPending = retailOrders?.filter(o => o.payment_status !== 'paid').reduce((sum, o) => sum + (o.total_amount - (o.paid_amount || 0)), 0) || 0
 
-        const totalRevenue = invoiceRevenue + retailRevenue
+        const invoiceRetailRevenue = invoiceRevenue + retailRevenue
         const totalPendingRevenue = invoicePending + retailPending
+
+        // SePay payment_transactions: actual bank transfers
+        const { data: sepayTxns, error: sepayError } = await supabase
+            .from('payment_transactions')
+            .select('amount_in, transfer_type, matched_order_id, matched_invoice_id')
+            .eq('transfer_type', 'in')
+
+        if (sepayError) console.error('Error fetching SePay stats:', sepayError)
+        const sepayRevenue = sepayTxns?.reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0) || 0
+
+        // Deduct invoice/order revenue already counted via SePay match
+        const matchedInvIds = new Set(sepayTxns?.filter(tx => tx.matched_invoice_id).map(tx => tx.matched_invoice_id) || [])
+        const matchedOrdIds = new Set(sepayTxns?.filter(tx => tx.matched_order_id).map(tx => tx.matched_order_id) || [])
+        const unmatchedInvRevenue = invoices?.filter(i => i.type === 'output' && !matchedInvIds.has(i.id)).reduce((sum, i) => sum + (i.paid_amount || 0), 0) || 0
+        const unmatchedRetailRevenue = retailOrders?.filter(o => !matchedOrdIds.has(o.id)).reduce((sum, o) => sum + (o.paid_amount || 0), 0) || 0
+
+        // Total = SePay (B2C) + unmatched invoices/orders (B2B)
+        const totalRevenue = sepayRevenue + unmatchedInvRevenue + unmatchedRetailRevenue
 
         // Fetch total value from active contracts
         const { data: activeContracts } = await supabase
@@ -130,13 +148,32 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
         const now = new Date()
         const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), 1)
 
+        // Source 1: SePay payment_transactions (B2C bank transfers)
+        const { data: paymentTxns, error: ptError } = await supabase
+            .from('payment_transactions')
+            .select('amount_in, amount_out, transfer_type, transaction_date, matched_order_id, matched_invoice_id')
+            .gte('transaction_date', oneYearAgo.toISOString())
+
+        if (ptError) console.error('Error fetching payment_transactions:', ptError)
+
+        // Source 2: Invoices (B2B contracts/invoices)
         const { data: invoices, error: invError } = await supabase
             .from('invoices')
-            .select('total_amount, paid_amount, issue_date, type')
+            .select('id, total_amount, paid_amount, issue_date, type')
+            .eq('type', 'output')
             .gte('issue_date', oneYearAgo.toISOString())
 
         if (invError) console.error('Error fetching chart invoices:', invError)
 
+        // Source 3: Retail orders (Studio/Academy)
+        const { data: retailOrders, error: retailError } = await supabase
+            .from('retail_orders')
+            .select('id, paid_amount, created_at')
+            .gte('created_at', oneYearAgo.toISOString())
+
+        if (retailError) console.error('Error fetching chart retail_orders:', retailError)
+
+        // Source 4: Manual expense entries
         const { data: expenses, error: expError } = await supabase
             .from('expenses')
             .select('amount, date')
@@ -144,23 +181,52 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
 
         if (expError) console.error('Error fetching chart expenses:', expError)
 
+        // Build set of invoice/order IDs already matched by SePay (to avoid double-counting)
+        const matchedInvoiceIds = new Set<string>()
+        const matchedOrderIds = new Set<string>()
+        paymentTxns?.forEach(tx => {
+            if (tx.matched_invoice_id) matchedInvoiceIds.add(tx.matched_invoice_id)
+            if (tx.matched_order_id) matchedOrderIds.add(tx.matched_order_id)
+        })
+
         // Aggregate by month
         const months = []
         for (let i = 0; i < 12; i++) {
             const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1)
             const label = `T${d.getMonth() + 1}`
+            const isMonth = (dateStr: string | null) => {
+                if (!dateStr) return false
+                const dt = new Date(dateStr)
+                return dt.getMonth() === d.getMonth() && dt.getFullYear() === d.getFullYear()
+            }
 
-            const monthlyRevenue = invoices?.filter(inv => {
-                if (!inv.issue_date) return false
-                const invDate = new Date(inv.issue_date)
-                return invDate.getMonth() === d.getMonth() && invDate.getFullYear() === d.getFullYear() && inv.type === 'output'
-            }).reduce((sum, inv) => sum + (inv.total_amount || 0), 0) || 0
+            // SePay revenue (amount_in from bank)
+            const sepayRevenue = paymentTxns?.filter(tx =>
+                isMonth(tx.transaction_date) && tx.transfer_type === 'in'
+            ).reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0) || 0
 
-            const monthlyExpenses = expenses?.filter(exp => {
-                if (!exp.date) return false
-                const expDate = new Date(exp.date)
-                return expDate.getMonth() === d.getMonth() && expDate.getFullYear() === d.getFullYear()
-            }).reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
+            // SePay expenses (amount_out from bank)
+            const sepayExpenses = paymentTxns?.filter(tx =>
+                isMonth(tx.transaction_date) && tx.transfer_type === 'out'
+            ).reduce((sum, tx) => sum + (Number(tx.amount_out) || 0), 0) || 0
+
+            // Invoice revenue (B2B) — exclude those already counted via SePay match
+            const invoiceRevenue = invoices?.filter(inv =>
+                isMonth(inv.issue_date) && !matchedInvoiceIds.has(inv.id)
+            ).reduce((sum: number, inv: any) => sum + (inv.paid_amount || 0), 0) || 0
+
+            // Retail order revenue — exclude those already counted via SePay match
+            const retailRevenue = retailOrders?.filter(order =>
+                isMonth(order.created_at) && !matchedOrderIds.has(order.id)
+            ).reduce((sum: number, order: any) => sum + (order.paid_amount || 0), 0) || 0
+
+            // Manual expenses
+            const manualExpenses = expenses?.filter(exp =>
+                isMonth(exp.date)
+            ).reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0
+
+            const monthlyRevenue = sepayRevenue + invoiceRevenue + retailRevenue
+            const monthlyExpenses = sepayExpenses + manualExpenses
 
             months.push({
                 date: label,
