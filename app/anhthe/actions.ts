@@ -114,8 +114,10 @@ export async function submitPhotoOrder(formData: FormData) {
       }
 
       if (extraPaid > 0) {
+        // "In thêm" only when there are packages; otherwise it's a standalone print order
+        const printLabel = totalFreePrints > 0 ? 'In ảnh cứng (In thêm)' : 'In ảnh cứng'
         items.push({
-          product_name: `In ảnh cứng (In thêm)`,
+          product_name: printLabel,
           quantity: extraPaid,
           unit_price: EXTRA_PRINT_PRICE,
           total_price: extraPaid * EXTRA_PRINT_PRICE,

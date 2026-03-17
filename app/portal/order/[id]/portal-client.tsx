@@ -230,13 +230,19 @@ function PortalPaymentWatcher({ token, remainingAmount }: { token: string; remai
 
 function ShippingInfoForm({ order, token }: { order: any; token: string }) {
     const existing = order.shipping_info || {}
-    const [form, setForm] = useState({
-        recipient_name: existing.recipient_name || '',
-        recipient_phone: existing.recipient_phone || '',
-        address: existing.address || '',
-    })
+    // Also check metadata.shipping (from /anhthe order form)
+    const metaShipping = order.metadata?.shipping || {}
+    const initialData = {
+        recipient_name: existing.recipient_name || metaShipping.name || '',
+        recipient_phone: existing.recipient_phone || metaShipping.phone || '',
+        address: existing.address || metaShipping.address || '',
+    }
+    const hasExistingInfo = !!(initialData.recipient_name && initialData.address)
+
+    const [form, setForm] = useState(initialData)
     const [isSaving, setIsSaving] = useState(false)
     const [saved, setSaved] = useState(false)
+    const [isEditing, setIsEditing] = useState(!hasExistingInfo)
 
     const fillFromCustomer = () => {
         setForm(f => ({
@@ -258,6 +264,7 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
             if (res.ok) {
                 toast.success(data.message || 'Đã lưu thông tin nhận hàng')
                 setSaved(true)
+                setIsEditing(false)
             } else {
                 toast.error(data.error || 'Có lỗi xảy ra')
             }
@@ -276,66 +283,108 @@ function ShippingInfoForm({ order, token }: { order: any; token: string }) {
                     </div>
                     <div>
                         <h3 className="text-sm font-semibold text-zinc-950 tracking-tight">Thông tin nhận hàng</h3>
-                        <p className="text-[11px] font-medium text-muted-foreground">Điền nếu bạn muốn nhận ảnh in</p>
+                        <p className="text-[11px] font-medium text-muted-foreground">
+                            {hasExistingInfo ? 'Thông tin giao hàng của bạn' : 'Điền nếu bạn muốn nhận ảnh in'}
+                        </p>
                     </div>
                 </div>
-                {saved && (
+                {(saved || (hasExistingInfo && !isEditing)) && (
                     <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] font-semibold">
-                        <CheckCircle2 className="h-3 w-3 mr-1" /> Đã lưu
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> {saved ? 'Đã lưu' : 'Đã có'}
                     </Badge>
                 )}
             </div>
-            <div className="p-5 space-y-4">
-                <button
-                    type="button"
-                    onClick={fillFromCustomer}
-                    className="w-full text-left px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-colors text-xs font-medium text-zinc-600 flex items-center gap-2"
-                >
-                    <User className="h-3.5 w-3.5" />
-                    Cùng thông tin khách hàng ({order.customer_name})
-                </button>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Collapsed view: show existing info */}
+            {hasExistingInfo && !isEditing ? (
+                <div className="p-5 space-y-3">
+                    <div className="bg-zinc-50 rounded-lg p-4 space-y-2 border border-zinc-100">
+                        <div className="flex items-center gap-2 text-sm">
+                            <User className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                            <span className="font-semibold text-zinc-900">{form.recipient_name}</span>
+                            {form.recipient_phone && (
+                                <span className="text-zinc-400">· {form.recipient_phone}</span>
+                            )}
+                        </div>
+                        <div className="flex items-start gap-2 text-sm">
+                            <MapPin className="h-3.5 w-3.5 text-zinc-400 shrink-0 mt-0.5" />
+                            <span className="text-zinc-600">{form.address}</span>
+                        </div>
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditing(true)}
+                        className="w-full h-9 text-xs font-medium rounded-lg"
+                    >
+                        Thay đổi thông tin nhận hàng
+                    </Button>
+                </div>
+            ) : (
+                /* Edit form */
+                <div className="p-5 space-y-4">
+                    <button
+                        type="button"
+                        onClick={fillFromCustomer}
+                        className="w-full text-left px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-colors text-xs font-medium text-zinc-600 flex items-center gap-2"
+                    >
+                        <User className="h-3.5 w-3.5" />
+                        Cùng thông tin khách hàng ({order.customer_name})
+                    </button>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-zinc-600">Tên người nhận</Label>
+                            <Input
+                                value={form.recipient_name}
+                                onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))}
+                                placeholder="Nguyễn Văn A"
+                                className="h-10 text-sm"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-zinc-600">Số điện thoại</Label>
+                            <Input
+                                value={form.recipient_phone}
+                                onChange={e => setForm(f => ({ ...f, recipient_phone: e.target.value }))}
+                                placeholder="09xx xxx xxx"
+                                className="h-10 text-sm"
+                            />
+                        </div>
+                    </div>
+
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-zinc-600">Tên người nhận</Label>
-                        <Input
-                            value={form.recipient_name}
-                            onChange={e => setForm(f => ({ ...f, recipient_name: e.target.value }))}
-                            placeholder="Nguyễn Văn A"
-                            className="h-10 text-sm"
+                        <Label className="text-xs font-semibold text-zinc-600">Địa chỉ giao hàng</Label>
+                        <textarea
+                            value={form.address}
+                            onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                            placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                            rows={2}
+                            className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 resize-none"
                         />
                     </div>
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-zinc-600">Số điện thoại</Label>
-                        <Input
-                            value={form.recipient_phone}
-                            onChange={e => setForm(f => ({ ...f, recipient_phone: e.target.value }))}
-                            placeholder="09xx xxx xxx"
-                            className="h-10 text-sm"
-                        />
+
+                    <div className="flex gap-2">
+                        {hasExistingInfo && (
+                            <Button
+                                variant="outline"
+                                onClick={() => { setForm(initialData); setIsEditing(false) }}
+                                className="flex-1 h-10 rounded-lg font-semibold text-sm"
+                            >
+                                Huỷ
+                            </Button>
+                        )}
+                        <Button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className={cn("h-10 rounded-lg font-semibold text-sm", hasExistingInfo ? "flex-1" : "w-full")}
+                        >
+                            {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
+                            Lưu thông tin nhận hàng
+                        </Button>
                     </div>
                 </div>
-
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-zinc-600">Địa chỉ giao hàng</Label>
-                    <textarea
-                        value={form.address}
-                        onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                        placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
-                        rows={2}
-                        className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 focus:border-zinc-400 resize-none"
-                    />
-                </div>
-
-                <Button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="w-full h-10 rounded-lg font-semibold text-sm"
-                >
-                    {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-4 w-4" />}
-                    Lưu thông tin nhận hàng
-                </Button>
-            </div>
+            )}
         </div>
     )
 }
