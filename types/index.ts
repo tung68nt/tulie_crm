@@ -677,11 +677,22 @@ export interface DashboardStats {
   efficiency_score: number
 }
 
+export interface RevenueDetailItem {
+  source: 'sepay' | 'invoice' | 'retail_order'
+  description: string
+  amount: number
+  reference_id?: string
+  reference_code?: string
+  customer_name?: string
+  date?: string
+}
+
 export interface RevenueData {
   date: string
   revenue: number
   expenses: number
   profit: number
+  details?: RevenueDetailItem[]
 }
 
 export interface Alert {

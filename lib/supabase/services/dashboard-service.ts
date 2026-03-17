@@ -151,7 +151,7 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
         // Source 1: SePay payment_transactions (B2C bank transfers)
         const { data: paymentTxns, error: ptError } = await supabase
             .from('payment_transactions')
-            .select('amount_in, amount_out, transfer_type, transaction_date, matched_order_id, matched_invoice_id')
+            .select('id, amount_in, amount_out, transfer_type, transaction_date, matched_order_id, matched_invoice_id, content, code')
             .gte('transaction_date', oneYearAgo.toISOString())
 
         if (ptError) console.error('Error fetching payment_transactions:', ptError)
@@ -159,7 +159,7 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
         // Source 2: Invoices (B2B contracts/invoices)
         const { data: invoices, error: invError } = await supabase
             .from('invoices')
-            .select('id, total_amount, paid_amount, issue_date, type')
+            .select('id, invoice_number, total_amount, paid_amount, issue_date, type, customer_id, customers:customer_id(company_name)')
             .eq('type', 'output')
             .gte('issue_date', oneYearAgo.toISOString())
 
@@ -168,7 +168,7 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
         // Source 3: Retail orders (Studio/Academy)
         const { data: retailOrders, error: retailError } = await supabase
             .from('retail_orders')
-            .select('id, paid_amount, created_at')
+            .select('id, order_number, paid_amount, created_at, customer_name')
             .gte('created_at', oneYearAgo.toISOString())
 
         if (retailError) console.error('Error fetching chart retail_orders:', retailError)
@@ -200,10 +200,28 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
                 return dt.getMonth() === d.getMonth() && dt.getFullYear() === d.getFullYear()
             }
 
+            // Collect detail items for this month
+            const details: import('@/types').RevenueDetailItem[] = []
+
             // SePay revenue (amount_in from bank)
-            const sepayRevenue = paymentTxns?.filter(tx =>
+            const sepayInTxns = paymentTxns?.filter(tx =>
                 isMonth(tx.transaction_date) && tx.transfer_type === 'in'
-            ).reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0) || 0
+            ) || []
+            const sepayRevenue = sepayInTxns.reduce((sum, tx) => sum + (Number(tx.amount_in) || 0), 0)
+
+            sepayInTxns.forEach(tx => {
+                const amount = Number(tx.amount_in) || 0
+                if (amount > 0) {
+                    details.push({
+                        source: 'sepay',
+                        description: tx.content?.substring(0, 60) || tx.code || 'Giao dịch SePay',
+                        amount,
+                        reference_id: tx.id,
+                        reference_code: tx.code || undefined,
+                        date: tx.transaction_date || undefined,
+                    })
+                }
+            })
 
             // SePay expenses (amount_out from bank)
             const sepayExpenses = paymentTxns?.filter(tx =>
@@ -211,14 +229,47 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
             ).reduce((sum, tx) => sum + (Number(tx.amount_out) || 0), 0) || 0
 
             // Invoice revenue (B2B) — exclude those already counted via SePay match
-            const invoiceRevenue = invoices?.filter(inv =>
+            const unmatchedInvoices = invoices?.filter(inv =>
                 isMonth(inv.issue_date) && !matchedInvoiceIds.has(inv.id)
-            ).reduce((sum: number, inv: any) => sum + (inv.paid_amount || 0), 0) || 0
+            ) || []
+            const invoiceRevenue = unmatchedInvoices.reduce((sum: number, inv: any) => sum + (inv.paid_amount || 0), 0)
+
+            unmatchedInvoices.forEach((inv: any) => {
+                const amount = inv.paid_amount || 0
+                if (amount > 0) {
+                    const customerName = inv.customers?.company_name || undefined
+                    details.push({
+                        source: 'invoice',
+                        description: `HĐ ${inv.invoice_number}${customerName ? ` — ${customerName}` : ''}`,
+                        amount,
+                        reference_id: inv.id,
+                        reference_code: inv.invoice_number || undefined,
+                        customer_name: customerName,
+                        date: inv.issue_date || undefined,
+                    })
+                }
+            })
 
             // Retail order revenue — exclude those already counted via SePay match
-            const retailRevenue = retailOrders?.filter(order =>
+            const unmatchedRetail = retailOrders?.filter(order =>
                 isMonth(order.created_at) && !matchedOrderIds.has(order.id)
-            ).reduce((sum: number, order: any) => sum + (order.paid_amount || 0), 0) || 0
+            ) || []
+            const retailRevenue = unmatchedRetail.reduce((sum: number, order: any) => sum + (order.paid_amount || 0), 0)
+
+            unmatchedRetail.forEach((order: any) => {
+                const amount = order.paid_amount || 0
+                if (amount > 0) {
+                    details.push({
+                        source: 'retail_order',
+                        description: `ĐH ${order.order_number}${order.customer_name ? ` — ${order.customer_name}` : ''}`,
+                        amount,
+                        reference_id: order.id,
+                        reference_code: order.order_number || undefined,
+                        customer_name: order.customer_name || undefined,
+                        date: order.created_at || undefined,
+                    })
+                }
+            })
 
             // Manual expenses
             const manualExpenses = expenses?.filter(exp =>
@@ -232,7 +283,8 @@ export async function getRevenueChartData(): Promise<RevenueData[]> {
                 date: label,
                 revenue: monthlyRevenue / 1000000,
                 expenses: monthlyExpenses / 1000000,
-                profit: (monthlyRevenue - monthlyExpenses) / 1000000
+                profit: (monthlyRevenue - monthlyExpenses) / 1000000,
+                details: details.sort((a, b) => b.amount - a.amount),
             })
         }
 
