@@ -84,15 +84,16 @@ export async function POST(req: NextRequest) {
 
         console.log(`[SePay Webhook] Received: type=${payload?.transferType}`)
 
-        // 1. Verify API Key — Optional: only enforced if configured
+        // 1. Verify API Key / Token — Optional: only enforced if configured
         const telegramConfig = await getSystemSetting('telegram_config')
         const storedApiKey = telegramConfig?.sepay_api_key
+        const storedSecretKey = telegramConfig?.sepay_secret_key
 
-        if (storedApiKey) {
-            // API key is configured → enforce authentication
+        if (storedApiKey || storedSecretKey) {
+            // API key/Secret is configured → enforce authentication
             if (!authHeader && !signature) {
                 const headersObj = Object.fromEntries(req.headers.entries())
-                console.warn('[SePay Webhook] Rejected: API key configured but no auth provided. Headers received:', headersObj)
+                console.warn('[SePay Webhook] Rejected: Security configured but no auth provided. Headers received:', headersObj)
                 
                 // TEMP DEBUG: Log to database so we can see it
                 try {
@@ -117,16 +118,19 @@ export async function POST(req: NextRequest) {
                 const match = authHeader.match(/^(?:Apikey|Bearer)\s+(.+)$/i)
                 receivedKey = match?.[1] ?? authHeader
                 const cleanReceivedKey = receivedKey.trim().replace(/^["']|["']$/g, '')
-                const cleanStoredKey = storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '')
+                
+                const cleanStoredApiKey = storedApiKey ? storedApiKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '') : ''
+                const cleanStoredSecretKey = storedSecretKey ? storedSecretKey.trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '') : ''
 
-                if (cleanReceivedKey !== cleanStoredKey) {
-                    console.warn('[SePay Webhook] API key mismatch — rejecting')
+                // Check against both the API Key AND the Webhook Secret to be foolproof
+                if (cleanReceivedKey !== cleanStoredApiKey && cleanReceivedKey !== cleanStoredSecretKey) {
+                    console.warn('[SePay Webhook] API key/Secret mismatch — rejecting')
                     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 })
                 }
             }
         } else {
             // No API key configured → accept without auth (backward compatible)
-            console.log('[SePay Webhook] No API key configured — accepting without auth')
+            console.log('[SePay Webhook] No API key/Secret configured — accepting without auth')
         }
 
         // 2. Verify HMAC Signature (if provided)
