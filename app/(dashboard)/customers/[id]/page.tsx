@@ -213,7 +213,7 @@ export default async function CustomerDetailPage({ params }: any) {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {quotations.map((quote) => (
-                                <Link key={quote.id} href={`/quotations/${quote.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
+                                <Link key={quote.id} href={`/quotations/${quote.id}?from=/customers/${id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
                                     <div>
                                         <p className="font-medium">{quote.quotation_number}</p>
                                         <p className="text-sm text-muted-foreground">{formatDate(quote.created_at)}</p>
@@ -238,7 +238,7 @@ export default async function CustomerDetailPage({ params }: any) {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {contracts.map((contract) => (
-                                <Link key={contract.id} href={`/contracts/${contract.id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
+                                <Link key={contract.id} href={`/contracts/${contract.id}?from=/customers/${id}`} className="flex items-center justify-between p-4 rounded-lg border hover:bg-accent transition-colors">
                                     <div>
                                         <p className="font-medium">{contract.contract_number}</p>
                                         <p className="text-sm text-muted-foreground">Bắt đầu: {formatDate(contract.start_date)}</p>

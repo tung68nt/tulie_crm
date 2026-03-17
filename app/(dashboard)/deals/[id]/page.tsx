@@ -111,7 +111,7 @@ export default async function DealDetailPage({ params }: any) {
                                                     <FileText className="h-5 w-5 text-primary" />
                                                 </div>
                                                 <div>
-                                                    <Link href={`/quotations/${quote.id}`} className="font-bold hover:underline">
+                                                    <Link href={`/quotations/${quote.id}?from=/deals/${id}`} className="font-bold hover:underline">
                                                         {quote.quotation_number}
                                                     </Link>
                                                     <p className="text-xs text-muted-foreground">{quote.title}</p>
