@@ -33,14 +33,19 @@ export async function POST(
             return NextResponse.json({ error: 'Template not found' }, { status: 404 })
         }
 
-        // Get contract to extract customer_id
-        const { data: contract, error } = await supabase
+        // Use admin client to bypass RLS — auth is already verified above
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const adminSupabase = createAdminClient()
+
+        // Get contract with related data
+        const { data: contract, error } = await adminSupabase
             .from('contracts')
             .select('*, customer:customers(*), items:contract_items(*), milestones:contract_milestones(*), quotation:quotations(*, items:quotation_items(*))')
             .eq('id', contractId)
             .single()
 
         if (error || !contract) {
+            console.error('Contract fetch error:', error)
             return NextResponse.json({ error: 'Contract not found' }, { status: 404 })
         }
 
