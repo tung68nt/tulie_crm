@@ -157,6 +157,174 @@ export async function createRetailOrder(order: Partial<RetailOrder>) {
     }
 }
 
+/**
+ * Create a retail order from a public-facing form (no auth required).
+ * Uses admin client to bypass RLS — security is via server action context.
+ */
+export async function createPublicRetailOrder(order: Partial<RetailOrder>) {
+    try {
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
+
+        const { items, use_deposit, ...orderData } = order as any
+
+        // Auto-generate ID if not provided
+        if (!orderData.order_number) {
+            // Need to use admin client for generating ID too
+            const date = orderData.order_date ? new Date(orderData.order_date) : new Date()
+            const yy = date.getFullYear().toString().slice(-2)
+            const mm = (date.getMonth() + 1).toString().padStart(2, '0')
+            const dd = date.getDate().toString().padStart(2, '0')
+            const mmdd = `${mm}${dd}`
+            const kValue = Math.floor((orderData.total_amount || 0) / 1000)
+
+            const { data: maxSttData } = await supabase
+                .from('retail_orders')
+                .select('stt')
+                .order('stt', { ascending: false })
+                .limit(1)
+                .maybeSingle()
+
+            const nextStt = maxSttData?.stt ? maxSttData.stt + 1 : 810
+            orderData.order_number = `DH_${yy}_${mmdd}_${nextStt}_${kValue}`
+            orderData.stt = nextStt
+        }
+
+        if (orderData.delivery_date === '') orderData.delivery_date = null
+        if (orderData.order_date === '') orderData.order_date = null
+
+        const { data: insertedOrder, error: orderError } = await supabase
+            .from('retail_orders')
+            .insert([{ ...orderData, created_by: null }])
+            .select()
+            .single()
+
+        if (orderError) throw orderError
+
+        // Insert items if any
+        if (items && items.length > 0) {
+            const orderItems = items.map((item: any, index: number) => ({
+                order_id: insertedOrder.id,
+                product_id: item.product_id,
+                product_name: item.product_name,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                total_price: item.total_price || (item.quantity * item.unit_price),
+                sort_order: index
+            }))
+
+            const { error: itemsError } = await supabase
+                .from('retail_order_items')
+                .insert(orderItems)
+
+            if (itemsError) {
+                console.error('Error inserting order items:', itemsError)
+            }
+        }
+
+        // Non-blocking: send Telegram notification (skip for drafts)
+        if (orderData.order_status !== 'draft') {
+            try {
+                await sendTelegramNotification(await formatNewRetailOrder(insertedOrder), 'notify_new_retail_order')
+            } catch (notifErr) {
+                console.error('Telegram notification failed (order still created):', notifErr)
+            }
+        }
+
+        revalidatePath('/studio')
+        return insertedOrder as RetailOrder
+    } catch (err) {
+        console.error('Error creating public retail order:', err)
+        throw err
+    }
+}
+
+/**
+ * Update a retail order from a public-facing form (no auth required).
+ * Uses admin client to bypass RLS.
+ */
+export async function updatePublicRetailOrder(id: string, order: Partial<RetailOrder>) {
+    try {
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
+
+        const { items, ...updateData } = order as any
+        delete updateData.use_deposit
+        if (updateData.delivery_date === '') updateData.delivery_date = null
+        if (updateData.order_date === '') updateData.order_date = null
+
+        // Auto-update order_number suffix when total_amount changes
+        if (updateData.total_amount !== undefined) {
+            const { data: current } = await supabase
+                .from('retail_orders')
+                .select('order_number, total_amount')
+                .eq('id', id)
+                .single()
+
+            if (current?.order_number && current.total_amount !== updateData.total_amount) {
+                const parts = current.order_number.split('_')
+                if (parts.length >= 5) {
+                    const newKValue = Math.floor(updateData.total_amount / 1000)
+                    parts[parts.length - 1] = String(newKValue)
+                    updateData.order_number = parts.join('_')
+                }
+            }
+        }
+
+        const { error } = await supabase
+            .from('retail_orders')
+            .update(updateData)
+            .eq('id', id)
+
+        if (error) throw error
+
+        // Upsert items: delete all existing, then insert new ones
+        if (items && Array.isArray(items)) {
+            await supabase.from('retail_order_items').delete().eq('order_id', id)
+
+            if (items.length > 0) {
+                const orderItems = items.map((item: any, index: number) => ({
+                    order_id: id,
+                    product_id: item.product_id,
+                    product_name: item.product_name,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    total_price: item.total_price || (item.quantity * item.unit_price),
+                    sort_order: index
+                }))
+
+                const { error: itemsError } = await supabase
+                    .from('retail_order_items')
+                    .insert(orderItems)
+
+                if (itemsError) console.error('Error upserting order items:', itemsError)
+            }
+        }
+
+        // Send Telegram notification when draft becomes pending
+        if (updateData.order_status && updateData.order_status !== 'draft') {
+            try {
+                const { data: updatedOrder } = await supabase
+                    .from('retail_orders')
+                    .select('*')
+                    .eq('id', id)
+                    .single()
+                if (updatedOrder) {
+                    await sendTelegramNotification(await formatNewRetailOrder(updatedOrder), 'notify_new_retail_order')
+                }
+            } catch (notifErr) {
+                console.error('Telegram notification failed:', notifErr)
+            }
+        }
+
+        revalidatePath('/studio')
+        return true
+    } catch (err) {
+        console.error('Error updating public retail order:', err)
+        throw err
+    }
+}
+
 export async function updateRetailOrder(id: string, order: Partial<RetailOrder>) {
     try {
         const supabase = await createClient()

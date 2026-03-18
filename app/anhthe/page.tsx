@@ -1,4 +1,5 @@
 import { getProducts } from '@/lib/supabase/services/product-service'
+import { createClient } from '@/lib/supabase/server'
 import OrderForm from './components/OrderForm'
 import { Metadata } from 'next'
 
@@ -19,5 +20,10 @@ export default async function IDPhotoOrderPage() {
     .filter(p => p.is_active && p.category === 'Studio')
     .sort((a, b) => a.price - b.price)
 
-  return <OrderForm products={photoPackages} />
+  // Check if current user is admin (logged in)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const isAdmin = !!user
+
+  return <OrderForm products={photoPackages} isAdmin={isAdmin} />
 }

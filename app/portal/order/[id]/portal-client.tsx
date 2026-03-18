@@ -15,6 +15,7 @@ import { buildVietQrUrl, buildVietQrDeeplink } from '@/lib/utils/vietqr'
 import { toast } from 'sonner'
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; dot: string; border: string }> = {
+    'draft': { label: 'Đơn nháp', bg: 'bg-zinc-50', text: 'text-zinc-400', dot: 'bg-zinc-300', border: 'border-zinc-200' },
     'pending': { label: 'Chờ xử lý', bg: 'bg-zinc-50', text: 'text-zinc-500', dot: 'bg-zinc-400', border: 'border-zinc-200' },
     'editing': { label: 'Đang chỉnh sửa', bg: 'bg-blue-50', text: 'text-blue-600', dot: 'bg-blue-500', border: 'border-blue-200' },
     'edit_done': { label: 'Hoàn thành chỉnh sửa', bg: 'bg-violet-50', text: 'text-violet-600', dot: 'bg-violet-500', border: 'border-violet-200' },

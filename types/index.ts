@@ -751,7 +751,7 @@ export interface InvoiceFilters {
   date_to?: string
 }
 // Retail Order Types (B2C Studio)
-export type RetailOrderStatus = 'pending' | 'editing' | 'edit_done' | 'waiting_ship' | 'shipping' | 'completed' | 'cancelled'
+export type RetailOrderStatus = 'draft' | 'pending' | 'editing' | 'edit_done' | 'waiting_ship' | 'shipping' | 'completed' | 'cancelled'
 export type DeliveryType = 'digital' | 'physical'
 export type RetailPaymentStatus = 'pending' | 'partial' | 'paid'
 

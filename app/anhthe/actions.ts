@@ -1,6 +1,6 @@
 'use server'
 
-import { createRetailOrder } from '@/lib/supabase/services/retail-order-service'
+import { createPublicRetailOrder, updatePublicRetailOrder } from '@/lib/supabase/services/retail-order-service'
 import { getProductById } from '@/lib/supabase/services/product-service'
 import { z } from 'zod'
 
@@ -30,6 +30,7 @@ const orderSchema = z.object({
   discountType: z.string().optional().nullable().transform(v => v ?? undefined),
   discountValue: z.string().optional().nullable().transform(v => v ?? undefined),
   discountAmount: z.coerce.number().default(0),
+  draftId: z.string().optional().nullable().transform(v => v ?? undefined),
 })
 
 export async function submitPhotoOrder(formData: FormData) {
@@ -51,6 +52,7 @@ export async function submitPhotoOrder(formData: FormData) {
       discountType: formData.get('discountType') ?? undefined,
       discountValue: formData.get('discountValue') ?? undefined,
       discountAmount: formData.get('discountAmount') as string ?? '0',
+      draftId: formData.get('draftId') ?? undefined,
     }
 
     const val = orderSchema.parse(rawData)
@@ -97,7 +99,6 @@ export async function submitPhotoOrder(formData: FormData) {
       const freeIncluded = Math.min(printQty, totalFreePrints)
       const extraPaid = Math.max(0, printQty - totalFreePrints)
 
-      // Map size IDs to readable names for notes
       const SIZE_NAMES: Record<string, string> = {
         'mix': 'Mix (3×4×6 + 5×3×4 + 3×2×3)',
         '2x3': '2×3 cm',
@@ -108,7 +109,6 @@ export async function submitPhotoOrder(formData: FormData) {
         '4.5x4.5': '4.5×4.5 cm',
         '5x5': '5×5 cm',
       }
-      const sizeSummary = viSizes.map((s, i) => `Vỉ ${i + 1}: ${SIZE_NAMES[s] || s}`).join(', ')
 
       if (freeIncluded > 0) {
         items.push({
@@ -120,7 +120,6 @@ export async function submitPhotoOrder(formData: FormData) {
       }
 
       if (extraPaid > 0) {
-        // "In thêm" only when there are packages; otherwise it's a standalone print order
         const printLabel = totalFreePrints > 0 ? 'In ảnh cứng (In thêm)' : 'In ảnh cứng'
         items.push({
           product_name: printLabel,
@@ -177,20 +176,18 @@ export async function submitPhotoOrder(formData: FormData) {
       discountAmount > 0 ? `Giảm giá: -${new Intl.NumberFormat('vi-VN').format(discountAmount)}đ${val.discountType === 'percent' ? ` (${val.discountValue}%)` : ''}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
 
-    // Generate public_token explicitly so we can use it for redirect
-    // (DB default may not be returned by .select() in unauthenticated context)
     const publicToken = crypto.randomUUID()
 
-    const newOrder = await createRetailOrder({
+    const orderPayload = {
       customer_name: val.customerName,
       customer_phone: val.customerPhone,
       customer_email: '',
       total_amount: finalAmount,
       paid_amount: 0,
-      payment_status: 'pending',
-      order_status: 'pending',
+      payment_status: 'pending' as const,
+      order_status: 'pending' as const,
       source_system: 'website',
-      brand: 'studio',
+      brand: 'studio' as const,
       notes: orderNotes,
       public_token: publicToken,
       metadata: {
@@ -208,9 +205,16 @@ export async function submitPhotoOrder(formData: FormData) {
         } : null,
       },
       items,
-    })
+    }
 
-    return { success: true, orderId: newOrder.id, token: publicToken }
+    // If we have a draftId, update the draft to pending; otherwise create new
+    if (val.draftId) {
+      await updatePublicRetailOrder(val.draftId, orderPayload)
+      return { success: true, orderId: val.draftId, token: publicToken }
+    } else {
+      const newOrder = await createPublicRetailOrder(orderPayload)
+      return { success: true, orderId: newOrder.id, token: publicToken }
+    }
   } catch (error: any) {
     console.error('Submit photo order error:', error)
     return { success: false, error: error.message || 'Có lỗi xảy ra, vui lòng thử lại sau.' }

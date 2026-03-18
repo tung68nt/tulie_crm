@@ -15,6 +15,8 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    SelectGroup,
+    SelectLabel,
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
@@ -1394,12 +1396,26 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         <SelectValue placeholder="Chọn nhanh tài khoản" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="_" disabled>Chọn danh sách đã cấu hình</SelectItem>
-                                        {availableBanks.map(b => (
-                                            <SelectItem key={b.account_no} value={b.account_no}>
-                                                {b.bank_name} - {b.account_no}
-                                            </SelectItem>
-                                        ))}
+                                        {availableBanks.filter(b => b.type !== 'personal').length > 0 && (
+                                            <SelectGroup>
+                                                <SelectLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">TK Công ty</SelectLabel>
+                                                {availableBanks.filter(b => b.type !== 'personal').map(b => (
+                                                    <SelectItem key={b.account_no} value={b.account_no}>
+                                                        {b.bank_name} - {b.account_no}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        )}
+                                        {availableBanks.filter(b => b.type === 'personal').length > 0 && (
+                                            <SelectGroup>
+                                                <SelectLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">TK Cá nhân</SelectLabel>
+                                                {availableBanks.filter(b => b.type === 'personal').map(b => (
+                                                    <SelectItem key={b.account_no} value={b.account_no}>
+                                                        {b.bank_name} - {b.account_no}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        )}
                                     </SelectContent>
                                 </Select>
                             )}

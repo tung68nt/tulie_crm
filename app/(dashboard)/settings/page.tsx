@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
-import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet, RefreshCw, Copy, GraduationCap } from 'lucide-react'
+import { Building2, Bell, Palette, Shield, Database as DatabaseIcon, Tag, ListFilter, Plus, Trash2, Box, Send, Mail, CheckCircle2, Globe, Settings, BookOpen, FileText, CreditCard, Wallet, RefreshCw, Copy, GraduationCap, User } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useTheme } from 'next-themes'
@@ -1634,17 +1634,23 @@ export default function SettingsPage() {
                     </TabsContent>
 
                     <TabsContent value="bank-accounts">
-                        <Card className="rounded-xl shadow-sm border-border/50">
-                            <CardHeader className="bg-muted/30 border-b border-border/50">
-                                <CardTitle className="text-xl font-bold tracking-tight">Danh sách tài khoản ngân hàng</CardTitle>
-                                <CardDescription className="text-sm font-medium">Các tài khoản này sẽ được hiển thị để chọn khi tạo báo giá hoặc đơn hàng.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-6 pt-6">
-                                <div className="space-y-4">
-                                    {bankAccounts.map((account, index) => (
+                        <div className="space-y-6">
+                            {/* Tài khoản công ty */}
+                            <Card className="rounded-xl shadow-sm border-border/50">
+                                <CardHeader className="bg-muted/30 border-b border-border/50">
+                                    <div className="flex items-center gap-2">
+                                        <Building2 className="h-5 w-5 text-zinc-600" />
+                                        <div>
+                                            <CardTitle className="text-xl font-bold tracking-tight">Tài khoản công ty</CardTitle>
+                                            <CardDescription className="text-sm font-medium">Hiển thị khi tạo báo giá B2B (Agency)</CardDescription>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-6">
+                                    {bankAccounts.map((account, index) => account.type !== 'personal' && (
                                         <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50 group">
                                             <div className="flex items-center justify-between mb-2">
-                                                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground italic">Tài khoản #{index + 1}</h4>
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground italic">TK Công ty #{bankAccounts.filter((a, i) => a.type !== 'personal' && i <= index).length}</h4>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
@@ -1669,6 +1675,132 @@ export default function SettingsPage() {
                                                             setBankAccounts(newAccounts)
                                                         }}
                                                         placeholder="Ví dụ: VietinBank"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Số tài khoản</Label>
+                                                    <Input
+                                                        value={account.account_no}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].account_no = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: 0110163102"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên chủ tài khoản</Label>
+                                                    <Input
+                                                        value={account.account_name}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].account_name = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: CÔNG TY TNHH TULIE"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Chi nhánh</Label>
+                                                    <Input
+                                                        value={account.bank_branch}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].bank_branch = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: Hà Nội"
+                                                        className="rounded-xl"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="pt-3 border-t border-border/30">
+                                                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">Sử dụng mặc định cho</Label>
+                                                <div className="flex flex-wrap gap-4">
+                                                    {[
+                                                        { value: 'quotation', label: 'Báo giá (Agency B2B)' },
+                                                    ].map(option => (
+                                                        <label key={option.value} className="flex items-center gap-2 cursor-pointer select-none">
+                                                            <Checkbox
+                                                                checked={(account.default_for || []).includes(option.value)}
+                                                                onCheckedChange={(checked) => {
+                                                                    const newAccounts = [...bankAccounts]
+                                                                    const current = newAccounts[index].default_for || []
+                                                                    newAccounts[index].default_for = checked
+                                                                        ? [...current, option.value]
+                                                                        : current.filter((v: string) => v !== option.value)
+                                                                    setBankAccounts(newAccounts)
+                                                                }}
+                                                            />
+                                                            <span className="text-xs font-medium text-zinc-700">{option.label}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {bankAccounts.filter(a => a.type !== 'personal').length === 0 && (
+                                        <div className="p-8 text-center text-muted-foreground bg-zinc-50/50 rounded-xl border border-dashed border-border/50">
+                                            <Building2 className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                                            <p className="text-sm">Chưa có tài khoản công ty nào</p>
+                                        </div>
+                                    )}
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-dashed h-12 rounded-xl text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 border-zinc-200"
+                                        onClick={() => {
+                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '', default_for: [], type: 'company' }])
+                                        }}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" /> Thêm tài khoản công ty
+                                    </Button>
+                                </CardContent>
+                            </Card>
+
+                            {/* Tài khoản cá nhân */}
+                            <Card className="rounded-xl shadow-sm border-border/50">
+                                <CardHeader className="bg-muted/30 border-b border-border/50">
+                                    <div className="flex items-center gap-2">
+                                        <User className="h-5 w-5 text-zinc-600" />
+                                        <div>
+                                            <CardTitle className="text-xl font-bold tracking-tight">Tài khoản cá nhân</CardTitle>
+                                            <CardDescription className="text-sm font-medium">Hiển thị ở Studio B2C và cũng dùng được cho Agency B2B</CardDescription>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4 pt-6">
+                                    {bankAccounts.map((account, index) => account.type === 'personal' && (
+                                        <div key={index} className="space-y-4 border p-5 rounded-2xl relative bg-white shadow-sm border-border/50 group">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground italic">TK Cá nhân #{bankAccounts.filter((a, i) => a.type === 'personal' && i <= index).length}</h4>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-destructive hover:bg-destructive/5 rounded-full"
+                                                    onClick={() => {
+                                                        const newAccounts = [...bankAccounts]
+                                                        newAccounts.splice(index, 1)
+                                                        setBankAccounts(newAccounts)
+                                                    }}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                <div className="space-y-2">
+                                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Tên ngân hàng</Label>
+                                                    <Input
+                                                        value={account.bank_name}
+                                                        onChange={(e) => {
+                                                            const newAccounts = [...bankAccounts]
+                                                            newAccounts[index].bank_name = e.target.value
+                                                            setBankAccounts(newAccounts)
+                                                        }}
+                                                        placeholder="Ví dụ: MBBank"
                                                         className="rounded-xl"
                                                     />
                                                 </div>
@@ -1738,24 +1870,32 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                     ))}
+                                    {bankAccounts.filter(a => a.type === 'personal').length === 0 && (
+                                        <div className="p-8 text-center text-muted-foreground bg-zinc-50/50 rounded-xl border border-dashed border-border/50">
+                                            <User className="h-8 w-8 mx-auto mb-2 opacity-20" />
+                                            <p className="text-sm">Chưa có tài khoản cá nhân nào</p>
+                                        </div>
+                                    )}
                                     <Button
                                         variant="outline"
                                         className="w-full border-dashed h-12 rounded-xl text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 border-zinc-200"
                                         onClick={() => {
-                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '', default_for: [] }])
+                                            setBankAccounts([...bankAccounts, { bank_name: '', account_no: '', account_name: '', bank_branch: '', default_for: [], type: 'personal' }])
                                         }}
                                     >
-                                        <Plus className="mr-2 h-4 w-4" /> Thêm tài khoản ngân hàng
+                                        <Plus className="mr-2 h-4 w-4" /> Thêm tài khoản cá nhân
                                     </Button>
-                                </div>
-                                <div className="flex justify-end pt-4">
-                                    <Button onClick={() => handleSaveBankAccounts(bankAccounts)} disabled={isSavingBankAccounts} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
-                                        {isSavingBankAccounts && <LoadingSpinner size="sm" className="mr-2" />}
-                                        Lưu danh sách
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+
+                            {/* Nút lưu chung */}
+                            <div className="flex justify-end">
+                                <Button onClick={() => handleSaveBankAccounts(bankAccounts)} disabled={isSavingBankAccounts} className="rounded-xl px-10 font-bold shadow-lg shadow-zinc-100">
+                                    {isSavingBankAccounts && <LoadingSpinner size="sm" className="mr-2" />}
+                                    Lưu danh sách
+                                </Button>
+                            </div>
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="note-templates">

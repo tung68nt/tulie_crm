@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef, useCallback } from 'react'
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { submitPhotoOrder } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -81,9 +81,40 @@ function QtyStepper({ value, onChange, min = 0 }: { value: number; onChange: (v:
   )
 }
 
-export default function OrderForm({ products }: { products: Product[] }) {
+export default function OrderForm({ products, isAdmin = false }: { products: Product[]; isAdmin?: boolean }) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [draftId, setDraftId] = useState<string | null>(null)
+  const [customerName, setCustomerName] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
+  const draftSaving = useRef(false)
+
+  // Auto-save draft when customer fills in name + phone
+  useEffect(() => {
+    if (customerName.length < 2 || customerPhone.length < 10 || draftSaving.current) return
+
+    const timer = setTimeout(async () => {
+      if (draftSaving.current) return
+      draftSaving.current = true
+      try {
+        const res = await fetch('/api/studio/draft-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customerName, customerPhone }),
+        })
+        const data = await res.json()
+        if (data.draftId) {
+          setDraftId(data.draftId)
+        }
+      } catch (err) {
+        console.error('Draft save failed:', err)
+      } finally {
+        draftSaving.current = false
+      }
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [customerName, customerPhone])
 
   // Build packages from DB products
   const PACKAGES = useMemo(() => products.map(p => {
@@ -259,6 +290,11 @@ export default function OrderForm({ products }: { products: Product[] }) {
     setIsSubmitting(true)
     const formData = new FormData(e.currentTarget)
 
+    // Include draftId if we have a saved draft
+    if (draftId) {
+      formData.set('draftId', draftId)
+    }
+
     // Build packages JSON
     const pkgArray = PACKAGES.filter(p => (pkgQuantities[p.id] || 0) > 0).map(p => ({
       id: p.id,
@@ -346,13 +382,13 @@ export default function OrderForm({ products }: { products: Product[] }) {
                   <Label htmlFor="customerName" className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                     Họ và tên <span className="text-red-500">*</span>
                   </Label>
-                  <Input id="customerName" name="customerName" placeholder="Nguyễn Văn A" required className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300" />
+                  <Input id="customerName" name="customerName" placeholder="Nguyễn Văn A" required className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="customerPhone" className="text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                     Số điện thoại <span className="text-red-500">*</span>
                   </Label>
-                  <Input id="customerPhone" name="customerPhone" type="tel" placeholder="09xx xxx xxx" required className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300" />
+                  <Input id="customerPhone" name="customerPhone" type="tel" placeholder="09xx xxx xxx" required className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} />
                 </div>
               </div>
 
@@ -818,7 +854,8 @@ export default function OrderForm({ products }: { products: Product[] }) {
             </div>
           </section>
 
-          {/* Section 4: Discount */}
+          {/* Section 4: Discount — admin only */}
+          {isAdmin && (
           <section className="space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3 px-1">
               <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
@@ -898,6 +935,7 @@ export default function OrderForm({ products }: { products: Product[] }) {
               )}
             </div>
           </section>
+          )}
 
           {/* Order Summary + Submit */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm sticky bottom-4 z-10">
