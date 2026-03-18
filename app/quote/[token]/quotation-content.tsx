@@ -568,7 +568,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                         <div className="text-slate-600 text-[11px] leading-relaxed mt-1 space-y-0.5">
                                                                             {item.description.split('\n').filter((line: string) => line.trim()).map((line: string, di: number) => (
                                                                                 <div key={di} className="flex gap-1.5">
-                                                                                    <span className="shrink-0 text-slate-400 text-[10px] mt-[1px]">•</span>
+                                                                                    <span className="shrink-0 text-slate-400 text-[13px] leading-none mt-[2px]">•</span>
                                                                                     <span className="italic">{line.replace(/^[•\-\*]\s*/, '')}</span>
                                                                                 </div>
                                                                             ))}
