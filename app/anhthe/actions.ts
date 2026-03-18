@@ -27,6 +27,9 @@ const orderSchema = z.object({
   shippingAddress: z.string().optional().nullable().transform(v => v ?? undefined),
   shippingRegion: z.string().optional().nullable().transform(v => v ?? undefined),
   shippingFee: z.coerce.number().default(0),
+  discountType: z.string().optional().nullable().transform(v => v ?? undefined),
+  discountValue: z.string().optional().nullable().transform(v => v ?? undefined),
+  discountAmount: z.coerce.number().default(0),
 })
 
 export async function submitPhotoOrder(formData: FormData) {
@@ -45,6 +48,9 @@ export async function submitPhotoOrder(formData: FormData) {
       shippingAddress: formData.get('shippingAddress') ?? undefined,
       shippingRegion: formData.get('shippingRegion') ?? undefined,
       shippingFee: formData.get('shippingFee') as string ?? '0',
+      discountType: formData.get('discountType') ?? undefined,
+      discountValue: formData.get('discountValue') ?? undefined,
+      discountAmount: formData.get('discountAmount') as string ?? '0',
     }
 
     const val = orderSchema.parse(rawData)
@@ -141,6 +147,22 @@ export async function submitPhotoOrder(formData: FormData) {
 
     const totalAmount = items.reduce((sum, item) => sum + item.total_price, 0)
 
+    // Discount item (negative line item)
+    const discountAmount = val.discountAmount || 0
+    if (discountAmount > 0) {
+      const discountLabel = val.discountType === 'percent'
+        ? `Giảm giá (${val.discountValue}%)`
+        : 'Giảm giá'
+      items.push({
+        product_name: discountLabel,
+        quantity: 1,
+        unit_price: -discountAmount,
+        total_price: -discountAmount,
+      })
+    }
+
+    const finalAmount = Math.max(0, totalAmount - discountAmount)
+
     const orderNotes = [
       val.notes ? `Link Drive/Ghi chú: ${val.notes}` : null,
       packageSummary.length > 0 ? `Gói: ${packageSummary.join(', ')}` : null,
@@ -152,6 +174,7 @@ export async function submitPhotoOrder(formData: FormData) {
       photoUrls.length > 0 ? `Ảnh đã upload: ${photoUrls.length} ảnh` : null,
       val.shippingName ? `Ship đến: ${val.shippingName} - ${val.shippingPhone} - ${val.shippingAddress}` : null,
       shippingFee > 0 ? `Phí ship: ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ (${val.shippingRegion === 'hanoi' ? 'Hà Nội' : 'Tỉnh khác'})` : (val.shippingName ? 'Miễn phí vận chuyển' : null),
+      discountAmount > 0 ? `Giảm giá: -${new Intl.NumberFormat('vi-VN').format(discountAmount)}đ${val.discountType === 'percent' ? ` (${val.discountValue}%)` : ''}` : null,
     ].filter(Boolean).join('\n') || 'Đơn đặt từ Website (Khách Tự Order)'
 
     // Generate public_token explicitly so we can use it for redirect
@@ -162,7 +185,7 @@ export async function submitPhotoOrder(formData: FormData) {
       customer_name: val.customerName,
       customer_phone: val.customerPhone,
       customer_email: '',
-      total_amount: totalAmount,
+      total_amount: finalAmount,
       paid_amount: 0,
       payment_status: 'pending',
       order_status: 'pending',

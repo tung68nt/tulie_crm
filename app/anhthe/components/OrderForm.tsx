@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Camera, CheckCircle2, ImagePlus, Link2, MapPin, MinusIcon, Package, PlusIcon, Printer, Sparkles, Star, Truck, Upload, User, X } from 'lucide-react'
+import { Camera, CheckCircle2, ImagePlus, Link2, MapPin, MinusIcon, Package, Percent, PlusIcon, Printer, Sparkles, Star, Tag, Truck, Upload, User, X } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -126,6 +126,10 @@ export default function OrderForm({ products }: { products: Product[] }) {
   const [shippingPhone, setShippingPhone] = useState('')
   const [shippingAddress, setShippingAddress] = useState('')
 
+  // Discount state
+  const [discountType, setDiscountType] = useState<'amount' | 'percent'>('amount')
+  const [discountValue, setDiscountValue] = useState('')
+
   // Photo upload state
   const [uploadedFiles, setUploadedFiles] = useState<{ name: string; url: string; path: string }[]>([])
   const [isUploading, setIsUploading] = useState(false)
@@ -192,7 +196,19 @@ export default function OrderForm({ products }: { products: Product[] }) {
   }, [pkgQuantities, PACKAGES])
 
   const shippingFee = wantPrint ? (hasFreeShipping ? 0 : (shippingRegion === 'hanoi' ? SHIPPING_FEE_HANOI : SHIPPING_FEE_OTHER)) : 0
-  const totalPrice = packageTotal + printExtraCost + shippingFee
+  const subtotal = packageTotal + printExtraCost + shippingFee
+
+  // Discount calculation
+  const discountAmount = useMemo(() => {
+    const val = parseFloat(discountValue) || 0
+    if (val <= 0) return 0
+    if (discountType === 'percent') {
+      return Math.round(subtotal * Math.min(val, 100) / 100)
+    }
+    return Math.min(val, subtotal)
+  }, [discountType, discountValue, subtotal])
+
+  const totalPrice = Math.max(0, subtotal - discountAmount)
 
   // Compute viLabels: which package each vỉ belongs to
   const viLabels = useMemo(() => {
@@ -255,6 +271,13 @@ export default function OrderForm({ products }: { products: Product[] }) {
     formData.set('viLabels', wantPrint ? JSON.stringify(viLabels) : '[]')
     formData.set('printQuantity', wantPrint ? totalPrintQty.toString() : '0')
     formData.set('photoUrls', JSON.stringify(uploadedFiles.map(f => f.url)))
+
+    // Discount info
+    if (discountAmount > 0) {
+      formData.set('discountType', discountType)
+      formData.set('discountValue', discountValue)
+      formData.set('discountAmount', discountAmount.toString())
+    }
 
     // Shipping info (always included when printing)
     if (wantPrint) {
@@ -795,6 +818,87 @@ export default function OrderForm({ products }: { products: Product[] }) {
             </div>
           </section>
 
+          {/* Section 4: Discount */}
+          <section className="space-y-4 sm:space-y-5">
+            <div className="flex items-center gap-3 px-1">
+              <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
+                <Tag className="w-4.5 h-4.5 text-zinc-700" />
+              </div>
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Giảm giá</h2>
+                <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">Nhập mã giảm giá hoặc ưu đãi đặc biệt</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm p-4 sm:p-5">
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Type toggle */}
+                <div className="flex rounded-lg border border-zinc-200 overflow-hidden shrink-0 h-10 sm:h-11">
+                  <button
+                    type="button"
+                    onClick={() => setDiscountType('amount')}
+                    className={cn(
+                      "px-3 sm:px-4 text-xs font-bold transition-all flex items-center gap-1.5",
+                      discountType === 'amount'
+                        ? "bg-zinc-900 text-white"
+                        : "bg-white text-zinc-500 hover:bg-zinc-50"
+                    )}
+                  >
+                    VNĐ
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDiscountType('percent')}
+                    className={cn(
+                      "px-3 sm:px-4 text-xs font-bold transition-all flex items-center gap-1.5",
+                      discountType === 'percent'
+                        ? "bg-zinc-900 text-white"
+                        : "bg-white text-zinc-500 hover:bg-zinc-50"
+                    )}
+                  >
+                    <Percent className="size-3" />
+                  </button>
+                </div>
+
+                {/* Value input */}
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder={discountType === 'amount' ? 'Nhập số tiền giảm...' : 'Nhập % giảm (VD: 10)'}
+                    value={discountValue ? (discountType === 'amount' ? new Intl.NumberFormat('vi-VN').format(Number(discountValue)) : discountValue) : ''}
+                    onChange={(e) => {
+                      if (discountType === 'amount') {
+                        const raw = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '')
+                        setDiscountValue(raw)
+                      } else {
+                        const raw = e.target.value.replace(/[^0-9.]/g, '')
+                        setDiscountValue(raw)
+                      }
+                    }}
+                    className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300 pr-14"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-300 pointer-events-none">
+                    {discountType === 'amount' ? 'VNĐ' : '%'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Discount preview */}
+              {discountAmount > 0 && (
+                <div className="mt-3 flex items-center justify-between px-3 py-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
+                  <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
+                    <Tag className="size-3.5" />
+                    Giảm giá {discountType === 'percent' ? `${discountValue}%` : ''}
+                  </span>
+                  <span className="text-sm font-bold text-emerald-800 tabular-nums">
+                    -{new Intl.NumberFormat('vi-VN').format(discountAmount)}đ
+                  </span>
+                </div>
+              )}
+            </div>
+          </section>
+
           {/* Order Summary + Submit */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm sticky bottom-4 z-10">
             <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -806,13 +910,23 @@ export default function OrderForm({ products }: { products: Product[] }) {
                   </span>
                   <span className="text-sm font-semibold text-zinc-500">đ</span>
                 </div>
-                {totalPkgCount > 0 && (
-                  <p className="text-[11px] text-zinc-400 font-medium mt-1">
-                    {totalPkgCount > 0 ? `${totalPkgCount} gói` : ''}
-                    {wantPrint && totalPrintQty > 0 && `${totalPkgCount > 0 ? ' · ' : ''}${totalPrintQty} vỉ in`}
-                    {wantPrint && shippingFee > 0 && ` · ship ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ`}
-                    {wantPrint && hasFreeShipping && ' · free ship'}
-                  </p>
+                {(totalPkgCount > 0 || discountAmount > 0) && (
+                  <div className="text-[11px] text-zinc-400 font-medium mt-1 space-y-0.5">
+                    {totalPkgCount > 0 && (
+                      <p>
+                        {totalPkgCount > 0 ? `${totalPkgCount} gói` : ''}
+                        {wantPrint && totalPrintQty > 0 && `${totalPkgCount > 0 ? ' · ' : ''}${totalPrintQty} vỉ in`}
+                        {wantPrint && shippingFee > 0 && ` · ship ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ`}
+                        {wantPrint && hasFreeShipping && ' · free ship'}
+                      </p>
+                    )}
+                    {discountAmount > 0 && (
+                      <p className="text-emerald-600 font-semibold">
+                        Giảm: -{new Intl.NumberFormat('vi-VN').format(discountAmount)}đ
+                        {discountType === 'percent' && ` (${discountValue}%)`}
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
               <Button
