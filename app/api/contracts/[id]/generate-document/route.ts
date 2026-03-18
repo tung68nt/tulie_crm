@@ -13,8 +13,8 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Require permission to edit contracts (generate document = edit action)
-        const authResult = await requirePermission('contracts', 'edit')
+        // Require permission to view contracts (generate document = preview action)
+        const authResult = await requirePermission('contracts', 'view')
         if (isAuthError(authResult)) return authResult
 
         const { supabase } = authResult
