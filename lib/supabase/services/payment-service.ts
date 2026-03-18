@@ -146,8 +146,12 @@ export async function processWebhookPayment(payload: SepayWebhookPayload): Promi
                 .update({ matched_order_id: order.id })
                 .eq('id', transactionId)
 
-            // Record payment on retail order
-            await recordRetailPayment(order.id, amount)
+            // Only record payment if not already fully paid (prevent double-charge)
+            if (order.payment_status !== 'paid') {
+                await recordRetailPayment(order.id, amount)
+            } else {
+                console.log(`[PaymentService] Order ${order.order_number} already paid — skipping recordRetailPayment (tx: ${transactionId})`)
+            }
 
             // Log to activity_log for finance tab
             await logPaymentActivity(transactionId, 'retail_order', order.id, amount, content, sourceSystem)

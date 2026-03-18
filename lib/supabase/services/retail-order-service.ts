@@ -270,13 +270,25 @@ export async function recordRetailPayment(id: string, amount: number) {
 
         if (fetchError || !order) throw new Error('Order not found')
 
+        // Skip if already fully paid (prevent double-charge)
+        if (order.payment_status === 'paid') {
+            console.log(`[recordRetailPayment] Order ${order.order_number} already paid — skipping`)
+            return true
+        }
+
         const newPaidAmount = (order.paid_amount || 0) + amount
-        const paymentStatus: RetailPaymentStatus = newPaidAmount >= order.total_amount ? 'paid' : 'partial'
+        // Cap: do not allow paid_amount to exceed total_amount
+        const cappedPaidAmount = Math.min(newPaidAmount, order.total_amount)
+        const paymentStatus: RetailPaymentStatus = cappedPaidAmount >= order.total_amount ? 'paid' : 'partial'
+
+        if (newPaidAmount > order.total_amount) {
+            console.warn(`[recordRetailPayment] Overpayment prevented: ${newPaidAmount} > ${order.total_amount} for ${order.order_number}. Capped to ${cappedPaidAmount}`)
+        }
 
         const { error } = await supabase
             .from('retail_orders')
             .update({
-                paid_amount: newPaidAmount,
+                paid_amount: cappedPaidAmount,
                 payment_status: paymentStatus
             })
             .eq('id', id)
@@ -296,6 +308,58 @@ export async function recordRetailPayment(id: string, amount: number) {
         console.error('Error recording retail payment:', err)
         throw err
     }
+}
+
+/**
+ * Recalculate order payment from actual matched transactions.
+ * Use this to fix orders with incorrect paid_amount (e.g., double-charge from manual + webhook).
+ */
+export async function recalculateOrderPayment(orderId: string): Promise<{
+    previousPaid: number
+    actualPaid: number
+    delta: number
+    totalAmount: number
+    newStatus: RetailPaymentStatus
+}> {
+    const { createAdminClient } = await import('../admin')
+    const supabase = createAdminClient()
+
+    // Get order
+    const { data: order, error: fetchError } = await supabase
+        .from('retail_orders')
+        .select('id, order_number, total_amount, paid_amount, payment_status')
+        .eq('id', orderId)
+        .single()
+
+    if (fetchError || !order) throw new Error('Order not found')
+
+    // Sum all matched transactions from payment_transactions
+    const { data: txs } = await supabase
+        .from('payment_transactions')
+        .select('amount_in')
+        .eq('matched_order_id', orderId)
+
+    const actualPaid = (txs || []).reduce((sum, tx) => sum + (tx.amount_in || 0), 0)
+    const previousPaid = order.paid_amount || 0
+    const delta = actualPaid - previousPaid
+    const newStatus: RetailPaymentStatus = actualPaid >= order.total_amount ? 'paid' : actualPaid > 0 ? 'partial' : 'pending'
+
+    // Update order with correct values
+    const { error } = await supabase
+        .from('retail_orders')
+        .update({
+            paid_amount: actualPaid,
+            payment_status: newStatus
+        })
+        .eq('id', orderId)
+
+    if (error) throw error
+
+    console.log(`[recalculateOrderPayment] ${order.order_number}: ${previousPaid} → ${actualPaid} (delta: ${delta})`)
+
+    revalidatePath('/studio')
+    revalidatePath(`/studio/${orderId}`)
+    return { previousPaid, actualPaid, delta, totalAmount: order.total_amount, newStatus }
 }
 
 export async function getRetailOrderByToken(token: string) {

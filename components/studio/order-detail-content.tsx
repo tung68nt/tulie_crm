@@ -26,7 +26,9 @@ import {
     Truck,
     MapPin,
     ImageIcon,
-    Printer
+    Printer,
+    AlertTriangle,
+    Scale
 } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { useState } from 'react'
@@ -48,6 +50,7 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
     const [paymentAmount, setPaymentAmount] = useState('')
     const [isConfirmingTransfer, setIsConfirmingTransfer] = useState(false)
     const [transferConfirmed, setTransferConfirmed] = useState(false)
+    const [isRecalculating, setIsRecalculating] = useState(false)
     const [availableBanks, setAvailableBanks] = useState<any[]>([])
     const [links, setLinks] = useState({
         resource_link: order.resource_link || '',
@@ -126,6 +129,30 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
         }
     }
 
+    const handleRecalculate = async () => {
+        setIsRecalculating(true)
+        try {
+            const res = await fetch('/api/studio/recalculate-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order.id }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Failed')
+
+            if (data.delta === 0) {
+                toast.info('Thanh toán đã chính xác — không cần điều chỉnh')
+            } else {
+                toast.success(`Đã cân bằng: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.previousPaid)} → ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.actualPaid)}`)
+                // Refresh page to show updated data
+                window.location.reload()
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Lỗi khi cân bằng thanh toán')
+        } finally {
+            setIsRecalculating(false)
+        }
+    }
 
 
     return (
@@ -520,6 +547,39 @@ export function OrderDetailContent({ order }: OrderDetailContentProps) {
                                 </p>
                             )}
                         </div>
+
+                        {/* Overpayment Warning Banner */}
+                        {(order.paid_amount || 0) > order.total_amount && (
+                            <div className="p-4 rounded-xl bg-red-50 border border-red-200 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="h-8 w-8 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                                        <AlertTriangle className="h-4 w-4 text-red-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-red-800">
+                                            Thu thừa {formatCurrency((order.paid_amount || 0) - order.total_amount)}
+                                        </p>
+                                        <p className="text-xs text-red-600 mt-0.5">
+                                            Paid: {formatCurrency(order.paid_amount || 0)} / Total: {formatCurrency(order.total_amount)}. 
+                                            Có thể do xác thực tay + webhook ghi nhận trùng lặp.
+                                        </p>
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={handleRecalculate}
+                                    disabled={isRecalculating}
+                                    size="sm"
+                                    variant="outline"
+                                    className="w-full h-9 rounded-lg font-bold text-xs border-red-200 text-red-700 hover:bg-red-100"
+                                >
+                                    {isRecalculating
+                                        ? <LoadingSpinner size="sm" className="mr-2" />
+                                        : <Scale className="mr-1.5 h-3.5 w-3.5" />
+                                    }
+                                    Cân bằng thanh toán
+                                </Button>
+                            </div>
+                        )}
 
                         {remainingAmount > 0 && (
                             <>
