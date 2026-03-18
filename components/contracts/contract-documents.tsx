@@ -70,7 +70,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
         if (action === 'preview' || action === 'print') {
             win = window.open('', '_blank')
             if (win) {
-                win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Đang tạo giấy tờ...</title><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;}</style></head><body><p>⏳ Đang tạo giấy tờ, vui lòng đợi...</p></body></html>`)
+                win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Đang tạo giấy tờ...</title><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;}.spinner{width:20px;height:20px;border:2px solid #e5e7eb;border-top-color:#18181b;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:10px;}@keyframes spin{to{transform:rotate(360deg)}}.wrap{display:flex;align-items:center;}</style></head><body><div class="wrap"><div class="spinner"></div><p>Đang tạo giấy tờ, vui lòng đợi...</p></div></body></html>`)
                 win.document.close()
             }
         }

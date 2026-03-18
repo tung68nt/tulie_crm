@@ -1,12 +1,12 @@
 'use server'
 
-import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import { getQuotationByToken } from './quotation-service'
 import { getBrandConfig } from './settings-service'
 
 export async function getPortalDataByToken(token: string) {
     try {
-        const supabase = await createClient()
+        const supabase = createAdminClient()
 
         // 1. Get primary quotation
         const { data: qData } = await supabase

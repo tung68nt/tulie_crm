@@ -46,10 +46,10 @@ export async function updateSession(request: NextRequest) {
 
         // Protected routes - redirect to system-login if not authenticated
         const protectedPaths = [
-            '/dashboard', '/customers', '/quotations', '/contracts',
+            '/dashboard', '/customers', '/quotations', '/contracts', '/orders',
             '/invoices', '/products', '/finance', '/team', '/reports',
             '/settings', '/studio', '/helpdesk', '/templates', '/bundles',
-            '/leads', '/deals', '/projects', '/profile',
+            '/leads', '/deals', '/projects', '/profile', '/workspace',
             '/demo', '/dev',
         ]
         const isProtectedPath = protectedPaths.some(path =>

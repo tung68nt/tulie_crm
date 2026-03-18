@@ -37,10 +37,10 @@ export async function POST(
         const { createAdminClient } = await import('@/lib/supabase/admin')
         const adminSupabase = createAdminClient()
 
-        // Get contract with related data
+        // Verify contract exists (generateDocument will fetch full data itself)
         const { data: contract, error } = await adminSupabase
             .from('contracts')
-            .select('*, customer:customers(*), items:contract_items(*), milestones:contract_milestones(*), quotation:quotations(*, items:quotation_items(*))')
+            .select('id, customer_id')
             .eq('id', contractId)
             .single()
 
