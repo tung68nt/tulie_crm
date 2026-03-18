@@ -372,6 +372,7 @@ export default function QuotationDetailPage() {
                                                 <TableHead className="text-center text-xs">ĐVT</TableHead>
                                                 <TableHead className="text-center text-xs">SL</TableHead>
                                                 <TableHead className="text-right text-xs">Đơn giá</TableHead>
+                                                <TableHead className="text-center text-xs">CK</TableHead>
                                                 <TableHead className="text-right pr-6 text-xs">Thành tiền</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -385,7 +386,7 @@ export default function QuotationDetailPage() {
                                                                     {sectionIdx + 1}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell colSpan={5} className="py-2">
+                                                            <TableCell colSpan={6} className="py-2">
                                                                 <span className="text-xs font-semibold text-foreground">{sectionName}</span>
                                                             </TableCell>
                                                         </TableRow>
@@ -424,6 +425,7 @@ export default function QuotationDetailPage() {
                                                             <TableCell className="text-center text-sm text-muted-foreground whitespace-nowrap py-3 align-top">{item.unit}</TableCell>
                                                             <TableCell className="text-center text-sm font-medium text-foreground py-3 align-top">{item.quantity}</TableCell>
                                                             <TableCell className="text-right text-sm text-muted-foreground tabular-nums whitespace-nowrap py-3 align-top">{formatCurrency(item.unit_price)}</TableCell>
+                                                            <TableCell className="text-center text-sm text-muted-foreground tabular-nums whitespace-nowrap py-3 align-top">{item.discount ? `${item.discount}%` : '—'}</TableCell>
                                                             <TableCell className="text-right pr-6 text-sm font-semibold text-foreground tabular-nums whitespace-nowrap py-3 align-top">{formatCurrency(item.total_price)}</TableCell>
                                                         </TableRow>
                                                     ))}

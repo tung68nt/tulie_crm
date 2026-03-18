@@ -184,6 +184,8 @@ export async function fillTemplate(template: string, variables: Record<string, s
         const regex = new RegExp(`{{${key}}}`, 'g')
         result = result.replace(regex, value || '')
     }
+    // Clean up any remaining unfilled {{...}} placeholders so they appear blank
+    result = result.replace(/\{\{[a-zA-Z_]+\}\}/g, '')
     return result
 }
 
@@ -201,7 +203,7 @@ export async function generateDocument(
         const template = await getTemplateById(templateId)
         if (!template) throw new Error('Template not found')
 
-        // Get customer data
+        // Get customer data (including abbreviation)
         const { data: customer, error: custError } = await supabase
             .from('customers')
             .select('*')
@@ -246,10 +248,27 @@ export async function generateDocument(
             }
         }
 
-        const now = new Date()
+        // Use signed_date if available, otherwise fallback to now
+        const signedDate = contract?.signed_date ? new Date(contract.signed_date) : null
+        const docDate = signedDate || new Date()
+        const abbr = customer?.abbreviation || ''
+        const dateStr = signedDate
+            ? `${docDate.getFullYear()}${String(docDate.getMonth() + 1).padStart(2, '0')}${String(docDate.getDate()).padStart(2, '0')}`
+            : ''
 
         // Use snapshot from contract if available, otherwise live customer data
         const custData = contract?.customer_snapshot || customer
+
+        // Build document numbers based on format: yyyymmdd/TYPE-TL-ABBR
+        const contractDocNumber = (dateStr && abbr)
+            ? `${dateStr}/HDKT-TL-${abbr.toUpperCase()}`
+            : contract?.contract_number || ''
+        const paymentDocNumber = (dateStr && abbr)
+            ? `${dateStr}/DNTT-TL-${abbr.toUpperCase()}`
+            : ''
+        const deliveryDocNumber = (dateStr && abbr)
+            ? `${dateStr}/BGNT-TL-${abbr.toUpperCase()}`
+            : ''
 
         // Build variables map
         const variables: Record<string, string> = {
@@ -262,6 +281,9 @@ export async function generateDocument(
             customer_representative: custData.representative || customer.representative || '',
             customer_position: custData.position || customer.position || '',
             customer_invoice_address: custData.invoice_address || custData.address || customer.address || '',
+            customer_mobile: '',
+            customer_bank_account: '',
+            customer_bank_name: '',
 
             // Provider variables
             provider_company: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',
@@ -273,17 +295,37 @@ export async function generateDocument(
             bank_account: '86683979',
             account_holder: 'CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE',
 
-            // Date variables
-            contract_date: now.toLocaleDateString('vi-VN'),
-            date_day: now.getDate().toString(),
-            date_month: (now.getMonth() + 1).toString(),
-            date_year: now.getFullYear().toString(),
-            quotation_date: now.toLocaleDateString('vi-VN'),
+            // Date variables — use signed_date if available
+            day: docDate.getDate().toString(),
+            month: (docDate.getMonth() + 1).toString(),
+            year: docDate.getFullYear().toString(),
+            contract_date: signedDate ? signedDate.toLocaleDateString('vi-VN') : '',
+            date_day: docDate.getDate().toString(),
+            date_month: (docDate.getMonth() + 1).toString(),
+            date_year: docDate.getFullYear().toString(),
+            quotation_date: new Date().toLocaleDateString('vi-VN'),
             location: 'Hà Nội',
 
-            // Default specific numbers
-            quotation_number: `QT-${now.getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-            payment_number: `REQ-${now.getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+            // Document numbers — using new format
+            contract_number: contractDocNumber,
+            payment_number: paymentDocNumber,
+            report_number: deliveryDocNumber,
+            quotation_number: contract?.quotation?.quotation_number || '',
+
+            // Defaults that may be overridden
+            subtotal: '',
+            vat_rate: '',
+            vat_amount: '',
+            total_amount_number: '',
+            amount_in_words: '',
+            payment_terms: '',
+            delivery_time: '',
+            delivery_address: '',
+            delivery_date: '',
+            service_description: '',
+            payment_percentage: '',
+            payment_amount: '',
+
             ...additionalVariables
         }
 
@@ -295,42 +337,70 @@ export async function generateDocument(
 
         // Add contract variables
         if (contract) {
-            variables.contract_number = contract.contract_number || ''
-            variables.contract_date = contract.created_at ? new Date(contract.created_at).toLocaleDateString('vi-VN') : variables.contract_date
             variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || 0)
             if (!variables.amount_in_words) variables.amount_in_words = readNumberToWords(contract.total_amount || 0)
             variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
-            variables.service_description = contract.description || ''
+            variables.service_description = contract.description || contract.title || ''
 
-            // Build items table (HTML)
-            let itemsHtml = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 20px;">'
-            itemsHtml += '<tr><th style="border: 1px solid #000; padding: 8px; text-align: center;">STT</th><th style="border: 1px solid #000; padding: 8px;">Tên hàng hoá, dịch vụ</th><th style="border: 1px solid #000; padding: 8px; text-align: center;">ĐVT</th><th style="border: 1px solid #000; padding: 8px; text-align: center;">SL</th><th style="border: 1px solid #000; padding: 8px; text-align: right;">Đơn giá</th><th style="border: 1px solid #000; padding: 8px; text-align: right;">Thành tiền</th></tr>'
-            if (contract.items && contract.items.length > 0) {
-                contract.items.forEach((item: any, index: number) => {
-                    itemsHtml += `<tr>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${index + 1}</td>
-                        <td style="border: 1px solid #000; padding: 8px;">${item.product_name}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.unit}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.quantity}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${new Intl.NumberFormat('vi-VN').format(item.unit_price)}</td>
-                        <td style="border: 1px solid #000; padding: 8px; text-align: right;">${new Intl.NumberFormat('vi-VN').format(item.total_price)}</td>
+            // Build items table from quotation items
+            const items = contract.items || []
+            if (items.length > 0) {
+                let subtotal = 0
+                let itemsRowsHtml = ''
+                items.forEach((item: any, index: number) => {
+                    const totalPrice = item.total_price || (item.quantity * item.unit_price)
+                    subtotal += totalPrice
+                    itemsRowsHtml += `<tr>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${index + 1}</td>
+                        <td style="border:1px solid #000; padding:5px;" colspan="3">${item.product_name}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.unit || 'Bộ'}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.quantity}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(item.unit_price)}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(totalPrice)}</td>
                     </tr>`
                 })
-            }
-            itemsHtml += '</table>'
-            variables.contract_items_table = itemsHtml
-            variables.quotation_items_table = itemsHtml
+                variables.contract_items_table = itemsRowsHtml
+                variables.quotation_items_table = itemsRowsHtml
 
-            // Payment schedule
-            let paymentHtml = '<ul style="margin-top: 5px;">'
-            if (contract.milestones && contract.milestones.length > 0) {
-                const paymentMilestones = contract.milestones.filter((m: any) => m.type !== 'work')
-                paymentMilestones.forEach((m: any) => {
-                    paymentHtml += `<li>${m.name}: Thanh toán ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ (Hạn: ${m.due_date ? new Date(m.due_date).toLocaleDateString('vi-VN') : ''})</li>`
-                })
+                // Subtotal, VAT, Total
+                const vatRate = contract.quotation?.vat_percent ?? 0
+                const vatAmount = contract.quotation?.vat_amount ?? Math.round(subtotal * vatRate / 100)
+                variables.subtotal = new Intl.NumberFormat('vi-VN').format(subtotal)
+                variables.vat_rate = vatRate > 0 ? `${vatRate}%` : '0%'
+                variables.vat_amount = new Intl.NumberFormat('vi-VN').format(vatAmount)
+                variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || (subtotal + vatAmount))
+            } else {
+                variables.contract_items_table = ''
+                variables.quotation_items_table = ''
             }
-            paymentHtml += '</ul>'
-            variables.payment_schedule = paymentHtml
+
+            // Payment terms from milestones
+            if (contract.milestones && contract.milestones.length > 0) {
+                const paymentMilestones = contract.milestones.filter((m: any) => m.type === 'payment')
+                if (paymentMilestones.length > 0) {
+                    const totalAmount = contract.total_amount || 0
+                    let paymentTermsHtml = ''
+                    paymentMilestones.forEach((m: any, idx: number) => {
+                        const percentage = totalAmount > 0 ? Math.round((m.amount / totalAmount) * 100) : 0
+                        const dueStr = m.due_date ? `(Hạn: ${new Date(m.due_date).toLocaleDateString('vi-VN')})` : ''
+                        paymentTermsHtml += `<br/>- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ — ${m.name} ${dueStr}`
+                    })
+                    variables.payment_terms = paymentTermsHtml
+
+                    // For payment request: use first pending milestone or total
+                    if (!additionalVariables?.payment_amount) {
+                        const pendingMilestone = paymentMilestones.find((m: any) => m.status === 'pending') || paymentMilestones[0]
+                        if (pendingMilestone) {
+                            const pct = totalAmount > 0 ? Math.round((pendingMilestone.amount / totalAmount) * 100) : 0
+                            variables.payment_amount = new Intl.NumberFormat('vi-VN').format(pendingMilestone.amount) + ' VNĐ'
+                            variables.payment_percentage = `${pct}%`
+                            if (!variables.amount_in_words || variables.amount_in_words === readNumberToWords(totalAmount)) {
+                                variables.amount_in_words = readNumberToWords(pendingMilestone.amount)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         const filledContent = await fillTemplate(template.content, variables)

@@ -6,9 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const DOCUMENT_TYPES = [
     {
@@ -133,6 +134,13 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const isFramework = contract.type === 'contract'
     const isOrder = contract.type === 'order'
 
+    // Validation warnings for document completeness
+    const missingDocFields: string[] = []
+    if (!contract.signed_date) missingDocFields.push('Ngày ký hợp đồng')
+    if (!contract.customer?.abbreviation) missingDocFields.push('Tên viết tắt KH (mã giấy tờ)')
+    if (!contract.milestones?.some(m => m.type === 'payment')) missingDocFields.push('Mốc thanh toán')
+    if (!contract.quotation_id) missingDocFields.push('Báo giá liên kết (danh sách sản phẩm)')
+
     return (
         <Card>
             <CardHeader className="pb-3">
@@ -145,6 +153,17 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 </p>
             </CardHeader>
             <CardContent className="space-y-3">
+                {/* Warning for missing data */}
+                {missingDocFields.length > 0 && (
+                    <Alert className="bg-amber-50 border-amber-200">
+                        <AlertTriangle className="h-4 w-4 text-amber-600" />
+                        <AlertDescription className="text-xs text-amber-800">
+                            <strong>Thiếu thông tin:</strong> {missingDocFields.join(' • ')}.
+                            Giấy tờ vẫn preview được nhưng các phần thiếu sẽ để trống.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 {/* Editable customer info form */}
                 <div className="rounded-lg border border-dashed">
                     <button

@@ -35,6 +35,8 @@ import { vi } from 'date-fns/locale'
 import { Contract, ContractMilestone, Customer, Quotation } from '@/types'
 import { updateContract } from '@/lib/supabase/services/contract-service'
 import { toast } from 'sonner'
+import { AlertTriangle } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface MilestoneItem {
     id: string
@@ -69,9 +71,25 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
     const [endDate, setEndDate] = useState<Date | undefined>(
         contract.end_date ? new Date(contract.end_date) : undefined
     )
+    const [signedDate, setSignedDate] = useState<Date | undefined>(
+        contract.signed_date ? new Date(contract.signed_date) : undefined
+    )
     const [status, setStatus] = useState(contract.status)
     const [terms, setTerms] = useState(contract.terms || '')
     const [contractType, setContractType] = useState(contract.type || 'contract')
+
+    // Customer abbreviation for document number generation
+    const selectedCustomer = customers.find(c => c.id === customerId)
+    const [customerAbbreviation, setCustomerAbbreviation] = useState(
+        selectedCustomer?.abbreviation || ''
+    )
+
+    // Auto-preview contract number based on signed_date + abbreviation
+    const previewContractNumber = (() => {
+        if (!signedDate || !customerAbbreviation) return contract.contract_number || '—'
+        const dateStr = format(signedDate, 'yyyyMMdd')
+        return `${dateStr}/HDKT-TL-${customerAbbreviation.toUpperCase()}`
+    })()
     const [orderNumber, setOrderNumber] = useState(contract.order_number || '')
 
     const [milestones, setMilestones] = useState<MilestoneItem[]>(
@@ -106,11 +124,23 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
         )
     }
 
+    // Validation warnings
+    const missingFields: string[] = []
+    if (!signedDate) missingFields.push('Ngày ký hợp đồng')
+    if (!customerAbbreviation) missingFields.push('Tên viết tắt khách hàng')
+    if (!totalValue) missingFields.push('Giá trị hợp đồng')
+    if (milestones.filter(m => m.type === 'payment').length === 0) missingFields.push('Mốc thanh toán (ít nhất 1 đợt)')
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!customerId || !title) {
             toast.error('Vui lòng điền đầy đủ thông tin bắt buộc')
             return
+        }
+
+        // Warn but don't block if missing non-critical fields
+        if (missingFields.length > 0) {
+            toast.warning(`Thiếu thông tin: ${missingFields.join(', ')}. Bộ giấy tờ có thể chưa đầy đủ.`)
         }
 
         setIsLoading(true)
@@ -122,11 +152,26 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 total_amount: totalValue,
                 start_date: startDate?.toISOString(),
                 end_date: endDate?.toISOString(),
+                signed_date: signedDate?.toISOString(),
                 status: status,
                 terms,
                 type: contractType as any,
                 order_number: orderNumber,
                 project_id: projectId || undefined,
+            }
+
+            // Update customer abbreviation if changed
+            if (customerAbbreviation && customerId) {
+                try {
+                    const { createClient } = await import('@/lib/supabase/client')
+                    const supabase = createClient()
+                    await supabase
+                        .from('customers')
+                        .update({ abbreviation: customerAbbreviation })
+                        .eq('id', customerId)
+                } catch (e) {
+                    console.warn('Failed to update customer abbreviation:', e)
+                }
             }
 
             const milestoneData = milestones.map(m => ({
@@ -287,6 +332,41 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                             </div>
 
                             <div className="space-y-2">
+                                <Label>Ngày ký hợp đồng <span className="text-destructive">*</span></Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {signedDate ? format(signedDate, 'dd/MM/yyyy', { locale: vi }) : 'Chọn ngày ký'}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar mode="single" selected={signedDate} onSelect={setSignedDate} />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label>Tên viết tắt KH <span className="text-destructive">*</span></Label>
+                                    <Input
+                                        value={customerAbbreviation}
+                                        onChange={(e) => setCustomerAbbreviation(e.target.value.toUpperCase())}
+                                        placeholder="VD: VSTEM"
+                                    />
+                                    <p className="text-[10px] text-muted-foreground">Dùng để tạo mã giấy tờ: HDKT-TL-{customerAbbreviation || 'XXX'}</p>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Mã hợp đồng (Auto)</Label>
+                                    <Input
+                                        value={previewContractNumber}
+                                        readOnly
+                                        className="bg-muted font-mono text-xs"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label>Điều khoản</Label>
                                 <Textarea
                                     value={terms}
@@ -303,6 +383,15 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     placeholder="VD: PO-2023-001"
                                 />
                             </div>
+
+                            {missingFields.length > 0 && (
+                                <Alert variant="destructive" className="bg-amber-50 border-amber-200 text-amber-800">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertDescription className="text-xs">
+                                        <strong>Thông tin cần bổ sung:</strong> {missingFields.join(' • ')}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                         </CardContent>
                     </Card>
 
