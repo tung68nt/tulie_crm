@@ -119,7 +119,10 @@ export async function getQuotationById(id: string) {
 
 export async function getQuotationByToken(token: string) {
     try {
-        const supabase = await createClient()
+        // Use admin client — this is called from public /quote/[token] pages
+        // where no user session exists, so RLS would block the anon key
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
         const { data, error } = await supabase
             .from('quotations')
             .select('*, customer:customers!customer_id(*), creator:users!created_by(id, full_name), items:quotation_items(*)')
@@ -420,7 +423,9 @@ export async function deleteQuotations(ids: string[]) {
 }
 export async function recordQuotationView(id: string) {
     try {
-        const supabase = await createClient()
+        // Use admin client — this is called from public portal context
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
 
         // 1. Increment view count
         const { data: quote, error } = await supabase.rpc('increment_quotation_view', { quote_id: id })
@@ -452,7 +457,9 @@ export async function recordQuotationView(id: string) {
 
 export async function acceptQuotationPortal(id: string, confirmerInfo: any) {
     try {
-        const supabase = await createClient()
+        // Use admin client — this is called from public portal context
+        const { createAdminClient } = await import('../admin')
+        const supabase = createAdminClient()
         const { error } = await supabase
             .from('quotations')
             .update({
