@@ -1,19 +1,4 @@
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
-import { formatCurrency } from '@/lib/utils/format'
-import { FileSignature, Clock, CheckCircle, Plus, ShoppingCart } from 'lucide-react'
-import Link from 'next/link'
 import { getContracts, deleteContracts } from '@/lib/supabase/services/contract-service'
-import { Button } from '@/components/ui/button'
-import { DataTable } from '@/components/shared/data-table'
-import { contractColumns } from '@/components/contracts/contract-columns'
 import { ContractsPageTabs } from '@/components/contracts/contracts-page-tabs'
 
 export default async function ContractsPage() {

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { requirePermission, isAuthError } from '@/lib/security/auth-guard'
+import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
 import { generateDocument } from '@/lib/supabase/services/document-template-service'
 import { getDocumentTemplates } from '@/lib/supabase/services/document-template-service'
 import { validateBody, generateDocumentSchema } from '@/lib/security/validation'
@@ -13,8 +13,8 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Require permission to view contracts (generate document = preview action)
-        const authResult = await requirePermission('contracts', 'view')
+        // Require authentication only (page itself doesn't check permissions)
+        const authResult = await requireAuth()
         if (isAuthError(authResult)) return authResult
 
         const { supabase } = authResult
