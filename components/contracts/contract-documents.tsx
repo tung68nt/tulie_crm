@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Download, Printer, Check, ChevronRight } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 
@@ -42,6 +44,23 @@ interface ContractDocumentsProps {
 export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [loading, setLoading] = useState<string | null>(null)
     const [generated, setGenerated] = useState<Record<string, string>>({})
+    const [showForm, setShowForm] = useState(false)
+
+    // Editable customer info — pre-filled from contract.customer
+    const [customerInfo, setCustomerInfo] = useState({
+        customer_company: contract.customer?.company_name || '',
+        customer_representative: contract.customer?.representative || '',
+        customer_position: contract.customer?.position || '',
+        customer_email: contract.customer?.email || '',
+        customer_phone: contract.customer?.phone || '',
+        customer_tax_code: contract.customer?.tax_code || '',
+        customer_address: contract.customer?.address || '',
+    })
+
+    const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setCustomerInfo(prev => ({ ...prev, [name]: value }))
+    }
 
     const handleGenerate = async (type: string, action: 'preview' | 'download' | 'print') => {
         setLoading(type)
@@ -49,32 +68,36 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             const res = await fetch(`/api/contracts/${contract.id}/generate-document`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type })
+                body: JSON.stringify({
+                    type,
+                    additionalVariables: customerInfo,
+                })
             })
 
             if (!res.ok) throw new Error('Failed to generate')
             const data = await res.json()
 
-            if (data.html) {
-                setGenerated(prev => ({ ...prev, [type]: data.html }))
+            const html = data.content || data.html
+            if (html) {
+                setGenerated(prev => ({ ...prev, [type]: html }))
 
                 if (action === 'preview') {
                     const win = window.open('', '_blank')
                     if (win) {
-                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${data.html}</body></html>`)
+                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`)
                         win.document.close()
                     }
                 } else if (action === 'print') {
                     const win = window.open('', '_blank')
                     if (win) {
-                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${data.html}</body></html>`)
+                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`)
                         win.document.close()
                         win.focus()
                         setTimeout(() => win.print(), 300)
                     }
                 } else if (action === 'download') {
                     const label = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'document'
-                    const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${data.html}</body></html>`], { type: 'text/html' })
+                    const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`], { type: 'text/html' })
                     const url = URL.createObjectURL(blob)
                     const a = document.createElement('a')
                     a.href = url
@@ -106,39 +129,126 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 </p>
             </CardHeader>
             <CardContent className="space-y-3">
-                {/* Customer info auto-fill preview */}
-                {contract.customer && (
-                    <div className="rounded-lg bg-muted/50 border border-dashed p-3 space-y-1.5">
-                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Thông tin tự động điền</p>
-                        <div className="grid grid-cols-1 gap-1 text-xs">
-                            {contract.customer.company_name && (
-                                <div className="flex gap-2">
-                                    <span className="text-muted-foreground shrink-0">Công ty:</span>
-                                    <span className="font-medium truncate">{contract.customer.company_name}</span>
-                                </div>
-                            )}
-                            {contract.customer.representative && (
-                                <div className="flex gap-2">
-                                    <span className="text-muted-foreground shrink-0">Đại diện:</span>
-                                    <span className="font-medium truncate">{contract.customer.representative}</span>
-                                </div>
-                            )}
-                            {contract.customer.address && (
-                                <div className="flex gap-2">
-                                    <span className="text-muted-foreground shrink-0">Địa chỉ:</span>
-                                    <span className="font-medium truncate">{contract.customer.address}</span>
-                                </div>
-                            )}
-                            {contract.customer.tax_code && (
-                                <div className="flex gap-2">
-                                    <span className="text-muted-foreground shrink-0">MST:</span>
-                                    <span className="font-medium">{contract.customer.tax_code}</span>
-                                </div>
-                            )}
+                {/* Editable customer info form */}
+                <div className="rounded-lg border border-dashed">
+                    <button
+                        type="button"
+                        className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/50 rounded-lg transition-colors"
+                        onClick={() => setShowForm(!showForm)}
+                    >
+                        <div>
+                            <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+                                Thông tin điền vào giấy tờ
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                                {customerInfo.customer_company || 'Chưa có'} • {customerInfo.customer_representative || 'Chưa có đại diện'}
+                            </p>
                         </div>
-                    </div>
-                )}
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showForm ? 'rotate-180' : ''}`} />
+                    </button>
 
+                    {showForm && (
+                        <div className="px-3 pb-3 space-y-2.5 border-t">
+                            <div className="grid grid-cols-1 gap-2 pt-2.5">
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] text-muted-foreground">Công ty</Label>
+                                    <div className="relative">
+                                        <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                        <Input
+                                            name="customer_company"
+                                            value={customerInfo.customer_company}
+                                            onChange={handleInfoChange}
+                                            className="pl-8 h-8 text-xs"
+                                            placeholder="Tên công ty"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] text-muted-foreground">Đại diện</Label>
+                                        <div className="relative">
+                                            <User className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                            <Input
+                                                name="customer_representative"
+                                                value={customerInfo.customer_representative}
+                                                onChange={handleInfoChange}
+                                                className="pl-8 h-8 text-xs"
+                                                placeholder="Họ tên"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] text-muted-foreground">Chức vụ</Label>
+                                        <Input
+                                            name="customer_position"
+                                            value={customerInfo.customer_position}
+                                            onChange={handleInfoChange}
+                                            className="h-8 text-xs"
+                                            placeholder="Giám đốc..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] text-muted-foreground">Email</Label>
+                                        <div className="relative">
+                                            <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                            <Input
+                                                name="customer_email"
+                                                value={customerInfo.customer_email}
+                                                onChange={handleInfoChange}
+                                                className="pl-8 h-8 text-xs"
+                                                placeholder="email@..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] text-muted-foreground">SĐT</Label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                            <Input
+                                                name="customer_phone"
+                                                value={customerInfo.customer_phone}
+                                                onChange={handleInfoChange}
+                                                className="pl-8 h-8 text-xs"
+                                                placeholder="0xxx..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] text-muted-foreground">MST</Label>
+                                    <Input
+                                        name="customer_tax_code"
+                                        value={customerInfo.customer_tax_code}
+                                        onChange={handleInfoChange}
+                                        className="h-8 text-xs"
+                                        placeholder="Mã số thuế"
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] text-muted-foreground">Địa chỉ</Label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                        <Input
+                                            name="customer_address"
+                                            value={customerInfo.customer_address}
+                                            onChange={handleInfoChange}
+                                            className="pl-8 h-8 text-xs"
+                                            placeholder="Địa chỉ"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Document list */}
                 <div className="space-y-2">
                 {DOCUMENT_TYPES.map((doc) => {
                     const isActive = loading === doc.type
