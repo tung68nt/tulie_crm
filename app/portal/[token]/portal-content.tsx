@@ -46,6 +46,7 @@ import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
 import { ProjectActivityHistory } from '@/components/projects/project-activity-history'
 import { sanitizeHtml } from '@/lib/security/sanitize'
 import { useConfirm } from '@/components/ui/confirm-dialog'
+import { usePortalTracking } from '@/hooks/use-portal-tracking'
 
 interface PortalContentProps {
     data: {
@@ -105,6 +106,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     const [isViewingDoc, setIsViewingDoc] = useState(false)
 
     const handleViewDoc = async (docId: string) => {
+        trackInteraction('view_document', { docId })
         try {
             const doc = await getGeneratedDocumentById(docId)
             if (doc) {
@@ -117,6 +119,13 @@ export default function PortalContent({ data, token }: PortalContentProps) {
     }
     const router = useRouter()
     const { confirm } = useConfirm()
+
+    // Portal view tracking
+    const { trackInteraction } = usePortalTracking({
+        portalToken: token,
+        projectId: project?.id,
+        customerId: customer?.id
+    })
 
     // Fallback: if no work items yet, build from quotations (legacy mode)
     const displayItems = useMemo(() => {
@@ -366,6 +375,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                     })
                                     if (!confirmed) return
                                     try {
+                                        trackInteraction('confirm_contract', { contractId: c.id })
                                         const { confirmContractFromPortal } = await import('@/lib/supabase/services/portal-actions')
                                         const result = await confirmContractFromPortal(token, c.id, {
                                             name: customer?.representative || '',

@@ -21,6 +21,7 @@ import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Check } from 'lucide-react'
+import { useQuotationTracking } from '@/hooks/use-quotation-tracking'
 
 import { Checkbox } from '@/components/ui/checkbox'
 
@@ -43,6 +44,9 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
     const [showReject, setShowReject] = useState(false)
     const [rejectReason, setRejectReason] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // View tracking
+    const { trackInteraction } = useQuotationTracking(initialQuotation.id)
 
     const [confirmer, setConfirmer] = useState({
         name: '',
@@ -72,6 +76,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
         setIsSubmitting(true)
         try {
+            trackInteraction('accept', { confirmerName: confirmer.name })
             const res = await updateQuotationStatus(currentQuotation.id, 'accepted', {
                 ...confirmer,
                 selectedItemIds: selectedItemIds
@@ -96,6 +101,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
         setIsSubmitting(true)
         try {
+            trackInteraction('reject', { reason: rejectReason })
             const res = await updateQuotationStatus(currentQuotation.id, 'rejected', { reason: rejectReason })
             if (res?.success) {
                 toast.success("Đã gửi phản hồi từ chối báo giá")
@@ -203,6 +209,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
     const hasProposal = currentQuotation.type === 'proposal' && pc
 
     const handlePrint = () => {
+        trackInteraction('print')
         window.print();
     };
 

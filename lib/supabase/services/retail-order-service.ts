@@ -171,6 +171,25 @@ export async function updateRetailOrder(id: string, order: Partial<RetailOrder>)
         // Remove non-DB fields
         delete updateData.use_deposit
 
+        // Auto-update order_number suffix when total_amount changes
+        if (updateData.total_amount !== undefined) {
+            const { data: current } = await supabase
+                .from('retail_orders')
+                .select('order_number, total_amount')
+                .eq('id', id)
+                .single()
+
+            if (current?.order_number && current.total_amount !== updateData.total_amount) {
+                const parts = current.order_number.split('_')
+                // Format: DH_YY_MMDD_STT_VALUE → replace last part with new kValue
+                if (parts.length >= 5) {
+                    const newKValue = Math.floor(updateData.total_amount / 1000)
+                    parts[parts.length - 1] = String(newKValue)
+                    updateData.order_number = parts.join('_')
+                }
+            }
+        }
+
         const { error } = await supabase
             .from('retail_orders')
             .update(updateData)

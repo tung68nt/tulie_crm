@@ -23,6 +23,7 @@ import { ProjectGanttChart } from '@/components/projects/project-gantt-chart'
 import { ProjectDocumentationSet } from '@/components/projects/project-documentation-set'
 import { ProjectActivityHistory } from '@/components/projects/project-activity-history'
 import { getProjectTasks } from '@/lib/supabase/services/task-service'
+import { PortalViewAnalytics } from '@/components/portal/portal-view-analytics'
 
 export default async function ProjectDetailPage({ params }: any) {
     const { id } = await params
@@ -249,6 +250,7 @@ export default async function ProjectDetailPage({ params }: any) {
                 {/* Sidebar - client component with status, PM, dates, acceptance reports */}
                 <div className="space-y-6">
                     <ProjectSidebar project={project} teamMembers={teamMembers} />
+                    <PortalViewAnalytics projectId={project.id} />
                     <ProjectActivityHistory projectId={project.id} />
                 </div>
             </div>

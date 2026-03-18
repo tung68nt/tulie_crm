@@ -38,6 +38,7 @@ import { QuotationEmailButton } from '@/components/quotations/quotation-email-bu
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
 import { ConvertQuotationButton } from '@/components/quotations/convert-quotation-button'
 import DocumentDownloadButton from '@/components/documents/DocumentDownloadButton'
+import { QuotationViewAnalytics } from '@/components/quotations/quotation-view-analytics'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -530,6 +531,9 @@ export default function QuotationDetailPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+
+                            {/* View Analytics */}
+                            <QuotationViewAnalytics quotationId={quotation.id} />
 
                             {/* Payment Details Card */}
                             <Card>
