@@ -251,7 +251,22 @@ export function QuotationPaper({ quotation, brandConfig }: QuotationPaperProps) 
                                             <td className="py-3 px-4 align-top">
                                                 <p className="font-bold text-zinc-950 text-[13px] mb-0.5 uppercase tracking-tight">{item.name}</p>
                                                 {item.description && (
-                                                    <p className="text-slate-500 text-[11px] leading-relaxed italic">{item.description}</p>
+                                                    <div className="text-slate-500 text-[11px] leading-relaxed italic mt-1">
+                                                        {item.description.split('\n').map((line: string, lineIdx: number) => {
+                                                            const trimmed = line.trim()
+                                                            const isBullet = trimmed.startsWith('•') || trimmed.startsWith('·') || trimmed.startsWith('- ')
+                                                            if (isBullet) {
+                                                                const text = trimmed.replace(/^[•·\-]\s*/, '')
+                                                                return (
+                                                                    <div key={lineIdx} className="flex items-start gap-2 ml-1 mt-1">
+                                                                        <div className="h-[5px] w-[5px] rounded-full bg-zinc-800 shrink-0 mt-[5px]" />
+                                                                        <span>{text}</span>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                            return <p key={lineIdx} className={lineIdx > 0 ? 'mt-0.5' : ''}>{line}</p>
+                                                        })}
+                                                    </div>
                                                 )}
                                             </td>
                                             <td className="py-3 px-3 text-center align-top text-slate-600 font-medium">{item.unit || '-'}</td>

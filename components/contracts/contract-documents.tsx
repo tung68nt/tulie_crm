@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 
@@ -15,25 +15,25 @@ const DOCUMENT_TYPES = [
         type: 'contract',
         label: 'Hợp đồng kinh tế',
         description: 'Hợp đồng ký kết giữa 2 bên với đầy đủ điều khoản pháp lý',
-        icon: '📄',
+        icon: FileText,
     },
     {
         type: 'order',
         label: 'Đơn đặt hàng',
         description: 'Đơn đặt hàng chi tiết sản phẩm/dịch vụ',
-        icon: '📋',
+        icon: ClipboardList,
     },
     {
         type: 'payment_request',
         label: 'Đề nghị thanh toán',
         description: 'Công văn đề nghị thanh toán công nợ theo hợp đồng',
-        icon: '💳',
+        icon: CreditCard,
     },
     {
         type: 'delivery_minutes',
         label: 'Biên bản giao nhận',
         description: 'Biên bản xác nhận giao nhận hàng hóa/dịch vụ',
-        icon: '📦',
+        icon: Package,
     }
 ]
 
@@ -280,7 +280,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                             key={doc.type}
                             className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                         >
-                            <span className="text-xl">{doc.icon}</span>
+                            <doc.icon className="h-5 w-5 text-zinc-600 shrink-0" />
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
                                     <p className="text-sm font-medium">{doc.label}</p>
