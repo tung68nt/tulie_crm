@@ -64,6 +64,17 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
 
     const handleGenerate = async (type: string, action: 'preview' | 'download' | 'print') => {
         setLoading(type)
+
+        // IMPORTANT: Open window SYNCHRONOUSLY during user click to avoid popup blocker
+        let win: Window | null = null
+        if (action === 'preview' || action === 'print') {
+            win = window.open('', '_blank')
+            if (win) {
+                win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Đang tạo giấy tờ...</title><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;}</style></head><body><p>⏳ Đang tạo giấy tờ, vui lòng đợi...</p></body></html>`)
+                win.document.close()
+            }
+        }
+
         try {
             const res = await fetch(`/api/contracts/${contract.id}/generate-document`, {
                 method: 'POST',
@@ -74,30 +85,31 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 })
             })
 
-            if (!res.ok) throw new Error('Failed to generate')
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}))
+                throw new Error(errData.error || `Lỗi ${res.status}`)
+            }
             const data = await res.json()
 
             const html = data.content || data.html
             if (html) {
                 setGenerated(prev => ({ ...prev, [type]: html }))
+                const title = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'Document'
+                const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`
 
-                if (action === 'preview') {
-                    const win = window.open('', '_blank')
-                    if (win) {
-                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`)
-                        win.document.close()
-                    }
-                } else if (action === 'print') {
-                    const win = window.open('', '_blank')
-                    if (win) {
-                        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${DOCUMENT_TYPES.find(d => d.type === type)?.label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`)
-                        win.document.close()
-                        win.focus()
-                        setTimeout(() => win.print(), 300)
-                    }
+                if (action === 'preview' && win) {
+                    win.document.open()
+                    win.document.write(fullHtml)
+                    win.document.close()
+                } else if (action === 'print' && win) {
+                    win.document.open()
+                    win.document.write(fullHtml)
+                    win.document.close()
+                    win.focus()
+                    setTimeout(() => win!.print(), 300)
                 } else if (action === 'download') {
                     const label = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'document'
-                    const blob = new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${label}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`], { type: 'text/html' })
+                    const blob = new Blob([fullHtml], { type: 'text/html' })
                     const url = URL.createObjectURL(blob)
                     const a = document.createElement('a')
                     a.href = url
@@ -105,9 +117,13 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     a.click()
                     URL.revokeObjectURL(url)
                 }
+            } else {
+                if (win) win.close()
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error generating document:', err)
+            if (win) win.close()
+            alert(`Không thể tạo giấy tờ: ${err.message}`)
         } finally {
             setLoading(null)
         }
