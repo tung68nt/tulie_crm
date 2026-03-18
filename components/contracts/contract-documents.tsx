@@ -105,7 +105,41 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     Xuất giấy tờ từ dữ liệu hợp đồng — tự động điền thông tin
                 </p>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-3">
+                {/* Customer info auto-fill preview */}
+                {contract.customer && (
+                    <div className="rounded-lg bg-muted/50 border border-dashed p-3 space-y-1.5">
+                        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Thông tin tự động điền</p>
+                        <div className="grid grid-cols-1 gap-1 text-xs">
+                            {contract.customer.company_name && (
+                                <div className="flex gap-2">
+                                    <span className="text-muted-foreground shrink-0">Công ty:</span>
+                                    <span className="font-medium truncate">{contract.customer.company_name}</span>
+                                </div>
+                            )}
+                            {contract.customer.representative && (
+                                <div className="flex gap-2">
+                                    <span className="text-muted-foreground shrink-0">Đại diện:</span>
+                                    <span className="font-medium truncate">{contract.customer.representative}</span>
+                                </div>
+                            )}
+                            {contract.customer.address && (
+                                <div className="flex gap-2">
+                                    <span className="text-muted-foreground shrink-0">Địa chỉ:</span>
+                                    <span className="font-medium truncate">{contract.customer.address}</span>
+                                </div>
+                            )}
+                            {contract.customer.tax_code && (
+                                <div className="flex gap-2">
+                                    <span className="text-muted-foreground shrink-0">MST:</span>
+                                    <span className="font-medium">{contract.customer.tax_code}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                <div className="space-y-2">
                 {DOCUMENT_TYPES.map((doc) => {
                     const isActive = loading === doc.type
                     const isGenerated = !!generated[doc.type]
@@ -133,7 +167,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                 </div>
                                 <p className="text-xs text-muted-foreground truncate">{doc.description}</p>
                             </div>
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex items-center gap-1">
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -166,6 +200,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                         </div>
                     )
                 })}
+                </div>
             </CardContent>
         </Card>
     )
