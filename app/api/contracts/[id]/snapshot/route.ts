@@ -4,6 +4,7 @@ import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
 /**
  * PUT /api/contracts/[id]/snapshot — Save customer_snapshot
  * Persists customer info override on the contract
+ * Also syncs back to `customers` table and other contracts of the same customer
  */
 export async function PUT(
     request: Request,
@@ -19,6 +20,7 @@ export async function PUT(
         const { createAdminClient } = await import('@/lib/supabase/admin')
         const supabase = createAdminClient()
 
+        // 1. Save snapshot to this contract
         const { error } = await supabase
             .from('contracts')
             .update({ customer_snapshot: snapshot })
@@ -27,6 +29,39 @@ export async function PUT(
         if (error) {
             console.error('Error saving snapshot:', error)
             return NextResponse.json({ error: 'Failed to save' }, { status: 500 })
+        }
+
+        // 2. Sync back to customers table + other contracts of same customer
+        const { data: contract } = await supabase
+            .from('contracts')
+            .select('customer_id')
+            .eq('id', contractId)
+            .single()
+
+        if (contract?.customer_id) {
+            // Update customers table with snapshot fields
+            const customerUpdate: Record<string, any> = {}
+            if (snapshot.company_name) customerUpdate.company_name = snapshot.company_name
+            if (snapshot.representative) customerUpdate.representative = snapshot.representative
+            if (snapshot.position) customerUpdate.position = snapshot.position
+            if (snapshot.email) customerUpdate.email = snapshot.email
+            if (snapshot.phone) customerUpdate.phone = snapshot.phone
+            if (snapshot.tax_code) customerUpdate.tax_code = snapshot.tax_code
+            if (snapshot.address) customerUpdate.address = snapshot.address
+
+            if (Object.keys(customerUpdate).length > 0) {
+                await supabase
+                    .from('customers')
+                    .update(customerUpdate)
+                    .eq('id', contract.customer_id)
+            }
+
+            // Sync snapshot to all other contracts of same customer
+            await supabase
+                .from('contracts')
+                .update({ customer_snapshot: snapshot })
+                .eq('customer_id', contract.customer_id)
+                .neq('id', contractId)
         }
 
         return NextResponse.json({ success: true })

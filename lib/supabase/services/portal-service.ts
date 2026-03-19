@@ -306,6 +306,21 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
 
         if (error) throw error
 
+        // 3. Sync to customer_snapshot on all contracts of this customer
+        const snapshot = {
+            company_name: updateData.company_name,
+            representative: updateData.representative,
+            position: updateData.position,
+            tax_code: updateData.tax_code,
+            email: updateData.email,
+            phone: updateData.phone,
+            address: updateData.address,
+        }
+        await supabase
+            .from('contracts')
+            .update({ customer_snapshot: snapshot })
+            .eq('customer_id', customerId)
+
         return { success: true }
     } catch (err: any) {
         console.error('Error updating customer info from portal:', err)
