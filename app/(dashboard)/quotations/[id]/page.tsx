@@ -261,7 +261,7 @@ export default function QuotationDetailPage() {
                             </Link>
                         </Button>
 
-                        {['draft', 'sent', 'accepted', 'viewed'].includes(quotation.status) && (
+                        {!['rejected', 'expired'].includes(quotation.status) && (
                             <ConvertQuotationButton quotationId={quotation.id} />
                         )}
                     </div>
