@@ -157,6 +157,21 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
                 console.error('Error inserting new milestones:', milestoneError)
                 throw milestoneError
             }
+
+            // 3. Auto-sync: link payment milestones to the project (for customer portal)
+            const { data: linkedProject } = await supabase
+                .from('projects')
+                .select('id')
+                .eq('contract_id', id)
+                .single()
+
+            if (linkedProject) {
+                await supabase
+                    .from('contract_milestones')
+                    .update({ project_id: linkedProject.id })
+                    .eq('contract_id', id)
+                    .eq('type', 'payment')
+            }
         }
 
         revalidatePath('/contracts')
@@ -314,6 +329,13 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
                 // Link quotation and contract to the new project
                 await supabase.from('quotations').update({ project_id: project.id }).eq('id', quotation.id)
                 await supabase.from('contracts').update({ project_id: project.id }).eq('id', contract.id)
+
+                // Sync payment milestones to project for customer portal
+                await supabase
+                    .from('contract_milestones')
+                    .update({ project_id: project.id })
+                    .eq('contract_id', contract.id)
+                    .eq('type', 'payment')
             }
         }
 
