@@ -143,11 +143,24 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
         }
 
         if (milestones && milestones.length > 0) {
-            const contractMilestones = milestones.map(m => ({
-                ...m,
-                id: undefined,
-                contract_id: id
-            }))
+            // Explicitly construct milestone data — avoid spreading `id: undefined`
+            // which can cause Supabase to reject the insert (null id vs auto-generated UUID)
+            const contractMilestones = milestones.map(m => {
+                const row: Record<string, any> = {
+                    contract_id: id,
+                    name: m.name || '',
+                    amount: m.amount || 0,
+                    status: m.status || 'pending',
+                    type: m.type || 'payment',
+                }
+                // Only include optional fields if they have actual values
+                if (m.percentage != null && m.percentage > 0) row.percentage = m.percentage
+                if (m.due_date) row.due_date = m.due_date
+                if (m.completed_at) row.completed_at = m.completed_at
+                if (m.delay_reason) row.delay_reason = m.delay_reason
+                if (m.description) row.description = m.description
+                return row
+            })
 
             const { error: milestoneError } = await supabase
                 .from('contract_milestones')
@@ -159,11 +172,12 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
             }
 
             // 3. Auto-sync: link payment milestones to the project (for customer portal)
+            // Use .maybeSingle() instead of .single() to avoid error when no project exists
             const { data: linkedProject } = await supabase
                 .from('projects')
                 .select('id')
                 .eq('contract_id', id)
-                .single()
+                .maybeSingle()
 
             if (linkedProject) {
                 await supabase
