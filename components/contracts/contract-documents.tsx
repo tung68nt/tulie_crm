@@ -313,17 +313,21 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                 </div>
                             </div>
 
-                                {infoChanged && (
-                                    <Button
-                                        size="sm"
-                                        onClick={handleSaveCustomerInfo}
-                                        disabled={savingInfo}
-                                        className="w-full mt-2"
-                                    >
-                                        {savingInfo ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-3.5 w-3.5" />}
-                                        Lưu thông tin khách hàng
-                                    </Button>
-                                )}
+                                <Button
+                                    size="sm"
+                                    variant={infoChanged ? "default" : "outline"}
+                                    onClick={handleSaveCustomerInfo}
+                                    disabled={savingInfo || !infoChanged}
+                                    className="w-full mt-2"
+                                >
+                                    {savingInfo ? (
+                                        <><LoadingSpinner size="sm" className="mr-2" /> Đang lưu...</>
+                                    ) : infoChanged ? (
+                                        <><Save className="mr-2 h-3.5 w-3.5" /> Lưu thông tin khách hàng</>
+                                    ) : (
+                                        <><Check className="mr-2 h-3.5 w-3.5" /> Đã lưu</>
+                                    )}
+                                </Button>
                         </div>
                     )}
                 </div>
