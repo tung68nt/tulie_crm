@@ -158,6 +158,10 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 type: contractType as any,
                 order_number: orderNumber,
                 project_id: projectId || undefined,
+                // Auto-update contract number when signed_date and abbreviation are set
+                ...(signedDate && customerAbbreviation ? {
+                    contract_number: `${format(signedDate, 'yyyyMMdd')}/HDKT-TL-${customerAbbreviation.toUpperCase()}`
+                } : {}),
             }
 
             // Update customer abbreviation if changed

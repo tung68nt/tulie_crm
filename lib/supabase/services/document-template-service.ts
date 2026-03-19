@@ -342,6 +342,20 @@ export async function generateDocument(
             variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
             variables.service_description = contract.description || contract.title || ''
 
+            // Auto-fill delivery_time from contract start_date → end_date
+            if (contract.start_date && contract.end_date) {
+                const start = new Date(contract.start_date).toLocaleDateString('vi-VN')
+                const end = new Date(contract.end_date).toLocaleDateString('vi-VN')
+                variables.delivery_time = `Từ ${start} đến ${end}`
+            } else if (contract.end_date) {
+                variables.delivery_time = `Trước ngày ${new Date(contract.end_date).toLocaleDateString('vi-VN')}`
+            } else if (contract.start_date) {
+                variables.delivery_time = `Từ ${new Date(contract.start_date).toLocaleDateString('vi-VN')}`
+            }
+
+            // Auto-fill delivery_address from customer address
+            variables.delivery_address = custData.address || customer.address || ''
+
             // Build items table from quotation items
             const items = contract.items || []
             if (items.length > 0) {
