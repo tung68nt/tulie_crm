@@ -38,6 +38,14 @@ import { toast } from 'sonner'
 import { AlertTriangle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
+// Helper: parse '27,000,000' → 27000000
+const parseFormattedNumber = (value: string): number => {
+    return parseInt(value.replace(/[^0-9]/g, '')) || 0
+}
+const formatNumber = (value: number): string => {
+    return value ? new Intl.NumberFormat('vi-VN').format(value) : ''
+}
+
 interface MilestoneItem {
     id: string
     name: string
@@ -298,9 +306,11 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                             <div className="space-y-2">
                                 <Label>Giá trị hợp đồng <span className="text-destructive">*</span></Label>
                                 <Input
-                                    type="number"
-                                    value={totalValue}
-                                    onChange={(e) => setTotalValue(parseInt(e.target.value) || 0)}
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={formatNumber(totalValue)}
+                                    onChange={(e) => setTotalValue(parseFormattedNumber(e.target.value))}
+                                    placeholder="0"
                                 />
                             </div>
 
@@ -466,9 +476,11 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                         <div className="space-y-2">
                                             <Label>Số tiền</Label>
                                             <Input
-                                                type="number"
-                                                value={milestone.amount}
-                                                onChange={(e) => updateMilestone(milestone.id, 'amount', parseInt(e.target.value) || 0)}
+                                                type="text"
+                                                inputMode="numeric"
+                                                value={formatNumber(milestone.amount)}
+                                                onChange={(e) => updateMilestone(milestone.id, 'amount', parseFormattedNumber(e.target.value))}
+                                                placeholder="0"
                                             />
                                         </div>
                                         <div className="space-y-2">
