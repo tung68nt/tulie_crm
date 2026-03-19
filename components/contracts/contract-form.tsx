@@ -162,21 +162,22 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
 
         setIsLoading(true)
         try {
-            const updateData: Partial<Contract> = {
+            const updateData: Record<string, any> = {
                 customer_id: customerId,
-                quotation_id: quotationId || undefined,
                 title,
                 total_amount: totalValue,
-                start_date: startDate?.toISOString(),
-                end_date: endDate?.toISOString(),
-                signed_date: signedDate?.toISOString(),
+                start_date: startDate?.toISOString() || null,
+                end_date: endDate?.toISOString() || null,
+                signed_date: signedDate?.toISOString() || null,
                 status: status,
                 terms,
-                type: contractType as any,
-                order_number: orderNumber,
-                project_id: projectId || undefined,
-                contract_number: contractNumber || undefined,
+                type: contractType,
+                order_number: orderNumber || null,
+                project_id: projectId || null,
+                contract_number: contractNumber || null,
             }
+            // Add quotation_id only if set
+            if (quotationId) updateData.quotation_id = quotationId
 
             // Update customer abbreviation if changed
             if (customerAbbreviation && customerId) {
