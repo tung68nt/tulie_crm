@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { toast } from 'sonner'
 
 const DOCUMENT_TYPES = [
     {
@@ -47,21 +48,53 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [generated, setGenerated] = useState<Record<string, string>>({})
     const [showForm, setShowForm] = useState(false)
 
-    // Editable customer info — pre-filled from contract.customer
+    // Editable customer info — pre-filled from snapshot or customer
+    const snapshot = contract.customer_snapshot
+    const cust = contract.customer
     const [customerInfo, setCustomerInfo] = useState({
-        customer_company: contract.customer?.company_name || '',
-        customer_representative: contract.customer?.representative || '',
-        customer_position: contract.customer?.position || '',
-        customer_email: contract.customer?.email || '',
-        customer_phone: contract.customer?.phone || '',
-        customer_tax_code: contract.customer?.tax_code || '',
-        customer_address: contract.customer?.address || '',
+        customer_company: snapshot?.company_name || cust?.company_name || '',
+        customer_representative: snapshot?.representative || cust?.representative || '',
+        customer_position: snapshot?.position || cust?.position || '',
+        customer_email: snapshot?.email || cust?.email || '',
+        customer_phone: snapshot?.phone || cust?.phone || '',
+        customer_tax_code: snapshot?.tax_code || cust?.tax_code || '',
+        customer_address: snapshot?.address || cust?.address || '',
     })
+    const [infoChanged, setInfoChanged] = useState(false)
+    const [savingInfo, setSavingInfo] = useState(false)
 
     const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setCustomerInfo(prev => ({ ...prev, [name]: value }))
+        setInfoChanged(true)
     }
+
+    // Save customer info to contract's customer_snapshot
+    const handleSaveCustomerInfo = useCallback(async () => {
+        setSavingInfo(true)
+        try {
+            const res = await fetch(`/api/contracts/${contract.id}/snapshot`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    company_name: customerInfo.customer_company,
+                    representative: customerInfo.customer_representative,
+                    position: customerInfo.customer_position,
+                    email: customerInfo.customer_email,
+                    phone: customerInfo.customer_phone,
+                    tax_code: customerInfo.customer_tax_code,
+                    address: customerInfo.customer_address,
+                })
+            })
+            if (!res.ok) throw new Error('Lỗi lưu thông tin')
+            setInfoChanged(false)
+            toast.success('Đã lưu thông tin khách hàng')
+        } catch (err: any) {
+            toast.error(err.message || 'Không thể lưu thông tin')
+        } finally {
+            setSavingInfo(false)
+        }
+    }, [contract.id, customerInfo])
 
     const handleGenerate = async (type: string, action: 'preview' | 'download' | 'print') => {
         setLoading(type)
@@ -279,6 +312,18 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                     </div>
                                 </div>
                             </div>
+
+                                {infoChanged && (
+                                    <Button
+                                        size="sm"
+                                        onClick={handleSaveCustomerInfo}
+                                        disabled={savingInfo}
+                                        className="w-full mt-2"
+                                    >
+                                        {savingInfo ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="mr-2 h-3.5 w-3.5" />}
+                                        Lưu thông tin khách hàng
+                                    </Button>
+                                )}
                         </div>
                     )}
                 </div>
