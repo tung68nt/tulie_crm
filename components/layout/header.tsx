@@ -141,60 +141,65 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-                {/* Theme Toggle */}
+                {/* Theme Toggle — Modern Pill Switch */}
                 {mounted && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
+                    <button
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                        className="rounded-xl h-10 w-10 hover:bg-zinc-100 transition-colors"
+                        className="relative h-8 w-[52px] rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-zinc-300 dark:hover:border-zinc-600"
+                        aria-label="Toggle theme"
                     >
-                        {theme === 'dark' ? (
-                            <Sun className="h-5 w-5 text-zinc-400 group-hover:text-zinc-950" />
-                        ) : (
-                            <Moon className="h-5 w-5 text-zinc-500 group-hover:text-zinc-950" />
-                        )}
-                    </Button>
+                        <div
+                            className={`absolute top-[3px] h-[26px] w-[26px] rounded-full bg-white dark:bg-zinc-900 shadow-sm border border-zinc-200 dark:border-zinc-600 transition-all duration-300 ease-in-out flex items-center justify-center ${theme === 'dark' ? 'left-[22px]' : 'left-[2px]'}`}
+                        >
+                            <Sun className={`h-3.5 w-3.5 text-amber-500 absolute transition-all duration-300 ${theme === 'dark' ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`} />
+                            <Moon className={`h-3.5 w-3.5 text-blue-400 absolute transition-all duration-300 ${theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`} />
+                        </div>
+                    </button>
                 )}
 
-                {/* Notifications */}
+                {/* Notifications — Modern Bell */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative rounded-xl h-10 w-10 hover:bg-zinc-100 transition-colors">
-                            <Bell className="h-5 w-5 text-zinc-500" />
+                        <Button variant="ghost" size="icon" className="relative rounded-full h-9 w-9 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
+                            <Bell className="h-[18px] w-[18px] text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors group-hover:animate-[wiggle_0.3s_ease-in-out]" />
                             {unreadCount > 0 && (
-                                <Badge
-                                    variant="destructive"
-                                    className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full p-0 text-[10px] flex items-center justify-center font-bold border-2 border-background"
-                                >
-                                    {unreadCount}
-                                </Badge>
+                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-zinc-900 dark:bg-white px-1 text-[10px] font-bold text-white dark:text-zinc-900 ring-2 ring-background shadow-sm">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] sm:w-80">
-                        <DropdownMenuLabel>Thông báo</DropdownMenuLabel>
+                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] sm:w-80 rounded-xl shadow-xl border-zinc-200/80 dark:border-zinc-700">
+                        <div className="flex items-center justify-between px-4 py-3">
+                            <span className="text-sm font-bold">Thông báo</span>
+                            {unreadCount > 0 && (
+                                <span className="text-[11px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">{unreadCount} mới</span>
+                            )}
+                        </div>
                         <DropdownMenuSeparator />
                         <div className="max-h-[300px] overflow-y-auto">
                             {notifications.length === 0 ? (
-                                <div className="py-4 text-center text-sm text-muted-foreground">
-                                    Không có thông báo mới
+                                <div className="py-8 text-center">
+                                    <Bell className="h-8 w-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-2" />
+                                    <p className="text-sm text-muted-foreground font-medium">Không có thông báo mới</p>
                                 </div>
                             ) : (
                                 notifications.map((notification) => (
                                     <DropdownMenuItem
                                         key={notification.id}
-                                        className={`flex flex-col items-start gap-1 py-3 cursor-pointer ${!notification.read ? 'bg-muted/50' : ''}`}
+                                        className={`flex flex-col items-start gap-1 py-3 px-4 cursor-pointer rounded-lg mx-1 my-0.5 ${!notification.read ? 'bg-zinc-50 dark:bg-zinc-800/50' : ''}`}
                                         onClick={() => handleNotificationClick(notification)}
                                     >
                                         <div className="flex items-center gap-2">
-                                            <span className={`h-2 w-2 rounded-full ${getNotificationColor(notification.type)}`} />
-                                            <span className="font-medium">{notification.title}</span>
+                                            {!notification.read && (
+                                                <span className="h-2 w-2 rounded-full bg-zinc-900 dark:bg-white shrink-0" />
+                                            )}
+                                            <span className={`font-semibold text-sm ${!notification.read ? '' : 'text-muted-foreground'}`}>{notification.title}</span>
                                         </div>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-[13px] text-muted-foreground leading-snug pl-4">
                                             {notification.message}
                                         </p>
-                                        <span className="text-xs text-muted-foreground">
+                                        <span className="text-[11px] text-muted-foreground/60 font-medium pl-4">
                                             {formatTimeAgo(notification.created_at)}
                                         </span>
                                     </DropdownMenuItem>
@@ -202,8 +207,8 @@ export function Header() {
                             )}
                         </div>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild className="justify-center text-center cursor-pointer">
-                            <Link href="/notifications" className="text-sm font-medium w-full">
+                        <DropdownMenuItem asChild className="justify-center text-center cursor-pointer py-2.5 rounded-lg mx-1 mb-1">
+                            <Link href="/notifications" className="text-sm font-semibold w-full">
                                 Xem tất cả thông báo
                             </Link>
                         </DropdownMenuItem>
