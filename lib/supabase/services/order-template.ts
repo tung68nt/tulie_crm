@@ -3,7 +3,7 @@
  * Layout chuẩn theo bộ thủ tục Tulie
  */
 export const orderTemplate = `
-<div style="font-family: Arial, sans-serif; font-size: 13pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 20mm 20mm 20mm 25mm; line-height: 1.5; text-align: justify;">
+<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 15mm 20mm; line-height: 1.5; text-align: justify;">
   <!-- Header -->
   <table style="width:100%; border-collapse:collapse; margin-bottom: 0;">
     <tr>
