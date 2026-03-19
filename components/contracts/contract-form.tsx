@@ -86,18 +86,27 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
     const [terms, setTerms] = useState(contract.terms || '')
     const [contractType, setContractType] = useState(contract.type || 'contract')
 
+    // Lock form when contract is signed/active/completed
+    const isLocked = ['signed', 'active', 'completed'].includes(contract.status)
+
     // Customer abbreviation for document number generation
     const selectedCustomer = customers.find(c => c.id === customerId)
     const [customerAbbreviation, setCustomerAbbreviation] = useState(
         selectedCustomer?.abbreviation || ''
     )
 
-    // Auto-preview contract number based on signed_date + abbreviation
-    const previewContractNumber = (() => {
-        if (!signedDate || !customerAbbreviation) return contract.contract_number || '—'
+    // Editable contract number
+    const [contractNumber, setContractNumber] = useState(contract.contract_number || '')
+
+    // Auto-generate contract number from signed_date + abbreviation
+    const generateContractNumber = () => {
+        if (!signedDate || !customerAbbreviation) {
+            toast.error('Cần điền Ngày ký và Tên viết tắt KH trước')
+            return
+        }
         const dateStr = format(signedDate, 'yyyyMMdd')
-        return `${dateStr}/HDKT-TL-${customerAbbreviation.toUpperCase()}`
-    })()
+        setContractNumber(`${dateStr}/HDKT-TL-${customerAbbreviation.toUpperCase()}`)
+    }
     const [orderNumber, setOrderNumber] = useState(contract.order_number || '')
 
     const [milestones, setMilestones] = useState<MilestoneItem[]>(
@@ -166,10 +175,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 type: contractType as any,
                 order_number: orderNumber,
                 project_id: projectId || undefined,
-                // Auto-update contract number when signed_date and abbreviation are set
-                ...(signedDate && customerAbbreviation ? {
-                    contract_number: `${format(signedDate, 'yyyyMMdd')}/HDKT-TL-${customerAbbreviation.toUpperCase()}`
-                } : {}),
+                contract_number: contractNumber || undefined,
             }
 
             // Update customer abbreviation if changed
@@ -226,7 +232,17 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 </div>
             </div>
 
+            {isLocked && (
+                <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800">
+                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                    <AlertDescription className="text-amber-800 dark:text-amber-300 font-medium">
+                        Hợp đồng đã ký — không thể chỉnh sửa thông tin. Liên hệ admin nếu cần thay đổi.
+                    </AlertDescription>
+                </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
+                <fieldset disabled={isLocked} className="space-y-6">
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Basic Info */}
                     <Card>
@@ -371,12 +387,25 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     <p className="text-[10px] text-muted-foreground">Dùng để tạo mã giấy tờ: HDKT-TL-{customerAbbreviation || 'XXX'}</p>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Mã hợp đồng (Auto)</Label>
-                                    <Input
-                                        value={previewContractNumber}
-                                        readOnly
-                                        className="bg-muted font-mono text-xs"
-                                    />
+                                    <Label>Mã hợp đồng</Label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={contractNumber}
+                                            onChange={(e) => setContractNumber(e.target.value)}
+                                            placeholder="Nhập hoặc bấm Tạo mã"
+                                            className="font-mono text-xs flex-1"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={generateContractNumber}
+                                            className="shrink-0 text-xs"
+                                        >
+                                            Tạo mã
+                                        </Button>
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground">Format: yyyymmdd/HDKT-TL-{customerAbbreviation || 'XXX'}</p>
                                 </div>
                             </div>
 
@@ -547,6 +576,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 </div>
 
                 {/* Actions */}
+                {!isLocked && (
                 <div className="flex items-center justify-end gap-4">
                     <Button type="button" variant="outline" asChild>
                         <Link href={`/contracts/${contract.id}`}>Hủy</Link>
@@ -557,6 +587,8 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                         Lưu thay đổi
                     </Button>
                 </div>
+                )}
+                </fieldset>
             </form>
         </div>
     )
