@@ -306,7 +306,7 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
 
         if (error) throw error
 
-        // 3. Sync to customer_snapshot on all contracts of this customer
+        // 3. Sync to customer_snapshot on contracts in the same project
         const snapshot = {
             company_name: updateData.company_name,
             representative: updateData.representative,
@@ -316,10 +316,26 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
             phone: updateData.phone,
             address: updateData.address,
         }
-        await supabase
-            .from('contracts')
-            .update({ customer_snapshot: snapshot })
-            .eq('customer_id', customerId)
+
+        // Find project_id from the quotation linked to this token
+        const { data: qDetail } = await supabase
+            .from('quotations')
+            .select('project_id')
+            .eq('public_token', token)
+            .single()
+
+        if (qDetail?.project_id) {
+            await supabase
+                .from('contracts')
+                .update({ customer_snapshot: snapshot })
+                .eq('project_id', qDetail.project_id)
+        } else {
+            // Fallback: no project — sync only contracts of this customer
+            await supabase
+                .from('contracts')
+                .update({ customer_snapshot: snapshot })
+                .eq('customer_id', customerId)
+        }
 
         return { success: true }
     } catch (err: any) {

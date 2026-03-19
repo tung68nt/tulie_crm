@@ -31,10 +31,10 @@ export async function PUT(
             return NextResponse.json({ error: 'Failed to save' }, { status: 500 })
         }
 
-        // 2. Sync back to customers table + other contracts of same customer
+        // 2. Sync back to customers table + other contracts in same project
         const { data: contract } = await supabase
             .from('contracts')
-            .select('customer_id')
+            .select('customer_id, project_id')
             .eq('id', contractId)
             .single()
 
@@ -56,12 +56,14 @@ export async function PUT(
                     .eq('id', contract.customer_id)
             }
 
-            // Sync snapshot to all other contracts of same customer
-            await supabase
-                .from('contracts')
-                .update({ customer_snapshot: snapshot })
-                .eq('customer_id', contract.customer_id)
-                .neq('id', contractId)
+            // Sync snapshot to other contracts in the same project
+            if (contract.project_id) {
+                await supabase
+                    .from('contracts')
+                    .update({ customer_snapshot: snapshot })
+                    .eq('project_id', contract.project_id)
+                    .neq('id', contractId)
+            }
         }
 
         return NextResponse.json({ success: true })
