@@ -28,7 +28,7 @@ const DOCUMENT_TYPES = [
     {
         type: 'payment_request',
         label: 'Đề nghị thanh toán',
-        description: 'Công văn đề nghị thanh toán công nợ theo hợp đồng',
+        description: 'Đề nghị thanh toán theo hợp đồng kinh tế',
         icon: CreditCard,
     },
     {
