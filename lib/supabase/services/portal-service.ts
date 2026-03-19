@@ -293,6 +293,7 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
             .from('customers')
             .update({
                 company_name: updateData.company_name,
+                representative_title: updateData.representative_title,
                 representative: updateData.representative,
                 position: updateData.position,
                 tax_code: updateData.tax_code,
@@ -309,6 +310,7 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
         // 3. Sync to customer_snapshot on contracts in the same project
         const snapshot = {
             company_name: updateData.company_name,
+            representative_title: updateData.representative_title,
             representative: updateData.representative,
             position: updateData.position,
             tax_code: updateData.tax_code,
@@ -366,7 +368,7 @@ export async function savePortalCustomerInfoDraft(token: string, customerId: str
 
         // Only update non-empty fields, keep is_info_unlocked unchanged
         const fieldsToUpdate: Record<string, any> = {}
-        const allowedFields = ['company_name', 'representative', 'position', 'tax_code', 'email', 'phone', 'address', 'invoice_address']
+        const allowedFields = ['company_name', 'representative_title', 'representative', 'position', 'tax_code', 'email', 'phone', 'address', 'invoice_address']
         for (const field of allowedFields) {
             if (updateData[field] !== undefined && updateData[field] !== '') {
                 fieldsToUpdate[field] = updateData[field]

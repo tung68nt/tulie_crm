@@ -42,6 +42,7 @@ export async function PUT(
             // Update customers table with snapshot fields
             const customerUpdate: Record<string, any> = {}
             if (snapshot.company_name) customerUpdate.company_name = snapshot.company_name
+            if (snapshot.representative_title) customerUpdate.representative_title = snapshot.representative_title
             if (snapshot.representative) customerUpdate.representative = snapshot.representative
             if (snapshot.position) customerUpdate.position = snapshot.position
             if (snapshot.email) customerUpdate.email = snapshot.email

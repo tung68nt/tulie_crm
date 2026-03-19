@@ -148,6 +148,7 @@ export interface Customer {
   company_size?: string
   website?: string
   representative?: string
+  representative_title?: string
   position?: string
   abbreviation?: string
   customer_type: 'individual' | 'business'
@@ -306,6 +307,7 @@ export interface CustomerSnapshot {
   address?: string
   invoice_address?: string
   representative?: string
+  representative_title?: string
   position?: string
 }
 

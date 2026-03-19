@@ -23,6 +23,7 @@ export function CustomerInfoForm({ customer, token, onComplete, onDraftSave }: C
     const [isSavingDraft, setIsSavingDraft] = useState(false)
     const [formData, setFormData] = useState({
         company_name: customer.company_name || '',
+        representative_title: customer.representative_title || '',
         representative: customer.representative || '',
         position: customer.position || '',
         tax_code: customer.tax_code || '',
@@ -110,18 +111,33 @@ export function CustomerInfoForm({ customer, token, onComplete, onDraftSave }: C
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="representative" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Người đại diện</Label>
-                    <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                        <Input
-                            id="representative"
-                            name="representative"
-                            value={formData.representative}
-                            onChange={handleChange}
-                            className="pl-10 h-11 rounded-xl border-zinc-200 focus:ring-zinc-950 focus:border-zinc-950 transition-all font-medium"
-                            placeholder="Họ và tên người đại diện"
-                        />
+                    <Label htmlFor="representative" className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Người đại diện pháp luật</Label>
+                    <div className="flex gap-2">
+                        <select
+                            name="representative_title"
+                            value={formData.representative_title}
+                            onChange={(e) => setFormData(prev => ({ ...prev, representative_title: e.target.value }))}
+                            className="h-11 rounded-xl border border-zinc-200 bg-white px-3 text-sm font-medium focus:ring-zinc-950 focus:border-zinc-950 transition-all min-w-[80px]"
+                        >
+                            <option value="">—</option>
+                            <option value="Ông">Ông</option>
+                            <option value="Bà">Bà</option>
+                        </select>
+                        <div className="relative flex-1">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                            <Input
+                                id="representative"
+                                name="representative"
+                                value={formData.representative}
+                                onChange={handleChange}
+                                className="pl-10 h-11 rounded-xl border-zinc-200 focus:ring-zinc-950 focus:border-zinc-950 transition-all font-medium"
+                                placeholder="Họ và tên người đại diện"
+                            />
+                        </div>
                     </div>
+                    {formData.representative_title && formData.representative && (
+                        <p className="text-[10px] text-zinc-400 mt-1">Hiển thị: <span className="font-medium text-zinc-600">{formData.representative_title} {formData.representative}</span></p>
+                    )}
                 </div>
 
                 <div className="space-y-2">

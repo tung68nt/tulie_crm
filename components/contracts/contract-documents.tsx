@@ -53,6 +53,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const cust = contract.customer
     const [customerInfo, setCustomerInfo] = useState({
         customer_company: snapshot?.company_name || cust?.company_name || '',
+        customer_representative_title: snapshot?.representative_title || cust?.representative_title || '',
         customer_representative: snapshot?.representative || cust?.representative || '',
         customer_position: snapshot?.position || cust?.position || '',
         customer_email: snapshot?.email || cust?.email || '',
@@ -79,6 +80,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     company_name: customerInfo.customer_company,
+                    representative_title: customerInfo.customer_representative_title,
                     representative: customerInfo.customer_representative,
                     position: customerInfo.customer_position,
                     email: customerInfo.customer_email,
@@ -236,17 +238,32 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
 
                                 <div className="grid grid-cols-2 gap-2">
                                     <div className="space-y-1">
-                                        <Label className="text-[10px] text-muted-foreground">Đại diện</Label>
-                                        <div className="relative">
-                                            <User className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                                            <Input
-                                                name="customer_representative"
-                                                value={customerInfo.customer_representative}
-                                                onChange={handleInfoChange}
-                                                className="pl-8 h-8 text-xs"
-                                                placeholder="Họ tên"
-                                            />
+                                        <Label className="text-[10px] text-muted-foreground">Đại diện pháp luật</Label>
+                                        <div className="flex gap-1.5">
+                                            <select
+                                                name="customer_representative_title"
+                                                value={customerInfo.customer_representative_title}
+                                                onChange={(e) => { setCustomerInfo(prev => ({ ...prev, customer_representative_title: e.target.value })); setInfoChanged(true) }}
+                                                className="h-8 rounded-md border border-input bg-background px-2 text-xs min-w-[60px]"
+                                            >
+                                                <option value="">—</option>
+                                                <option value="Ông">Ông</option>
+                                                <option value="Bà">Bà</option>
+                                            </select>
+                                            <div className="relative flex-1">
+                                                <User className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                                <Input
+                                                    name="customer_representative"
+                                                    value={customerInfo.customer_representative}
+                                                    onChange={handleInfoChange}
+                                                    className="pl-8 h-8 text-xs"
+                                                    placeholder="Họ tên"
+                                                />
+                                            </div>
                                         </div>
+                                        {customerInfo.customer_representative_title && customerInfo.customer_representative && (
+                                            <p className="text-[9px] text-muted-foreground">{customerInfo.customer_representative_title} {customerInfo.customer_representative}</p>
+                                        )}
                                     </div>
                                     <div className="space-y-1">
                                         <Label className="text-[10px] text-muted-foreground">Chức vụ</Label>
