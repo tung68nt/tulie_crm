@@ -194,6 +194,15 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
 export async function deleteContract(id: string) {
     try {
         const supabase = await createClient()
+
+        // 1. Find linked quotation and reset its status
+        const { data: contract } = await supabase
+            .from('contracts')
+            .select('quotation_id')
+            .eq('id', id)
+            .single()
+
+        // 2. Delete the contract
         const { error } = await supabase
             .from('contracts')
             .delete()
@@ -202,6 +211,16 @@ export async function deleteContract(id: string) {
         if (error) {
             console.error('Error deleting contract:', error)
             throw error
+        }
+
+        // 3. Reset quotation status so it can be re-converted
+        if (contract?.quotation_id) {
+            await supabase
+                .from('quotations')
+                .update({ status: 'accepted' })
+                .eq('id', contract.quotation_id)
+                .eq('status', 'converted')
+            revalidatePath('/quotations')
         }
 
         revalidatePath('/contracts')
@@ -216,6 +235,17 @@ export async function deleteContract(id: string) {
 export async function deleteContracts(ids: string[]) {
     try {
         const supabase = await createClient()
+
+        // 1. Find linked quotations before deletion
+        const { data: contracts } = await supabase
+            .from('contracts')
+            .select('quotation_id')
+            .in('id', ids)
+        const quotationIds = (contracts || [])
+            .map(c => c.quotation_id)
+            .filter(Boolean) as string[]
+
+        // 2. Delete contracts
         const { error } = await supabase
             .from('contracts')
             .delete()
@@ -224,6 +254,16 @@ export async function deleteContracts(ids: string[]) {
         if (error) {
             console.error('Error deleting contracts:', error)
             throw error
+        }
+
+        // 3. Reset linked quotation statuses
+        if (quotationIds.length > 0) {
+            await supabase
+                .from('quotations')
+                .update({ status: 'accepted' })
+                .in('id', quotationIds)
+                .eq('status', 'converted')
+            revalidatePath('/quotations')
         }
 
         revalidatePath('/contracts')
@@ -246,6 +286,20 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
             .single()
 
         if (qError || !quotation) throw new Error('Không tìm thấy báo giá')
+
+        // Guard: check if quotation is already converted and has a contract
+        if (quotation.status === 'converted') {
+            // Check if there's still a linked contract
+            const { count } = await supabase
+                .from('contracts')
+                .select('id', { count: 'exact', head: true })
+                .eq('quotation_id', quotationId)
+            if (count && count > 0) {
+                throw new Error('Báo giá này đã được chuyển thành hợp đồng/đơn hàng. Xóa hợp đồng cũ trước khi tạo mới.')
+            }
+            // If no contract exists (was deleted), reset status so conversion can proceed
+            await supabase.from('quotations').update({ status: 'accepted' }).eq('id', quotationId)
+        }
 
         // 2. Generate number — use yyyymmdd/HDKT-TL-XXX if abbreviation exists
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
