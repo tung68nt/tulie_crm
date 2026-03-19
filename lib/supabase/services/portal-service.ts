@@ -315,6 +315,7 @@ export async function updatePortalCustomerInfo(token: string, customerId: string
             email: updateData.email,
             phone: updateData.phone,
             address: updateData.address,
+            invoice_address: updateData.invoice_address,
         }
 
         // Find project_id from the quotation linked to this token

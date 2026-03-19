@@ -48,6 +48,7 @@ export async function PUT(
             if (snapshot.phone) customerUpdate.phone = snapshot.phone
             if (snapshot.tax_code) customerUpdate.tax_code = snapshot.tax_code
             if (snapshot.address) customerUpdate.address = snapshot.address
+            if (snapshot.invoice_address) customerUpdate.invoice_address = snapshot.invoice_address
 
             if (Object.keys(customerUpdate).length > 0) {
                 await supabase

@@ -59,6 +59,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
         customer_phone: snapshot?.phone || cust?.phone || '',
         customer_tax_code: snapshot?.tax_code || cust?.tax_code || '',
         customer_address: snapshot?.address || cust?.address || '',
+        customer_invoice_address: snapshot?.invoice_address || cust?.invoice_address || '',
     })
     const [infoChanged, setInfoChanged] = useState(false)
     const [savingInfo, setSavingInfo] = useState(false)
@@ -84,6 +85,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     phone: customerInfo.customer_phone,
                     tax_code: customerInfo.customer_tax_code,
                     address: customerInfo.customer_address,
+                    invoice_address: customerInfo.customer_invoice_address,
                 })
             })
             if (!res.ok) throw new Error('Lỗi lưu thông tin')
@@ -299,7 +301,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <Label className="text-[10px] text-muted-foreground">Địa chỉ</Label>
+                                    <Label className="text-[10px] text-muted-foreground">Địa chỉ trụ sở</Label>
                                     <div className="relative">
                                         <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                                         <Input
@@ -307,7 +309,21 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                             value={customerInfo.customer_address}
                                             onChange={handleInfoChange}
                                             className="pl-8 h-8 text-xs"
-                                            placeholder="Địa chỉ"
+                                            placeholder="Địa chỉ đăng ký kinh doanh"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <Label className="text-[10px] text-muted-foreground">Địa chỉ xuất hóa đơn (nếu khác)</Label>
+                                    <div className="relative">
+                                        <FileText className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground opacity-50" />
+                                        <Input
+                                            name="customer_invoice_address"
+                                            value={customerInfo.customer_invoice_address}
+                                            onChange={handleInfoChange}
+                                            className="pl-8 h-8 text-xs"
+                                            placeholder="Bỏ trống nếu trùng địa chỉ trụ sở"
                                         />
                                     </div>
                                 </div>
