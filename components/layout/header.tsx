@@ -141,20 +141,18 @@ export function Header() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-                {/* Theme Toggle — Modern Pill Switch */}
+                {/* Theme Toggle */}
                 {mounted && (
-                    <button
+                    <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                        className="relative h-8 w-[52px] rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:border-zinc-300 dark:hover:border-zinc-600"
+                        className="relative rounded-full h-9 w-9 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         aria-label="Toggle theme"
                     >
-                        <div
-                            className={`absolute top-[3px] h-[26px] w-[26px] rounded-full bg-white dark:bg-zinc-900 shadow-sm border border-zinc-200 dark:border-zinc-600 transition-all duration-300 ease-in-out flex items-center justify-center ${theme === 'dark' ? 'left-[22px]' : 'left-[2px]'}`}
-                        >
-                            <Sun className={`h-3.5 w-3.5 text-amber-500 absolute transition-all duration-300 ${theme === 'dark' ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}`} />
-                            <Moon className={`h-3.5 w-3.5 text-blue-400 absolute transition-all duration-300 ${theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}`} />
-                        </div>
-                    </button>
+                        <Sun className={`h-[18px] w-[18px] text-amber-500 transition-all duration-300 ${theme === 'dark' ? 'opacity-0 rotate-90 scale-0 absolute' : 'opacity-100 rotate-0 scale-100'}`} />
+                        <Moon className={`h-[18px] w-[18px] text-blue-400 transition-all duration-300 ${theme === 'dark' ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0 absolute'}`} />
+                    </Button>
                 )}
 
                 {/* Notifications — Modern Bell */}
