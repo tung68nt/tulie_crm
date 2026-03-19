@@ -247,12 +247,19 @@ export async function convertQuotationToOrder(quotationId: string, type: 'contra
 
         if (qError || !quotation) throw new Error('Không tìm thấy báo giá')
 
-        // 2. Generate number
+        // 2. Generate number — use yyyymmdd/HDKT-TL-XXX if abbreviation exists
         const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-        const prefix = type === 'order' ? 'DH' : 'HD'
-        const countRes = await supabase.from('contracts').select('id', { count: 'exact', head: true }).eq('type', type)
-        const nextNum = (countRes.count || 0) + 1
-        const formattedNum = `${prefix}-${dateStr}-${nextNum.toString().padStart(3, '0')}`
+        const customerAbbr = quotation.customer?.abbreviation || ''
+        let formattedNum: string
+        if (customerAbbr) {
+            const typePrefix = type === 'order' ? 'DH' : 'HDKT'
+            formattedNum = `${dateStr}/${typePrefix}-TL-${customerAbbr.toUpperCase()}`
+        } else {
+            const prefix = type === 'order' ? 'DH' : 'HD'
+            const countRes = await supabase.from('contracts').select('id', { count: 'exact', head: true }).eq('type', type)
+            const nextNum = (countRes.count || 0) + 1
+            formattedNum = `${prefix}-${dateStr}-${nextNum.toString().padStart(3, '0')}`
+        }
 
         // 3. Snapshot customer info from quotation join
         const customerSnapshot = quotation.customer ? {
