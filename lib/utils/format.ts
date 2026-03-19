@@ -19,7 +19,8 @@ export function formatNumber(value: number | null | undefined): string {
 }
 
 // Date formatting
-export function formatDate(date: string | Date): string {
+export function formatDate(date: string | Date | null | undefined): string {
+    if (!date) return '—'
     const d = typeof date === 'string' ? parseISO(date) : date
     return format(d, DATE_FORMAT)
 }

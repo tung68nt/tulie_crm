@@ -482,14 +482,22 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                             </Button>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {milestones.map((milestone, index) => (
-                                <div key={milestone.id} className="p-4 border rounded-lg space-y-3">
+                            {milestones.map((milestone, index) => {
+                                const isCompleted = milestone.status === 'completed'
+                                return (
+                                <div key={milestone.id} className={`p-4 border rounded-lg space-y-3 ${isCompleted ? 'border-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800' : ''}`}>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <span className="font-medium">Đợt {index + 1}</span>
+                                            {isCompleted && (
+                                                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 font-medium">
+                                                    ✓ Đã ghi nhận
+                                                </span>
+                                            )}
                                             <Select
                                                 value={milestone.type}
                                                 onValueChange={(v) => updateMilestone(milestone.id, 'type', v)}
+                                                disabled={isCompleted}
                                             >
                                                 <SelectTrigger className="h-8 w-32 bg-muted/50">
                                                     <SelectValue />
@@ -514,6 +522,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                                     <SelectItem value="overdue">Trễ</SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                            {!isCompleted && (
                                             <Button
                                                 type="button"
                                                 variant="ghost"
@@ -523,6 +532,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                             >
                                                 <Trash2 className="h-4 w-4 text-muted-foreground" />
                                             </Button>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="space-y-2">
@@ -530,12 +540,14 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                         <Input
                                             value={milestone.name}
                                             onChange={(e) => updateMilestone(milestone.id, 'name', e.target.value)}
+                                            disabled={isCompleted}
                                         />
                                     </div>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between">
                                                 <Label>Số tiền</Label>
+                                                {!isCompleted && (
                                                 <Button
                                                     type="button"
                                                     variant={milestone.amount_mode === 'percent' ? 'default' : 'outline'}
@@ -546,6 +558,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                                     <Percent className="h-3 w-3" />
                                                     {milestone.amount_mode === 'percent' ? 'Theo %' : 'Cố định'}
                                                 </Button>
+                                                )}
                                             </div>
                                             {milestone.amount_mode === 'percent' ? (
                                                 <div className="space-y-1.5">
@@ -559,6 +572,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                                             onChange={(e) => updateMilestone(milestone.id, 'percentage', parseFloat(e.target.value) || 0)}
                                                             placeholder="0"
                                                             className="flex-1"
+                                                            disabled={isCompleted}
                                                         />
                                                         <span className="text-sm text-muted-foreground shrink-0">%</span>
                                                     </div>
@@ -573,6 +587,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                                     value={formatNumber(milestone.amount)}
                                                     onChange={(e) => updateMilestone(milestone.id, 'amount', parseFormattedNumber(e.target.value))}
                                                     placeholder="0"
+                                                    disabled={isCompleted}
                                                 />
                                             )}
                                         </div>
@@ -580,7 +595,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                             <Label>Hạn thanh toán (Dự kiến)</Label>
                                             <Popover>
                                                 <PopoverTrigger asChild>
-                                                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                                                    <Button variant="outline" className="w-full justify-start text-left font-normal" disabled={isCompleted}>
                                                         <CalendarIcon className="mr-2 h-4 w-4" />
                                                         {milestone.due_date ? format(milestone.due_date, 'dd/MM/yyyy') : 'Chọn'}
                                                     </Button>
@@ -620,11 +635,13 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                                 value={milestone.delay_reason}
                                                 onChange={(e) => updateMilestone(milestone.id, 'delay_reason', e.target.value)}
                                                 placeholder="VD: Chờ phản hồi khách hàng"
+                                                disabled={isCompleted}
                                             />
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                                )
+                            })}
 
                             <div className="p-4 bg-muted rounded-lg">
                                 <div className="flex justify-between font-medium">
