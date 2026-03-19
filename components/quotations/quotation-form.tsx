@@ -182,16 +182,17 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             ]
         }
 
-        // Assign section_id based on section_name transitions to keep initial sections separate
-        let currentSecId = 0
-        let lastSectionName: string | null = null
-        return rawItems.map((item, idx) => {
+        // Assign section_id based on section_name — group by name (not by position transitions)
+        // so items with the same section_name always share one section_id
+        const nameToSecId: Record<string, string> = {}
+        let secCounter = 0
+        return rawItems.map((item) => {
             const normalizedName = (item.section_name || '').trim()
-            if (idx === 0 || normalizedName !== lastSectionName) {
-                currentSecId++
-                lastSectionName = normalizedName
+            if (!nameToSecId[normalizedName]) {
+                secCounter++
+                nameToSecId[normalizedName] = `sec-${secCounter}`
             }
-            return { ...item, section_id: `sec-${currentSecId}` }
+            return { ...item, section_id: nameToSecId[normalizedName] }
         })
     })
 
@@ -482,16 +483,16 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     total_price: item.quantity * item.unit_price * (1 - item.discount / 100)
                 }))
 
-                // Assign section_id based on section_name transitions (same logic as initial state)
-                let currentSecId = 0
-                let lastSectionName: string | null = null
-                const newItems = rawItems.map((item: any, idx: number) => {
+                // Assign section_id based on section_name — group by name (consistent with initial state)
+                const nameToSecId: Record<string, string> = {}
+                let secCounter = 0
+                const newItems = rawItems.map((item: any) => {
                     const normalizedName = (item.section_name || '').trim()
-                    if (idx === 0 || normalizedName !== lastSectionName) {
-                        currentSecId++
-                        lastSectionName = normalizedName
+                    if (!nameToSecId[normalizedName]) {
+                        secCounter++
+                        nameToSecId[normalizedName] = `sec-${secCounter}`
                     }
-                    return { ...item, section_id: `sec-${currentSecId}` }
+                    return { ...item, section_id: nameToSecId[normalizedName] }
                 })
 
                 setItems(newItems)
