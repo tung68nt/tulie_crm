@@ -362,6 +362,7 @@ export interface ContractMilestone {
   description?: string
   due_date: string
   amount: number
+  percentage?: number
   status: 'pending' | 'completed' | 'overdue'
   completed_at?: string
   delay_reason?: string

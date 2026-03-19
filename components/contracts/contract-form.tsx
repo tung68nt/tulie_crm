@@ -28,7 +28,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { formatCurrency } from '@/lib/utils/format'
-import { ArrowLeft, CalendarIcon, Save, Plus, Trash2 } from 'lucide-react'
+import { ArrowLeft, CalendarIcon, Save, Plus, Trash2, Percent } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
@@ -50,6 +50,8 @@ interface MilestoneItem {
     id: string
     name: string
     amount: number
+    percentage: number
+    amount_mode: 'fixed' | 'percent'
     due_date: Date | undefined
     status: string
     completed_at: Date | undefined
@@ -114,6 +116,8 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
             id: m.id,
             name: m.name,
             amount: m.amount,
+            percentage: m.percentage || 0,
+            amount_mode: (m.percentage && m.percentage > 0) ? 'percent' as const : 'fixed' as const,
             due_date: m.due_date ? new Date(m.due_date) : undefined,
             status: m.status as any,
             completed_at: m.completed_at ? new Date(m.completed_at) : undefined,
@@ -125,7 +129,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
     const addMilestone = () => {
         setMilestones([
             ...milestones,
-            { id: `temp-${Date.now()}`, name: '', amount: 0, due_date: undefined, status: 'pending', completed_at: undefined, delay_reason: '', type: 'payment' },
+            { id: `temp-${Date.now()}`, name: '', amount: 0, percentage: 0, amount_mode: 'fixed', due_date: undefined, status: 'pending', completed_at: undefined, delay_reason: '', type: 'payment' },
         ])
     }
 
@@ -137,8 +141,33 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
 
     const updateMilestone = (id: string, field: keyof MilestoneItem, value: any) => {
         setMilestones(
-            milestones.map((m) => (m.id === id ? { ...m, [field]: value } : m))
+            milestones.map((m) => {
+                if (m.id !== id) return m
+                const updated = { ...m, [field]: value }
+                // Auto-calc amount when percentage changes
+                if (field === 'percentage' && updated.amount_mode === 'percent' && totalValue > 0) {
+                    updated.amount = Math.round(totalValue * (updated.percentage / 100))
+                }
+                // When switching to percent mode, calc percentage from current amount
+                if (field === 'amount_mode' && value === 'percent' && totalValue > 0 && updated.amount > 0) {
+                    updated.percentage = Math.round((updated.amount / totalValue) * 10000) / 100
+                }
+                // When switching to fixed mode, keep amount as-is
+                return updated
+            })
         )
+    }
+
+    // Recalculate percent-mode milestone amounts when totalValue changes
+    const handleTotalValueChange = (newValue: number) => {
+        setTotalValue(newValue)
+        if (newValue > 0) {
+            setMilestones(prev => prev.map(m =>
+                m.amount_mode === 'percent' && m.percentage > 0
+                    ? { ...m, amount: Math.round(newValue * (m.percentage / 100)) }
+                    : m
+            ))
+        }
     }
 
     // Validation warnings
@@ -196,6 +225,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
             const milestoneData = milestones.map(m => ({
                 name: m.name,
                 amount: m.amount,
+                percentage: m.amount_mode === 'percent' ? m.percentage : undefined,
                 due_date: m.due_date?.toISOString(),
                 status: m.status,
                 completed_at: m.completed_at?.toISOString(),
@@ -326,7 +356,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     type="text"
                                     inputMode="numeric"
                                     value={formatNumber(totalValue)}
-                                    onChange={(e) => setTotalValue(parseFormattedNumber(e.target.value))}
+                                    onChange={(e) => handleTotalValueChange(parseFormattedNumber(e.target.value))}
                                     placeholder="0"
                                 />
                             </div>
@@ -504,14 +534,47 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     </div>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <Label>Số tiền</Label>
-                                            <Input
-                                                type="text"
-                                                inputMode="numeric"
-                                                value={formatNumber(milestone.amount)}
-                                                onChange={(e) => updateMilestone(milestone.id, 'amount', parseFormattedNumber(e.target.value))}
-                                                placeholder="0"
-                                            />
+                                            <div className="flex items-center justify-between">
+                                                <Label>Số tiền</Label>
+                                                <Button
+                                                    type="button"
+                                                    variant={milestone.amount_mode === 'percent' ? 'default' : 'outline'}
+                                                    size="sm"
+                                                    className="h-6 px-2 text-xs gap-1"
+                                                    onClick={() => updateMilestone(milestone.id, 'amount_mode', milestone.amount_mode === 'fixed' ? 'percent' : 'fixed')}
+                                                >
+                                                    <Percent className="h-3 w-3" />
+                                                    {milestone.amount_mode === 'percent' ? 'Theo %' : 'Cố định'}
+                                                </Button>
+                                            </div>
+                                            {milestone.amount_mode === 'percent' ? (
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <Input
+                                                            type="number"
+                                                            min={0}
+                                                            max={100}
+                                                            step={0.01}
+                                                            value={milestone.percentage || ''}
+                                                            onChange={(e) => updateMilestone(milestone.id, 'percentage', parseFloat(e.target.value) || 0)}
+                                                            placeholder="0"
+                                                            className="flex-1"
+                                                        />
+                                                        <span className="text-sm text-muted-foreground shrink-0">%</span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        = {formatCurrency(milestone.amount)}
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <Input
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    value={formatNumber(milestone.amount)}
+                                                    onChange={(e) => updateMilestone(milestone.id, 'amount', parseFormattedNumber(e.target.value))}
+                                                    placeholder="0"
+                                                />
+                                            )}
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Hạn thanh toán (Dự kiến)</Label>
