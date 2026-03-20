@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw, Eye, EyeOff } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -64,7 +64,9 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
         fromDb: boolean
         dbDocId?: string
         milestoneId?: string
+        isVisible?: boolean
     }
+
 
     const DOC_META: Record<string, { label: string; description: string; icon: any }> = {
         contract: { label: 'Hợp đồng kinh tế', description: 'Hợp đồng ký kết giữa 2 bên với đầy đủ điều khoản pháp lý', icon: FileText },
@@ -97,6 +99,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     fromDb: true,
                     dbDocId: doc.id,
                     milestoneId: doc.milestone_id,
+                    isVisible: doc.is_visible_on_portal !== false,
                 }
             })
         }
@@ -115,6 +118,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 description: meta.description,
                 icon: meta.icon,
                 fromDb: false,
+                isVisible: false,
             }
         })
     })()
@@ -128,6 +132,26 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             window.open(`/api/contracts/${contract.id}/preview?type=${item.type}`, '_blank')
         }
         setLoading(null)
+    }
+
+    const handleToggleVisibility = async (item: DocItem) => {
+        if (!item.dbDocId) return
+        setLoading(item.key)
+        try {
+            const nextVal = !item.isVisible
+            const res = await fetch(`/api/contracts/${contract.id}/documents/${item.dbDocId}/toggle-visibility`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_visible: nextVal })
+            })
+            if (!res.ok) throw new Error('Cập nhật thất bại')
+            setDbDocs(prev => prev.map(d => d.id === item.dbDocId ? { ...d, is_visible_on_portal: nextVal } : d))
+            toast.success(nextVal ? 'Đã hiển thị trên Portal' : 'Đã ẩn khỏi Portal')
+        } catch (err: any) {
+            toast.error(err.message)
+        } finally {
+            setLoading(null)
+        }
     }
 
     // Print
@@ -488,6 +512,19 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                     {isActive ? <LoadingSpinner size="sm" /> : <ChevronRight className="h-3 w-3" />}
                                     Xem
                                 </Button>
+                                {isGenerated && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-xs"
+                                        onClick={() => handleToggleVisibility(item)}
+                                        disabled={isActive}
+                                        title={item.isVisible ? "Đang hiện trên Portal" : "Đang ẩn khỏi Portal"}
+                                    >
+                                        {item.isVisible ? <Eye className="h-3 w-3 text-emerald-600" /> : <EyeOff className="h-3 w-3 text-zinc-400" />}
+                                        {item.isVisible ? <span className="text-emerald-700">Hiện Portal</span> : <span className="text-zinc-500">Ẩn Portal</span>}
+                                    </Button>
+                                )}
                                 <Button
                                     variant="ghost"
                                     size="sm"
