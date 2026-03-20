@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -21,14 +21,38 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [loading, setLoading] = useState<string | null>(null)
     const [showForm, setShowForm] = useState(false)
     const [dbDocs, setDbDocs] = useState<any[]>([])
+    const [regenerating, setRegenerating] = useState(false)
 
-    // Load DB documents on mount
-    useEffect(() => {
+    const loadDocs = useCallback(() => {
         fetch(`/api/contracts/${contract.id}/documents`)
             .then(r => r.ok ? r.json() : { documents: [] })
             .then(data => setDbDocs(data.documents || []))
             .catch(() => {})
     }, [contract.id])
+
+    // Load DB documents on mount
+    useEffect(() => {
+        loadDocs()
+    }, [loadDocs])
+
+    // Regenerate all documents from current contract data
+    const handleRegenerate = async () => {
+        setRegenerating(true)
+        try {
+            const res = await fetch(`/api/contracts/${contract.id}/documents`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ regenerate: true })
+            })
+            if (!res.ok) throw new Error('Failed')
+            toast.success('Đã tạo lại giấy tờ thành công')
+            loadDocs()
+        } catch {
+            toast.error('Không thể tạo lại giấy tờ')
+        } finally {
+            setRegenerating(false)
+        }
+    }
 
     // Build doc items list from DB docs or fallback to static types
     interface DocItem {
@@ -237,9 +261,21 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     <FileText className="h-5 w-5" />
                     Bộ giấy tờ
                 </CardTitle>
-                <p className="text-xs text-muted-foreground">
-                    Xuất giấy tờ từ dữ liệu hợp đồng — tự động điền thông tin
-                </p>
+                <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                        Xuất giấy tờ từ dữ liệu hợp đồng — tự động điền thông tin
+                    </p>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs gap-1"
+                        onClick={handleRegenerate}
+                        disabled={regenerating}
+                    >
+                        <RefreshCw className={`h-3 w-3 ${regenerating ? 'animate-spin' : ''}`} />
+                        {regenerating ? 'Đang tạo...' : 'Tạo lại'}
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-3">
                 {/* Warning for missing data */}

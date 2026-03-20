@@ -70,7 +70,7 @@ export const paymentTemplate = `
 
   <!-- Thông tin thanh toán -->
   <p style="margin:16px 0 8px 0; font-weight:bold;">Thông tin chuyển khoản:</p>
-  <table style="margin-left: 1.27cm; margin-bottom:16px; border-collapse:collapse; font-size:13pt;">
+  <table style="margin-left: 1.27cm; margin-bottom:16px; border-collapse:collapse; font-size:10pt;">
     <tr>
       <td style="padding:4px 12px 4px 0; white-space:nowrap;">- Đơn vị thụ hưởng:</td>
       <td style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
@@ -108,8 +108,6 @@ export const paymentTemplate = `
         <p style="font-weight:bold; margin:0; font-size:12pt;">CÔNG NGHỆ TULIE</p>
         <p style="font-style:italic; margin:4px 0; font-size:11pt;">(Ký, ghi rõ họ tên, đóng dấu)</p>
         <div style="height:80px;"></div>
-        <p style="font-weight:bold; margin:0;">Nguyễn Thanh Tùng</p>
-        <p style="margin:0;">Giám đốc</p>
       </td>
     </tr>
   </table>
