@@ -63,13 +63,19 @@ export async function getPortalDataByToken(token: string) {
 
             if (siblingQuotes) allQuotations = siblingQuotes
 
-            // 2. Get all contracts in this project
+            const qIdsStr = allQuotations.map(q => q.id).join(',')
+            const contractOrFilter = qIdsStr ? `project_id.eq.${projectId},quotation_id.in.(${qIdsStr})` : `project_id.eq.${projectId}`
+
             const { data: siblingContracts } = await supabase
                 .from('contracts')
                 .select('*, milestones:contract_milestones(*)')
-                .eq('project_id', projectId)
+                .or(contractOrFilter)
 
-            if (siblingContracts) allContracts = siblingContracts
+            if (siblingContracts) {
+                // Deduplicate in case a contract matches both
+                const uniqueContracts = Array.from(new Map(siblingContracts.map(c => [c.id, c])).values())
+                allContracts = uniqueContracts
+            }
 
             // 3. Get Project-level milestones
             const { data: projectMilestones } = await supabase

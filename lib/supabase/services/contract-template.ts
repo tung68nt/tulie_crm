@@ -38,13 +38,19 @@ export const contractTemplate = `
 
   <!-- ===== BÊN A ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
+    <colgroup>
+      <col style="width:32%">
+      <col style="width:35%">
+      <col style="width:10%">
+      <col style="width:23%">
+    </colgroup>
     <tr style="border-bottom:1px solid #000;">
       <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên sử dụng dịch vụ (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">{{customer_company}}</td>
     </tr>
     <tr>
       <td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td>
-      <td style="font-weight:bold; padding-right:16px;">{{customer_representative}}</td>
+      <td style="font-weight:bold; padding-right:16px;">{{customer_representative_title}} {{customer_representative}}</td>
       <td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td>
       <td>{{customer_position}}</td>
     </tr>
@@ -74,6 +80,12 @@ export const contractTemplate = `
 
   <!-- ===== BÊN B ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
+    <colgroup>
+      <col style="width:32%">
+      <col style="width:35%">
+      <col style="width:10%">
+      <col style="width:23%">
+    </colgroup>
     <tr style="border-bottom:1px solid #000;">
       <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên cung cấp dịch vụ (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>

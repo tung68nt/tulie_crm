@@ -131,45 +131,56 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
             throw contractError
         }
 
-        // 2. Refresh milestones
-        const { error: deleteError } = await supabase
-            .from('contract_milestones')
-            .delete()
-            .eq('contract_id', id)
-
-        if (deleteError) {
-            console.error('Error deleting old milestones:', deleteError)
-            throw deleteError
-        }
-
-        if (milestones && milestones.length > 0) {
-            // Explicitly construct milestone data — avoid spreading `id: undefined`
-            // which can cause Supabase to reject the insert (null id vs auto-generated UUID)
-            const contractMilestones = milestones.map(m => {
-                const row: Record<string, any> = {
-                    contract_id: id,
-                    name: m.name || '',
-                    amount: m.amount || 0,
-                    status: m.status || 'pending',
-                    type: m.type || 'payment',
-                }
-                // Only include optional fields if they have actual values
-                if (m.percentage != null && m.percentage > 0) row.percentage = m.percentage
-                if (m.due_date) row.due_date = m.due_date
-                if (m.completed_at) row.completed_at = m.completed_at
-                if (m.delay_reason) row.delay_reason = m.delay_reason
-                if (m.description) row.description = m.description
-                return row
-            })
-
-            const { error: milestoneError } = await supabase
+        // 2. Manage milestones
+        if (milestones) {
+            // Get current milestones to identify which ones to delete
+            const { data: currentMilestones } = await supabase
                 .from('contract_milestones')
-                .insert(contractMilestones)
-
-            if (milestoneError) {
-                console.error('Error inserting new milestones:', milestoneError)
-                throw milestoneError
+                .select('id')
+                .eq('contract_id', id)
+            
+            const currentIds = currentMilestones?.map(m => m.id) || []
+            const newIds = milestones.map(m => m.id).filter(mid => mid && !mid.startsWith('temp-'))
+            
+            // Delete milestones that are removed
+            const idsToDelete = currentIds.filter(cid => !newIds.includes(cid))
+            if (idsToDelete.length > 0) {
+                const { error: deleteError } = await supabase
+                    .from('contract_milestones')
+                    .delete()
+                    .in('id', idsToDelete)
+                if (deleteError) console.error('Error deleting removed milestones:', deleteError)
             }
+
+            if (milestones.length > 0) {
+                const contractMilestones = milestones.map(m => {
+                    const row: Record<string, any> = {
+                        contract_id: id,
+                        name: m.name || '',
+                        amount: m.amount || 0,
+                        status: m.status || 'pending',
+                        type: m.type || 'payment',
+                    }
+                    if (m.id && !m.id.startsWith('temp-')) {
+                        row.id = m.id
+                    }
+                    // Only include optional fields if they have actual values
+                    if (m.percentage != null && m.percentage > 0) row.percentage = m.percentage
+                    if (m.due_date) row.due_date = m.due_date
+                    if (m.completed_at) row.completed_at = m.completed_at
+                    if (m.delay_reason) row.delay_reason = m.delay_reason
+                    if (m.description) row.description = m.description
+                    return row
+                })
+
+                const { error: milestoneError } = await supabase
+                    .from('contract_milestones')
+                    .upsert(contractMilestones, { onConflict: 'id' })
+
+                if (milestoneError) {
+                    console.error('Error upserting new milestones:', milestoneError)
+                    throw milestoneError
+                }
 
             // 3. Auto-sync: link payment milestones to the project (for customer portal)
             // Use .maybeSingle() instead of .single() to avoid error when no project exists
@@ -186,6 +197,7 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
                     .eq('contract_id', id)
                     .eq('type', 'payment')
             }
+            } // Close if (milestones.length > 0)
         }
 
         revalidatePath('/contracts')

@@ -278,6 +278,7 @@ export async function generateDocument(
             customer_tax_code: custData.tax_code || customer.tax_code || '',
             customer_email: custData.email || customer.email || '',
             customer_phone: custData.phone || customer.phone || '',
+            customer_representative_title: custData.representative_title || customer.representative_title || '',
             customer_representative: custData.representative || customer.representative || '',
             customer_position: custData.position || customer.position || '',
             customer_invoice_address: custData.invoice_address || custData.address || customer.address || '',
@@ -387,12 +388,12 @@ export async function generateDocument(
                 const paymentMilestones = contract.milestones.filter((m: any) => m.type === 'payment')
                 if (paymentMilestones.length > 0) {
                     const totalAmount = contract.total_amount || 0
-                    let paymentTermsHtml = ''
-                    paymentMilestones.forEach((m: any, idx: number) => {
+                    const paymentTermsHtml = paymentMilestones.map((m: any, idx: number) => {
                         const percentage = totalAmount > 0 ? Math.round((m.amount / totalAmount) * 100) : 0
                         const dueStr = m.due_date ? `(Hạn: ${new Date(m.due_date).toLocaleDateString('vi-VN')})` : ''
-                        paymentTermsHtml += `<br/>- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ — ${m.name} ${dueStr}`
-                    })
+                        return `- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ — ${m.name} ${dueStr}`
+                    }).join('<br/>')
+                    
                     variables.payment_terms = paymentTermsHtml
 
                     // For payment request: use first pending milestone or total

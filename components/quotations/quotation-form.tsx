@@ -182,17 +182,18 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             ]
         }
 
-        // Assign section_id based on section_name — group by name (not by position transitions)
-        // so items with the same section_name always share one section_id
-        const nameToSecId: Record<string, string> = {}
-        let secCounter = 0
-        return rawItems.map((item) => {
-            const normalizedName = (item.section_name || '').trim()
-            if (!nameToSecId[normalizedName]) {
+        let currentSecId = 'sec-1'
+        let lastSecName = rawItems[0]?.section_name || ''
+        let secCounter = 1
+
+        return rawItems.map((item, index) => {
+            const currentName = (item.section_name || '').trim()
+            if (index > 0 && currentName !== lastSecName) {
                 secCounter++
-                nameToSecId[normalizedName] = `sec-${secCounter}`
+                currentSecId = `sec-${secCounter}`
+                lastSecName = currentName
             }
-            return { ...item, section_id: nameToSecId[normalizedName] }
+            return { ...item, section_id: currentSecId }
         })
     })
 

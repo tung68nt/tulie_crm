@@ -21,6 +21,11 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card'
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+} from '@/components/ui/tabs'
 import { Calendar } from '@/components/ui/calendar'
 import {
     Popover,
@@ -223,6 +228,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
             }
 
             const milestoneData = milestones.map(m => ({
+                id: m.id,
                 name: m.name,
                 amount: m.amount,
                 percentage: m.amount_mode === 'percent' ? m.percentage : undefined,
@@ -548,16 +554,16 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                             <div className="flex items-center justify-between">
                                                 <Label>Số tiền</Label>
                                                 {!isCompleted && (
-                                                <Button
-                                                    type="button"
-                                                    variant={milestone.amount_mode === 'percent' ? 'default' : 'outline'}
-                                                    size="sm"
-                                                    className="h-6 px-2 text-xs gap-1"
-                                                    onClick={() => updateMilestone(milestone.id, 'amount_mode', milestone.amount_mode === 'fixed' ? 'percent' : 'fixed')}
+                                                <Tabs
+                                                    value={milestone.amount_mode}
+                                                    onValueChange={(v) => updateMilestone(milestone.id, 'amount_mode', v as 'fixed' | 'percent')}
+                                                    className="w-[130px]"
                                                 >
-                                                    <Percent className="h-3 w-3" />
-                                                    {milestone.amount_mode === 'percent' ? 'Theo %' : 'Cố định'}
-                                                </Button>
+                                                    <TabsList className="h-8 p-1 w-full grid grid-cols-2 bg-muted/50 items-center">
+                                                        <TabsTrigger value="percent" className="text-[10px] h-6 px-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">Theo %</TabsTrigger>
+                                                        <TabsTrigger value="fixed" className="text-[10px] h-6 px-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">Cố định</TabsTrigger>
+                                                    </TabsList>
+                                                </Tabs>
                                                 )}
                                             </div>
                                             {milestone.amount_mode === 'percent' ? (
