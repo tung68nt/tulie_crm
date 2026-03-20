@@ -135,25 +135,28 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 const title = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'Document'
                 const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`
 
+                // Use Blob URL so the tab shows a real URL instead of about:blank
+                const blob = new Blob([fullHtml], { type: 'text/html; charset=utf-8' })
+                const blobUrl = URL.createObjectURL(blob)
+
                 if (action === 'preview' && win) {
-                    win.document.open()
-                    win.document.write(fullHtml)
-                    win.document.close()
+                    win.location.href = blobUrl
                 } else if (action === 'print' && win) {
-                    win.document.open()
-                    win.document.write(fullHtml)
-                    win.document.close()
-                    win.focus()
-                    setTimeout(() => win!.print(), 300)
+                    win.location.href = blobUrl
+                    // Wait for content to load before printing
+                    win.addEventListener('load', () => {
+                        win!.focus()
+                        win!.print()
+                    })
+                    // Fallback timeout in case load event doesn't fire
+                    setTimeout(() => { try { win!.focus(); win!.print() } catch {} }, 500)
                 } else if (action === 'download') {
                     const label = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'document'
-                    const blob = new Blob([fullHtml], { type: 'text/html' })
-                    const url = URL.createObjectURL(blob)
                     const a = document.createElement('a')
-                    a.href = url
+                    a.href = blobUrl
                     a.download = `${label} - ${contract.contract_number}.html`
                     a.click()
-                    URL.revokeObjectURL(url)
+                    URL.revokeObjectURL(blobUrl)
                 }
             } else {
                 if (win) win.close()
