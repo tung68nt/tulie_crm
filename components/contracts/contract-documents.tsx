@@ -46,8 +46,12 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             })
             if (!res.ok) throw new Error('Failed')
             const data = await res.json()
-            console.log('[Regenerate response]', data)
-            toast.success(`Đã tạo lại: ${data.generated} docs, ${data.milestones?.length || 0} milestones, ${data.documents?.length || 0} final docs`)
+            console.log('[Regenerate response]', JSON.stringify(data, null, 2))
+            if (data.insertErrors?.length > 0) {
+                console.error('[Insert errors]', data.insertErrors)
+                toast.error(`Insert errors: ${data.insertErrors.map((e: any) => `${e.type}: ${e.error} (${e.code})`).join('; ')}`)
+            }
+            toast.success(`Generated: ${data.generated}, Inserted: ${data.inserted}, Final: ${data.documents?.length || 0}`)
             loadDocs()
         } catch {
             toast.error('Không thể tạo lại giấy tờ')

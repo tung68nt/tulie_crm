@@ -59,6 +59,8 @@ export async function POST(
         return NextResponse.json({ 
             documents: finalDocs,
             generated: docs?.length || 0,
+            inserted: (docs as any)?.__insertedCount || 0,
+            insertErrors: (docs as any)?.__insertErrors || [],
             milestones: milestones?.map(m => ({ name: m.name, type: m.type, amount: m.amount })),
             regenerated: true 
         })

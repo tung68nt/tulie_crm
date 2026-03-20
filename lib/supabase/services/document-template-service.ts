@@ -594,6 +594,7 @@ export async function generateDocumentBundle(contractId: string) {
     )
     
     let insertedCount = 0
+    const insertErrors: any[] = []
     for (const doc of docs) {
         const { data: inserted, error: insertErr } = await supabase
             .from('contract_documents')
@@ -602,7 +603,10 @@ export async function generateDocumentBundle(contractId: string) {
             .single()
 
         if (insertErr) {
-            console.error(`[generateDocumentBundle] Error inserting ${doc.type} (milestone_id=${doc.milestone_id}):`, insertErr)
+            console.error(`[generateDocumentBundle] Error inserting ${doc.type} (milestone_id=${doc.milestone_id}):`, 
+                JSON.stringify({ code: insertErr.code, message: insertErr.message, details: insertErr.details, hint: insertErr.hint })
+            )
+            insertErrors.push({ type: doc.type, milestone_id: doc.milestone_id, error: insertErr.message, code: insertErr.code, hint: insertErr.hint })
             // If FK error, try without milestone_id
             if (insertErr.code === '23503' && doc.milestone_id) {
                 const { error: retryErr } = await supabase
@@ -615,7 +619,11 @@ export async function generateDocumentBundle(contractId: string) {
             insertedCount++
         }
     }
-    console.log(`[generateDocumentBundle] Successfully inserted ${insertedCount}/${docs.length} docs`)
+    console.log(`[generateDocumentBundle] Successfully inserted ${insertedCount}/${docs.length} docs, errors: ${insertErrors.length}`)
+    
+    // Attach debug info
+    ;(docs as any).__insertErrors = insertErrors
+    ;(docs as any).__insertedCount = insertedCount
 
     return docs
 }
