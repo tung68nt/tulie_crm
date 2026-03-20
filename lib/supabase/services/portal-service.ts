@@ -82,7 +82,7 @@ export async function getPortalDataByToken(token: string) {
                 const contractIds = allContracts.map(c => c.id)
                 let { data: contractDocs } = await supabase
                     .from('contract_documents')
-                    .select('id, contract_id, type, doc_number, content, status')
+                    .select('id, contract_id, type, doc_number, content, status, is_visible_on_portal')
                     .in('contract_id', contractIds)
                     .order('created_at', { ascending: true })
 
@@ -101,7 +101,8 @@ export async function getPortalDataByToken(token: string) {
                                     type: d.type,
                                     doc_number: d.doc_number,
                                     content: d.content,
-                                    status: d.status
+                                    status: d.status,
+                                    is_visible_on_portal: true
                                 }))]
                             }
                         }
@@ -209,7 +210,7 @@ export async function getPortalDataByToken(token: string) {
                 // Also fetch contract_documents for standalone mode
                 let { data: contractDocs } = await supabase
                     .from('contract_documents')
-                    .select('id, contract_id, type, doc_number, content, status')
+                    .select('id, contract_id, type, doc_number, content, status, is_visible_on_portal')
                     .eq('contract_id', contract.id)
                     .order('created_at', { ascending: true })
 
@@ -225,7 +226,8 @@ export async function getPortalDataByToken(token: string) {
                                 type: d.type,
                                 doc_number: d.doc_number,
                                 content: d.content,
-                                status: d.status
+                                status: d.status,
+                                is_visible_on_portal: true
                             }))
                         }
                     } catch (genErr) {

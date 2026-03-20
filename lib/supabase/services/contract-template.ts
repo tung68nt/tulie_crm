@@ -39,13 +39,13 @@ export const contractTemplate = `
   <!-- ===== BÊN A ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
     <colgroup>
+      <col style="width:25%">
       <col style="width:32%">
-      <col style="width:35%">
-      <col style="width:10%">
-      <col style="width:23%">
+      <col style="width:13%">
+      <col style="width:30%">
     </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên sử dụng dịch vụ (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 0;">Bên sử dụng dịch vụ (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">{{customer_company}}</td>
     </tr>
     <tr>
@@ -71,33 +71,27 @@ export const contractTemplate = `
       <td>{{customer_email}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Số tài khoản:</td>
-      <td>{{customer_bank_account}}</td>
-      <td style="white-space:nowrap;">tại</td>
-      <td>{{customer_bank_name}}</td>
+      <td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td>
+      <td style="vertical-align:top;">{{customer_bank_account}}</td>
+      <td style="white-space:nowrap; vertical-align:top;">tại</td>
+      <td style="vertical-align:top;">{{customer_bank_name}}</td>
     </tr>
   </table>
 
   <!-- ===== BÊN B ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
     <colgroup>
+      <col style="width:25%">
       <col style="width:32%">
-      <col style="width:35%">
-      <col style="width:10%">
-      <col style="width:23%">
+      <col style="width:13%">
+      <col style="width:30%">
     </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên cung cấp dịch vụ (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 0;">Bên cung cấp dịch vụ (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td>
-      <td style="font-weight:bold; padding-right:16px;">Ông Nguyễn Thanh Tùng</td>
-      <td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td>
-      <td>Giám đốc</td>
-    </tr>
-    <tr>
-      <td style="white-space:nowrap;">Địa chỉ liên hệ:</td>
+      <td style="white-space:nowrap; padding-right:8px;">Địa chỉ liên hệ:</td>
       <td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td>
     </tr>
     <tr>
@@ -113,10 +107,10 @@ export const contractTemplate = `
       <td>info@tulie.vn</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Số tài khoản:</td>
-      <td>86683979</td>
-      <td style="white-space:nowrap;">tại</td>
-      <td>Ngân hàng Techcombank - CN Hội sở</td>
+      <td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td>
+      <td style="vertical-align:top;">86683979</td>
+      <td style="white-space:nowrap; vertical-align:top;">tại</td>
+      <td style="vertical-align:top;">Ngân hàng Techcombank - CN Hội sở</td>
     </tr>
   </table>
 
@@ -127,7 +121,7 @@ export const contractTemplate = `
       <td style="font-weight:bold; vertical-align:top; padding:6px 0;">Điều 1: Nội dung hợp đồng và giá trị hợp đồng</td>
     </tr>
   </table>
-  <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border-bottom:1px solid #000;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
     <tr>
       <td style="width:30px; vertical-align:top; padding:2px 0;">1.1</td>
       <td style="vertical-align:top; padding:2px 0;">Theo đề nghị của Bên A, Bên B thực hiện cung cấp cho Bên A những sản phẩm như sau:</td>

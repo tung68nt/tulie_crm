@@ -29,35 +29,46 @@ export const orderTemplate = `
 
   <!-- Bên A -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
+    <colgroup>
+      <col style="width:25%">
+      <col style="width:32%">
+      <col style="width:13%">
+      <col style="width:30%">
+    </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên đặt hàng (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 0;">Bên đặt hàng (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">{{customer_company}}</td>
     </tr>
     <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">{{customer_representative}}</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">{{customer_position}}</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">{{customer_address}}</td></tr>
     <tr><td>Điện thoại:</td><td>{{customer_phone}}</td><td>Di động:</td><td>{{customer_mobile}}</td></tr>
     <tr><td>Mã số thuế:</td><td>{{customer_tax_code}}</td><td>Email:</td><td>{{customer_email}}</td></tr>
-    <tr><td>Số tài khoản:</td><td>{{customer_bank_account}}</td><td>tại</td><td>{{customer_bank_name}}</td></tr>
+    <tr><td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td><td style="vertical-align:top;">{{customer_bank_account}}</td><td style="white-space:nowrap; vertical-align:top;">tại</td><td style="vertical-align:top;">{{customer_bank_name}}</td></tr>
   </table>
 
   <!-- Bên B -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
+    <colgroup>
+      <col style="width:25%">
+      <col style="width:32%">
+      <col style="width:13%">
+      <col style="width:30%">
+    </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap;">Bên nhận đặt hàng (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 0;">Bên nhận đặt hàng (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
-    <tr><td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px;">Ông Nguyễn Thanh Tùng</td><td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td><td style="">Giám đốc</td></tr>
     <tr><td>Địa chỉ liên hệ:</td><td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
     <tr><td>Điện thoại:</td><td></td><td>Di động:</td><td>+84 98 898 4554</td></tr>
     <tr><td>Mã số thuế:</td><td>0110163102</td><td>Email:</td><td>info@tulie.vn</td></tr>
-    <tr><td>Số tài khoản:</td><td>86683979</td><td>tại</td><td>Ngân hàng Techcombank - CN Hội sở</td></tr>
+    <tr><td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td><td style="vertical-align:top;">86683979</td><td style="white-space:nowrap; vertical-align:top;">tại</td><td style="vertical-align:top;">Ngân hàng Techcombank - CN Hội sở</td></tr>
   </table>
 
   <!-- Điều 1 -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:6px;">
     <tr><td style="width:30px; font-weight:bold; vertical-align:top; padding:6px 0;">1</td><td style="font-weight:bold; vertical-align:top; padding:6px 0;">Điều 1: Nội dung và giá trị đơn đặt hàng</td></tr>
   </table>
-  <table style="width:100%; border-collapse:collapse; margin-bottom:8px; border-bottom:1px solid #000;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
     <tr><td style="width:30px; vertical-align:top; padding:2px 0;">1.1</td><td style="vertical-align:top; padding:2px 0;">Bên A cam kết đặt hàng các sản phẩm, dịch vụ như sau:</td></tr>
   </table>
 

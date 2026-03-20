@@ -294,6 +294,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     const hasSignedContract = contracts.some((c: any) => c.status === 'signed')
                     const hasDraftContract = contracts.some((c: any) => c.status === 'draft')
                     const hasPendingContract = contracts.some((c: any) => ['sent', 'viewed'].includes(c.status))
+                    const hasVisibleDocs = contracts.some((c: any) => c.documents && c.documents.some((d: any) => d.is_visible_on_portal))
                     const hasPaidDeposit = invoices.some((inv: any) => inv.status === 'paid')
                     const isCompleted = project?.status === 'completed'
                     const allAccepted = workItems.length > 0 && workItems.every((w: any) => w.status === 'accepted')
@@ -309,8 +310,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         banner = { icon: '🚀', title: 'Dự án đang triển khai', desc: 'Hợp đồng đã ký & đã nhận cọc. Theo dõi tiến độ bên dưới.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasSignedContract) {
                         banner = { icon: '✅', title: 'Hợp đồng đã ký — Chờ đặt cọc', desc: 'Vui lòng thanh toán đặt cọc theo thông tin chuyển khoản trong báo giá để bắt đầu triển khai.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
-                    } else if (hasPendingContract) {
-                        banner = { icon: '📄', title: 'Hợp đồng đang chờ review', desc: 'Vui lòng xem xét hợp đồng và xác nhận để tiến hành ký kết.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
+                    } else if (hasPendingContract || hasVisibleDocs) {
+                        banner = { icon: '📄', title: 'Tài liệu đang chờ review', desc: 'Vui lòng xem xét các tài liệu dự án và xác nhận hợp đồng (nếu có) để tiến hành dự án.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasDraftContract) {
                         banner = { icon: '✏️', title: 'Đang soạn hợp đồng', desc: 'Hợp đồng đang được soạn thảo dựa trên báo giá đã duyệt. Bạn sẽ nhận được bản review sớm.', color: 'text-zinc-700', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasAcceptedQuote && !hasContracts) {
@@ -331,9 +332,9 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 })()}
 
                 {/* Contract Review & Confirm Panel */}
-                {contracts.filter((c: any) => ['sent', 'viewed'].includes(c.status)).map((c: any) => {
+                {contracts.filter((c: any) => ['sent', 'viewed'].includes(c.status) || (c.documents && c.documents.some((d: any) => d.is_visible_on_portal))).map((c: any) => {
                     // Find the main contract document (type = 'contract' or 'order')
-                    const mainDoc = (c.documents || []).find((d: any) => d.type === 'contract' || d.type === 'order')
+                    const mainDoc = (c.documents || []).find((d: any) => (d.type === 'contract' || d.type === 'order') && d.is_visible_on_portal !== false)
                     return (
                     <div key={c.id} className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
                         <div className="p-6 space-y-4">
@@ -517,16 +518,29 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Tiện ích khác — Hidden for now as it's redundant with the new milestone cards */}
                 {/* Document Viewer Dialog for Portal */}
                 <Dialog open={isViewingDoc} onOpenChange={setIsViewingDoc}>
-                    <DialogContent className="sm:max-w-[800px] max-h-[85vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>Xem tài liệu</DialogTitle>
-                        </DialogHeader>
-                        <div
-                            className="p-8 prose prose-zinc max-w-none bg-white min-h-[400px]"
-                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
-                        />
-                        <div className="flex justify-end pt-4 border-t">
-                            <Button onClick={() => setIsViewingDoc(false)}>Đóng</Button>
+                    <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
+                        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-100">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
+                                    <FileText className="w-4 h-4 text-zinc-900" />
+                                </div>
+                                <DialogTitle className="text-base font-semibold text-zinc-900">Chi tiết tài liệu</DialogTitle>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                onClick={() => setIsViewingDoc(false)}
+                                className="text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+                            >
+                                Đóng
+                            </Button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
+                            <div
+                                className="bg-white p-8 md:p-12 lg:p-16 shadow-sm border border-zinc-200 text-[#000]"
+                                style={{ margin: '0 auto', maxWidth: '210mm' }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
+                            />
                         </div>
                     </DialogContent>
                 </Dialog>
@@ -847,34 +861,50 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
         const contractDocs: any[] = contract?.documents || []
         const quotation = item.quotation
 
-        const docs = defaultDocTypes.map(dt => {
-            if (dt.key === 'quotation') {
-                // Quotation status
-                const isQuoteSent = quotation && ['sent', 'viewed', 'accepted', 'converted'].includes(quotation.status)
-                return {
-                    title: dt.title,
-                    status: isQuoteSent ? 'completed' : 'pending',
-                    date: isQuoteSent ? quotation.created_at : null,
-                }
+        // Append Quotation first
+        const isQuoteSent = quotation && ['sent', 'viewed', 'accepted', 'converted'].includes(quotation.status)
+        const docs: any[] = [
+            {
+                title: 'Báo giá (đã gửi)',
+                status: isQuoteSent ? 'completed' : 'pending',
+                date: isQuoteSent ? quotation.created_at : null,
+            }
+        ]
+
+        // Then append every document from contractDocs that is visible
+        const visibleContractDocs = contractDocs.filter((d: any) => d.is_visible_on_portal !== false)
+        const paymentDocs = visibleContractDocs.filter((d: any) => d.type === 'payment_request')
+        
+        const addedTypes = new Set<string>()
+
+        for (const d of visibleContractDocs) {
+            addedTypes.add(d.type)
+            const metaTitle = DOC_TYPE_LABELS[d.type] || d.type
+
+            let docTitle = metaTitle
+            if (d.type === 'payment_request' && paymentDocs.length > 1) {
+                const idx = paymentDocs.indexOf(d) + 1
+                docTitle = `${metaTitle} đợt ${idx}`
             }
 
-            // Match against contract_documents
-            const matchedDocs = contractDocs.filter((d: any) => d.type === dt.key)
-            if (matchedDocs.length > 0) {
-                // For payment_request, there may be multiple - mark as completed if any exists
-                const mainDoc = matchedDocs[0]
-                return {
-                    title: matchedDocs.length > 1 
-                        ? `${dt.title} (${matchedDocs.length} đợt)` 
-                        : dt.title,
-                    status: mainDoc.status === 'signed' ? 'signed' : 'completed',
-                    generated_doc_id: mainDoc.id,
-                    date: mainDoc.created_at,
-                }
-            }
+            docs.push({
+                title: docTitle,
+                status: d.status === 'signed' ? 'signed' : 'completed',
+                generated_doc_id: d.id,
+                date: d.created_at,
+            })
+        }
 
-            return { title: dt.title, status: 'pending' }
-        })
+        // Add pending default ones if not present
+        const defaultTypes = ['contract', 'delivery_minutes', 'payment_request', 'acceptance']
+        for (const type of defaultTypes) {
+            if (!addedTypes.has(type)) {
+                docs.push({
+                    title: DOC_TYPE_LABELS[type] || 'Tài liệu',
+                    status: 'pending'
+                })
+            }
+        }
 
         groupedDocs.push({ title: item.title, docs })
     })

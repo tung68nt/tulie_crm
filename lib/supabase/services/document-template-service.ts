@@ -411,8 +411,11 @@ export async function generateDocument(
                             const pct = totalAmount > 0 ? Math.round((pendingMilestone.amount / totalAmount) * 100) : 0
                             variables.payment_amount = new Intl.NumberFormat('vi-VN').format(pendingMilestone.amount) + ' VNĐ'
                             variables.payment_percentage = `${pct}%`
-                            if (!variables.amount_in_words || variables.amount_in_words === readNumberToWords(totalAmount)) {
-                                variables.amount_in_words = readNumberToWords(pendingMilestone.amount)
+                            // Only overwrite amount_in_words if this is a payment request
+                            if (template.type === 'payment_request') {
+                                if (!variables.amount_in_words || variables.amount_in_words === readNumberToWords(totalAmount)) {
+                                    variables.amount_in_words = readNumberToWords(pendingMilestone.amount)
+                                }
                             }
                         }
                     }
