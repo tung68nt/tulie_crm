@@ -509,9 +509,6 @@ export async function generateDocumentBundle(contractId: string) {
             const paymentMilestones = (contract.milestones || []).filter((m: any) => 
                 m.amount > 0
             )
-            console.log(`[generateDocumentBundle] Contract ${contractId}: ${(contract.milestones||[]).length} total milestones, ${paymentMilestones.length} with amount > 0`, 
-                paymentMilestones.map((m:any) => ({ name: m.name, type: m.type, amount: m.amount }))
-            )
             
             if (paymentMilestones.length === 0) {
                 // No milestones → generate single generic ĐNTT
@@ -588,42 +585,24 @@ export async function generateDocumentBundle(contractId: string) {
         }
     }
 
-    // 5. Insert all generated documents (one by one to isolate errors)
-    console.log(`[generateDocumentBundle] Generated ${docs.length} docs for contract ${contractId}:`, 
-        docs.map(d => ({ type: d.type, milestone_id: d.milestone_id, doc_number: d.doc_number }))
-    )
-    
-    let insertedCount = 0
-    const insertErrors: any[] = []
-    for (const doc of docs) {
-        const { data: inserted, error: insertErr } = await supabase
-            .from('contract_documents')
-            .insert(doc)
-            .select('id, type, milestone_id')
-            .single()
+    // 5. Insert all generated documents (one by one to handle FK errors gracefully)
+    if (docs.length > 0) {
+        for (const doc of docs) {
+            const { error: insertErr } = await supabase
+                .from('contract_documents')
+                .insert(doc)
 
-        if (insertErr) {
-            console.error(`[generateDocumentBundle] Error inserting ${doc.type} (milestone_id=${doc.milestone_id}):`, 
-                JSON.stringify({ code: insertErr.code, message: insertErr.message, details: insertErr.details, hint: insertErr.hint })
-            )
-            insertErrors.push({ type: doc.type, milestone_id: doc.milestone_id, error: insertErr.message, code: insertErr.code, hint: insertErr.hint })
-            // If FK error, try without milestone_id
-            if (insertErr.code === '23503' && doc.milestone_id) {
-                const { error: retryErr } = await supabase
-                    .from('contract_documents')
-                    .insert({ ...doc, milestone_id: null })
-                if (!retryErr) insertedCount++
-                else console.error(`[generateDocumentBundle] Retry without milestone_id also failed:`, retryErr)
+            if (insertErr) {
+                console.error(`Error inserting ${doc.type}:`, insertErr.message)
+                // If FK error on milestone_id, retry without it
+                if (insertErr.code === '23503' && doc.milestone_id) {
+                    await supabase
+                        .from('contract_documents')
+                        .insert({ ...doc, milestone_id: null })
+                }
             }
-        } else {
-            insertedCount++
         }
     }
-    console.log(`[generateDocumentBundle] Successfully inserted ${insertedCount}/${docs.length} docs, errors: ${insertErrors.length}`)
-    
-    // Attach debug info
-    ;(docs as any).__insertErrors = insertErrors
-    ;(docs as any).__insertedCount = insertedCount
 
     return docs
 }

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
 import { getContractDocuments, generateDocumentBundle } from '@/lib/supabase/services/document-template-service'
-import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * GET /api/contracts/[id]/documents
@@ -38,32 +37,11 @@ export async function POST(
         if (isAuthError(authResult)) return authResult
 
         const { id: contractId } = await params
+        await generateDocumentBundle(contractId)
         
-        // Debug: get milestones before regeneration
-        const supabase = createAdminClient()
-        const { data: milestones } = await supabase
-            .from('contract_milestones')
-            .select('id, name, type, amount, status')
-            .eq('contract_id', contractId)
-            .order('due_date', { ascending: true })
-        
-        console.log(`[POST /documents] Contract ${contractId} milestones:`, 
-            milestones?.map(m => ({ name: m.name, type: m.type, amount: m.amount }))
-        )
-        
-        const docs = await generateDocumentBundle(contractId)
-
-        // Also get final docs from DB to confirm
-        const finalDocs = await getContractDocuments(contractId)
-
-        return NextResponse.json({ 
-            documents: finalDocs,
-            generated: docs?.length || 0,
-            inserted: (docs as any)?.__insertedCount || 0,
-            insertErrors: (docs as any)?.__insertErrors || [],
-            milestones: milestones?.map(m => ({ name: m.name, type: m.type, amount: m.amount })),
-            regenerated: true 
-        })
+        // Return fresh docs from DB
+        const documents = await getContractDocuments(contractId)
+        return NextResponse.json({ documents, regenerated: true })
     } catch (error: any) {
         console.error('Error regenerating contract documents:', error)
         return NextResponse.json({ error: 'Failed to regenerate documents' }, { status: 500 })
