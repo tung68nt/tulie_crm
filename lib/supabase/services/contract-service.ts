@@ -158,7 +158,11 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
             }
 
             if (milestones.length > 0) {
-                const contractMilestones = milestones.map(m => {
+                // Separate new vs existing milestones
+                const existingMilestones: Record<string, any>[] = []
+                const newMilestones: Record<string, any>[] = []
+
+                for (const m of milestones) {
                     const row: Record<string, any> = {
                         contract_id: id,
                         name: m.name || '',
@@ -173,17 +177,32 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
                     }
                     if (m.id && !m.id.startsWith('temp-')) {
                         row.id = m.id
+                        existingMilestones.push(row)
+                    } else {
+                        newMilestones.push(row)
                     }
-                    return row
-                })
+                }
 
-                const { error: milestoneError } = await supabase
-                    .from('contract_milestones')
-                    .upsert(contractMilestones, { onConflict: 'id' })
+                // Update existing milestones
+                if (existingMilestones.length > 0) {
+                    const { error: upsertError } = await supabase
+                        .from('contract_milestones')
+                        .upsert(existingMilestones, { onConflict: 'id' })
+                    if (upsertError) {
+                        console.error('Error updating milestones:', upsertError)
+                        return { success: false, error: upsertError.message }
+                    }
+                }
 
-                if (milestoneError) {
-                    console.error('Error upserting milestones:', milestoneError)
-                    return { success: false, error: milestoneError.message }
+                // Insert new milestones (let DB generate UUID)
+                if (newMilestones.length > 0) {
+                    const { error: insertError } = await supabase
+                        .from('contract_milestones')
+                        .insert(newMilestones)
+                    if (insertError) {
+                        console.error('Error inserting new milestones:', insertError)
+                        return { success: false, error: insertError.message }
+                    }
                 }
 
                 // 3. Auto-sync: link payment milestones to the project (for customer portal)
