@@ -231,11 +231,11 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 id: m.id,
                 name: m.name,
                 amount: m.amount,
-                percentage: m.amount_mode === 'percent' ? m.percentage : undefined,
-                due_date: m.due_date?.toISOString(),
+                percentage: m.amount_mode === 'percent' ? m.percentage : null,
+                due_date: m.due_date?.toISOString() || null,
                 status: m.status,
-                completed_at: m.completed_at?.toISOString(),
-                delay_reason: m.delay_reason,
+                completed_at: m.completed_at?.toISOString() || null,
+                delay_reason: m.delay_reason || null,
                 type: m.type
             }))
 
@@ -551,7 +551,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     </div>
                                     <div className="grid gap-4 sm:grid-cols-2">
                                         <div className="space-y-2">
-                                            <div className="flex items-center justify-between">
+                                            <div className="flex items-center justify-between h-8">
                                                 <Label>Số tiền</Label>
                                                 {!isCompleted && (
                                                 <Tabs
@@ -598,7 +598,9 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                             )}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Hạn thanh toán (Dự kiến)</Label>
+                                            <div className="flex items-center h-8">
+                                                <Label>Hạn thanh toán (Dự kiến)</Label>
+                                            </div>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <Button variant="outline" className="w-full justify-start text-left font-normal" disabled={isCompleted}>

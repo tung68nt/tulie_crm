@@ -160,16 +160,15 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
                         amount: m.amount || 0,
                         status: m.status || 'pending',
                         type: m.type || 'payment',
+                        percentage: m.percentage || null,
+                        due_date: m.due_date || null,
+                        completed_at: m.completed_at || null,
+                        delay_reason: m.delay_reason || null,
+                        description: m.description || null,
                     }
                     if (m.id && !m.id.startsWith('temp-')) {
                         row.id = m.id
                     }
-                    // Only include optional fields if they have actual values
-                    if (m.percentage != null && m.percentage > 0) row.percentage = m.percentage
-                    if (m.due_date) row.due_date = m.due_date
-                    if (m.completed_at) row.completed_at = m.completed_at
-                    if (m.delay_reason) row.delay_reason = m.delay_reason
-                    if (m.description) row.description = m.description
                     return row
                 })
 
