@@ -819,23 +819,74 @@ function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: an
     // Group documents by work item
     const groupedDocs: { title: string; docs: any[] }[] = []
 
-    // Default procedures for projects (fallback)
-    const defaultProcedures = [
-        { title: 'Báo giá dịch vụ', status: 'completed' },
-        { title: 'Hợp đồng & Phụ lục', status: 'completed' },
-        { title: 'Biên bản tạm ứng / Hóa đơn', status: 'completed' },
-        { title: 'Biên bản bàn giao sản phẩm', status: 'pending' },
-        { title: 'Quyết toán & Thanh lý', status: 'pending' },
+    // Default document types per work item (templates for the checklist)
+    const DOC_TYPE_LABELS: Record<string, string> = {
+        contract: 'Hợp đồng',
+        order: 'Đơn đặt hàng',
+        payment_request: 'Yêu cầu thanh toán',
+        delivery_minutes: 'Biên bản bàn giao',
+    }
+
+    const defaultDocTypes = [
+        { key: 'quotation', title: 'Báo giá (đã gửi)' },
+        { key: 'contract', title: 'Hợp đồng' },
+        { key: 'delivery_minutes', title: 'Biên bản bàn giao' },
+        { key: 'payment_request', title: 'Yêu cầu thanh toán' },
+        { key: 'acceptance', title: 'Biên bản nghiệm thu' },
     ]
 
     workItems.forEach((item: any) => {
-        const docs = item.required_documents || []
-        if (docs.length > 0) {
-            groupedDocs.push({ title: item.title, docs })
+        const reqDocs = item.required_documents || []
+        if (reqDocs.length > 0) {
+            groupedDocs.push({ title: item.title, docs: reqDocs })
+            return
         }
+
+        // Build from contract.documents + quotation status
+        const contract = item.contract
+        const contractDocs: any[] = contract?.documents || []
+        const quotation = item.quotation
+
+        const docs = defaultDocTypes.map(dt => {
+            if (dt.key === 'quotation') {
+                // Quotation status
+                const isQuoteSent = quotation && ['sent', 'viewed', 'accepted', 'converted'].includes(quotation.status)
+                return {
+                    title: dt.title,
+                    status: isQuoteSent ? 'completed' : 'pending',
+                    date: isQuoteSent ? quotation.created_at : null,
+                }
+            }
+
+            // Match against contract_documents
+            const matchedDocs = contractDocs.filter((d: any) => d.type === dt.key)
+            if (matchedDocs.length > 0) {
+                // For payment_request, there may be multiple - mark as completed if any exists
+                const mainDoc = matchedDocs[0]
+                return {
+                    title: matchedDocs.length > 1 
+                        ? `${dt.title} (${matchedDocs.length} đợt)` 
+                        : dt.title,
+                    status: mainDoc.status === 'signed' ? 'signed' : 'completed',
+                    generated_doc_id: mainDoc.id,
+                    date: mainDoc.created_at,
+                }
+            }
+
+            return { title: dt.title, status: 'pending' }
+        })
+
+        groupedDocs.push({ title: item.title, docs })
     })
 
     if (groupedDocs.length === 0) {
+        const defaultProcedures = [
+            { title: 'Báo giá (đã gửi)', status: 'pending' },
+            { title: 'Hợp đồng', status: 'pending' },
+            { title: 'Biên bản bàn giao', status: 'pending' },
+            { title: 'Yêu cầu thanh toán', status: 'pending' },
+            { title: 'Biên bản nghiệm thu', status: 'pending' },
+        ]
         groupedDocs.push({ title: 'Dự án', docs: defaultProcedures })
     }
 
