@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -47,6 +47,26 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [loading, setLoading] = useState<string | null>(null)
     const [generated, setGenerated] = useState<Record<string, string>>({})
     const [showForm, setShowForm] = useState(false)
+
+    // Persist generated state to localStorage
+    const storageKey = `contract-docs-${contract.id}`
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(storageKey)
+            if (saved) {
+                const parsed = JSON.parse(saved) as Record<string, string>
+                setGenerated(parsed)
+            }
+        } catch {}
+    }, [storageKey])
+
+    const markGenerated = (type: string, html: string) => {
+        setGenerated(prev => {
+            const next = { ...prev, [type]: html }
+            try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
+            return next
+        })
+    }
 
     // Editable customer info — pre-filled from snapshot or customer
     const snapshot = contract.customer_snapshot
@@ -106,6 +126,12 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
         // For preview: simply open the direct URL — no need for POST + blob
         if (action === 'preview') {
             window.open(`/api/contracts/${contract.id}/preview?type=${type}`, '_blank')
+            // Mark as generated
+            setGenerated(prev => {
+                const next = { ...prev, [type]: 'previewed' }
+                try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
+                return next
+            })
             setLoading(null)
             return
         }
@@ -138,7 +164,11 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
 
             const html = data.content || data.html
             if (html) {
-                setGenerated(prev => ({ ...prev, [type]: html }))
+                setGenerated(prev => {
+                    const next = { ...prev, [type]: html }
+                    try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
+                    return next
+                })
                 const title = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'Document'
                 const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`
 
