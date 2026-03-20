@@ -76,7 +76,7 @@ export function BundleSelectorDialog({ isOpen, onOpenChange, workItem, project }
                 const { content } = await generateDocument(
                     templateId,
                     project.customer_id,
-                    workItem.contract_id || undefined,
+                    workItem.contract_id || null,
                     {
                         work_item_title: workItem.title,
                         project_name: project.title

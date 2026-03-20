@@ -120,10 +120,15 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
     try {
         const supabase = await createClient()
 
+        // Strip undefined values from payload (Supabase + Next.js Server Actions can't handle undefined)
+        const cleanContract = Object.fromEntries(
+            Object.entries(contract).filter(([_, v]) => v !== undefined)
+        )
+
         // 1. Update contract
         const { error: contractError } = await supabase
             .from('contracts')
-            .update(contract)
+            .update(cleanContract)
             .eq('id', id)
 
         if (contractError) {

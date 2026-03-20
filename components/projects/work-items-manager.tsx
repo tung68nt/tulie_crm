@@ -115,19 +115,19 @@ export function WorkItemsManager({ project, workItems: initialWorkItems }: WorkI
         startTransition(async () => {
             try {
                 // Use first quotation_id for DB column (backward compat) + store full array in metadata
-                const primaryQuotationId = newItem.quotation_ids[0] || undefined
+                const primaryQuotationId = newItem.quotation_ids[0] || null
                 await createWorkItem({
                     project_id: project.id,
                     title: newItem.title,
                     description: newItem.description,
                     quotation_id: primaryQuotationId,
-                    contract_id: newItem.contract_id || undefined,
+                    contract_id: newItem.contract_id || null,
                     sort_order: initialWorkItems.length,
                     required_documents: DEFAULT_DOCUMENTS.map(d => ({
                         title: d,
                         status: 'pending' as const,
                     })),
-                    metadata: newItem.quotation_ids.length > 1 ? { quotation_ids: newItem.quotation_ids } : undefined,
+                    metadata: newItem.quotation_ids.length > 1 ? { quotation_ids: newItem.quotation_ids } : null,
                 } as any)
                 toast.success('Đã tạo hạng mục mới')
                 setShowCreateDialog(false)
@@ -391,14 +391,14 @@ function WorkItemRow({
     const handleSaveQuotations = async () => {
         startTransition(async () => {
             try {
-                const primaryId = editQuotationIds[0] || undefined
+                const primaryId = editQuotationIds[0] || null
                 await updateWorkItem(item.id, {
                     quotation_id: primaryId,
                     metadata: {
                         ...(item.metadata || {}),
                         quotation_ids: editQuotationIds,
                     },
-                })
+                } as any)
                 toast.success('Đã cập nhật báo giá cho hạng mục')
                 router.refresh()
             } catch (err: any) {

@@ -246,11 +246,15 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
     try {
         const supabase = await createClient()
 
-        // Prepare quotation data (map empty UUIDs to null)
-        const quoteDataToUpdate = {
+        // Prepare quotation data (map empty UUIDs to null, strip undefined values)
+        const rawUpdate = {
             ...quotation,
             customer_id: quotation.customer_id || null
         }
+        // Strip undefined values — Supabase .update() and Next.js Server Actions cannot serialize undefined
+        const quoteDataToUpdate = Object.fromEntries(
+            Object.entries(rawUpdate).filter(([_, v]) => v !== undefined)
+        )
 
         // Check duplicate quotation number
         if (quoteDataToUpdate.quotation_number) {

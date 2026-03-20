@@ -589,25 +589,25 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             const validUntil = new Date()
             validUntil.setDate(validUntil.getDate() + validityDays)
 
-            const updateData: Partial<Quotation> = {
+            const updateData: Record<string, any> = {
                 quotation_number: quotationNumber,
-                customer_id: customerId,
+                customer_id: customerId || null,
                 title,
-                terms,
-                notes,
+                terms: terms || null,
+                notes: notes || null,
                 vat_percent: vatPercent,
                 vat_amount: vatAmount,
                 subtotal,
                 total_amount: totalAmount,
                 valid_until: validUntil.toISOString(),
                 status: sendAfterSave ? 'sent' : quotation.status,
-                bank_name: bankName,
-                bank_account_no: bankAccountNo,
-                bank_account_name: bankAccountName,
-                bank_branch: bankBranch,
+                bank_name: bankName || null,
+                bank_account_no: bankAccountNo || null,
+                bank_account_name: bankAccountName || null,
+                bank_branch: bankBranch || null,
                 type,
-                proposal_content: proposalContent,
-                project_id: projectId || undefined
+                proposal_content: proposalContent || null,
+                project_id: projectId || null
             }
 
             // Clean items to only include valid database columns
