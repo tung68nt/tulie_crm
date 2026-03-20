@@ -12,32 +12,6 @@ import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
 
-const DOCUMENT_TYPES = [
-    {
-        type: 'contract',
-        label: 'Hợp đồng kinh tế',
-        description: 'Hợp đồng ký kết giữa 2 bên với đầy đủ điều khoản pháp lý',
-        icon: FileText,
-    },
-    {
-        type: 'order',
-        label: 'Đơn đặt hàng',
-        description: 'Đơn đặt hàng chi tiết sản phẩm/dịch vụ',
-        icon: ClipboardList,
-    },
-    {
-        type: 'payment_request',
-        label: 'Đề nghị thanh toán',
-        description: 'Đề nghị thanh toán theo hợp đồng kinh tế',
-        icon: CreditCard,
-    },
-    {
-        type: 'delivery_minutes',
-        label: 'Biên bản giao nhận',
-        description: 'Biên bản xác nhận giao nhận hàng hóa/dịch vụ',
-        icon: Package,
-    }
-]
 
 interface ContractDocumentsProps {
     contract: Contract
@@ -45,27 +19,156 @@ interface ContractDocumentsProps {
 
 export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [loading, setLoading] = useState<string | null>(null)
-    const [generated, setGenerated] = useState<Record<string, string>>({})
     const [showForm, setShowForm] = useState(false)
+    const [dbDocs, setDbDocs] = useState<any[]>([])
 
-    // Persist generated state to localStorage
-    const storageKey = `contract-docs-${contract.id}`
+    // Load DB documents on mount
     useEffect(() => {
-        try {
-            const saved = localStorage.getItem(storageKey)
-            if (saved) {
-                const parsed = JSON.parse(saved) as Record<string, string>
-                setGenerated(parsed)
-            }
-        } catch {}
-    }, [storageKey])
+        fetch(`/api/contracts/${contract.id}/documents`)
+            .then(r => r.ok ? r.json() : { documents: [] })
+            .then(data => setDbDocs(data.documents || []))
+            .catch(() => {})
+    }, [contract.id])
 
-    const markGenerated = (type: string, html: string) => {
-        setGenerated(prev => {
-            const next = { ...prev, [type]: html }
-            try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
-            return next
+    // Build doc items list from DB docs or fallback to static types
+    interface DocItem {
+        key: string
+        type: string
+        label: string
+        description: string
+        icon: any
+        fromDb: boolean
+        dbDocId?: string
+        milestoneId?: string
+    }
+
+    const DOC_META: Record<string, { label: string; description: string; icon: any }> = {
+        contract: { label: 'Hợp đồng kinh tế', description: 'Hợp đồng ký kết giữa 2 bên với đầy đủ điều khoản pháp lý', icon: FileText },
+        order: { label: 'Đơn đặt hàng', description: 'Đơn đặt hàng chi tiết sản phẩm/dịch vụ', icon: ClipboardList },
+        payment_request: { label: 'Đề nghị thanh toán', description: 'Đề nghị thanh toán theo hợp đồng kinh tế', icon: CreditCard },
+        delivery_minutes: { label: 'Biên bản giao nhận', description: 'Biên bản xác nhận giao nhận hàng hóa/dịch vụ', icon: Package },
+    }
+
+    const isFramework = contract.type === 'contract'
+    const isOrder = contract.type === 'order'
+
+    const docItems: DocItem[] = (() => {
+        if (dbDocs.length > 0) {
+            // Build from DB documents
+            const paymentDocs = dbDocs.filter(d => d.type === 'payment_request')
+            return dbDocs.map((doc, idx) => {
+                const meta = DOC_META[doc.type] || DOC_META.contract
+                const paymentIdx = doc.type === 'payment_request' 
+                    ? paymentDocs.indexOf(doc) + 1 
+                    : 0
+                const milestone = contract.milestones?.find(m => m.id === doc.milestone_id)
+                return {
+                    key: doc.id,
+                    type: doc.type,
+                    label: doc.type === 'payment_request' && paymentDocs.length > 1
+                        ? `ĐNTT ${paymentIdx}: ${milestone?.name || `Đợt ${paymentIdx}`}`
+                        : meta.label,
+                    description: doc.doc_number || meta.description,
+                    icon: meta.icon,
+                    fromDb: true,
+                    dbDocId: doc.id,
+                    milestoneId: doc.milestone_id,
+                }
+            })
+        }
+
+        // Fallback: static doc types based on contract type
+        const types = isOrder 
+            ? ['order', 'payment_request', 'delivery_minutes']
+            : ['contract', 'payment_request', 'delivery_minutes']
+        
+        return types.map(type => {
+            const meta = DOC_META[type]
+            return {
+                key: type,
+                type,
+                label: meta.label,
+                description: meta.description,
+                icon: meta.icon,
+                fromDb: false,
+            }
         })
+    })()
+
+    // Preview: open stored doc directly or generate on-the-fly
+    const handlePreviewDoc = (item: DocItem) => {
+        setLoading(item.key)
+        if (item.dbDocId) {
+            window.open(`/api/contracts/${contract.id}/documents/${item.dbDocId}/preview`, '_blank')
+        } else {
+            window.open(`/api/contracts/${contract.id}/preview?type=${item.type}`, '_blank')
+        }
+        setLoading(null)
+    }
+
+    // Print
+    const handlePrintDoc = async (item: DocItem) => {
+        setLoading(item.key)
+        const win = window.open('', '_blank')
+        if (!win) { setLoading(null); return }
+        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Đang tạo...</title><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;}</style></head><body><p>Đang tải...</p></body></html>`)
+        win.document.close()
+
+        try {
+            let html: string
+            if (item.dbDocId) {
+                const res = await fetch(`/api/contracts/${contract.id}/documents/${item.dbDocId}/preview`)
+                html = await res.text()
+            } else {
+                const res = await fetch(`/api/contracts/${contract.id}/generate-document`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
+                })
+                const data = await res.json()
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print</title><style>@media print{@page{size:A4;margin:10mm}}</style></head><body>${data.content || ''}</body></html>`
+            }
+            win.document.open()
+            win.document.write(html)
+            win.document.close()
+            win.focus()
+            setTimeout(() => win.print(), 300)
+        } catch {
+            win.close()
+        } finally {
+            setLoading(null)
+        }
+    }
+
+    // Download
+    const handleDownloadDoc = async (item: DocItem) => {
+        setLoading(item.key)
+        try {
+            let html: string
+            if (item.dbDocId) {
+                const res = await fetch(`/api/contracts/${contract.id}/documents/${item.dbDocId}/preview`)
+                html = await res.text()
+            } else {
+                const res = await fetch(`/api/contracts/${contract.id}/generate-document`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
+                })
+                const data = await res.json()
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${item.label}</title><style>@media print{@page{size:A4;margin:10mm}}</style></head><body>${data.content || ''}</body></html>`
+            }
+            const blob = new Blob([html], { type: 'text/html' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${item.label} - ${contract.contract_number}.html`
+            a.click()
+            URL.revokeObjectURL(url)
+        } catch {
+            alert('Không thể tải giấy tờ')
+        } finally {
+            setLoading(null)
+        }
     }
 
     // Editable customer info — pre-filled from snapshot or customer
@@ -119,90 +222,6 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             setSavingInfo(false)
         }
     }, [contract.id, customerInfo])
-
-    const handleGenerate = async (type: string, action: 'preview' | 'download' | 'print') => {
-        setLoading(type)
-
-        // For preview: simply open the direct URL — no need for POST + blob
-        if (action === 'preview') {
-            window.open(`/api/contracts/${contract.id}/preview?type=${type}`, '_blank')
-            // Mark as generated
-            setGenerated(prev => {
-                const next = { ...prev, [type]: 'previewed' }
-                try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
-                return next
-            })
-            setLoading(null)
-            return
-        }
-
-        // For print/download: open window synchronously to avoid popup blocker
-        let win: Window | null = null
-        if (action === 'print') {
-            win = window.open('', '_blank')
-            if (win) {
-                win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Đang tạo giấy tờ...</title><style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:system-ui;color:#666;}.spinner{width:20px;height:20px;border:2px solid #e5e7eb;border-top-color:#18181b;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:10px;}@keyframes spin{to{transform:rotate(360deg)}}.wrap{display:flex;align-items:center;}</style></head><body><div class="wrap"><div class="spinner"></div><p>Đang tạo giấy tờ, vui lòng đợi...</p></div></body></html>`)
-                win.document.close()
-            }
-        }
-
-        try {
-            const res = await fetch(`/api/contracts/${contract.id}/generate-document`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type,
-                    additionalVariables: customerInfo,
-                })
-            })
-
-            if (!res.ok) {
-                const errData = await res.json().catch(() => ({}))
-                throw new Error(errData.error || `Lỗi ${res.status}`)
-            }
-            const data = await res.json()
-
-            const html = data.content || data.html
-            if (html) {
-                setGenerated(prev => {
-                    const next = { ...prev, [type]: html }
-                    try { localStorage.setItem(storageKey, JSON.stringify(next)) } catch {}
-                    return next
-                })
-                const title = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'Document'
-                const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title><style>@media print { @page { size: A4; margin: 10mm; } }</style></head><body>${html}</body></html>`
-
-                if (action === 'print' && win) {
-                    win.document.open()
-                    win.document.write(fullHtml)
-                    win.document.close()
-                    win.focus()
-                    setTimeout(() => win!.print(), 300)
-                } else if (action === 'download') {
-                    const label = DOCUMENT_TYPES.find(d => d.type === type)?.label || 'document'
-                    const blob = new Blob([fullHtml], { type: 'text/html' })
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = `${label} - ${contract.contract_number}.html`
-                    a.click()
-                    URL.revokeObjectURL(url)
-                }
-            } else {
-                if (win) win.close()
-            }
-        } catch (err: any) {
-            console.error('Error generating document:', err)
-            if (win) win.close()
-            alert(`Không thể tạo giấy tờ: ${err.message}`)
-        } finally {
-            setLoading(null)
-        }
-    }
-
-    // Determine lifecycle step from contract
-    const isFramework = contract.type === 'contract'
-    const isOrder = contract.type === 'order'
 
     // Validation warnings for document completeness
     const missingDocFields: string[] = []
@@ -400,24 +419,19 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
 
                 {/* Document list */}
                 <div className="space-y-2">
-                {DOCUMENT_TYPES.map((doc) => {
-                    const isActive = loading === doc.type
-                    const isGenerated = !!generated[doc.type]
-
-                    // Show order template only for orders, contract for contracts
-                    // Payment & delivery always show
-                    if (doc.type === 'contract' && isOrder) return null
-                    if (doc.type === 'order' && isFramework && !contract.order_number) return null
+                {docItems.map((item, idx) => {
+                    const isActive = loading === item.key
+                    const isGenerated = item.fromDb
 
                     return (
                         <div
-                            key={doc.type}
+                            key={item.key}
                             className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
                         >
-                            <doc.icon className="h-5 w-5 text-zinc-600 shrink-0" />
+                            <item.icon className="h-5 w-5 text-zinc-600 shrink-0" />
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <p className="text-sm font-medium">{doc.label}</p>
+                                    <p className="text-sm font-medium">{item.label}</p>
                                     {isGenerated && (
                                         <Badge variant="outline" className="text-xs text-green-600 border-green-200 bg-green-50">
                                             <Check className="h-3 w-3 mr-1" />
@@ -425,14 +439,14 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                         </Badge>
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground truncate">{doc.description}</p>
+                                <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                             </div>
                             <div className="flex items-center gap-1">
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-7 text-xs"
-                                    onClick={() => handleGenerate(doc.type, 'preview')}
+                                    onClick={() => handlePreviewDoc(item)}
                                     disabled={isActive}
                                 >
                                     {isActive ? <LoadingSpinner size="sm" /> : <ChevronRight className="h-3 w-3" />}
@@ -442,7 +456,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                     variant="ghost"
                                     size="sm"
                                     className="h-7 text-xs"
-                                    onClick={() => handleGenerate(doc.type, 'print')}
+                                    onClick={() => handlePrintDoc(item)}
                                     disabled={isActive}
                                 >
                                     <Printer className="h-3 w-3" />
@@ -451,7 +465,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                                     variant="ghost"
                                     size="sm"
                                     className="h-7 text-xs"
-                                    onClick={() => handleGenerate(doc.type, 'download')}
+                                    onClick={() => handleDownloadDoc(item)}
                                     disabled={isActive}
                                 >
                                     <Download className="h-3 w-3" />

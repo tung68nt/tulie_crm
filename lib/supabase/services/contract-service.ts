@@ -4,6 +4,7 @@ import { createClient } from '../server'
 import { Contract, ContractMilestone } from '@/types'
 import { revalidatePath } from 'next/cache'
 import { logActivity, logDestructiveAction } from './activity-service'
+import { generateDocumentBundle } from './document-template-service'
 
 export async function getContracts(customerId?: string, type?: 'contract' | 'order', brand?: string) {
     try {
@@ -121,6 +122,11 @@ export async function createContract(contract: Partial<Contract>, milestones: Pa
         entity_type: contract.type || 'contract',
         entity_id: contractData.id,
         description: `Tạo ${contract.type === 'order' ? 'đơn hàng' : 'hợp đồng'} mới: ${contract.title}`
+    })
+
+    // 4. Auto-generate document bundle (fire-and-forget)
+    generateDocumentBundle(contractData.id).catch(err => {
+        console.error('Error auto-generating document bundle:', err)
     })
 
     return contractData
@@ -247,6 +253,11 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
             // Don't fail the whole save if logging fails
             console.error('Error logging activity:', logErr)
         }
+
+        // Auto-regenerate document bundle (all draft docs)
+        generateDocumentBundle(id).catch(err => {
+            console.error('Error regenerating document bundle:', err)
+        })
 
         return { success: true }
     } catch (err: any) {

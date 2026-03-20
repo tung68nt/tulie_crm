@@ -433,6 +433,170 @@ export async function generateDocument(
 }
 
 /**
+ * Define which documents each contract type needs
+ */
+function getDocTypesForContract(contractType: string): string[] {
+    if (contractType === 'order') {
+        return ['order', 'payment_request', 'delivery_minutes']
+    }
+    // Default: contract (HĐ kinh tế)
+    return ['contract', 'payment_request', 'delivery_minutes']
+}
+
+/**
+ * Get all contract documents from DB
+ */
+export async function getContractDocuments(contractId: string) {
+    const supabase = createAdminClient()
+    const { data, error } = await supabase
+        .from('contract_documents')
+        .select('*')
+        .eq('contract_id', contractId)
+        .order('created_at', { ascending: true })
+
+    if (error) {
+        console.error('Error fetching contract documents:', error)
+        return []
+    }
+    return data || []
+}
+
+/**
+ * Auto-generate all documents for a contract.
+ * Bundle composition depends on contract type:
+ * - contract → [HĐ, N×ĐNTT, BBGN]  
+ * - order → [ĐĐH, N×ĐNTT, BBGN]
+ * 
+ * Each payment milestone gets its own ĐNTT document.
+ * Only regenerates draft documents (signed docs are preserved).
+ */
+export async function generateDocumentBundle(contractId: string) {
+    const supabase = createAdminClient()
+
+    // 1. Get contract with milestones and quotation items
+    const { data: contract, error: cErr } = await supabase
+        .from('contracts')
+        .select('*, milestones:contract_milestones(*), quotation:quotations(*, items:quotation_items(*))')
+        .eq('id', contractId)
+        .single()
+
+    if (cErr || !contract) {
+        console.error('generateDocumentBundle: contract not found', cErr)
+        return
+    }
+
+    // 2. Delete existing DRAFT documents (preserve signed ones)
+    await supabase
+        .from('contract_documents')
+        .delete()
+        .eq('contract_id', contractId)
+        .eq('status', 'draft')
+
+    // 3. Determine which doc types this contract needs
+    const docTypes = getDocTypesForContract(contract.type || 'contract')
+
+    // 4. Find templates
+    const templates = await getDocumentTemplates()
+    const docs: any[] = []
+
+    for (const docType of docTypes) {
+        const template = templates.find(t => t.type === docType)
+        if (!template) continue
+
+        if (docType === 'payment_request') {
+            // One ĐNTT per payment milestone
+            const paymentMilestones = (contract.milestones || []).filter((m: any) => m.type === 'payment')
+            
+            if (paymentMilestones.length === 0) {
+                // No milestones → generate single generic ĐNTT
+                try {
+                    const result = await generateDocument(template.id, contract.customer_id, contractId)
+                    docs.push({
+                        contract_id: contractId,
+                        type: docType,
+                        milestone_id: null,
+                        doc_number: result.variables?.payment_number || '',
+                        content: result.content,
+                        status: 'draft'
+                    })
+                } catch (e) {
+                    console.error(`Error generating ${docType}:`, e)
+                }
+            } else {
+                const totalAmount = contract.total_amount || 0
+
+                for (let i = 0; i < paymentMilestones.length; i++) {
+                    const milestone = paymentMilestones[i]
+                    const pct = totalAmount > 0 ? Math.round((milestone.amount / totalAmount) * 100) : 0
+                    
+                    // Override payment-specific variables for this milestone
+                    const milestoneVars: Record<string, string> = {
+                        payment_amount: new Intl.NumberFormat('vi-VN').format(milestone.amount) + ' VND',
+                        payment_percentage: `${pct}%`,
+                        amount_in_words: readNumberToWords(milestone.amount),
+                        milestone_name: milestone.name || `Đợt ${i + 1}`,
+                        milestone_due_date: milestone.due_date 
+                            ? parseLocalDateString(milestone.due_date).toLocaleDateString('vi-VN')
+                            : '',
+                    }
+
+                    try {
+                        const result = await generateDocument(template.id, contract.customer_id, contractId, milestoneVars)
+                        // Append milestone index to doc number
+                        const docNum = result.variables?.payment_number 
+                            ? `${result.variables.payment_number}-${i + 1}` 
+                            : ''
+                        
+                        docs.push({
+                            contract_id: contractId,
+                            type: docType,
+                            milestone_id: milestone.id,
+                            doc_number: docNum,
+                            content: result.content,
+                            status: 'draft'
+                        })
+                    } catch (e) {
+                        console.error(`Error generating ĐNTT for milestone ${milestone.id}:`, e)
+                    }
+                }
+            }
+        } else {
+            // Single document (HĐ, ĐĐH, BBGN)
+            try {
+                const result = await generateDocument(template.id, contract.customer_id, contractId)
+                const docNum = docType === 'contract' ? result.variables?.contract_number
+                    : docType === 'order' ? result.variables?.contract_number
+                    : result.variables?.report_number || ''
+                
+                docs.push({
+                    contract_id: contractId,
+                    type: docType,
+                    milestone_id: null,
+                    doc_number: docNum,
+                    content: result.content,
+                    status: 'draft'
+                })
+            } catch (e) {
+                console.error(`Error generating ${docType}:`, e)
+            }
+        }
+    }
+
+    // 5. Insert all generated documents
+    if (docs.length > 0) {
+        const { error: insertErr } = await supabase
+            .from('contract_documents')
+            .insert(docs)
+
+        if (insertErr) {
+            console.error('Error inserting contract documents:', insertErr)
+        }
+    }
+
+    return docs
+}
+
+/**
  * Fetches all necessary data to populate a PDF template (React-PDF)
  */
 export async function getDocumentData(
