@@ -588,23 +588,34 @@ export async function generateDocumentBundle(contractId: string) {
         }
     }
 
-    // 5. Insert all generated documents
+    // 5. Insert all generated documents (one by one to isolate errors)
     console.log(`[generateDocumentBundle] Generated ${docs.length} docs for contract ${contractId}:`, 
         docs.map(d => ({ type: d.type, milestone_id: d.milestone_id, doc_number: d.doc_number }))
     )
     
-    if (docs.length > 0) {
+    let insertedCount = 0
+    for (const doc of docs) {
         const { data: inserted, error: insertErr } = await supabase
             .from('contract_documents')
-            .insert(docs)
+            .insert(doc)
             .select('id, type, milestone_id')
+            .single()
 
         if (insertErr) {
-            console.error('Error inserting contract documents:', insertErr)
+            console.error(`[generateDocumentBundle] Error inserting ${doc.type} (milestone_id=${doc.milestone_id}):`, insertErr)
+            // If FK error, try without milestone_id
+            if (insertErr.code === '23503' && doc.milestone_id) {
+                const { error: retryErr } = await supabase
+                    .from('contract_documents')
+                    .insert({ ...doc, milestone_id: null })
+                if (!retryErr) insertedCount++
+                else console.error(`[generateDocumentBundle] Retry without milestone_id also failed:`, retryErr)
+            }
         } else {
-            console.log(`[generateDocumentBundle] Successfully inserted ${inserted?.length || 0} docs`)
+            insertedCount++
         }
     }
+    console.log(`[generateDocumentBundle] Successfully inserted ${insertedCount}/${docs.length} docs`)
 
     return docs
 }
