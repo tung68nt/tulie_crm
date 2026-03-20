@@ -393,7 +393,7 @@ export async function generateDocument(
 
             // Payment terms from milestones
             if (contract.milestones && contract.milestones.length > 0) {
-                const paymentMilestones = contract.milestones.filter((m: any) => m.type === 'payment' || (!m.type && m.amount > 0))
+                const paymentMilestones = contract.milestones.filter((m: any) => m.amount > 0)
                 if (paymentMilestones.length > 0) {
                     const totalAmount = contract.total_amount || 0
                     const paymentTermsHtml = paymentMilestones.map((m: any, idx: number) => {
@@ -504,10 +504,13 @@ export async function generateDocumentBundle(contractId: string) {
         if (!template) continue
 
         if (docType === 'payment_request') {
-            // One ĐNTT per payment milestone
-            // Include milestones with type='payment' OR milestones without type that have amount > 0
+            // One ĐNTT per milestone that has a payment amount
+            // Any milestone with amount > 0 gets a payment request (regardless of type field)
             const paymentMilestones = (contract.milestones || []).filter((m: any) => 
-                m.type === 'payment' || (!m.type && m.amount > 0)
+                m.amount > 0
+            )
+            console.log(`[generateDocumentBundle] Contract ${contractId}: ${(contract.milestones||[]).length} total milestones, ${paymentMilestones.length} with amount > 0`, 
+                paymentMilestones.map((m:any) => ({ name: m.name, type: m.type, amount: m.amount }))
             )
             
             if (paymentMilestones.length === 0) {

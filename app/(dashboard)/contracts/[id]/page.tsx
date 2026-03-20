@@ -19,7 +19,8 @@ import {
     CheckCircle,
     Clock,
     AlertTriangle,
-    FileSignature
+    FileSignature,
+    Globe
 } from 'lucide-react'
 import { getContractById } from '@/lib/supabase/services/contract-service'
 import { notFound } from 'next/navigation'
@@ -28,6 +29,7 @@ import { ContractEmailButton } from '@/components/contracts/contract-email-butto
 import { ContractDocuments } from '@/components/contracts/contract-documents'
 import { ContractLifecycle } from '@/components/contracts/contract-lifecycle'
 import { SetPasswordDialog } from '@/components/shared/set-password-dialog'
+import { createClient } from '@/lib/supabase/server'
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
     const { id } = await params
@@ -54,6 +56,23 @@ export default async function ContractDetailPage({ params, searchParams }: any) 
         .reduce((sum: number, m: any) => sum + m.amount, 0) || 0
 
     const progress = contract.total_amount > 0 ? (paidAmount / contract.total_amount) * 100 : 0
+
+    // Get portal URL via linked project's quotation
+    let portalUrl: string | null = null
+    if (contract.project_id) {
+        try {
+            const supabase = await createClient()
+            const { data: quotation } = await supabase
+                .from('quotations')
+                .select('public_token')
+                .eq('project_id', contract.project_id)
+                .limit(1)
+                .maybeSingle()
+            if (quotation?.public_token) {
+                portalUrl = `/portal/${quotation.public_token}`
+            }
+        } catch {}
+    }
 
     return (
         <div className="space-y-6">
@@ -101,6 +120,14 @@ export default async function ContractDetailPage({ params, searchParams }: any) 
                             Chỉnh sửa
                         </Link>
                     </Button>
+                    {portalUrl && (
+                        <Button variant="outline" asChild>
+                            <a href={portalUrl} target="_blank" rel="noopener noreferrer">
+                                <Globe className="mr-2 h-4 w-4" />
+                                Xem Portal
+                            </a>
+                        </Button>
+                    )}
                 </div>
             </div>
 
