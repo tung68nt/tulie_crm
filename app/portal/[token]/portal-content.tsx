@@ -494,6 +494,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 timeline={timeline}
                                 contracts={contracts}
                                 onViewContractDoc={handleViewContractDoc}
+                                onViewDoc={handleViewDoc}
                             />
                         ))}
 
@@ -506,8 +507,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </div>
                 </div>
 
-                {/* Bộ thủ tục chứng từ — aggregate from all work items */}
-                <DocumentProceduresSection workItems={displayItems} handleViewDoc={handleViewDoc} />
+                {/* Bộ thủ tục chứng từ đã được dời vào trong Hạng mục thay vì hiển thị riêng lẻ */}
 
                 {/* Gantt View Section */}
                 <ProjectGanttChart tasks={data.tasks || []} />
@@ -518,7 +518,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Tiện ích khác — Hidden for now as it's redundant with the new milestone cards */}
                 {/* Document Viewer Dialog for Portal */}
                 <Dialog open={isViewingDoc} onOpenChange={setIsViewingDoc}>
-                    <DialogContent className="max-w-[800px] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
+                    <DialogContent className="max-w-4xl p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
                         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
@@ -535,10 +535,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </Button>
                         </div>
 
-                        <div className="p-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
+                        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
                             <div
-                                className="bg-white p-8 md:p-12 lg:p-16 shadow-sm border border-zinc-200 text-[#000]"
-                                style={{ margin: '0 auto', maxWidth: '210mm' }}
+                                className="bg-white p-8 md:p-12 lg:p-16 shadow-lg border border-zinc-200 text-[#000]"
+                                style={{ margin: '0 auto', maxWidth: '210mm', minHeight: '297mm' }}
                                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
                             />
                         </div>
@@ -550,7 +550,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 }
 
 /* ===== Work Item Card ===== */
-function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotationId, onSelectQuotation, timeline = [], contracts = [], onViewContractDoc }: {
+function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotationId, onSelectQuotation, timeline = [], contracts = [], onViewContractDoc, onViewDoc }: {
     item: any; idx: number; token: string;
     quotationOptions?: any[];
     selectedQuotationId?: string;
@@ -558,6 +558,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
     timeline?: any[];
     contracts?: any[];
     onViewContractDoc?: (htmlContent: string) => void;
+    onViewDoc?: (docId: string) => void;
 }) {
     const quotation = item.quotation
     const contract = item.contract
@@ -639,48 +640,80 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                 <div className="lg:w-2/5 p-5 border-b lg:border-b-0 lg:border-r border-zinc-100 space-y-5">
                     {/* Documents linked */}
                     <div className="space-y-2">
-                        {activeQuotation && (
-                            <a href={`/quote/${activeQuotation.public_token || token}`} target="_blank"
-                                className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
-                                <div className="flex items-center gap-3">
-                                    <FileText className="w-4 h-4 text-muted-foreground" />
-                                    <div>
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Báo giá</p>
-                                        <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{activeQuotation.quotation_number}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <StatusBadge status={activeQuotation.status} />
-                                    <ExternalLink className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-900 transition-colors" />
-                                </div>
-                            </a>
-                        )}
-                        {contract && (() => {
-                            // Find the main contract document from contract.documents
-                            const mainContractDoc = (contract.documents || []).find((d: any) => d.type === 'contract' || d.type === 'order')
-                            return (
-                                <div className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all">
+                        {(() => {
+                            const renderedDocs: any[] = []
+                            // 1. Quotaion
+                            if (activeQuotation && ['sent', 'viewed', 'accepted', 'converted'].includes(activeQuotation.status)) {
+                                renderedDocs.push({
+                                    title: 'Báo giá',
+                                    key: 'quotation',
+                                    number: activeQuotation.quotation_number,
+                                    status: activeQuotation.status,
+                                    icon: FileText,
+                                    link: `/quote/${activeQuotation.public_token || token}`
+                                })
+                            }
+
+                            // 2. Contract Documents
+                            if (contract) {
+                                const contractDocs: any[] = contract.documents || []
+                                const visibleDocs = contractDocs.filter((d: any) => d.is_visible_on_portal !== false)
+                                const paymentDocs = visibleDocs.filter((d: any) => d.type === 'payment_request')
+                                const DOC_TYPE_LABELS: Record<string, string> = {
+                                    contract: 'Hợp đồng',
+                                    order: 'Đơn đặt hàng',
+                                    payment_request: 'Đề nghị thanh toán',
+                                    delivery_minutes: 'Biên bản bàn giao',
+                                    acceptance: 'Biên bản nghiệm thu',
+                                }
+
+                                for (const d of visibleDocs) {
+                                    const metaTitle = DOC_TYPE_LABELS[d.type] || d.type
+                                    let docTitle = metaTitle
+                                    if (d.type === 'payment_request' && paymentDocs.length > 1) {
+                                        const idx = paymentDocs.indexOf(d) + 1
+                                        docTitle = `${metaTitle} đợt ${idx}`
+                                    }
+
+                                    renderedDocs.push({
+                                        title: docTitle,
+                                        key: d.id,
+                                        number: d.doc_number || (d.type === 'contract' ? contract.contract_number : ''),
+                                        status: d.status,
+                                        icon: FileSignature,
+                                        docId: d.id,
+                                        content: d.content
+                                    })
+                                }
+                            }
+
+                            return renderedDocs.map((d, i) => (
+                                <div key={d.key || i} className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all group">
                                     <div className="flex items-center gap-3">
-                                        <FileSignature className="w-4 h-4 text-muted-foreground" />
+                                        <d.icon className="w-4 h-4 text-muted-foreground" />
                                         <div>
-                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
-                                            <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">{d.title}</p>
+                                            <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{d.number || '---'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <StatusBadge status={contract.status} />
-                                        {mainContractDoc && onViewContractDoc && (
+                                        <StatusBadge status={d.status} />
+                                        {d.link ? (
+                                            <a href={d.link} target="_blank" className="flex items-center justify-center w-7 h-7 bg-white rounded-lg border border-zinc-200 hover:bg-zinc-100 transition-colors">
+                                                <ExternalLink className="w-3.5 h-3.5 text-zinc-600" />
+                                            </a>
+                                        ) : d.docId ? (
                                             <button
-                                                onClick={() => onViewContractDoc(mainContractDoc.content)}
+                                                onClick={() => onViewDoc ? onViewDoc(d.docId) : (d.content && onViewContractDoc?.(d.content))}
                                                 className="flex items-center gap-1 px-2 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 transition-colors text-xs font-semibold text-zinc-700"
                                             >
                                                 <Eye className="w-3 h-3" />
                                                 Xem
                                             </button>
-                                        )}
+                                        ) : null}
                                     </div>
                                 </div>
-                            )
+                            ))
                         })()}
                     </div>
 
@@ -828,219 +861,6 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
     )
 }
 
-/* ===== Document Procedures Section ===== */
-function DocumentProceduresSection({ workItems, handleViewDoc }: { workItems: any[]; handleViewDoc: (id: string) => void }) {
-    // Group documents by work item
-    const groupedDocs: { title: string; docs: any[] }[] = []
-
-    // Default document types per work item (templates for the checklist)
-    const DOC_TYPE_LABELS: Record<string, string> = {
-        contract: 'Hợp đồng',
-        order: 'Đơn đặt hàng',
-        payment_request: 'Yêu cầu thanh toán',
-        delivery_minutes: 'Biên bản bàn giao',
-    }
-
-    const defaultDocTypes = [
-        { key: 'quotation', title: 'Báo giá (đã gửi)' },
-        { key: 'contract', title: 'Hợp đồng' },
-        { key: 'delivery_minutes', title: 'Biên bản bàn giao' },
-        { key: 'payment_request', title: 'Yêu cầu thanh toán' },
-        { key: 'acceptance', title: 'Biên bản nghiệm thu' },
-    ]
-
-    workItems.forEach((item: any) => {
-        const reqDocs = item.required_documents || []
-        if (reqDocs.length > 0) {
-            groupedDocs.push({ title: item.title, docs: reqDocs })
-            return
-        }
-
-        // Build from contract.documents + quotation status
-        const contract = item.contract
-        const contractDocs: any[] = contract?.documents || []
-        const quotation = item.quotation
-
-        // Append Quotation first
-        const isQuoteSent = quotation && ['sent', 'viewed', 'accepted', 'converted'].includes(quotation.status)
-        const docs: any[] = [
-            {
-                title: 'Báo giá (đã gửi)',
-                status: isQuoteSent ? 'completed' : 'pending',
-                date: isQuoteSent ? quotation.created_at : null,
-            }
-        ]
-
-        // Then append every document from contractDocs that is visible
-        const visibleContractDocs = contractDocs.filter((d: any) => d.is_visible_on_portal !== false)
-        const paymentDocs = visibleContractDocs.filter((d: any) => d.type === 'payment_request')
-        
-        const addedTypes = new Set<string>()
-
-        for (const d of visibleContractDocs) {
-            addedTypes.add(d.type)
-            const metaTitle = DOC_TYPE_LABELS[d.type] || d.type
-
-            let docTitle = metaTitle
-            if (d.type === 'payment_request' && paymentDocs.length > 1) {
-                const idx = paymentDocs.indexOf(d) + 1
-                docTitle = `${metaTitle} đợt ${idx}`
-            }
-
-            docs.push({
-                title: docTitle,
-                status: d.status === 'signed' ? 'signed' : 'completed',
-                generated_doc_id: d.id,
-                date: d.created_at,
-            })
-        }
-
-        // Add pending default ones if not present
-        const defaultTypes = ['contract', 'delivery_minutes', 'payment_request', 'acceptance']
-        for (const type of defaultTypes) {
-            if (!addedTypes.has(type)) {
-                docs.push({
-                    title: DOC_TYPE_LABELS[type] || 'Tài liệu',
-                    status: 'pending'
-                })
-            }
-        }
-
-        groupedDocs.push({ title: item.title, docs })
-    })
-
-    if (groupedDocs.length === 0) {
-        const defaultProcedures = [
-            { title: 'Báo giá (đã gửi)', status: 'pending' },
-            { title: 'Hợp đồng', status: 'pending' },
-            { title: 'Biên bản bàn giao', status: 'pending' },
-            { title: 'Yêu cầu thanh toán', status: 'pending' },
-            { title: 'Biên bản nghiệm thu', status: 'pending' },
-        ]
-        groupedDocs.push({ title: 'Dự án', docs: defaultProcedures })
-    }
-
-    // Overall stats
-    const totalAllDocs = groupedDocs.reduce((sum, g) => sum + g.docs.length, 0)
-    const completedAllDocs = groupedDocs.reduce((sum, g) => sum + g.docs.filter((d: any) => d.status === 'signed' || d.status === 'completed' || d.status === 'auto').length, 0)
-
-    return (
-        <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
-            {/* Header */}
-            <div className="p-6 border-b border-zinc-100">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center">
-                            <FileCheck className="w-5 h-5 text-zinc-900" />
-                        </div>
-                        <div className="space-y-0.5">
-                            <h3 className="text-lg font-semibold text-zinc-950 tracking-tight leading-tight">Bộ chứng từ & Hồ sơ dự án</h3>
-                            <p className="text-xs text-zinc-400">Tiến độ hoàn thiện hồ sơ theo từng hạng mục</p>
-                        </div>
-                    </div>
-                    <span className="text-sm font-semibold text-zinc-500 tabular-nums">{completedAllDocs}/{totalAllDocs} hoàn thành</span>
-                </div>
-                {/* Overall progress */}
-                <div className="mt-4 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                    <div
-                        className={cn("h-full rounded-full transition-all duration-700", completedAllDocs === totalAllDocs ? "bg-zinc-900" : "bg-zinc-900")}
-                        style={{ width: `${totalAllDocs > 0 ? (completedAllDocs / totalAllDocs) * 100 : 0}%` }}
-                    />
-                </div>
-            </div>
-
-            {/* Grouped by work item */}
-            <div className="divide-y divide-zinc-100">
-                {groupedDocs.map((group, gIdx) => {
-                    const completedCount = group.docs.filter((d: any) => d.status === 'signed' || d.status === 'completed' || d.status === 'auto').length
-                    const totalCount = group.docs.length
-                    const isAllDone = completedCount === totalCount
-
-                    return (
-                        <div key={gIdx}>
-                            {/* Group header */}
-                            <div className="flex items-center justify-between px-6 py-4 bg-zinc-50/50">
-                                <div className="flex items-center gap-2.5">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-xs font-bold shrink-0">
-                                        {gIdx + 1}
-                                    </div>
-                                    <h4 className="text-sm font-semibold text-zinc-950 tracking-tight">{group.title}</h4>
-                                </div>
-                                <div className="flex items-center gap-2.5">
-                                    <span className="text-xs font-bold text-zinc-400 tabular-nums">{completedCount}/{totalCount}</span>
-                                    {isAllDone ? (
-                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-50 rounded-full border border-emerald-200">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                            <span className="text-[11px] font-normal text-emerald-700">Đủ hồ sơ</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 rounded-full border border-blue-200">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                                            <span className="text-[11px] font-normal text-blue-700">Đang xử lý</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Documents list */}
-                            <div className="px-4 py-2">
-                                {group.docs.map((doc: any, dIdx: number) => {
-                                    const isDone = doc.status === 'signed' || doc.status === 'completed' || doc.status === 'auto'
-                                    const isPending = doc.status === 'pending'
-
-                                    return (
-                                        <div
-                                            key={dIdx}
-                                            className={cn(
-                                                "flex items-center justify-between px-3 py-2.5 rounded-lg transition-all",
-                                                isDone ? "hover:bg-zinc-50" : "hover:bg-zinc-50"
-                                            )}
-                                        >
-                                            <div className="flex items-start gap-3 min-w-0">
-                                                {isDone ? (
-                                                    <CheckCircle className="w-[18px] h-[18px] text-zinc-900 shrink-0 mt-0.5" />
-                                                ) : isPending ? (
-                                                    <Clock className="w-[18px] h-[18px] text-zinc-400 shrink-0 mt-0.5" />
-                                                ) : (
-                                                    <div className="w-[18px] h-[18px] rounded-full border-2 border-zinc-200 shrink-0 mt-0.5" />
-                                                )}
-                                                <span className={cn(
-                                                    "text-sm font-medium truncate",
-                                                    isDone ? "text-zinc-800" : "text-zinc-500"
-                                                )}>{doc.title}</span>
-                                            </div>
-
-                                            <div className="flex items-center gap-2 shrink-0 ml-3">
-                                                {doc.date && <span className="text-xs text-zinc-400 font-medium hidden sm:inline tabular-nums">{formatDate(doc.date)}</span>}
-                                                {doc.generated_doc_id ? (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className="h-7 text-xs px-2.5 border-zinc-200 hover:bg-white font-semibold"
-                                                        onClick={() => handleViewDoc(doc.generated_doc_id)}
-                                                    >
-                                                        <Eye className="w-3 h-3 mr-1" />
-                                                        Xem
-                                                    </Button>
-                                                ) : isDone ? (
-                                                    <span className="text-xs font-semibold text-zinc-900">✓</span>
-                                                ) : isPending ? (
-                                                    <span className="text-xs font-semibold text-zinc-400">Chờ xử lý</span>
-                                                ) : (
-                                                    <span className="text-xs font-semibold text-zinc-300">—</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
-    )
-}
 
 /* ===== Timeline Section ===== */
 function TimelineSection({ timeline }: { timeline: any[] }) {
