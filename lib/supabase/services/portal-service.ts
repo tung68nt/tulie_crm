@@ -80,11 +80,35 @@ export async function getPortalDataByToken(token: string) {
             // 2b. Fetch contract_documents for all contracts (so portal can show viewable docs)
             if (allContracts.length > 0) {
                 const contractIds = allContracts.map(c => c.id)
-                const { data: contractDocs } = await supabase
+                let { data: contractDocs } = await supabase
                     .from('contract_documents')
                     .select('id, contract_id, type, doc_number, content, status')
                     .in('contract_id', contractIds)
                     .order('created_at', { ascending: true })
+
+                // Auto-generate documents for contracts that don't have any yet
+                const contractsWithDocs = new Set((contractDocs || []).map(d => d.contract_id))
+                const contractsWithoutDocs = allContracts.filter(c => !contractsWithDocs.has(c.id))
+                if (contractsWithoutDocs.length > 0) {
+                    try {
+                        const { generateDocumentBundle } = await import('./document-template-service')
+                        for (const c of contractsWithoutDocs) {
+                            const generated = await generateDocumentBundle(c.id)
+                            if (generated && generated.length > 0) {
+                                contractDocs = [...(contractDocs || []), ...generated.map((d: any) => ({
+                                    id: d.id || d.contract_id + '-' + d.type,
+                                    contract_id: d.contract_id,
+                                    type: d.type,
+                                    doc_number: d.doc_number,
+                                    content: d.content,
+                                    status: d.status
+                                }))]
+                            }
+                        }
+                    } catch (genErr) {
+                        console.error('Error auto-generating contract documents:', genErr)
+                    }
+                }
 
                 if (contractDocs) {
                     // Attach documents to their respective contracts
@@ -183,11 +207,31 @@ export async function getPortalDataByToken(token: string) {
 
             if (contract) {
                 // Also fetch contract_documents for standalone mode
-                const { data: contractDocs } = await supabase
+                let { data: contractDocs } = await supabase
                     .from('contract_documents')
                     .select('id, contract_id, type, doc_number, content, status')
                     .eq('contract_id', contract.id)
                     .order('created_at', { ascending: true })
+
+                // Auto-generate if no documents exist yet
+                if (!contractDocs || contractDocs.length === 0) {
+                    try {
+                        const { generateDocumentBundle } = await import('./document-template-service')
+                        const generated = await generateDocumentBundle(contract.id)
+                        if (generated && generated.length > 0) {
+                            contractDocs = generated.map((d: any) => ({
+                                id: d.id || d.contract_id + '-' + d.type,
+                                contract_id: d.contract_id,
+                                type: d.type,
+                                doc_number: d.doc_number,
+                                content: d.content,
+                                status: d.status
+                            }))
+                        }
+                    } catch (genErr) {
+                        console.error('Error auto-generating contract documents (standalone):', genErr)
+                    }
+                }
 
                 allContracts = [{ ...contract, documents: contractDocs || [] }]
             }
