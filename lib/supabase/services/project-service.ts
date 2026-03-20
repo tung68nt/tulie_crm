@@ -24,7 +24,44 @@ export async function getProjects(customerId?: string) {
             return []
         }
 
-        return data as Project[]
+        const projects = data as Project[]
+
+        // Fetch document stats for all contracts linked to these projects
+        try {
+            const contractIds = projects
+                .map(p => (p as any).contract?.id)
+                .filter(Boolean)
+
+            if (contractIds.length > 0) {
+                const { data: docs } = await supabase
+                    .from('contract_documents')
+                    .select('contract_id, status, is_visible_on_portal')
+                    .in('contract_id', contractIds)
+
+                if (docs) {
+                    const statsMap: Record<string, { total: number; visible: number; signed: number }> = {}
+                    docs.forEach((d: any) => {
+                        if (!statsMap[d.contract_id]) {
+                            statsMap[d.contract_id] = { total: 0, visible: 0, signed: 0 }
+                        }
+                        statsMap[d.contract_id].total++
+                        if (d.is_visible_on_portal !== false) statsMap[d.contract_id].visible++
+                        if (d.status === 'signed') statsMap[d.contract_id].signed++
+                    })
+
+                    projects.forEach(p => {
+                        const cId = (p as any).contract?.id
+                        if (cId && statsMap[cId]) {
+                            ;(p as any).doc_stats = statsMap[cId]
+                        }
+                    })
+                }
+            }
+        } catch {
+            // Silently ignore doc stats fetch errors
+        }
+
+        return projects
     } catch (err) {
         console.error('Fatal error in getProjects:', err)
         return []

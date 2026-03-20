@@ -51,18 +51,27 @@ export const projectColumns: ColumnDef<Project>[] = [
         ),
     },
     {
-        id: 'metadata',
+        id: 'doc_stats',
         header: 'Tài liệu',
         cell: ({ row }) => {
-            const metadata = row.original.metadata
-            if (!metadata) return null
+            const stats = (row.original as any).doc_stats as { total: number; visible: number; signed: number } | undefined
+            if (!stats || stats.total === 0) {
+                return <span className="text-xs text-muted-foreground">-</span>
+            }
+            const allSigned = stats.signed === stats.total
             return (
                 <div className="flex items-center gap-2">
-                    {metadata.source_link && (
-                        <Globe className="h-4 w-4 text-zinc-500" />
-                    )}
-                    {metadata.ai_folder_link && (
-                        <FolderArchive className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
+                    <span className="text-sm font-semibold tabular-nums">{stats.total}</span>
+                    {allSigned ? (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            Đủ hồ sơ
+                        </span>
+                    ) : (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                            {stats.visible} hiện
+                        </span>
                     )}
                 </div>
             )
