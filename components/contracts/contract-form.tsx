@@ -236,17 +236,23 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 status: m.status,
                 completed_at: m.completed_at?.toISOString() || null,
                 delay_reason: m.delay_reason || null,
-                type: m.type
+                type: m.type,
+                description: m.name || null,
             }))
 
-            await updateContract(contract.id, updateData, milestoneData as any)
+            const result = await updateContract(contract.id, updateData, milestoneData as any)
+
+            if (!result.success) {
+                toast.error(result.error || 'Có lỗi xảy ra khi cập nhật hợp đồng')
+                return
+            }
 
             toast.success('Cập nhật hợp đồng thành công')
             router.push(`/contracts/${contract.id}`)
             router.refresh()
         } catch (error: any) {
             console.error('Failed to update contract:', error)
-            toast.error(error.message || 'Có lỗi xảy ra khi cập nhật hợp đồng')
+            toast.error(error?.message || 'Có lỗi xảy ra khi cập nhật hợp đồng')
         } finally {
             setIsLoading(false)
         }

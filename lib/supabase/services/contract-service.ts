@@ -116,7 +116,7 @@ export async function createContract(contract: Partial<Contract>, milestones: Pa
     return contractData
 }
 
-export async function updateContract(id: string, contract: Partial<Contract>, milestones: Partial<ContractMilestone>[]) {
+export async function updateContract(id: string, contract: Partial<Contract>, milestones: Partial<ContractMilestone>[]): Promise<{ success: boolean; error?: string }> {
     try {
         const supabase = await createClient()
 
@@ -133,7 +133,7 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
 
         if (contractError) {
             console.error('Error updating contract:', contractError)
-            throw contractError
+            return { success: false, error: contractError.message }
         }
 
         // 2. Manage milestones
@@ -182,42 +182,47 @@ export async function updateContract(id: string, contract: Partial<Contract>, mi
                     .upsert(contractMilestones, { onConflict: 'id' })
 
                 if (milestoneError) {
-                    console.error('Error upserting new milestones:', milestoneError)
-                    throw milestoneError
+                    console.error('Error upserting milestones:', milestoneError)
+                    return { success: false, error: milestoneError.message }
                 }
 
-            // 3. Auto-sync: link payment milestones to the project (for customer portal)
-            // Use .maybeSingle() instead of .single() to avoid error when no project exists
-            const { data: linkedProject } = await supabase
-                .from('projects')
-                .select('id')
-                .eq('contract_id', id)
-                .maybeSingle()
-
-            if (linkedProject) {
-                await supabase
-                    .from('contract_milestones')
-                    .update({ project_id: linkedProject.id })
+                // 3. Auto-sync: link payment milestones to the project (for customer portal)
+                const { data: linkedProject } = await supabase
+                    .from('projects')
+                    .select('id')
                     .eq('contract_id', id)
-                    .eq('type', 'payment')
+                    .maybeSingle()
+
+                if (linkedProject) {
+                    await supabase
+                        .from('contract_milestones')
+                        .update({ project_id: linkedProject.id })
+                        .eq('contract_id', id)
+                        .eq('type', 'payment')
+                }
             }
-            } // Close if (milestones.length > 0)
         }
 
         revalidatePath('/contracts')
         revalidatePath(`/contracts/${id}`)
+        revalidatePath(`/contracts/${id}/edit`)
 
-        await logActivity({
-            action: 'update',
-            entity_type: 'contract',
-            entity_id: id,
-            description: `Cập nhật hợp đồng: ${contract.title || id}`
-        })
+        try {
+            await logActivity({
+                action: 'update',
+                entity_type: 'contract',
+                entity_id: id,
+                description: `Cập nhật hợp đồng: ${contract.title || id}`
+            })
+        } catch (logErr) {
+            // Don't fail the whole save if logging fails
+            console.error('Error logging activity:', logErr)
+        }
 
-        return true
+        return { success: true }
     } catch (err: any) {
         console.error('Fatal error in updateContract:', err)
-        throw new Error(err.message || 'Lỗi hệ thống khi cập nhật hợp đồng')
+        return { success: false, error: err.message || 'Lỗi hệ thống khi cập nhật hợp đồng' }
     }
 }
 
