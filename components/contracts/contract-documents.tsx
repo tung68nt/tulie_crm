@@ -466,16 +466,16 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                         >
                             <item.icon className="h-5 w-5 text-zinc-600 shrink-0" />
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm font-medium">{item.label}</p>
+                                <p className="text-sm font-medium truncate">{item.label}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                                     {isGenerated && (
-                                        <Badge variant="outline" className="text-xs text-green-600 border-green-200 bg-green-50">
-                                            <Check className="h-3 w-3 mr-1" />
+                                        <Badge variant="outline" className="text-[10px] leading-none px-1.5 py-0.5 text-green-600 border-green-200 bg-green-50 shrink-0">
+                                            <Check className="h-2.5 w-2.5 mr-0.5" />
                                             Đã tạo
                                         </Badge>
                                     )}
                                 </div>
-                                <p className="text-xs text-muted-foreground truncate">{item.description}</p>
                             </div>
                             <div className="flex items-center gap-1">
                                 <Button
