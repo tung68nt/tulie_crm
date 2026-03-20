@@ -88,7 +88,32 @@ export async function getQuotations(customerId?: string, brand?: string) {
 
         // Apply auto-expire check in memory
         const quotations = data as Quotation[];
-        return Promise.all(quotations.map(q => checkAndExpireQuotation(q, true))) as Promise<Quotation[]>;
+        const expired = await Promise.all(quotations.map(q => checkAndExpireQuotation(q, true))) as Quotation[];
+
+        // Compute real view counts from quotation_views table
+        try {
+            const ids = expired.map(q => q.id)
+            if (ids.length > 0) {
+                const { data: viewCounts } = await supabase
+                    .from('quotation_views')
+                    .select('quotation_id')
+                    .in('quotation_id', ids)
+
+                if (viewCounts) {
+                    const countMap: Record<string, number> = {}
+                    viewCounts.forEach((v: any) => {
+                        countMap[v.quotation_id] = (countMap[v.quotation_id] || 0) + 1
+                    })
+                    expired.forEach(q => {
+                        (q as any).view_count = countMap[q.id] || 0
+                    })
+                }
+            }
+        } catch {
+            // Silently ignore — view_count will use the field from quotations table
+        }
+
+        return expired;
     } catch (err) {
         console.error('Fatal error in getQuotations:', err)
         return []

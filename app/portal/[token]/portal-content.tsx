@@ -612,7 +612,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                             </a>
                                         ) : d.docId ? (
                                             <button
-                                                onClick={() => onViewDoc ? onViewDoc(d.docId) : (d.content && onViewContractDoc?.(d.content))}
+                                                onClick={() => d.content ? onViewContractDoc?.(d.content) : onViewDoc?.(d.docId)}
                                                 className="flex items-center gap-1 px-2 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 transition-colors text-xs font-semibold text-zinc-700"
                                             >
                                                 <Eye className="w-3 h-3" />
