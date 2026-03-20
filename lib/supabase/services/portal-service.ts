@@ -108,7 +108,30 @@ export async function getPortalDataByToken(token: string) {
                 .eq('project_id', projectId)
                 .order('sort_order', { ascending: true })
 
-            if (workItemsData) allWorkItems = workItemsData
+            if (workItemsData) {
+                // Auto-match contracts to work items via quotation_id
+                // (work items may have quotation_id but no contract_id set yet)
+                allWorkItems = workItemsData.map((wi: any) => {
+                    if (!wi.contract && wi.quotation_id) {
+                        const matchedContract = allContracts.find(c => c.quotation_id === wi.quotation_id)
+                        if (matchedContract) {
+                            return {
+                                ...wi,
+                                contract_id: matchedContract.id,
+                                contract: {
+                                    id: matchedContract.id,
+                                    contract_number: matchedContract.contract_number,
+                                    title: matchedContract.title,
+                                    status: matchedContract.status,
+                                    total_amount: matchedContract.total_amount,
+                                    created_at: matchedContract.created_at
+                                }
+                            }
+                        }
+                    }
+                    return wi
+                })
+            }
         } else {
             // Standalone mode: Only fetch descendants (Contract + Invoices) for this specific quote
             const { data: contract } = await supabase

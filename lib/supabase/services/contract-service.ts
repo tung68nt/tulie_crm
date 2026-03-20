@@ -104,6 +104,16 @@ export async function createContract(contract: Partial<Contract>, milestones: Pa
         }
     }
 
+    // 3. Auto-link work items: if contract was created from a quotation,
+    // update any work items that reference that quotation to also point to this contract
+    if (contract.quotation_id) {
+        await supabase
+            .from('project_work_items')
+            .update({ contract_id: contractData.id })
+            .eq('quotation_id', contract.quotation_id)
+            .is('contract_id', null)
+    }
+
     revalidatePath('/contracts')
 
     await logActivity({
