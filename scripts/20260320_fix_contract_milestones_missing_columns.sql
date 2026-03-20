@@ -1,17 +1,15 @@
--- Migration: Add missing columns to contract_milestones table
--- These columns are used by the contract form but were never added via migration
+-- Fix: contract_milestones table is missing 'updated_at' column
+-- The trigger 'update_milestones_updated_at' tries to set this column,
+-- but it was not created properly. This causes:
+--   ERROR: record "new" has no field "updated_at" (42703)
+-- which crashes the contract save functionality.
 
--- amount: monetary value for the milestone payment
+ALTER TABLE public.contract_milestones 
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+
+-- Also ensure other potentially missing columns exist
 ALTER TABLE public.contract_milestones ADD COLUMN IF NOT EXISTS amount DECIMAL(15,2) DEFAULT 0;
-
--- completed_at: timestamp when milestone was actually completed/paid
 ALTER TABLE public.contract_milestones ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP WITH TIME ZONE;
-
--- percentage: already added in 20260319 migration, but ensure it exists
 ALTER TABLE public.contract_milestones ADD COLUMN IF NOT EXISTS percentage NUMERIC;
-
--- type: already added in 20260304 migration, but ensure it exists
 ALTER TABLE public.contract_milestones ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'payment';
-
--- project_id: already added in 20260304 migration, but ensure it exists
 ALTER TABLE public.contract_milestones ADD COLUMN IF NOT EXISTS project_id UUID REFERENCES projects(id) ON DELETE CASCADE;
