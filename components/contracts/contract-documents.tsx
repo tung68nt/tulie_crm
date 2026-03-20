@@ -45,7 +45,9 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 body: JSON.stringify({ regenerate: true })
             })
             if (!res.ok) throw new Error('Failed')
-            toast.success('Đã tạo lại giấy tờ thành công')
+            const data = await res.json()
+            console.log('[Regenerate response]', data)
+            toast.success(`Đã tạo lại: ${data.generated} docs, ${data.milestones?.length || 0} milestones, ${data.documents?.length || 0} final docs`)
             loadDocs()
         } catch {
             toast.error('Không thể tạo lại giấy tờ')
