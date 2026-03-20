@@ -77,6 +77,30 @@ export async function getPortalDataByToken(token: string) {
                 allContracts = uniqueContracts
             }
 
+            // 2b. Fetch contract_documents for all contracts (so portal can show viewable docs)
+            if (allContracts.length > 0) {
+                const contractIds = allContracts.map(c => c.id)
+                const { data: contractDocs } = await supabase
+                    .from('contract_documents')
+                    .select('id, contract_id, type, doc_number, content, status')
+                    .in('contract_id', contractIds)
+                    .order('created_at', { ascending: true })
+
+                if (contractDocs) {
+                    // Attach documents to their respective contracts
+                    const docsByContract = new Map<string, any[]>()
+                    contractDocs.forEach(doc => {
+                        const list = docsByContract.get(doc.contract_id) || []
+                        list.push(doc)
+                        docsByContract.set(doc.contract_id, list)
+                    })
+                    allContracts = allContracts.map(c => ({
+                        ...c,
+                        documents: docsByContract.get(c.id) || []
+                    }))
+                }
+            }
+
             // 3. Get Project-level milestones
             const { data: projectMilestones } = await supabase
                 .from('contract_milestones')
@@ -140,7 +164,16 @@ export async function getPortalDataByToken(token: string) {
                 .eq('quotation_id', primaryQuotation.id)
                 .single()
 
-            if (contract) allContracts = [contract]
+            if (contract) {
+                // Also fetch contract_documents for standalone mode
+                const { data: contractDocs } = await supabase
+                    .from('contract_documents')
+                    .select('id, contract_id, type, doc_number, content, status')
+                    .eq('contract_id', contract.id)
+                    .order('created_at', { ascending: true })
+
+                allContracts = [{ ...contract, documents: contractDocs || [] }]
+            }
         }
 
         // Fetch Invoices for all identified quotations/contracts

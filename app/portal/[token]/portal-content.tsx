@@ -117,6 +117,12 @@ export default function PortalContent({ data, token }: PortalContentProps) {
             toast.error('Không thể tải tài liệu')
         }
     }
+
+    // View contract document content directly (from contract_documents table)
+    const handleViewContractDoc = (htmlContent: string) => {
+        setSelectedDocContent(htmlContent)
+        setIsViewingDoc(true)
+    }
     const router = useRouter()
     const { confirm } = useConfirm()
 
@@ -325,7 +331,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 })()}
 
                 {/* Contract Review & Confirm Panel */}
-                {contracts.filter((c: any) => ['sent', 'viewed'].includes(c.status)).map((c: any) => (
+                {contracts.filter((c: any) => ['sent', 'viewed'].includes(c.status)).map((c: any) => {
+                    // Find the main contract document (type = 'contract' or 'order')
+                    const mainDoc = (c.documents || []).find((d: any) => d.type === 'contract' || d.type === 'order')
+                    return (
                     <div key={c.id} className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between">
@@ -364,41 +373,55 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <p className="text-xs text-muted-foreground font-medium">
                                 Nhấn "Xác nhận" để đồng ý ký hợp đồng này
                             </p>
-                            <Button
-                                size="sm"
-                                className="rounded-lg font-bold tracking-tight text-[12px] px-6"
-                                onClick={async () => {
-                                    const confirmed = await confirm({
-                                        title: 'Xác nhận ký hợp đồng',
-                                        description: 'Xác nhận đồng ý ký hợp đồng này?',
-                                        confirmText: 'Xác nhận & Đồng ý',
-                                    })
-                                    if (!confirmed) return
-                                    try {
-                                        trackInteraction('confirm_contract', { contractId: c.id })
-                                        const { confirmContractFromPortal } = await import('@/lib/supabase/services/portal-actions')
-                                        const result = await confirmContractFromPortal(token, c.id, {
-                                            name: customer?.representative || '',
-                                            phone: customer?.phone || '',
-                                            email: customer?.email || '',
+                            <div className="flex items-center gap-2">
+                                {mainDoc && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="rounded-lg font-bold tracking-tight text-[12px] px-4"
+                                        onClick={() => handleViewContractDoc(mainDoc.content)}
+                                    >
+                                        <Eye className="w-4 h-4 mr-1.5" />
+                                        Xem hợp đồng
+                                    </Button>
+                                )}
+                                <Button
+                                    size="sm"
+                                    className="rounded-lg font-bold tracking-tight text-[12px] px-6"
+                                    onClick={async () => {
+                                        const confirmed = await confirm({
+                                            title: 'Xác nhận ký hợp đồng',
+                                            description: 'Xác nhận đồng ý ký hợp đồng này?',
+                                            confirmText: 'Xác nhận & Đồng ý',
                                         })
-                                        if (result.success) {
-                                            toast.success('Đã xác nhận hợp đồng thành công!')
-                                            router.refresh()
-                                        } else {
-                                            toast.error(result.error || 'Có lỗi xảy ra')
+                                        if (!confirmed) return
+                                        try {
+                                            trackInteraction('confirm_contract', { contractId: c.id })
+                                            const { confirmContractFromPortal } = await import('@/lib/supabase/services/portal-actions')
+                                            const result = await confirmContractFromPortal(token, c.id, {
+                                                name: customer?.representative || '',
+                                                phone: customer?.phone || '',
+                                                email: customer?.email || '',
+                                            })
+                                            if (result.success) {
+                                                toast.success('Đã xác nhận hợp đồng thành công!')
+                                                router.refresh()
+                                            } else {
+                                                toast.error(result.error || 'Có lỗi xảy ra')
+                                            }
+                                        } catch {
+                                            toast.error('Có lỗi xảy ra')
                                         }
-                                    } catch {
-                                        toast.error('Có lỗi xảy ra')
-                                    }
-                                }}
-                            >
-                                <Check className="w-4 h-4 mr-1.5" />
-                                Xác nhận & Đồng ý ký
-                            </Button>
+                                    }}
+                                >
+                                    <Check className="w-4 h-4 mr-1.5" />
+                                    Xác nhận & Đồng ý ký
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                ))}
+                    )
+                })}
 
                 {/* Stats Row — Clean, no uppercase, no letter-spacing */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -469,6 +492,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 onSelectQuotation={(qId: string) => handleSelectQuotation(item.id, qId)}
                                 timeline={timeline}
                                 contracts={contracts}
+                                onViewContractDoc={handleViewContractDoc}
                             />
                         ))}
 
@@ -512,13 +536,14 @@ export default function PortalContent({ data, token }: PortalContentProps) {
 }
 
 /* ===== Work Item Card ===== */
-function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotationId, onSelectQuotation, timeline = [], contracts = [] }: {
+function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotationId, onSelectQuotation, timeline = [], contracts = [], onViewContractDoc }: {
     item: any; idx: number; token: string;
     quotationOptions?: any[];
     selectedQuotationId?: string;
     onSelectQuotation?: (qId: string) => void;
     timeline?: any[];
     contracts?: any[];
+    onViewContractDoc?: (htmlContent: string) => void;
 }) {
     const quotation = item.quotation
     const contract = item.contract
@@ -616,18 +641,33 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                 </div>
                             </a>
                         )}
-                        {contract && (
-                            <div className="flex items-center justify-between p-3 rounded-xl border border-zinc-100">
-                                <div className="flex items-center gap-3">
-                                    <FileSignature className="w-4 h-4 text-muted-foreground" />
-                                    <div>
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
-                                        <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
+                        {contract && (() => {
+                            // Find the main contract document from contract.documents
+                            const mainContractDoc = (contract.documents || []).find((d: any) => d.type === 'contract' || d.type === 'order')
+                            return (
+                                <div className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all">
+                                    <div className="flex items-center gap-3">
+                                        <FileSignature className="w-4 h-4 text-muted-foreground" />
+                                        <div>
+                                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Hợp đồng</p>
+                                            <p className="text-xs font-bold font-mono text-zinc-900 mt-0.5">#{contract.contract_number}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <StatusBadge status={contract.status} />
+                                        {mainContractDoc && onViewContractDoc && (
+                                            <button
+                                                onClick={() => onViewContractDoc(mainContractDoc.content)}
+                                                className="flex items-center gap-1 px-2 py-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-100 transition-colors text-xs font-semibold text-zinc-700"
+                                            >
+                                                <Eye className="w-3 h-3" />
+                                                Xem
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-                                <StatusBadge status={contract.status} />
-                            </div>
-                        )}
+                            )
+                        })()}
                     </div>
 
                     {/* Amount */}
