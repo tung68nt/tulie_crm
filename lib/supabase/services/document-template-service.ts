@@ -589,13 +589,20 @@ export async function generateDocumentBundle(contractId: string) {
     }
 
     // 5. Insert all generated documents
+    console.log(`[generateDocumentBundle] Generated ${docs.length} docs for contract ${contractId}:`, 
+        docs.map(d => ({ type: d.type, milestone_id: d.milestone_id, doc_number: d.doc_number }))
+    )
+    
     if (docs.length > 0) {
-        const { error: insertErr } = await supabase
+        const { data: inserted, error: insertErr } = await supabase
             .from('contract_documents')
             .insert(docs)
+            .select('id, type, milestone_id')
 
         if (insertErr) {
             console.error('Error inserting contract documents:', insertErr)
+        } else {
+            console.log(`[generateDocumentBundle] Successfully inserted ${inserted?.length || 0} docs`)
         }
     }
 
