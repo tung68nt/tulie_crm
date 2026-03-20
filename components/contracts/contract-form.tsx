@@ -80,14 +80,23 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
     const [projectId, setProjectId] = useState(contract.project_id || '')
     const [title, setTitle] = useState(contract.title || '')
     const [totalValue, setTotalValue] = useState(contract.total_amount || 0)
+    // Parse date strings as local dates to avoid timezone shift
+    // "2026-03-16" → local March 16, not UTC March 16 (which would be March 15 in UTC+7)
+    const parseLocalDate = (dateStr: string | null | undefined): Date | undefined => {
+        if (!dateStr) return undefined
+        // Extract just the date part (YYYY-MM-DD) regardless of input format
+        const datePart = dateStr.substring(0, 10) // "2026-03-16" from "2026-03-16T17:00:00+00:00"
+        const [y, m, d] = datePart.split('-').map(Number)
+        return new Date(y, m - 1, d) // Local date constructor
+    }
     const [startDate, setStartDate] = useState<Date | undefined>(
-        contract.start_date ? new Date(contract.start_date) : undefined
+        parseLocalDate(contract.start_date)
     )
     const [endDate, setEndDate] = useState<Date | undefined>(
-        contract.end_date ? new Date(contract.end_date) : undefined
+        parseLocalDate(contract.end_date)
     )
     const [signedDate, setSignedDate] = useState<Date | undefined>(
-        contract.signed_date ? new Date(contract.signed_date) : undefined
+        parseLocalDate(contract.signed_date)
     )
     const [status, setStatus] = useState(contract.status)
     const [terms, setTerms] = useState(contract.terms || '')
@@ -123,9 +132,9 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
             amount: m.amount,
             percentage: m.percentage || 0,
             amount_mode: (m.percentage && m.percentage > 0) ? 'percent' as const : 'fixed' as const,
-            due_date: m.due_date ? new Date(m.due_date) : undefined,
+            due_date: parseLocalDate(m.due_date),
             status: m.status as any,
-            completed_at: m.completed_at ? new Date(m.completed_at) : undefined,
+            completed_at: parseLocalDate(m.completed_at),
             delay_reason: m.delay_reason || '',
             type: m.type || 'payment'
         })) || []

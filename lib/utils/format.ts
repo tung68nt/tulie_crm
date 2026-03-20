@@ -21,8 +21,18 @@ export function formatNumber(value: number | null | undefined): string {
 // Date formatting
 export function formatDate(date: string | Date | null | undefined): string {
     if (!date) return '—'
-    const d = typeof date === 'string' ? parseISO(date) : date
-    return format(d, DATE_FORMAT)
+    if (typeof date === 'string') {
+        // For date-only strings like "2026-03-16", parse as-is
+        // For ISO timestamps like "2026-03-15T17:00:00+00:00", extract date part only
+        // This avoids timezone shift issues on server (UTC) vs client (UTC+7)
+        const datePart = date.substring(0, 10) // "2026-03-16"
+        if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) {
+            const [y, m, d] = datePart.split('-').map(Number)
+            return format(new Date(y, m - 1, d), DATE_FORMAT)
+        }
+        return format(parseISO(date), DATE_FORMAT)
+    }
+    return format(date, DATE_FORMAT)
 }
 
 export function formatDateTime(date: string | Date): string {

@@ -4,6 +4,14 @@ import { createAdminClient } from '../admin'
 import { DocumentTemplate, DocumentBundle, GeneratedDocument } from '@/types'
 import { readNumberToWords } from '@/lib/utils/format'
 
+// Parse date string to local Date, avoiding UTC timezone shift
+// "2026-03-16T17:00:00+00:00" → local March 16 (not UTC which may differ)
+function parseLocalDateString(dateStr: string): Date {
+    const datePart = dateStr.substring(0, 10) // "2026-03-16"
+    const [y, m, d] = datePart.split('-').map(Number)
+    return new Date(y, m - 1, d)
+}
+
 import { contractTemplate } from './contract-template'
 import { paymentTemplate } from './payment-template'
 import { orderTemplate } from './order-template'
@@ -249,7 +257,7 @@ export async function generateDocument(
         }
 
         // Use signed_date if available, otherwise fallback to now
-        const signedDate = contract?.signed_date ? new Date(contract.signed_date) : null
+        const signedDate = contract?.signed_date ? parseLocalDateString(contract.signed_date) : null
         const docDate = signedDate || new Date()
         const abbr = customer?.abbreviation || ''
         const dateStr = signedDate
@@ -340,12 +348,12 @@ export async function generateDocument(
         if (contract) {
             variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || 0)
             if (!variables.amount_in_words) variables.amount_in_words = readNumberToWords(contract.total_amount || 0)
-            variables.start_date = contract.start_date ? new Date(contract.start_date).toLocaleDateString('vi-VN') : ''
+            variables.start_date = contract.start_date ? parseLocalDateString(contract.start_date).toLocaleDateString('vi-VN') : ''
             variables.service_description = contract.description || contract.title || ''
 
             // Auto-fill delivery_time = contract end date
             if (contract.end_date) {
-                variables.delivery_time = new Date(contract.end_date).toLocaleDateString('vi-VN')
+                variables.delivery_time = parseLocalDateString(contract.end_date).toLocaleDateString('vi-VN')
             }
 
             // Auto-fill delivery_address from customer address
@@ -390,7 +398,7 @@ export async function generateDocument(
                     const totalAmount = contract.total_amount || 0
                     const paymentTermsHtml = paymentMilestones.map((m: any, idx: number) => {
                         const percentage = totalAmount > 0 ? Math.round((m.amount / totalAmount) * 100) : 0
-                        const dueStr = m.due_date ? `(Hạn: ${new Date(m.due_date).toLocaleDateString('vi-VN')})` : ''
+                        const dueStr = m.due_date ? `(Hạn: ${parseLocalDateString(m.due_date).toLocaleDateString('vi-VN')})` : ''
                         return `- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ — ${m.name} ${dueStr}`
                     }).join('<br/>')
                     
@@ -479,9 +487,9 @@ export async function getDocumentData(
         quotation_number: relationData?.quotation_number,
         total_amount: relationData?.total_amount || 0,
         amount_in_words: relationData?.total_amount ? readNumberToWords(relationData.total_amount) : '',
-        start_date: relationData?.start_date ? new Date(relationData.start_date).toLocaleDateString('vi-VN') : '',
-        contract_date: relationData?.created_at ? new Date(relationData.created_at).toLocaleDateString('vi-VN') : now.toLocaleDateString('vi-VN'),
-        valid_until: relationData?.valid_until ? new Date(relationData.valid_until).toLocaleDateString('vi-VN') : '30 ngày kể từ ngày báo giá',
+        start_date: relationData?.start_date ? parseLocalDateString(relationData.start_date).toLocaleDateString('vi-VN') : '',
+        contract_date: relationData?.created_at ? parseLocalDateString(relationData.created_at).toLocaleDateString('vi-VN') : now.toLocaleDateString('vi-VN'),
+        valid_until: relationData?.valid_until ? parseLocalDateString(relationData.valid_until).toLocaleDateString('vi-VN') : '30 ngày kể từ ngày báo giá',
         ...additionalMetadata
     }
 }
