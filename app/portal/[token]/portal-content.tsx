@@ -436,8 +436,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                     </div>
                 )}
 
-                {/* Lịch trình triển khai & Thanh toán (Project Milestones) */}
-                {timeline.filter(t => t.type === 'work' || t.type === 'payment').length > 0 && (
+                {/* Lịch trình triển khai & Thanh toán — Grouped by Contract */}
+                {(contracts.length > 0 || timeline.filter(t => t.type === 'work' || t.type === 'payment').length > 0) && (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -452,49 +452,122 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             <Badge variant="outline" className="text-xs font-semibold bg-zinc-50/50 border-zinc-200 px-3 py-1.5 rounded-lg uppercase tracking-wider">Timeline</Badge>
                         </div>
 
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {timeline
-                                .filter(t => t.type === 'work' || t.type === 'payment')
-                                .map((milestone: any, mIdx: number) => (
-                                    <div key={mIdx} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-2.5">
-                                                <div className={cn(
-                                                    "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold transition-all group-hover:scale-105",
-                                                    milestone.status === 'completed' ? "bg-zinc-950 text-white shadow-lg shadow-black/10" : "bg-zinc-100 text-muted-foreground border border-zinc-200"
-                                                )}>
-                                                    #{mIdx + 1}
-                                                </div>
-                                                <StatusBadge status={milestone.status} />
+                        {/* Group milestones by contract */}
+                        {contracts.map((c: any) => {
+                            const contractMilestones = timeline.filter(
+                                (t: any) => t.contract_id === c.id && (t.type === 'work' || t.type === 'payment')
+                            )
+                            if (contractMilestones.length === 0) return null
+
+                            return (
+                                <div key={c.id} className="space-y-4">
+                                    {/* Contract header */}
+                                    <div className="flex items-center justify-between bg-white rounded-xl border border-zinc-200 p-4 shadow-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center">
+                                                <FileSignature className="w-4 h-4 text-zinc-700" />
                                             </div>
-                                            {milestone.type === 'payment' && (
-                                                <div className="p-2 bg-zinc-100 rounded-xl">
-                                                    <Wallet className="w-4 h-4 text-zinc-700" />
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="text-sm font-bold text-zinc-950 tracking-tight">
+                                                        {c.type === 'order' ? 'Đơn hàng' : 'Hợp đồng'} #{c.contract_number}
+                                                    </h4>
+                                                    <StatusBadge status={c.status} />
                                                 </div>
-                                            )}
+                                                <p className="text-xs text-zinc-500 mt-0.5 line-clamp-1">{c.title}</p>
+                                            </div>
                                         </div>
-                                        <h4 className="text-[15px] font-bold text-zinc-950 mb-1.5 tracking-tight leading-tight">{milestone.title}</h4>
-                                        {milestone.description && (
-                                            <p className="text-xs text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
-                                        )}
-                                        <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
-                                                <span className="text-[12px] font-semibold text-zinc-950">{formatDate(milestone.date)}</span>
+                                        <div className="text-right">
+                                            <p className="text-xs text-zinc-400 font-medium">Giá trị</p>
+                                            <div className="flex items-baseline gap-0.5">
+                                                <span className="text-sm font-bold text-zinc-950 tabular-nums tracking-tight">
+                                                    {formatCurrency(c.total_amount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}
+                                                </span>
+                                                <span className="text-xs font-semibold text-zinc-500">đ</span>
                                             </div>
-                                            {milestone.amount > 0 && (
-                                                <div className="text-right">
-                                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
-                                                    <div className="flex items-baseline justify-end gap-1">
-                                                        <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
-                                                        <span className="text-xs font-semibold text-zinc-900">đ</span>
-                                                    </div>
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
-                                ))}
-                        </div>
+
+                                    {/* Milestones for this contract */}
+                                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 pl-4 border-l-2 border-zinc-200 ml-4">
+                                        {contractMilestones.map((milestone: any, mIdx: number) => (
+                                            <div key={milestone.id} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div className={cn(
+                                                            "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold transition-all group-hover:scale-105",
+                                                            milestone.status === 'completed' ? "bg-zinc-950 text-white shadow-lg shadow-black/10" : "bg-zinc-100 text-muted-foreground border border-zinc-200"
+                                                        )}>
+                                                            #{mIdx + 1}
+                                                        </div>
+                                                        <StatusBadge status={milestone.status} />
+                                                    </div>
+                                                    {milestone.type === 'payment' && (
+                                                        <div className="p-2 bg-zinc-100 rounded-xl">
+                                                            <Wallet className="w-4 h-4 text-zinc-700" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <h4 className="text-[15px] font-bold text-zinc-950 mb-1.5 tracking-tight leading-tight">{milestone.title}</h4>
+                                                {milestone.description && (
+                                                    <p className="text-xs text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
+                                                )}
+                                                <div className="pt-4 border-t border-zinc-100 flex items-center justify-between">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
+                                                        <span className="text-[12px] font-semibold text-zinc-950">{formatDate(milestone.date)}</span>
+                                                    </div>
+                                                    {milestone.amount > 0 && (
+                                                        <div className="text-right">
+                                                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Giá trị mốc</span>
+                                                            <div className="flex items-baseline justify-end gap-1">
+                                                                <span className="text-[13px] font-bold text-zinc-950 tracking-tighter tabular-nums">{formatCurrency(milestone.amount).replace(/\s*[₫đ]\s*$/g, '').replace(/^[₫đ]\s*/g, '').trim()}</span>
+                                                                <span className="text-xs font-semibold text-zinc-900">đ</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                        })}
+
+                        {/* Standalone milestones (not linked to any contract) */}
+                        {(() => {
+                            const standaloneMilestones = timeline.filter(
+                                (t: any) => !t.contract_id && (t.type === 'work' || t.type === 'payment')
+                            )
+                            if (standaloneMilestones.length === 0) return null
+                            return (
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                    {standaloneMilestones.map((milestone: any, mIdx: number) => (
+                                        <div key={milestone.id} className="bg-white p-6 rounded-xl border border-zinc-200 shadow-sm hover:border-zinc-300 transition-all group">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className={cn(
+                                                        "w-9 h-9 rounded-xl flex items-center justify-center text-xs font-semibold",
+                                                        milestone.status === 'completed' ? "bg-zinc-950 text-white" : "bg-zinc-100 text-muted-foreground border border-zinc-200"
+                                                    )}>
+                                                        #{mIdx + 1}
+                                                    </div>
+                                                    <StatusBadge status={milestone.status} />
+                                                </div>
+                                            </div>
+                                            <h4 className="text-[15px] font-bold text-zinc-950 mb-1.5 tracking-tight">{milestone.title}</h4>
+                                            {milestone.description && (
+                                                <p className="text-xs text-zinc-500 line-clamp-2 mb-5 h-8 font-medium leading-relaxed">{milestone.description}</p>
+                                            )}
+                                            <div className="pt-4 border-t border-zinc-100">
+                                                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">Hạn hoàn thành</span>
+                                                <span className="text-[12px] font-semibold text-zinc-950 ml-2">{formatDate(milestone.date)}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )
+                        })()}
                     </div>
                 )}
 
