@@ -135,11 +135,14 @@ export async function getPortalDataByToken(token: string) {
             if (workItemsData) {
                 // Auto-match contracts to work items via quotation_id
                 // (work items may have quotation_id but no contract_id set yet)
+                // Then attach documents from allContracts (which have contract_documents loaded)
                 allWorkItems = workItemsData.map((wi: any) => {
+                    let workItem = wi
+
                     if (!wi.contract && wi.quotation_id) {
                         const matchedContract = allContracts.find(c => c.quotation_id === wi.quotation_id)
                         if (matchedContract) {
-                            return {
+                            workItem = {
                                 ...wi,
                                 contract_id: matchedContract.id,
                                 contract: {
@@ -148,12 +151,26 @@ export async function getPortalDataByToken(token: string) {
                                     title: matchedContract.title,
                                     status: matchedContract.status,
                                     total_amount: matchedContract.total_amount,
-                                    created_at: matchedContract.created_at
+                                    created_at: matchedContract.created_at,
+                                    documents: matchedContract.documents || []
                                 }
                             }
                         }
                     }
-                    return wi
+
+                    // Attach documents from allContracts to work item's contract
+                    // (Supabase join only fetches basic contract fields, not contract_documents)
+                    if (workItem.contract && !workItem.contract.documents) {
+                        const fullContract = allContracts.find(c => c.id === workItem.contract.id)
+                        if (fullContract?.documents) {
+                            workItem = {
+                                ...workItem,
+                                contract: { ...workItem.contract, documents: fullContract.documents }
+                            }
+                        }
+                    }
+
+                    return workItem
                 })
             }
         } else {
