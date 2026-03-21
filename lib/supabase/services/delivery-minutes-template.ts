@@ -33,11 +33,11 @@ export const deliveryMinutesTemplate = `
 
   <p style="margin:10px 0;">Hôm nay, ngày {{day}} tháng {{month}} năm {{year}}, tại {{customer_company}}, chúng tôi gồm có:</p>
 
-  <!-- Bên A -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
-    <colgroup><col style="width:190px"><col style="width:auto"><col style="width:80px"><col style="width:auto"></colgroup>
+  <!-- Bên A + Bên B (cùng 1 bảng) -->
+  <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
+    <colgroup><col style="width:210px"><col style="width:auto"><col style="width:80px"><col style="width:auto"></colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top; white-space:nowrap;">Bên nhận hàng (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên nhận hàng (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">{{customer_company}}</td>
     </tr>
     <tr><td style="vertical-align:top;">Người đại diện pháp luật:</td><td style="font-weight:bold; vertical-align:top;">{{customer_representative}}</td><td style="vertical-align:top;">Chức vụ:</td><td style="vertical-align:top;">{{customer_position}}</td></tr>
@@ -45,13 +45,9 @@ export const deliveryMinutesTemplate = `
     <tr><td style="vertical-align:top;">Điện thoại:</td><td style="vertical-align:top;">{{customer_phone}}</td><td style="vertical-align:top;">Di động:</td><td style="vertical-align:top;">{{customer_mobile}}</td></tr>
     <tr><td style="vertical-align:top;">Mã số thuế:</td><td style="vertical-align:top;">{{customer_tax_code}}</td><td style="vertical-align:top;">Email:</td><td style="vertical-align:top;">{{customer_email}}</td></tr>
     <tr><td style="vertical-align:top;">Số tài khoản:</td><td style="vertical-align:top;">{{customer_bank_account}}</td><td style="vertical-align:top;">tại</td><td style="vertical-align:top;">{{customer_bank_name}}</td></tr>
-  </table>
-
-  <!-- Bên B -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
-    <colgroup><col style="width:190px"><col style="width:auto"><col style="width:80px"><col style="width:auto"></colgroup>
+    <tr><td colspan="4" style="padding:6px 0;"></td></tr>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top; white-space:nowrap;">Bên giao hàng (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên giao hàng (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr><td style="vertical-align:top;">Địa chỉ liên hệ:</td><td colspan="3" style="vertical-align:top;">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>

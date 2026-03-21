@@ -36,16 +36,18 @@ export const contractTemplate = `
   <p style="font-style:italic; margin: 0 0 3px 0; text-align:justify;">- Căn cứ vào Luật doanh nghiệp số 68/2014/QH13 do quốc hội ban hành ngày 26/11/2014 có hiệu lực thi hành từ ngày 01/07/2015;</p>
   <p style="font-style:italic; margin: 0 0 10px 0; text-align:justify;">- Căn cứ vào khả năng cung cầu của hai bên.</p>
 
-  <!-- ===== BÊN A ===== -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
+  <!-- ===== BÊN A + BÊN B (cùng 1 bảng để căn thẳng lề) ===== -->
+  <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
     <colgroup>
-      <col style="width:190px">
+      <col style="width:210px">
       <col style="width:auto">
       <col style="width:80px">
       <col style="width:auto">
     </colgroup>
+
+    <!-- BÊN A -->
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top; white-space:nowrap;">Bên sử dụng dịch vụ (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên sử dụng dịch vụ (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">{{customer_company}}</td>
     </tr>
     <tr>
@@ -76,18 +78,13 @@ export const contractTemplate = `
       <td style="vertical-align:top;">tại</td>
       <td style="vertical-align:top;">{{customer_bank_name}}</td>
     </tr>
-  </table>
 
-  <!-- ===== BÊN B ===== -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
-    <colgroup>
-      <col style="width:190px">
-      <col style="width:auto">
-      <col style="width:80px">
-      <col style="width:auto">
-    </colgroup>
+    <!-- Spacer -->
+    <tr><td colspan="4" style="padding:6px 0;"></td></tr>
+
+    <!-- BÊN B -->
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top; white-space:nowrap;">Bên cung cấp dịch vụ (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên cung cấp dịch vụ (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr>
