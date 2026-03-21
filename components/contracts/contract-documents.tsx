@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw, Eye, EyeOff } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw, Eye, EyeOff, CircleCheck, Circle } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -65,6 +65,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
         dbDocId?: string
         milestoneId?: string
         isVisible?: boolean
+        docStatus?: string
     }
 
 
@@ -100,6 +101,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     dbDocId: doc.id,
                     milestoneId: doc.milestone_id,
                     isVisible: doc.is_visible_on_portal !== false,
+                    docStatus: doc.status || 'draft',
                 }
             })
         }
@@ -147,6 +149,25 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             if (!res.ok) throw new Error('Cập nhật thất bại')
             setDbDocs(prev => prev.map(d => d.id === item.dbDocId ? { ...d, is_visible_on_portal: nextVal } : d))
             toast.success(nextVal ? 'Đã hiển thị trên Portal' : 'Đã ẩn khỏi Portal')
+        } catch (err: any) {
+            toast.error(err.message)
+        } finally {
+            setLoading(null)
+        }
+    }
+
+    const handleToggleStatus = async (item: DocItem) => {
+        if (!item.dbDocId) return
+        setLoading(item.key)
+        try {
+            const res = await fetch(`/api/contracts/${contract.id}/documents/${item.dbDocId}/toggle-status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            if (!res.ok) throw new Error('Cập nhật thất bại')
+            const data = await res.json()
+            setDbDocs(prev => prev.map(d => d.id === item.dbDocId ? { ...d, status: data.status } : d))
+            toast.success(data.status === 'signed' ? 'Đã đánh dấu hoàn thành' : 'Đã chuyển về bản nháp')
         } catch (err: any) {
             toast.error(err.message)
         } finally {
@@ -482,19 +503,33 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                 {docItems.map((item, idx) => {
                     const isActive = loading === item.key
                     const isGenerated = item.fromDb
+                    const isSigned = item.docStatus === 'signed'
 
                     return (
                         <div
                             key={item.key}
-                            className="group flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/50"
+                            className={`group flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/50 ${isSigned ? 'bg-green-50/50 border-green-200' : ''}`}
                         >
-                            <item.icon className="h-4 w-4 text-zinc-500 shrink-0" />
+                            {isGenerated ? (
+                                <button
+                                    onClick={() => handleToggleStatus(item)}
+                                    className="shrink-0 focus:outline-none"
+                                    title={isSigned ? 'Đã hoàn thành — bấm để chuyển về nháp' : 'Bấm để đánh dấu hoàn thành'}
+                                >
+                                    {isSigned
+                                        ? <CircleCheck className="h-5 w-5 text-green-600" />
+                                        : <Circle className="h-5 w-5 text-zinc-300 hover:text-zinc-500 transition-colors" />
+                                    }
+                                </button>
+                            ) : (
+                                <item.icon className="h-4 w-4 text-zinc-500 shrink-0" />
+                            )}
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                    <p className="text-sm font-medium truncate">{item.label}</p>
-                                    {isGenerated && (
-                                        <Badge variant="outline" className="text-[10px] leading-none px-1 py-0 text-green-600 border-green-200 bg-green-50 shrink-0">
-                                            <Check className="h-2.5 w-2.5" />
+                                    <p className={`text-sm font-medium truncate ${isSigned ? 'text-green-800' : ''}`}>{item.label}</p>
+                                    {isSigned && (
+                                        <Badge variant="outline" className="text-[10px] leading-none px-1.5 py-0.5 text-green-600 border-green-200 bg-green-50 shrink-0">
+                                            Xong
                                         </Badge>
                                     )}
                                 </div>
