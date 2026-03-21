@@ -5,6 +5,7 @@ import { checkRateLimit, getClientIp } from '@/lib/security/rate-limiter'
 import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitize'
 import { validateBody, createLeadSchema, updateLeadSchema } from '@/lib/security/validation'
 import { applyScopeFilter } from '@/lib/security/permissions'
+import { sendTelegramNotification, formatNewLead } from '@/lib/supabase/services/telegram-service'
 
 // CORS: Allow landing page form submissions from tulie.agency
 const ALLOWED_ORIGINS = [
@@ -81,6 +82,13 @@ export async function POST(req: Request) {
             console.error('Error creating lead:', error)
             return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500, headers: getCorsHeaders(req) })
         }
+
+        // Send Telegram notification asynchronously
+        formatNewLead(data).then(msg => {
+            sendTelegramNotification(msg).catch(err => {
+                console.error('Failed to send telegram notification:', err)
+            })
+        }).catch(err => console.error('Error formatting telegram message:', err))
 
         return NextResponse.json({ success: true, data }, { headers: getCorsHeaders(req) })
     } catch (error: any) {

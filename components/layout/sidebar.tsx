@@ -46,6 +46,7 @@ const navGroups: NavGroup[] = [
     {
         title: 'Tulie Agency',
         items: [
+            { title: 'Khách hàng tiềm năng', href: '/leads', icon: Contact },
             { title: 'Leads & Cơ hội', href: '/deals', icon: TrendingUp },
             { title: 'Khách hàng', href: '/customers', icon: Users },
             { title: 'Báo giá', href: '/quotations', icon: FileText },

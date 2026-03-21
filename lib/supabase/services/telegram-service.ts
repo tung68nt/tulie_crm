@@ -202,4 +202,22 @@ export async function formatNewInvoice(invoice: any) {
     return fillTemplate(tpl, vars).trim()
 }
 
-
+export async function formatNewLead(lead: any) {
+    const config = await getTelegramConfig()
+    const vars = {
+        full_name: lead.full_name || 'N/A',
+        phone: lead.phone || 'N/A',
+        source: lead.source || 'N/A',
+        message: lead.message || 'Không có ghi chú'
+    }
+    const tpl = (config as any)?.template_new_lead || `
+<b>🎯 LEAD MỚI TỪ WEBSITE</b>
+━━━━━━━━━━━━━━━━━━
+👤 Khách hàng: <b>{full_name}</b>
+📞 SĐT: <code>{phone}</code>
+🌐 Nguồn: {source}
+📝 Lời nhắn: {message}
+━━━━━━━━━━━━━━━━━━
+<i>Vào hệ thống CRM để chốt sales ngay! 🚀</i>`
+    return fillTemplate(tpl, vars).trim()
+}
