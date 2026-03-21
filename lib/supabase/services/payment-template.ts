@@ -53,15 +53,11 @@ export const paymentTemplate = `
   </p>
 
   <p style="margin:6px 0; text-indent: 1.27cm;">
-    Căn cứ Biên bản bàn giao và nghiệm thu ngày {{delivery_date}}, hai bên xác nhận Bên cung cấp dịch vụ đã hoàn thành đầy đủ phạm vi công việc quy định tại Hợp đồng;
+    {{milestone_reason}}
   </p>
 
   <p style="margin:6px 0; text-indent: 1.27cm;">
-    Theo điều khoản thanh toán tại Điều 2 của Hợp đồng, Bên sử dụng dịch vụ thanh toán cho Bên cung cấp dịch vụ <b>{{payment_percentage}}</b> giá trị hợp đồng trong vòng 05 (năm) ngày làm việc kể từ ngày ký Biên bản bàn giao và nghiệm thu.
-  </p>
-
-  <p style="margin:6px 0; text-indent: 1.27cm;">
-    Vậy, chúng tôi kính đề nghị Quý Công ty thanh toán <b>{{payment_percentage}}</b> giá trị hợp đồng, tương đương số tiền:
+    Vậy, chúng tôi kính đề nghị Quý Công ty thanh toán <b>{{milestone_name}}</b> theo hợp đồng số <b>{{contract_number}}</b>, với giá trị <b>{{payment_percentage}}</b> giá trị hợp đồng, tương ứng số tiền:
   </p>
 
   <p style="margin:6px 0; text-indent: 1.27cm;">

@@ -552,11 +552,28 @@ export async function generateDocumentBundle(contractId: string) {
                     const pct = totalAmount > 0 ? Math.round((milestone.amount / totalAmount) * 100) : 0
                     
                     // Override payment-specific variables for this milestone
+                    const mName = milestone.name || `Đợt ${i + 1}`
+                    const mNameLower = mName.toLowerCase()
+                    const isDeposit = mNameLower.includes('cọc') || mNameLower.includes('đặt cọc') || mNameLower.includes('tạm ứng')
+                    
+                    let milestoneReason: string
+                    if (isDeposit) {
+                        milestoneReason = `Theo điều khoản thanh toán tại Điều 2 của Hợp đồng, Bên sử dụng dịch vụ thanh toán đặt cọc cho Bên cung cấp dịch vụ để triển khai dự án.`
+                    } else {
+                        const deliveryDate = milestone.due_date 
+                            ? parseLocalDateString(milestone.due_date).toLocaleDateString('vi-VN') 
+                            : ''
+                        milestoneReason = deliveryDate
+                            ? `Căn cứ Biên bản bàn giao và nghiệm thu ngày ${deliveryDate}, hai bên xác nhận Bên cung cấp dịch vụ đã hoàn thành đầy đủ phạm vi công việc quy định tại Hợp đồng.`
+                            : `Căn cứ Biên bản bàn giao và nghiệm thu, hai bên xác nhận Bên cung cấp dịch vụ đã hoàn thành đầy đủ phạm vi công việc quy định tại Hợp đồng.`
+                    }
+
                     const milestoneVars: Record<string, string> = {
                         payment_amount: new Intl.NumberFormat('vi-VN').format(milestone.amount) + ' VND',
                         payment_percentage: `${pct}%`,
                         amount_in_words: readNumberToWords(milestone.amount),
-                        milestone_name: milestone.name || `Đợt ${i + 1}`,
+                        milestone_name: mName,
+                        milestone_reason: milestoneReason,
                         milestone_due_date: milestone.due_date 
                             ? parseLocalDateString(milestone.due_date).toLocaleDateString('vi-VN')
                             : '',
