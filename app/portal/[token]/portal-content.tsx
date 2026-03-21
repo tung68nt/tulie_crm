@@ -400,10 +400,14 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </Button>
                         </div>
 
-                        <div className="px-4 py-4 sm:px-8 sm:py-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
+                        <div className="px-4 py-4 sm:px-6 sm:py-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
+                            <style>{`
+                                .portal-doc-viewer > div { padding: 10mm 15mm !important; }
+                                @media (min-width: 1024px) { .portal-doc-viewer > div { padding: 15mm 20mm !important; } }
+                            `}</style>
                             <div
-                                className="bg-white shadow-lg border border-zinc-200 text-[#000] mx-auto"
-                                style={{ padding: '20mm', maxWidth: '210mm', minHeight: '297mm' }}
+                                className="portal-doc-viewer bg-white shadow-lg border border-zinc-200 text-[#000] mx-auto"
+                                style={{ maxWidth: '210mm', minHeight: '297mm' }}
                                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
                             />
                         </div>
