@@ -29,27 +29,29 @@ export const orderTemplate = `
 
   <!-- Bên A -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
+    <colgroup><col style="width:190px"><col style="width:auto"><col style="width:80px"><col style="width:auto"></colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap; vertical-align:top; padding-right:8px;">Bên đặt hàng (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 0; vertical-align:top;">Bên đặt hàng (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">{{customer_company}}</td>
     </tr>
-    <tr><td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Người đại diện pháp luật:</td><td style="font-weight:bold; padding-right:16px; vertical-align:top;">{{customer_representative}}</td><td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Chức vụ:</td><td style="vertical-align:top;">{{customer_position}}</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Địa chỉ liên hệ:</td><td colspan="3" style="vertical-align:top;">{{customer_address}}</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Điện thoại:</td><td style="vertical-align:top;">{{customer_phone}}</td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Di động:</td><td style="vertical-align:top;">{{customer_mobile}}</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Mã số thuế:</td><td style="vertical-align:top;">{{customer_tax_code}}</td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Email:</td><td style="vertical-align:top;">{{customer_email}}</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Số tài khoản:</td><td style="vertical-align:top;">{{customer_bank_account}}</td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">tại</td><td style="vertical-align:top;">{{customer_bank_name}}</td></tr>
+    <tr><td style="vertical-align:top;">Người đại diện pháp luật:</td><td style="font-weight:bold; vertical-align:top;">{{customer_representative}}</td><td style="vertical-align:top;">Chức vụ:</td><td style="vertical-align:top;">{{customer_position}}</td></tr>
+    <tr><td style="vertical-align:top;">Địa chỉ liên hệ:</td><td colspan="3" style="vertical-align:top;">{{customer_address}}</td></tr>
+    <tr><td style="vertical-align:top;">Điện thoại:</td><td style="vertical-align:top;">{{customer_phone}}</td><td style="vertical-align:top;">Di động:</td><td style="vertical-align:top;">{{customer_mobile}}</td></tr>
+    <tr><td style="vertical-align:top;">Mã số thuế:</td><td style="vertical-align:top;">{{customer_tax_code}}</td><td style="vertical-align:top;">Email:</td><td style="vertical-align:top;">{{customer_email}}</td></tr>
+    <tr><td style="vertical-align:top;">Số tài khoản:</td><td style="vertical-align:top;">{{customer_bank_account}}</td><td style="vertical-align:top;">tại</td><td style="vertical-align:top;">{{customer_bank_name}}</td></tr>
   </table>
 
   <!-- Bên B -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
+    <colgroup><col style="width:190px"><col style="width:auto"><col style="width:80px"><col style="width:auto"></colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; white-space:nowrap; vertical-align:top; padding-right:8px;">Bên nhận đặt hàng (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 0; vertical-align:top;">Bên nhận đặt hàng (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Địa chỉ liên hệ:</td><td colspan="3" style="vertical-align:top;">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Điện thoại:</td><td style="vertical-align:top;"></td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Di động:</td><td style="vertical-align:top;">+84 98 898 4554</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Mã số thuế:</td><td style="vertical-align:top;">0110163102</td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Email:</td><td style="vertical-align:top;">info@tulie.vn</td></tr>
-    <tr><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Số tài khoản:</td><td style="vertical-align:top;">86683979</td><td style="white-space:nowrap; vertical-align:top; padding-right:8px;">tại</td><td style="vertical-align:top;">Ngân hàng Techcombank - CN Hội sở</td></tr>
+    <tr><td style="vertical-align:top;">Địa chỉ liên hệ:</td><td colspan="3" style="vertical-align:top;">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td></tr>
+    <tr><td style="vertical-align:top;">Điện thoại:</td><td style="vertical-align:top;"></td><td style="vertical-align:top;">Di động:</td><td style="vertical-align:top;">+84 98 898 4554</td></tr>
+    <tr><td style="vertical-align:top;">Mã số thuế:</td><td style="vertical-align:top;">0110163102</td><td style="vertical-align:top;">Email:</td><td style="vertical-align:top;">info@tulie.vn</td></tr>
+    <tr><td style="vertical-align:top;">Số tài khoản:</td><td style="vertical-align:top;">86683979</td><td style="vertical-align:top;">tại</td><td style="vertical-align:top;">Ngân hàng Techcombank - CN Hội sở</td></tr>
   </table>
 
   <!-- Điều 1 -->

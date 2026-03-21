@@ -28,15 +28,38 @@ export async function getProjects(customerId?: string) {
 
         // Fetch document stats for all contracts linked to these projects
         try {
-            const contractIds = projects
+            // Get contract IDs from both forward FK (project.contract_id) and reverse FK (contract.project_id)
+            const contractIdsFromFK = projects
                 .map(p => (p as any).contract?.id)
                 .filter(Boolean)
 
-            if (contractIds.length > 0) {
+            // Also query contracts linked via project_id
+            const projectIds = projects.map(p => p.id)
+            let contractIdsFromReverse: string[] = []
+            if (projectIds.length > 0) {
+                const { data: reverseContracts } = await supabase
+                    .from('contracts')
+                    .select('id, project_id')
+                    .in('project_id', projectIds)
+                if (reverseContracts) {
+                    contractIdsFromReverse = reverseContracts.map((c: any) => c.id)
+                    // Map project -> contract for reverse lookup
+                    reverseContracts.forEach((c: any) => {
+                        const project = projects.find(p => p.id === c.project_id)
+                        if (project && !(project as any).contract?.id) {
+                            ;(project as any)._reverseContractId = c.id
+                        }
+                    })
+                }
+            }
+
+            const allContractIds = [...new Set([...contractIdsFromFK, ...contractIdsFromReverse])]
+
+            if (allContractIds.length > 0) {
                 const { data: docs } = await supabase
                     .from('contract_documents')
                     .select('contract_id, status, is_visible_on_portal')
-                    .in('contract_id', contractIds)
+                    .in('contract_id', allContractIds)
 
                 if (docs) {
                     const statsMap: Record<string, { total: number; visible: number; signed: number }> = {}
@@ -50,7 +73,7 @@ export async function getProjects(customerId?: string) {
                     })
 
                     projects.forEach(p => {
-                        const cId = (p as any).contract?.id
+                        const cId = (p as any).contract?.id || (p as any)._reverseContractId
                         if (cId && statsMap[cId]) {
                             ;(p as any).doc_stats = statsMap[cId]
                         }

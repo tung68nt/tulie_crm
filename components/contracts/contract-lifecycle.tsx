@@ -210,12 +210,12 @@ export function ContractLifecycle({ contract, project }: ContractLifecycleProps)
                                                     variant="ghost"
                                                     size="sm"
                                                     className="h-6 text-xs px-2"
-                                                    asChild
+                                                    onClick={() => {
+                                                        window.open(`/api/contracts/${contract.id}/preview?type=${step.documentType}`, '_blank')
+                                                    }}
                                                 >
-                                                    <Link href={`#doc-${step.documentType}`}>
-                                                        <FileText className="h-3 w-3 mr-1" />
-                                                        {step.document}
-                                                    </Link>
+                                                    <FileText className="h-3 w-3 mr-1" />
+                                                    {step.document}
                                                 </Button>
                                             )}
                                         </div>
