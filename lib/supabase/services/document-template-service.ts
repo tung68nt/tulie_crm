@@ -399,7 +399,7 @@ export async function generateDocument(
                     const paymentTermsHtml = paymentMilestones.map((m: any, idx: number) => {
                         const percentage = totalAmount > 0 ? Math.round((m.amount / totalAmount) * 100) : 0
                         const dueStr = m.due_date ? `(Hạn: ${parseLocalDateString(m.due_date).toLocaleDateString('vi-VN')})` : ''
-                        return `- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VND — ${m.name} ${dueStr}`
+                        return `- Đợt ${idx + 1}: ${percentage}% giá trị Hợp đồng = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VND — ${m.name} ${dueStr}`
                     }).join('<br/>')
                     
                     variables.payment_terms = paymentTermsHtml
