@@ -6,6 +6,32 @@ import { sanitizeText, isValidEmail, isValidPhone } from '@/lib/security/sanitiz
 import { validateBody, createLeadSchema, updateLeadSchema } from '@/lib/security/validation'
 import { applyScopeFilter } from '@/lib/security/permissions'
 
+// CORS: Allow landing page form submissions from tulie.agency
+const ALLOWED_ORIGINS = [
+    'https://tulie.agency',
+    'https://www.tulie.agency',
+    'http://localhost:3000',
+    'http://localhost:3001',
+]
+
+function getCorsHeaders(req: Request) {
+    const origin = req.headers.get('origin') || ''
+    const isAllowed = ALLOWED_ORIGINS.includes(origin)
+    return {
+        'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400',
+    }
+}
+
+/**
+ * OPTIONS /api/leads — CORS preflight
+ */
+export async function OPTIONS(req: Request) {
+    return new Response(null, { status: 204, headers: getCorsHeaders(req) })
+}
+
 
 /**
  * POST /api/leads — Public endpoint for landing page form
@@ -27,7 +53,7 @@ export async function POST(req: Request) {
         if (!validation.success) {
             return NextResponse.json({ error: validation.error }, { status: 400 })
         }
-        const { full_name, company_name, phone, email, business_type, message } = validation.data
+        const { full_name, company_name, phone, email, business_type, message, source } = validation.data
 
         // Additional sanitization
         const cleanName = sanitizeText(full_name, 200)
@@ -46,20 +72,20 @@ export async function POST(req: Request) {
                 business_type: sanitizeText(business_type || '', 100) || null,
                 message: sanitizeText(message || '', 2000) || null,
                 status: 'new',
-                source: 'landing_page',
+                source: source,
             })
             .select()
             .single()
 
         if (error) {
             console.error('Error creating lead:', error)
-            return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 })
+            return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500, headers: getCorsHeaders(req) })
         }
 
-        return NextResponse.json({ success: true, data })
+        return NextResponse.json({ success: true, data }, { headers: getCorsHeaders(req) })
     } catch (error: any) {
         console.error('Lead API error:', error)
-        return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500 })
+        return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500, headers: getCorsHeaders(req) })
     }
 }
 

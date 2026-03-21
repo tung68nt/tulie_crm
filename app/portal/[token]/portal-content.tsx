@@ -310,8 +310,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                         banner = { icon: '🚀', title: 'Dự án đang triển khai', desc: 'Hợp đồng đã ký & đã nhận cọc. Theo dõi tiến độ bên dưới.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasSignedContract) {
                         banner = { icon: '✅', title: 'Hợp đồng đã ký — Chờ đặt cọc', desc: 'Vui lòng thanh toán đặt cọc theo thông tin chuyển khoản trong báo giá để bắt đầu triển khai.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
-                    } else if (hasPendingContract || hasVisibleDocs) {
-                        banner = { icon: '📄', title: 'Tài liệu đang chờ review', desc: 'Vui lòng xem xét các tài liệu dự án và xác nhận hợp đồng (nếu có) để tiến hành dự án.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
+                    } else if (hasPendingContract) {
+                        banner = { icon: '📄', title: 'Hợp đồng đang chờ xác nhận', desc: 'Vui lòng xem xét hợp đồng và xác nhận để tiến hành dự án.', color: 'text-zinc-900', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasDraftContract) {
                         banner = { icon: '✏️', title: 'Đang soạn hợp đồng', desc: 'Hợp đồng đang được soạn thảo dựa trên báo giá đã duyệt. Bạn sẽ nhận được bản review sớm.', color: 'text-zinc-700', bg: 'bg-zinc-50', border: 'border-zinc-200' }
                     } else if (hasAcceptedQuote && !hasContracts) {

@@ -50,6 +50,15 @@ export const createLeadSchema = z.object({
     email: emailSchema.optional().or(z.literal('')),
     business_type: z.string().max(100).optional(),
     message: z.string().max(2000).optional(),
+    source: z.enum([
+        'landing_page',
+        'lp_thiet_ke_website',
+        'lp_thiet_ke_landing_page',
+        'lp_thiet_ke_cv_portfolio',
+        'website_tulie',
+        'referral',
+        'other',
+    ]).optional().default('landing_page'),
 })
 
 /** PATCH /api/leads (authenticated) */
