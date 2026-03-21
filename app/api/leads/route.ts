@@ -83,12 +83,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Có lỗi xảy ra' }, { status: 500, headers: getCorsHeaders(req) })
         }
 
-        // Send Telegram notification asynchronously
-        formatNewLead(data).then(msg => {
-            sendTelegramNotification(msg).catch(err => {
-                console.error('Failed to send telegram notification:', err)
-            })
-        }).catch(err => console.error('Error formatting telegram message:', err))
+        // Send Telegram notification synchronously or using waitUntil to prevent 
+        // Vercel from killing the process before the request finishes.
+        try {
+            const msg = await formatNewLead(data)
+            await sendTelegramNotification(msg)
+        } catch (err) {
+            console.error('Telegram error:', err)
+        }
 
         return NextResponse.json({ success: true, data }, { headers: getCorsHeaders(req) })
     } catch (error: any) {
