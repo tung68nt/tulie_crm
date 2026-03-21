@@ -209,6 +209,7 @@ export async function formatNewLead(lead: any) {
     const vars = {
         full_name: lead.full_name || 'N/A',
         phone: lead.phone || 'N/A',
+        company_name: lead.company_name || 'Cá nhân',
         source: lead.source || 'N/A',
         message: lead.message || 'Không có ghi chú'
     }
@@ -217,6 +218,7 @@ export async function formatNewLead(lead: any) {
 ━━━━━━━━━━━━━━━━━━
 👤 Khách hàng: <b>{full_name}</b>
 📞 SĐT: <code>{phone}</code>
+🏢 Công ty: <b>{company_name}</b>
 🌐 Nguồn: {source}
 📝 Lời nhắn: {message}
 ━━━━━━━━━━━━━━━━━━
