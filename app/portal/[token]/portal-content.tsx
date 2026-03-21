@@ -426,7 +426,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Tiện ích khác — Hidden for now as it's redundant with the new milestone cards */}
                 {/* Document Viewer Dialog for Portal */}
                 <Dialog open={isViewingDoc} onOpenChange={setIsViewingDoc}>
-                    <DialogContent className="max-w-6xl sm:max-w-6xl w-[95vw] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
+                    <DialogContent className="sm:max-w-[860px] w-[95vw] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
                         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
@@ -443,10 +443,10 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                             </Button>
                         </div>
 
-                        <div className="p-3 sm:p-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
+                        <div className="px-4 py-4 sm:px-8 sm:py-6 overflow-y-auto max-h-[calc(100vh-120px)] sm:max-h-[85vh]">
                             <div
-                                className="bg-white p-5 sm:p-8 md:p-12 lg:p-16 shadow-lg border border-zinc-200 text-[#000] mx-auto"
-                                style={{ maxWidth: '210mm', minHeight: '297mm' }}
+                                className="bg-white shadow-lg border border-zinc-200 text-[#000] mx-auto"
+                                style={{ padding: '20mm', maxWidth: '210mm', minHeight: '297mm' }}
                                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
                             />
                         </div>
