@@ -105,7 +105,7 @@ export function DealForm({ customers = [], users = [] }: DealFormProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="budget">Ngân sách dự kiến (VNĐ)</Label>
+                            <Label htmlFor="budget">Ngân sách dự kiến (đ)</Label>
                             <Input
                                 id="budget"
                                 type="number"

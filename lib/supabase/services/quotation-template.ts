@@ -55,7 +55,7 @@ export const quotationTemplate = `
 
     <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px;">Điều 2: Giá trị hợp đồng và thanh toán</h3>
     <div style="font-size: 10pt; border: 1px solid #000; padding: 20px; background-color: #fafafa;">
-        <p style="margin: 0 0 10px 0;">2.1. Tổng giá trị: <strong>{{total_amount_number}} VNĐ</strong></p>
+        <p style="margin: 0 0 10px 0;">2.1. Tổng giá trị: <strong>{{total_amount_number}} VND</strong></p>
         <p style="margin: 0 0 15px 0;">(Bằng chữ: <em>{{amount_in_words}} đồng.</em>)</p>
         <p style="margin: 0;">2.2. Phương thức thanh toán: Chuyển khoản qua ngân hàng:</p>
         <div style="margin-top: 10px; padding-left: 15px; border-left: 2px solid #ddd;">

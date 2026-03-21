@@ -179,7 +179,7 @@ export function ProjectMilestones({ project }: ProjectMilestonesProps) {
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="text-[11px] text-muted-foreground font-medium">
-                                        {m.type === 'payment' ? 'Số tiền (VNĐ)' : 'Ngày thực tế'}
+                                        {m.type === 'payment' ? 'Số tiền (đ)' : 'Ngày thực tế'}
                                     </Label>
                                     {m.type === 'payment' ? (
                                         <Input

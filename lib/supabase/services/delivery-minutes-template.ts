@@ -25,7 +25,7 @@ export const deliveryMinutesTemplate = `
     </tr>
   </table>
 
-  <p style="text-align:center; font-weight:bold; font-size:18pt; margin: 16px 0 20px 0;">BIÊN BẢN GIAO NHẬN</p>
+  <p style="text-align:center; font-weight:bold; font-size:13pt; margin: 16px 0 20px 0;">BIÊN BẢN GIAO NHẬN</p>
 
   <!-- Căn cứ -->
   <p style="font-style:italic; margin: 0 0 3px 0; text-align:justify;">- Căn cứ vào hợp đồng kinh tế số {{contract_number}} giữa {{customer_company}} và Công ty TNHH Dịch vụ và Giải pháp Công nghệ Tulie;</p>

@@ -25,7 +25,7 @@ export const orderTemplate = `
     </tr>
   </table>
 
-  <p style="text-align:center; font-weight:bold; font-size:18pt; margin: 16px 0 20px 0;">ĐƠN ĐẶT HÀNG</p>
+  <p style="text-align:center; font-weight:bold; font-size:13pt; margin: 16px 0 20px 0;">ĐƠN ĐẶT HÀNG</p>
 
   <!-- Bên A -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">

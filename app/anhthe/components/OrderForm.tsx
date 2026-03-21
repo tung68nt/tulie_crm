@@ -881,7 +881,7 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                         : "bg-white text-zinc-500 hover:bg-zinc-50"
                     )}
                   >
-                    VNĐ
+                    đ
                   </button>
                   <button
                     type="button"
@@ -916,7 +916,7 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                     className="h-10 sm:h-11 rounded-lg border-zinc-200 focus:border-zinc-400 placeholder:text-zinc-300 pr-14"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-300 pointer-events-none">
-                    {discountType === 'amount' ? 'VNĐ' : '%'}
+                    {discountType === 'amount' ? 'đ' : '%'}
                   </div>
                 </div>
               </div>

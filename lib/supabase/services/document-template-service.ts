@@ -399,7 +399,7 @@ export async function generateDocument(
                     const paymentTermsHtml = paymentMilestones.map((m: any, idx: number) => {
                         const percentage = totalAmount > 0 ? Math.round((m.amount / totalAmount) * 100) : 0
                         const dueStr = m.due_date ? `(Hạn: ${parseLocalDateString(m.due_date).toLocaleDateString('vi-VN')})` : ''
-                        return `- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VNĐ — ${m.name} ${dueStr}`
+                        return `- Đợt ${idx + 1}: ${percentage}% giá trị HĐ = ${new Intl.NumberFormat('vi-VN').format(m.amount)} VND — ${m.name} ${dueStr}`
                     }).join('<br/>')
                     
                     variables.payment_terms = paymentTermsHtml
@@ -409,7 +409,7 @@ export async function generateDocument(
                         const pendingMilestone = paymentMilestones.find((m: any) => m.status === 'pending') || paymentMilestones[0]
                         if (pendingMilestone) {
                             const pct = totalAmount > 0 ? Math.round((pendingMilestone.amount / totalAmount) * 100) : 0
-                            variables.payment_amount = new Intl.NumberFormat('vi-VN').format(pendingMilestone.amount) + ' VNĐ'
+                            variables.payment_amount = new Intl.NumberFormat('vi-VN').format(pendingMilestone.amount) + ' VND'
                             variables.payment_percentage = `${pct}%`
                             // Only overwrite amount_in_words if this is a payment request
                             if (template.type === 'payment_request') {

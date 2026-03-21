@@ -28,7 +28,7 @@ export const contractTemplate = `
   </table>
 
   <!-- Tiêu đề -->
-  <p style="text-align:center; font-weight:bold; font-size:18pt; margin: 16px 0 20px 0;">HỢP ĐỒNG KINH TẾ</p>
+  <p style="text-align:center; font-weight:bold; font-size:13pt; margin: 16px 0 20px 0;">HỢP ĐỒNG KINH TẾ</p>
 
   <!-- Căn cứ pháp luật - IN NGHIÊNG -->
   <p style="font-style:italic; margin: 0 0 3px 0; text-align:justify;">- Căn cứ Bộ luật Dân sự nước Cộng hòa Xã hội Chủ nghĩa Việt Nam số 91/2015/QH13 được Quốc hội thông qua ngày 24/11/2015 có hiệu lực thi hành từ ngày 01/01/2017;</p>

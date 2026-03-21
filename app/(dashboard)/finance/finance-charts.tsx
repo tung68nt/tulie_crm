@@ -76,7 +76,7 @@ export function FinanceCharts({ monthlyData, recentTransactions }: FinanceCharts
                     <div className="grid gap-6 lg:grid-cols-3">
                         <Card className="lg:col-span-2 rounded-xl border shadow-sm overflow-hidden">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-base font-semibold">Doanh thu vs Chi phí (Triệu VNĐ)</CardTitle>
+                                <CardTitle className="text-base font-semibold">Doanh thu vs Chi phí (Triệu VND)</CardTitle>
                             </CardHeader>
                             <CardContent className="pt-2">
                                 {!hasData ? (

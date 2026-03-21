@@ -83,7 +83,7 @@ export const LATEX_CONTRACT_TEMPLATE = `
 
 \\vspace{15pt}
 \\textbf{Điều 2: Giá trị hợp đồng và phương thức thanh toán} \\\\
-2.1. Tổng giá trị hợp đồng (đã bao gồm VAT): \\textbf{ {{total_amount_number}} VNĐ} \\\\
+2.1. Tổng giá trị hợp đồng (đã bao gồm VAT): \\textbf{ {{total_amount_number}} VND} \\\\
 (Bằng chữ: \\textit{ {{amount_in_words}} }) \\\\
 2.2. Hình thức thanh toán: Chuyển khoản hoặc tiền mặt. \\\\
 2.3. Thời hạn thanh toán: Bên A thanh toán cho Bên B trong vòng 05 ngày làm việc kể từ ngày nghiệm thu bàn giao và nhận đầy đủ hóa đơn chứng từ.
@@ -153,7 +153,7 @@ Bên A cam kết đặt hàng các sản phẩm sau:
 
 \\vspace{15pt}
 \\textbf{Thông tin thanh toán:} \\\\
-- Tổng cộng: \\textbf{ {{total_amount_number}} VNĐ} \\\\
+- Tổng cộng: \\textbf{ {{total_amount_number}} VND} \\\\
 - Bằng chữ: \\textit{ {{amount_in_words}} } \\\\
 - Hình thức: {{payment_method}}
 
@@ -195,7 +195,7 @@ Thực hiện Hợp đồng kinh tế số \\textbf{ {{contract_number}} } ký n
 
 Theo điều khoản thanh toán, chúng tôi kính đề nghị Quý khách hàng thanh toán số tiền:
 \\begin{center}
-    \\textbf{\\Large {{payment_amount}} VNĐ} \\\\
+    \\textbf{\\Large {{payment_amount}} VND} \\\\
     (Bằng chữ: \\textit{ {{amount_in_words}} })
 \\end{center}
 

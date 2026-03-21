@@ -338,7 +338,7 @@ export async function getPortalDataByToken(token: string) {
                 id: `invoice-${inv.id}`,
                 type: 'payment',
                 title: `Yêu cầu thanh toán: ${inv.invoice_number}`,
-                description: `Số tiền: ${inv.total_amount.toLocaleString('vi-VN')} VNĐ`,
+                description: `Số tiền: ${inv.total_amount.toLocaleString('vi-VN')} VND`,
                 date: inv.issue_date,
                 status: inv.status === 'paid' ? 'completed' : 'pending',
                 amount: inv.total_amount,

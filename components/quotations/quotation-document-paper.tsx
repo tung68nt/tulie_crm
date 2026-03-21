@@ -151,7 +151,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                     )}
                     <tr className="bg-zinc-50">
                         <td colSpan={5} className="border border-black py-3 px-3 text-right font-bold uppercase text-[12px]">Tổng cộng thanh toán (Total Payment):</td>
-                        <td className="border border-black py-3 px-3 text-right font-bold text-[14px] tabular-nums underline decoration-2 underline-offset-4">{formatCurrency(quotation.total_amount || 0).replace('₫', '')} VNĐ</td>
+                        <td className="border border-black py-3 px-3 text-right font-bold text-[14px] tabular-nums underline decoration-2 underline-offset-4">{formatCurrency(quotation.total_amount || 0).replace('₫', '')} VND</td>
                     </tr>
                 </tbody>
             </table>
