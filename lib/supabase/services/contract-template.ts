@@ -45,7 +45,7 @@ export const contractTemplate = `
       <col style="width:auto">
     </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; vertical-align:top;">Bên sử dụng dịch vụ (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top;">Bên sử dụng dịch vụ (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">{{customer_company}}</td>
     </tr>
     <tr>
@@ -87,7 +87,7 @@ export const contractTemplate = `
       <col style="width:auto">
     </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0; vertical-align:top;">Bên cung cấp dịch vụ (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 12px 4px 0; vertical-align:top;">Bên cung cấp dịch vụ (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr>
