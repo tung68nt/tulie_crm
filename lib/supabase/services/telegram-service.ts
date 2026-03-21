@@ -1,9 +1,11 @@
 'use server'
 import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import { TelegramConfig } from '@/types'
 
 async function getTelegramConfig(): Promise<TelegramConfig | null> {
-    const supabase = await createClient()
+    // SECURITY: Use admin client to bypass RLS since this is called from public API routes
+    const supabase = createAdminClient()
     const { data, error } = await supabase
         .from('system_settings')
         .select('value')

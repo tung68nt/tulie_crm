@@ -175,8 +175,8 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                             <div className="col-span-3">Khách hàng</div>
                             <div className="col-span-2">Liên hệ</div>
                             <div className="col-span-2">Công ty</div>
+                            <div className="col-span-2">Nguồn</div>
                             <div className="col-span-2">Trạng thái</div>
-                            <div className="col-span-2">Ngày tạo</div>
                             <div className="col-span-1"></div>
                         </div>
 
@@ -196,18 +196,20 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                     </div>
                                     <div className="col-span-2 space-y-0.5">
                                         <p className="text-xs font-medium text-zinc-700">{lead.phone}</p>
-                                        {lead.email && <p className="text-[11px] text-muted-foreground truncate">{lead.email}</p>}
+                                        <p className="text-[11px] text-muted-foreground">{formatDate(lead.created_at)}</p>
                                     </div>
                                     <div className="col-span-2">
                                         <p className="text-xs font-medium text-zinc-600 truncate">{lead.company_name || '—'}</p>
                                     </div>
                                     <div className="col-span-2">
-                                        <Badge className={cn("text-[11px] font-semibold border-none px-2.5 py-1 rounded-lg", statusCfg.color)}>
-                                            {statusCfg.label}
+                                         <Badge variant="outline" className="text-[10px] bg-zinc-100 text-zinc-700 font-semibold border-zinc-200">
+                                            {lead.source === 'lp_thiet_ke_website' ? 'LP Thiết kế Web' : (lead.source || 'Website Tulie')}
                                         </Badge>
                                     </div>
                                     <div className="col-span-2">
-                                        <p className="text-[11px] text-muted-foreground">{formatDate(lead.created_at)}</p>
+                                        <Badge className={cn("text-[11px] font-semibold border-none px-2.5 py-1 rounded-lg", statusCfg.color)}>
+                                            {statusCfg.label}
+                                        </Badge>
                                     </div>
                                     <div className="col-span-1 flex justify-end" onClick={(e) => e.stopPropagation()}>
                                         <DropdownMenu>
@@ -278,6 +280,10 @@ export function LeadsList({ initialData, stats }: LeadsListProps) {
                                     <div className="space-y-1">
                                         <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Lĩnh vực</p>
                                         <p className="text-sm font-semibold text-zinc-950">{selectedLead.business_type || '—'}</p>
+                                    </div>
+                                    <div className="space-y-1 col-span-2">
+                                        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Nguồn thu thập</p>
+                                        <p className="text-sm font-semibold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">{selectedLead.source === 'lp_thiet_ke_website' ? 'Landing Page: Thiết kế Web' : (selectedLead.source || 'Website Chính')}</p>
                                     </div>
                                 </div>
 
