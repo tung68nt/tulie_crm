@@ -426,7 +426,7 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                 {/* Tiện ích khác — Hidden for now as it's redundant with the new milestone cards */}
                 {/* Document Viewer Dialog for Portal */}
                 <Dialog open={isViewingDoc} onOpenChange={setIsViewingDoc}>
-                    <DialogContent className="max-w-6xl w-[95vw] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
+                    <DialogContent className="max-w-6xl sm:max-w-6xl w-[95vw] p-0 overflow-hidden bg-zinc-50 border-none rounded-xl" showCloseButton={false}>
                         <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
