@@ -488,7 +488,23 @@ export async function generateDocumentBundle(contractId: string) {
         return
     }
 
-    // 2. Delete existing DRAFT documents (preserve signed ones)
+    // 2. Save visibility state of existing drafts before deleting
+    const { data: existingDrafts } = await supabase
+        .from('contract_documents')
+        .select('type, milestone_id, is_visible_on_portal')
+        .eq('contract_id', contractId)
+        .eq('status', 'draft')
+    
+    // Build a map: "type:milestone_id" -> is_visible_on_portal
+    const visibilityMap = new Map<string, boolean>()
+    if (existingDrafts) {
+        for (const d of existingDrafts) {
+            const key = `${d.type}:${d.milestone_id || ''}`
+            visibilityMap.set(key, d.is_visible_on_portal !== false)
+        }
+    }
+
+    // Delete existing DRAFT documents (preserve signed ones)
     await supabase
         .from('contract_documents')
         .delete()
@@ -591,6 +607,13 @@ export async function generateDocumentBundle(contractId: string) {
     // 5. Insert all generated documents (one by one to handle FK errors gracefully)
     if (docs.length > 0) {
         for (const doc of docs) {
+            // Restore previous visibility state
+            const visKey = `${doc.type}:${doc.milestone_id || ''}`
+            const wasVisible = visibilityMap.get(visKey)
+            if (wasVisible !== undefined) {
+                doc.is_visible_on_portal = wasVisible
+            }
+
             const { error: insertErr } = await supabase
                 .from('contract_documents')
                 .insert(doc)
