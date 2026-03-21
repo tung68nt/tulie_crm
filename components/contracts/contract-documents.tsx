@@ -174,7 +174,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
                 })
                 const data = await res.json()
-                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print</title><style>@media print{@page{size:A4;margin:10mm}}</style></head><body>${data.content || ''}</body></html>`
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print</title><style>@media print{@page{size:A4;margin:15mm 20mm}body>div{padding:0!important;margin:0!important;max-width:none!important}}</style></head><body>${data.content || ''}</body></html>`
             }
             win.document.open()
             win.document.write(html)
@@ -203,7 +203,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
                 })
                 const data = await res.json()
-                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${item.label}</title><style>@media print{@page{size:A4;margin:10mm}}</style></head><body>${data.content || ''}</body></html>`
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${item.label}</title><style>@media print{@page{size:A4;margin:15mm 20mm}body>div{padding:0!important;margin:0!important;max-width:none!important}}</style></head><body>${data.content || ''}</body></html>`
             }
             const blob = new Blob([html], { type: 'text/html' })
             const url = URL.createObjectURL(blob)
@@ -486,62 +486,62 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     return (
                         <div
                             key={item.key}
-                            className="group flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
+                            className="group flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/50"
                         >
-                            <item.icon className="h-5 w-5 text-zinc-600 shrink-0" />
+                            <item.icon className="h-4 w-4 text-zinc-500 shrink-0" />
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{item.label}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                    <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                                <div className="flex items-center gap-1.5">
+                                    <p className="text-sm font-medium truncate">{item.label}</p>
                                     {isGenerated && (
-                                        <Badge variant="outline" className="text-[10px] leading-none px-1.5 py-0.5 text-green-600 border-green-200 bg-green-50 shrink-0">
-                                            <Check className="h-2.5 w-2.5 mr-0.5" />
-                                            Đã tạo
+                                        <Badge variant="outline" className="text-[10px] leading-none px-1 py-0 text-green-600 border-green-200 bg-green-50 shrink-0">
+                                            <Check className="h-2.5 w-2.5" />
                                         </Badge>
                                     )}
                                 </div>
+                                <p className="text-[11px] text-muted-foreground truncate">{item.description}</p>
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5 shrink-0">
                                 <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
+                                    size="icon"
+                                    className="h-7 w-7"
                                     onClick={() => handlePreviewDoc(item)}
                                     disabled={isActive}
+                                    title="Xem"
                                 >
-                                    {isActive ? <LoadingSpinner size="sm" /> : <ChevronRight className="h-3 w-3" />}
-                                    Xem
+                                    {isActive ? <LoadingSpinner size="sm" /> : <ChevronRight className="h-3.5 w-3.5" />}
                                 </Button>
                                 {isGenerated && (
                                     <Button
                                         variant="ghost"
-                                        size="sm"
-                                        className="h-7 text-xs"
+                                        size="icon"
+                                        className="h-7 w-7"
                                         onClick={() => handleToggleVisibility(item)}
                                         disabled={isActive}
-                                        title={item.isVisible ? "Đang hiện trên Portal" : "Đang ẩn khỏi Portal"}
+                                        title={item.isVisible ? "Đang hiện trên Portal — bấm để ẩn" : "Đang ẩn — bấm để hiện trên Portal"}
                                     >
-                                        {item.isVisible ? <Eye className="h-3 w-3 text-emerald-600" /> : <EyeOff className="h-3 w-3 text-zinc-400" />}
-                                        {item.isVisible ? <span className="text-emerald-700">Hiện Portal</span> : <span className="text-zinc-500">Ẩn Portal</span>}
+                                        {item.isVisible ? <Eye className="h-3.5 w-3.5 text-emerald-600" /> : <EyeOff className="h-3.5 w-3.5 text-zinc-400" />}
                                     </Button>
                                 )}
                                 <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
+                                    size="icon"
+                                    className="h-7 w-7"
                                     onClick={() => handlePrintDoc(item)}
                                     disabled={isActive}
+                                    title="In"
                                 >
-                                    <Printer className="h-3 w-3" />
+                                    <Printer className="h-3.5 w-3.5" />
                                 </Button>
                                 <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="h-7 text-xs"
+                                    size="icon"
+                                    className="h-7 w-7"
                                     onClick={() => handleDownloadDoc(item)}
                                     disabled={isActive}
+                                    title="Tải xuống"
                                 >
-                                    <Download className="h-3 w-3" />
+                                    <Download className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
                         </div>

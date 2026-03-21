@@ -40,7 +40,12 @@ export async function GET(
 <head>
     <meta charset="UTF-8">
     <title>${title} - ${doc.doc_number || contractId}</title>
-    <style>@media print { @page { size: A4; margin: 10mm; } }</style>
+    <style>
+        @media print {
+            @page { size: A4; margin: 15mm 20mm; }
+            body > div { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+        }
+    </style>
 </head>
 <body>${doc.content}</body>
 </html>`
