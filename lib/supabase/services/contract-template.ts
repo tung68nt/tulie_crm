@@ -38,78 +38,72 @@ export const contractTemplate = `
 
   <!-- ===== BÊN A ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:10pt;" cellpadding="2">
-    <colgroup>
-      <col style="width:25%">
-      <col style="width:32%">
-      <col style="width:13%">
-      <col style="width:30%">
-    </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0;">Bên sử dụng dịch vụ (Bên A)</td>
-      <td colspan="3" style="font-weight:bold; padding:4px 0;">{{customer_company}}</td>
+      <td style="font-weight:bold; padding:4px 0; white-space:nowrap; vertical-align:top; padding-right:8px;">Bên sử dụng dịch vụ (Bên A)</td>
+      <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">{{customer_company}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; padding-right:8px;">Người đại diện pháp luật:</td>
-      <td style="font-weight:bold; padding-right:16px;">{{customer_representative_title}} {{customer_representative}}</td>
-      <td style="white-space:nowrap; padding-right:8px;">Chức vụ:</td>
-      <td>{{customer_position}}</td>
+      <td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; padding-right:16px; vertical-align:top;">{{customer_representative_title}} {{customer_representative}}</td>
+      <td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Chức vụ:</td>
+      <td style="vertical-align:top;">{{customer_position}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Địa chỉ liên hệ:</td>
-      <td colspan="3">{{customer_address}}</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Địa chỉ liên hệ:</td>
+      <td colspan="3" style="vertical-align:top;">{{customer_address}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Điện thoại:</td>
-      <td>{{customer_phone}}</td>
-      <td style="white-space:nowrap;">Di động:</td>
-      <td>{{customer_mobile}}</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Điện thoại:</td>
+      <td style="vertical-align:top;">{{customer_phone}}</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Di động:</td>
+      <td style="vertical-align:top;">{{customer_mobile}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Mã số thuế:</td>
-      <td>{{customer_tax_code}}</td>
-      <td style="white-space:nowrap;">Email:</td>
-      <td>{{customer_email}}</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Mã số thuế:</td>
+      <td style="vertical-align:top;">{{customer_tax_code}}</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Email:</td>
+      <td style="vertical-align:top;">{{customer_email}}</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Số tài khoản:</td>
       <td style="vertical-align:top;">{{customer_bank_account}}</td>
-      <td style="white-space:nowrap; vertical-align:top;">tại</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">tại</td>
       <td style="vertical-align:top;">{{customer_bank_name}}</td>
     </tr>
   </table>
 
   <!-- ===== BÊN B ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
-    <colgroup>
-      <col style="width:25%">
-      <col style="width:32%">
-      <col style="width:13%">
-      <col style="width:30%">
-    </colgroup>
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 0;">Bên cung cấp dịch vụ (Bên B)</td>
-      <td colspan="3" style="font-weight:bold; padding:4px 0;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
+      <td style="font-weight:bold; padding:4px 0; white-space:nowrap; vertical-align:top; padding-right:8px;">Bên cung cấp dịch vụ (Bên B)</td>
+      <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; padding-right:8px;">Địa chỉ liên hệ:</td>
-      <td colspan="3">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td>
+      <td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; padding-right:16px; vertical-align:top;">Ông Nguyễn Thanh Tùng</td>
+      <td style="white-space:nowrap; padding-right:8px; vertical-align:top;">Chức vụ:</td>
+      <td style="vertical-align:top;">Giám đốc</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Điện thoại:</td>
-      <td></td>
-      <td style="white-space:nowrap;">Di động:</td>
-      <td>+84 98 898 4554</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Địa chỉ liên hệ:</td>
+      <td colspan="3" style="vertical-align:top;">Tầng 4, Tòa nhà SHG, Số 8 Quang Trung, Phường Hà Đông, Thành phố Hà Nội, Việt Nam</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap;">Mã số thuế:</td>
-      <td>0110163102</td>
-      <td style="white-space:nowrap;">Email:</td>
-      <td>info@tulie.vn</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Điện thoại:</td>
+      <td style="vertical-align:top;"></td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Di động:</td>
+      <td style="vertical-align:top;">+84 98 898 4554</td>
     </tr>
     <tr>
-      <td style="white-space:nowrap; vertical-align:top;">Số tài khoản:</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Mã số thuế:</td>
+      <td style="vertical-align:top;">0110163102</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Email:</td>
+      <td style="vertical-align:top;">info@tulie.vn</td>
+    </tr>
+    <tr>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">Số tài khoản:</td>
       <td style="vertical-align:top;">86683979</td>
-      <td style="white-space:nowrap; vertical-align:top;">tại</td>
+      <td style="white-space:nowrap; vertical-align:top; padding-right:8px;">tại</td>
       <td style="vertical-align:top;">Ngân hàng Techcombank - CN Hội sở</td>
     </tr>
   </table>
