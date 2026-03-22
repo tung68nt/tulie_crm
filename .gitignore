@@ -52,3 +52,10 @@ AGENTS.md
 CLAUDE.md
 GEMINI.md
 .env*.local
+
+# Temp/scratch files
+tmp_*/
+*.sql.bak
+*.output.txt
+build_output.txt
+schema_output.txt

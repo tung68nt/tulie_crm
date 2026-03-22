@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '../server'
+import { createAdminClient } from '../admin'
 import { revalidatePath } from 'next/cache'
 import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
@@ -72,7 +73,9 @@ export async function setQuotationPassword(quotationId: string, password: string
 
 export async function verifyPortalPassword(token: string, password: string) {
     try {
-        const supabase = await createClient()
+        // SECURITY: Use admin client — portal visitors have no session,
+        // and we verify token ownership before any data access
+        const supabase = createAdminClient()
 
         // 1. Fetch primary quotation and its project data
         const { data: quotation, error } = await supabase
@@ -120,7 +123,8 @@ export async function verifyPortalPassword(token: string, password: string) {
 
 export async function updateQuotationStatus(quotationId: string, status: string, metadata: any = {}) {
     try {
-        const supabase = await createClient()
+        // SECURITY: Use admin client — called from public quote view (no session)
+        const supabase = createAdminClient()
 
         // 1. Get quotation to find public_token for revalidation
         const { data: quote } = await supabase
@@ -266,7 +270,9 @@ export async function confirmContractFromPortal(
     confirmerInfo: { name: string; phone: string; email: string; position?: string }
 ) {
     try {
-        const supabase = await createClient()
+        // SECURITY: Use admin client — portal visitors have no session,
+        // token is verified below before any mutations
+        const supabase = createAdminClient()
 
         // 1. Verify token → get project_id
         const { data: qData } = await supabase
