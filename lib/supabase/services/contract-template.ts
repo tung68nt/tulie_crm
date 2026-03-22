@@ -4,7 +4,7 @@
  * Biến tự động: {{variable_name}}
  */
 export const contractTemplate = `
-<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 15mm 20mm; line-height: 1.5; text-align: justify;">
+<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 20mm 15mm 20mm 25mm; line-height: 1.5; text-align: justify;">
   <!-- Header: 2 cột căn thẳng hàng -->
   <table style="width:100%; border-collapse:collapse; margin-bottom: 0;">
     <tr>

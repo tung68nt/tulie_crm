@@ -7,7 +7,7 @@
  * - Margin: 2cm trái, 2cm phải, 2cm trên, 2cm dưới
  */
 export const paymentTemplate = `
-<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 15mm 20mm; line-height: 1.5; text-align: justify;">
+<div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000; max-width: 210mm; margin: 0 auto; padding: 20mm 15mm 20mm 25mm; line-height: 1.5; text-align: justify;">
 
   <!-- Header: Tên cơ quan / Quốc hiệu tiêu ngữ -->
   <table style="width:100%; border-collapse:collapse; margin-bottom: 4px;">

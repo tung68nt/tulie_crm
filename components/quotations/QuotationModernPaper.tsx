@@ -84,7 +84,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
     return (
         <div className="quotation-paper-modern bg-white w-full max-w-[210mm] mx-auto shadow-sm print:shadow-none min-h-[297mm] flex flex-col">
             {/* 1:1 SYNCED HEADER */}
-            <div className="p-10">
+            <div className="p-10 print:p-0">
                 <div className="flex flex-row justify-between items-start">
                     <div className="flex flex-col items-start w-[65%]">
                         <div className="h-24 flex items-end mb-4">
@@ -365,7 +365,7 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
             </div>
 
             {/* SYNCED DECORATIVE FOOTER */}
-            <div className="mt-auto p-10 border-t border-slate-100 flex flex-col items-center">
+            <div className="mt-auto p-10 print:p-0 border-t border-slate-100 flex flex-col items-center">
                 <div className="flex justify-between items-center w-full text-[11px] text-slate-500 font-bold uppercase tracking-widest">
                     <div className="flex items-center gap-4">
                         <span className="text-slate-950">{brandConfig?.brand_name || "Tulie Agency"}</span>
@@ -381,10 +381,20 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @media print {
+                    @page {
+                        size: A4;
+                        margin: 20mm 15mm 20mm 25mm;
+                        @bottom-right {
+                            content: "Trang " counter(page) " / " counter(pages);
+                            font-family: Arial, sans-serif;
+                            font-size: 10pt;
+                        }
+                    }
                     .quotation-paper-modern {
                         box-shadow: none !important;
                         margin: 0 !important;
                         width: 100% !important;
+                        padding: 0 !important;
                     }
                     * {
                         -webkit-print-color-adjust: exact !important;

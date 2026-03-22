@@ -102,8 +102,10 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
     const [terms, setTerms] = useState(contract.terms || '')
     const [contractType, setContractType] = useState(contract.type || 'contract')
 
-    // Lock form when contract is signed/active/completed
-    const isLocked = ['signed', 'active', 'completed'].includes(contract.status)
+    // Lock entirely when completed/cancelled
+    const isFullyLocked = ['completed', 'cancelled'].includes(contract.status)
+    // Lock core details when active (but allow milestone/status updates)
+    const isCoreLocked = ['active', 'completed', 'cancelled'].includes(contract.status)
 
     // Customer abbreviation for document number generation
     const selectedCustomer = customers.find(c => c.id === customerId)
@@ -284,17 +286,25 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 </div>
             </div>
 
-            {isLocked && (
+            {isCoreLocked && !isFullyLocked && (
+                <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-800">
+                    <AlertTriangle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-800 dark:text-blue-300 font-medium">
+                        Hợp đồng đang thực hiện — chỉ cho phép cập nhật trạng thái và tiến độ công việc/thanh toán.
+                    </AlertDescription>
+                </Alert>
+            )}
+            {isFullyLocked && (
                 <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800">
                     <AlertTriangle className="h-4 w-4 text-amber-600" />
                     <AlertDescription className="text-amber-800 dark:text-amber-300 font-medium">
-                        Hợp đồng đã ký — không thể chỉnh sửa thông tin. Liên hệ admin nếu cần thay đổi.
+                        Hợp đồng đã đóng — không thể chỉnh sửa thông tin. Liên hệ admin nếu cần thay đổi.
                     </AlertDescription>
                 </Alert>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <fieldset disabled={isLocked} className="space-y-6">
+                <fieldset disabled={isFullyLocked} className="space-y-6">
                 <div className="grid gap-6 lg:grid-cols-2">
                     {/* Basic Info */}
                     <Card>
@@ -330,6 +340,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                 </Select>
                             </div>
 
+                            <fieldset disabled={isCoreLocked} className="space-y-4">
                             <div className="space-y-2">
                                 <Label>Khách hàng <span className="text-destructive">*</span></Label>
                                 <Select value={customerId} onValueChange={setCustomerId}>
@@ -487,6 +498,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                                     </AlertDescription>
                                 </Alert>
                             )}
+                            </fieldset>
                         </CardContent>
                     </Card>
 
@@ -680,7 +692,7 @@ export function ContractForm({ contract, customers, quotations, projects }: Cont
                 </div>
 
                 {/* Actions */}
-                {!isLocked && (
+                {!isFullyLocked && (
                 <div className="flex items-center justify-end gap-4">
                     <Button type="button" variant="outline" asChild>
                         <Link href={`/contracts/${contract.id}`}>Hủy</Link>

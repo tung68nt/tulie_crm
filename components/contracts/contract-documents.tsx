@@ -195,7 +195,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
                 })
                 const data = await res.json()
-                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print</title><style>@media print{@page{size:A4;margin:15mm 20mm}body>div{padding:0!important;margin:0!important;max-width:none!important}}</style></head><body>${data.content || ''}</body></html>`
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Print</title><style>@media print{@page{size:A4;margin:20mm 15mm 20mm 25mm;@bottom-right{content:"Trang " counter(page) " / " counter(pages);font-family:Arial,sans-serif;font-size:10pt;}}body{margin:0;background:none;}body>div{padding:0!important;margin:0!important;max-width:none!important;box-shadow:none!important;border:none!important;}}</style></head><body>${data.content || ''}</body></html>`
             }
             win.document.open()
             win.document.write(html)
@@ -224,7 +224,7 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     body: JSON.stringify({ type: item.type, additionalVariables: customerInfo })
                 })
                 const data = await res.json()
-                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${item.label}</title><style>@media print{@page{size:A4;margin:15mm 20mm}body>div{padding:0!important;margin:0!important;max-width:none!important}}</style></head><body>${data.content || ''}</body></html>`
+                html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${item.label}</title><style>@media print{@page{size:A4;margin:20mm 15mm 20mm 25mm;@bottom-right{content:"Trang " counter(page) " / " counter(pages);font-family:Arial,sans-serif;font-size:10pt;}}body{margin:0;background:none;}body>div{padding:0!important;margin:0!important;max-width:none!important;box-shadow:none!important;border:none!important;}}</style></head><body>${data.content || ''}</body></html>`
             }
             const blob = new Blob([html], { type: 'text/html' })
             const url = URL.createObjectURL(blob)

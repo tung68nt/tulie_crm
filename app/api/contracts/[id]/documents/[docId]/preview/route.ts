@@ -42,12 +42,23 @@ export async function GET(
     <title>${title} - ${doc.doc_number || contractId}</title>
     <style>
         @media print {
-            @page { size: A4; margin: 15mm 20mm; }
-            body > div { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+            @page {
+                size: A4;
+                margin: 20mm 15mm 20mm 25mm;
+                @bottom-right {
+                    content: "Trang " counter(page) " / " counter(pages);
+                    font-family: Arial, sans-serif;
+                    font-size: 10pt;
+                }
+            }
+            body { margin: 0; background: none; }
+            body > div { padding: 0 !important; margin: 0 !important; max-width: none !important; box-shadow: none !important; border: none !important; }
         }
     </style>
 </head>
-<body>${doc.content}</body>
+<body>
+    ${doc.content}
+</body>
 </html>`
 
         return new Response(fullHtml, {
