@@ -70,7 +70,7 @@ export const orderTemplate = `
       <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:60px;">Giảm giá</th>
       <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Thành tiền</th>
       <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:55px;">Thuế VAT</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Sau thuế</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Thành tiền sau thuế</th>
     </tr>
     {{contract_items_table}}
     <tr style="background:#f5f5f5;">
