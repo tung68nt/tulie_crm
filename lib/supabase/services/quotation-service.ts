@@ -417,6 +417,9 @@ export async function deleteQuotation(id: string) {
 
         if (error) {
             console.error('Error deleting quotation:', error)
+            if (error.code === '23503') {
+                throw new Error('Không thể xóa báo giá đã được sử dụng tạo hợp đồng/đơn hàng.')
+            }
             throw error
         }
 
@@ -439,6 +442,9 @@ export async function deleteQuotations(ids: string[]) {
 
         if (error) {
             console.error('Error deleting quotations:', error)
+            if (error.code === '23503') {
+                throw new Error('Không thể xóa báo giá đã được sử dụng tạo hợp đồng/đơn hàng.')
+            }
             throw error
         }
 

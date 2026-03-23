@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu, ChevronDown } from 'lucide-react'
+import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu, ChevronDown, CheckCircle, UserPlus, FileText, CheckCircle2, CreditCard, BellRing } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -87,14 +87,37 @@ export function Header() {
         }
     }
 
-    const getNotificationColor = (type: string) => {
+    const handleMarkAllAsRead = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Optimistic update
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+        setUnreadCount(0)
+
+        // API call
+        try {
+            const supabase = createClient()
+            const { data: { user: authUser } } = await supabase.auth.getUser()
+            if (authUser) {
+                await supabase.from('notifications')
+                    .update({ read: true })
+                    .eq('user_id', authUser.id)
+                    .eq('read', false)
+            }
+        } catch (error) {
+            console.error('Error marking all as read:', error)
+        }
+    }
+
+    const getNotificationIcon = (type: string) => {
         switch (type) {
-            case 'new_customer': return 'bg-zinc-800 dark:bg-zinc-200'
-            case 'quotation_accepted': return 'bg-zinc-950 dark:bg-zinc-50'
-            case 'invoice_overdue': return 'bg-zinc-600'
-            case 'contract_signed': return 'bg-zinc-900 mx-1'
-            case 'payment_received': return 'bg-zinc-700'
-            default: return 'bg-zinc-400'
+            case 'new_customer': return <UserPlus className="h-4 w-4" />
+            case 'quotation_accepted': return <CheckCircle2 className="h-4 w-4" />
+            case 'invoice_overdue': return <BellRing className="h-4 w-4" />
+            case 'contract_signed': return <FileText className="h-4 w-4" />
+            case 'payment_received': return <CreditCard className="h-4 w-4" />
+            default: return <Bell className="h-4 w-4" />
         }
     }
 
@@ -106,7 +129,7 @@ export function Header() {
         const diffHours = Math.floor(diffMs / 3600000)
         const diffDays = Math.floor(diffMs / 86400000)
 
-        if (diffMins < 60) return `${diffMins} phút trước`
+        if (diffMins < 60) return `${diffMins || 1} phút trước`
         if (diffHours < 24) return `${diffHours} giờ trước`
         return `${diffDays} ngày trước`
     }
@@ -159,57 +182,81 @@ export function Header() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative rounded-full h-9 w-9 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group">
-                            <Bell className="h-[18px] w-[18px] text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors group-hover:animate-[wiggle_0.3s_ease-in-out]" />
+                            <Bell className={`h-[18px] w-[18px] text-zinc-500 transition-colors group-hover:text-zinc-900 dark:group-hover:text-zinc-100 ${unreadCount > 0 ? 'group-hover:animate-[wiggle_0.3s_ease-in-out]' : ''}`} />
                             {unreadCount > 0 && (
-                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-zinc-900 dark:bg-white px-1 text-[10px] font-bold text-white dark:text-zinc-900 ring-2 ring-background shadow-sm">
+                                <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-background shadow-sm">
                                     {unreadCount > 9 ? '9+' : unreadCount}
                                 </span>
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] sm:w-80 rounded-xl shadow-xl border-zinc-200/80 dark:border-zinc-700">
-                        <div className="flex items-center justify-between px-4 py-3">
-                            <span className="text-sm font-bold">Thông báo</span>
+                    <DropdownMenuContent align="end" className="w-[calc(100vw-2rem)] sm:w-[380px] rounded-xl shadow-xl border-zinc-200/80 dark:border-zinc-700 p-0 overflow-hidden">
+                        <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-900 border-b">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[15px] font-bold text-zinc-900 dark:text-zinc-100">Thông báo</span>
+                                {unreadCount > 0 && (
+                                    <span className="text-[11px] font-bold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-full">{unreadCount} mới</span>
+                                )}
+                            </div>
                             {unreadCount > 0 && (
-                                <span className="text-[11px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">{unreadCount} mới</span>
+                                <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-auto p-0 text-[12px] font-medium text-blue-600 hover:text-blue-700 hover:bg-transparent -mr-2 pr-2"
+                                    onClick={handleMarkAllAsRead}
+                                >
+                                    Đánh dấu tất cả đã đọc
+                                </Button>
                             )}
                         </div>
-                        <DropdownMenuSeparator />
-                        <div className="max-h-[300px] overflow-y-auto">
+                        <div className="max-h-[380px] overflow-y-auto no-scrollbar">
                             {notifications.length === 0 ? (
-                                <div className="py-8 text-center">
-                                    <Bell className="h-8 w-8 text-zinc-200 dark:text-zinc-700 mx-auto mb-2" />
-                                    <p className="text-sm text-muted-foreground font-medium">Không có thông báo mới</p>
+                                <div className="py-12 flex flex-col items-center justify-center">
+                                    <div className="h-12 w-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
+                                        <Bell className="h-5 w-5 text-zinc-400" />
+                                    </div>
+                                    <p className="text-[14px] text-zinc-900 dark:text-zinc-100 font-semibold mb-1">Tất cả đã xong!</p>
+                                    <p className="text-[13px] text-muted-foreground text-center">Bạn không còn thông báo nào chưa đọc.</p>
                                 </div>
                             ) : (
-                                notifications.map((notification) => (
-                                    <DropdownMenuItem
-                                        key={notification.id}
-                                        className={`flex flex-col items-start gap-1 py-3 px-4 cursor-pointer rounded-lg mx-1 my-0.5 ${!notification.read ? 'bg-zinc-50 dark:bg-zinc-800/50' : ''}`}
-                                        onClick={() => handleNotificationClick(notification)}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {!notification.read && (
-                                                <span className="h-2 w-2 rounded-full bg-zinc-900 dark:bg-white shrink-0" />
-                                            )}
-                                            <span className={`font-semibold text-sm ${!notification.read ? '' : 'text-muted-foreground'}`}>{notification.title}</span>
-                                        </div>
-                                        <p className="text-[13px] text-muted-foreground leading-snug pl-4">
-                                            {notification.message}
-                                        </p>
-                                        <span className="text-[11px] text-muted-foreground/60 font-medium pl-4">
-                                            {formatTimeAgo(notification.created_at)}
-                                        </span>
-                                    </DropdownMenuItem>
-                                ))
+                                <div className="p-1.5 flex flex-col gap-0.5">
+                                    {notifications.map((notification) => (
+                                        <DropdownMenuItem
+                                            key={notification.id}
+                                            className={`flex items-start gap-3 py-3 px-3 cursor-pointer rounded-lg transition-colors border border-transparent ${!notification.read ? 'bg-blue-50/50 dark:bg-blue-500/5 hover:bg-blue-50 dark:hover:bg-blue-500/10' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}
+                                            onClick={() => handleNotificationClick(notification)}
+                                        >
+                                            <div className={`mt-0.5 shrink-0 flex items-center justify-center h-8 w-8 rounded-full ${!notification.read ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
+                                                {getNotificationIcon(notification.type)}
+                                            </div>
+                                            <div className="flex flex-col flex-1 w-full relative">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className={`font-semibold text-[13.5px] line-clamp-1 ${!notification.read ? 'text-zinc-900 dark:text-zinc-50' : 'text-zinc-700 dark:text-zinc-300'}`}>
+                                                        {notification.title}
+                                                    </span>
+                                                    {!notification.read && (
+                                                        <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0 shadow-[0_0_0_2px_#ebf5ff] dark:shadow-[0_0_0_2px_#1e3a8a]" />
+                                                    )}
+                                                </div>
+                                                <p className={`text-[13px] leading-[1.4] mt-0.5 line-clamp-2 ${!notification.read ? 'text-zinc-800 dark:text-zinc-200' : 'text-muted-foreground'}`}>
+                                                    {notification.message}
+                                                </p>
+                                                <span className={`text-[11.5px] font-medium mt-1.5 ${!notification.read ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground/80'}`}>
+                                                    {formatTimeAgo(notification.created_at)}
+                                                </span>
+                                            </div>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </div>
                             )}
                         </div>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild className="justify-center text-center cursor-pointer py-2.5 rounded-lg mx-1 mb-1">
-                            <Link href="/notifications" className="text-sm font-semibold w-full">
-                                Xem tất cả thông báo
-                            </Link>
-                        </DropdownMenuItem>
+                        <div className="p-2 border-t bg-zinc-50/50 dark:bg-zinc-900/50">
+                            <DropdownMenuItem asChild className="justify-center text-center cursor-pointer py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:bg-zinc-50 dark:hover:bg-zinc-900 shadow-sm transition-all text-[13px] font-semibold text-zinc-900 dark:text-zinc-100 h-9">
+                                <Link href="/notifications" className="w-full">
+                                    Xem tất cả thông báo
+                                </Link>
+                            </DropdownMenuItem>
+                        </div>
                     </DropdownMenuContent>
                 </DropdownMenu>
 

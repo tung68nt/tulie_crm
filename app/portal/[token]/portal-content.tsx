@@ -406,8 +406,8 @@ export default function PortalContent({ data, token }: PortalContentProps) {
                                 @media (min-width: 1024px) { .portal-doc-viewer > div { padding: 15mm 20mm !important; } }
                             `}</style>
                             <div
-                                className="portal-doc-viewer bg-white shadow-lg border border-zinc-200 text-[#000] mx-auto"
-                                style={{ maxWidth: '210mm', minHeight: '297mm' }}
+                                className="portal-doc-viewer bg-white shadow-lg border border-zinc-200 text-[#000] mx-auto relative shrink-0"
+                                style={{ width: '210mm', minWidth: '210mm', minHeight: '297mm', transformBox: 'border-box' }}
                                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedDocContent || '') }}
                             />
                         </div>

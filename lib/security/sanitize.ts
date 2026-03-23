@@ -38,13 +38,51 @@ const SANITIZE_OPTIONS: sanitizeHtmlLib.IOptions = {
         'th': ['colspan', 'rowspan', 'align', 'valign', 'scope'],
         'td': ['colspan', 'rowspan', 'align', 'valign'],
         'col': ['span'],
-        'table': ['border', 'cellpadding', 'cellspacing'],
+        'table': ['border', 'cellpadding', 'cellspacing', 'style'],
+    },
+    allowedStyles: {
+        '*': {
+            // Allow common CSS properties used in templates
+            'color': [/.*/],
+            'text-align': [/.*/],
+            'font-family': [/.*/],
+            'font-size': [/.*/],
+            'font-weight': [/.*/],
+            'font-style': [/.*/],
+            'text-decoration': [/.*/],
+            'text-transform': [/.*/],
+            'line-height': [/.*/],
+            'margin': [/.*/],
+            'margin-top': [/.*/],
+            'margin-bottom': [/.*/],
+            'margin-left': [/.*/],
+            'margin-right': [/.*/],
+            'padding': [/.*/],
+            'padding-top': [/.*/],
+            'padding-bottom': [/.*/],
+            'padding-left': [/.*/],
+            'padding-right': [/.*/],
+            'border': [/.*/],
+            'border-top': [/.*/],
+            'border-bottom': [/.*/],
+            'border-left': [/.*/],
+            'border-right': [/.*/],
+            'border-collapse': [/.*/],
+            'width': [/.*/],
+            'height': [/.*/],
+            'max-width': [/.*/],
+            'min-height': [/.*/],
+            'vertical-align': [/.*/],
+            'white-space': [/.*/],
+            'background': [/.*/],
+            'background-color': [/.*/],
+        }
     },
     allowedSchemes: ['http', 'https', 'mailto'],
     // Block javascript:, data:, vbscript: URIs
     disallowedTagsMode: 'discard',
     // Allow style tags (needed for document templates print CSS)
-    allowVulnerableTags: false,
+    allowVulnerableTags: true, // Need this to allow <style> tags content to pass through securely handled by sanitize-html
 }
 
 // Strict options for user-facing content (no style tags, fewer elements)

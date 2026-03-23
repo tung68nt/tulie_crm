@@ -51,7 +51,35 @@ export const quotationTemplate = `
     <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-bottom: 15px;">Điều 1: Nội dung và giá trị đơn đặt hàng</h3>
     <p style="font-size: 10pt; margin-bottom: 15px;">1.1 Bên A cam kết đặt hàng các sản phẩm, dịch vụ như sau:</p>
     
-    {{quotation_items_table}}
+    <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:10pt;">
+      <tr>
+        <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:40px;">STT</th>
+        <th style="border:1px solid #000; padding:5px; text-align:left; font-weight:bold;" colspan="3">Tên hàng hoá, dịch vụ</th>
+        <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Đơn vị tính</th>
+        <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:60px;">Số lượng</th>
+        <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:90px;">Đơn giá</th>
+        <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:100px;">Thành tiền</th>
+      </tr>
+      {{quotation_items_table}}
+      <tr>
+        <td style="border:1px solid #000; padding:5px;"></td>
+        <td style="border:1px solid #000; padding:5px;" colspan="6"><strong>Cộng tiền hàng</strong></td>
+        <td style="border:1px solid #000; padding:5px; text-align:right;">{{subtotal}}</td>
+      </tr>
+      {{discount_row_html}}
+      <tr>
+        <td style="border:1px solid #000; padding:5px;"></td>
+        <td style="border:1px solid #000; padding:5px;">Thuế suất GTGT</td>
+        <td style="border:1px solid #000; padding:5px; text-align:center;">{{vat_rate}}</td>
+        <td style="border:1px solid #000; padding:5px;" colspan="4"></td>
+        <td style="border:1px solid #000; padding:5px; text-align:right;">{{vat_amount}}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:5px;"></td>
+        <td style="border:1px solid #000; padding:5px;" colspan="6"><strong>Tổng tiền thanh toán</strong></td>
+        <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>
+      </tr>
+    </table>
 
     <h3 style="font-size: 11pt; font-weight: 800; text-transform: uppercase; margin-top: 30px; margin-bottom: 15px;">Điều 2: Giá trị hợp đồng và thanh toán</h3>
     <div style="font-size: 10pt; border: 1px solid #000; padding: 20px; background-color: #fafafa;">

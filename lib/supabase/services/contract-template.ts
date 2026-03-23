@@ -147,6 +147,7 @@ export const contractTemplate = `
       <td style="border:1px solid #000; padding:5px;" colspan="6"><strong>Cộng tiền hàng</strong></td>
       <td style="border:1px solid #000; padding:5px; text-align:right;">{{subtotal}}</td>
     </tr>
+    {{discount_row_html}}
     <tr>
       <td style="border:1px solid #000; padding:5px;"></td>
       <td style="border:1px solid #000; padding:5px;">Thuế suất GTGT</td>

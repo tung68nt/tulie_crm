@@ -349,7 +349,7 @@ export async function generateDocument(
             variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || 0)
             if (!variables.amount_in_words) variables.amount_in_words = readNumberToWords(contract.total_amount || 0)
             variables.start_date = contract.start_date ? parseLocalDateString(contract.start_date).toLocaleDateString('vi-VN') : ''
-            variables.service_description = contract.description || contract.title || ''
+            variables.service_description = contract.description || contract.quotation?.title || contract.title || ''
 
             // Auto-fill delivery_time = contract end date
             if (contract.end_date) {
@@ -379,13 +379,29 @@ export async function generateDocument(
                 variables.contract_items_table = itemsRowsHtml
                 variables.quotation_items_table = itemsRowsHtml
 
-                // Subtotal, VAT, Total
+                // Subtotal, Discount, VAT, Total
+                const discountAmount = contract.quotation?.discount_amount ?? 0
+                const discountPercent = contract.quotation?.discount_percent ?? 0
                 const vatRate = contract.quotation?.vat_percent ?? 0
-                const vatAmount = contract.quotation?.vat_amount ?? Math.round(subtotal * vatRate / 100)
+                const vatAmount = contract.quotation?.vat_amount ?? Math.round((subtotal - discountAmount) * vatRate / 100)
+                
                 variables.subtotal = new Intl.NumberFormat('vi-VN').format(subtotal)
                 variables.vat_rate = vatRate > 0 ? `${vatRate}%` : '0%'
                 variables.vat_amount = new Intl.NumberFormat('vi-VN').format(vatAmount)
-                variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || (subtotal + vatAmount))
+                variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || (subtotal - discountAmount + vatAmount))
+
+                // Optional discount row
+                if (discountAmount > 0) {
+                    const pctString = discountPercent > 0 ? ` (${discountPercent}%)` : ''
+                    variables.discount_row_html = `
+                    <tr>
+                      <td style="border:1px solid #000; padding:5px;"></td>
+                      <td style="border:1px solid #000; padding:5px;" colspan="6">Chiết khấu${pctString}</td>
+                      <td style="border:1px solid #000; padding:5px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(discountAmount)}</td>
+                    </tr>`
+                } else {
+                    variables.discount_row_html = ''
+                }
             } else {
                 variables.contract_items_table = ''
                 variables.quotation_items_table = ''
