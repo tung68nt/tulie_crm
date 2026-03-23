@@ -789,22 +789,21 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 </span>
                             </div>
                             <div className="flex items-baseline gap-1.5">
-                                <span className="text-[32px] font-black text-slate-900 tracking-tight leading-none tabular-nums">{formatCurrency(finalAmount)}</span>
-                                <span className="text-base font-bold text-slate-400">VNĐ</span>
+                                <span className="text-[32px] font-bold text-slate-900 tracking-tight leading-none tabular-nums">{new Intl.NumberFormat('vi-VN').format(finalAmount)}</span>
+                                <span className="text-base font-bold text-slate-400">VND</span>
                             </div>
                         </div>
                         
-                        {/* Mobile Total Price (Visible only on small screens) */}
                         <div className="sm:hidden flex flex-col items-center w-full mb-2">
                             <span className="text-xs font-medium text-slate-500 mb-1">Tổng thanh toán</span>
-                            <span className="text-2xl font-black text-slate-900 tabular-nums">{formatCurrency(finalAmount)} <span className="text-sm text-slate-400">VNĐ</span></span>
+                            <span className="text-2xl font-bold text-slate-900 tabular-nums">{new Intl.NumberFormat('vi-VN').format(finalAmount)} <span className="text-sm text-slate-400">VND</span></span>
                         </div>
 
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 w-full sm:w-auto">
                             <Button
                                 variant="ghost"
                                 size="default"
-                                className="font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 order-2 sm:order-1 rounded-full px-6 transition-colors"
+                                className="font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 order-2 sm:order-1 rounded-full px-6 transition-colors h-11"
                                 onClick={() => setShowReject(true)}
                                 disabled={['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
@@ -813,7 +812,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                             <Button
                                 variant="outline"
                                 size="default"
-                                className="font-medium border-slate-200 hover:bg-slate-50 order-3 sm:order-2 rounded-full px-6 shadow-sm hidden sm:flex"
+                                className="font-medium border-slate-200 hover:bg-slate-50 order-3 sm:order-2 rounded-full px-6 shadow-sm hidden sm:flex h-11"
                                 onClick={() => window.print()}
                             >
                                 <Printer className="mr-2 h-4 w-4 text-slate-500" />
