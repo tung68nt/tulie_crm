@@ -39,22 +39,22 @@ export const contractTemplate = `
   <!-- ===== BÊN A + BÊN B (cùng 1 bảng để căn thẳng lề) ===== -->
   <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:10pt;" cellpadding="2">
     <colgroup>
-      <col style="width:210px">
+      <col style="width:160px">
       <col style="width:auto">
-      <col style="width:80px">
+      <col style="width:70px">
       <col style="width:auto">
     </colgroup>
 
     <!-- BÊN A -->
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên sử dụng dịch vụ (Bên A)</td>
+      <td style="font-weight:bold; padding:4px 10px 4px 0; vertical-align:top; white-space:nowrap; font-size:9pt;">Bên sử dụng dịch vụ (Bên A)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top; text-transform:uppercase;">{{customer_company}}</td>
     </tr>
     <tr>
-      <td style="vertical-align:top;">Người đại diện pháp luật:</td>
-      <td style="font-weight:bold; vertical-align:top;">{{customer_representative_title}} {{customer_representative}}</td>
-      <td style="vertical-align:top;">Chức vụ:</td>
-      <td style="vertical-align:top;">{{customer_position}}</td>
+      <td style="vertical-align:top; white-space:nowrap;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; vertical-align:top; white-space:nowrap;">{{customer_representative_title}} {{customer_representative}}</td>
+      <td style="vertical-align:top; white-space:nowrap;">Chức vụ:</td>
+      <td style="vertical-align:top; white-space:nowrap;">{{customer_position}}</td>
     </tr>
     <tr>
       <td style="vertical-align:top;">Địa chỉ liên hệ:</td>
@@ -84,14 +84,14 @@ export const contractTemplate = `
 
     <!-- BÊN B -->
     <tr style="border-bottom:1px solid #000;">
-      <td style="font-weight:bold; padding:4px 20px 4px 0; vertical-align:top; white-space:nowrap;">Bên cung cấp dịch vụ (Bên B)</td>
+      <td style="font-weight:bold; padding:4px 10px 4px 0; vertical-align:top; white-space:nowrap; font-size:9pt;">Bên cung cấp dịch vụ (Bên B)</td>
       <td colspan="3" style="font-weight:bold; padding:4px 0; vertical-align:top;">CÔNG TY TNHH DỊCH VỤ VÀ GIẢI PHÁP CÔNG NGHỆ TULIE</td>
     </tr>
     <tr>
-      <td style="vertical-align:top;">Người đại diện pháp luật:</td>
-      <td style="font-weight:bold; vertical-align:top;">Ông Nguyễn Thanh Tùng</td>
-      <td style="vertical-align:top;">Chức vụ:</td>
-      <td style="vertical-align:top;">Giám đốc</td>
+      <td style="vertical-align:top; white-space:nowrap;">Người đại diện pháp luật:</td>
+      <td style="font-weight:bold; vertical-align:top; white-space:nowrap;">Ông Nguyễn Thanh Tùng</td>
+      <td style="vertical-align:top; white-space:nowrap;">Chức vụ:</td>
+      <td style="vertical-align:top; white-space:nowrap;">Giám đốc</td>
     </tr>
     <tr>
       <td style="vertical-align:top;">Địa chỉ liên hệ:</td>
