@@ -1664,13 +1664,13 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     placeholder="Dán mã JSON tại đây..."
                                     value={importText}
                                     onChange={(e) => setImportText(e.target.value)}
-                                    className="min-h-[300px] h-[50vh] max-h-[50vh] font-mono text-xs"
+                                    className="min-h-[300px] h-[50vh] max-h-[50vh] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors"
                                 />
                             </div>
 
                             <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600 h-[50vh] overflow-y-auto">
                                 <p className="font-bold mb-1">Cấu trúc Proposal (Các trường hỗ trợ):</p>
-                                <code className="block whitespace-pre opacity-80 text-[10px] leading-tight">
+                                <code className="block whitespace-pre opacity-80">
                                     {`{
   "introduction": "Giới thiệu chung...",
   "scope_of_work": "Phạm vi công việc...",

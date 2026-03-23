@@ -776,42 +776,57 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                 </div>
             )}
 
-            {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 sm:py-5 sm:px-4 shadow-md z-50 print:hidden overflow-hidden">
-                <div className="container max-w-4xl mx-auto">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* Sticky Action Footer - Premium Redesign */}
+            <div className="fixed bottom-0 left-0 right-0 bg-white/85 backdrop-blur-xl border-t border-slate-200/60 shadow-[0_-8px_30px_-15px_rgba(0,0,0,0.1)] p-4 sm:py-5 z-50 print:hidden transition-all duration-300">
+                <div className="container max-w-5xl mx-auto px-4 sm:px-6">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="hidden sm:flex flex-col justify-center">
-                            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none">Tổng cộng</span>
-                            <span className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">{formatCurrency(finalAmount)}</span>
-                            <span className="text-[11px] text-slate-400 font-medium mt-0.5">Cần hỗ trợ? <span className="text-slate-600 font-semibold">{brandConfig?.hotline || "098.898.4554"}</span></span>
+                            <div className="flex items-center gap-3 mb-1.5">
+                                <span className="text-sm font-medium text-slate-500">Tổng thanh toán</span>
+                                <div className="h-3.5 w-px bg-slate-300" />
+                                <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                                    <Phone className="w-3.5 h-3.5" /> Tư vấn thêm: <a href={`tel:${brandConfig?.hotline || "0988984554"}`} className="text-slate-900 font-semibold hover:text-blue-600 transition-colors">{brandConfig?.hotline || "098.898.4554"}</a>
+                                </span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5">
+                                <span className="text-[32px] font-black text-slate-900 tracking-tight leading-none tabular-nums">{formatCurrency(finalAmount)}</span>
+                                <span className="text-base font-bold text-slate-400">VNĐ</span>
+                            </div>
                         </div>
-                        <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
-                            <Button
-                                variant="outline"
-                                size="default"
-                                className="font-medium order-2 sm:order-1"
-                                onClick={() => window.print()}
-                            >
-                                <Printer className="mr-1.5 h-3.5 w-3.5" />
-                                In báo giá
-                            </Button>
+                        
+                        {/* Mobile Total Price (Visible only on small screens) */}
+                        <div className="sm:hidden flex flex-col items-center w-full mb-2">
+                            <span className="text-xs font-medium text-slate-500 mb-1">Tổng thanh toán</span>
+                            <span className="text-2xl font-black text-slate-900 tabular-nums">{formatCurrency(finalAmount)} <span className="text-sm text-slate-400">VNĐ</span></span>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 w-full sm:w-auto">
                             <Button
                                 variant="ghost"
                                 size="default"
-                                className="font-medium text-muted-foreground hover:text-destructive order-4 sm:order-3"
+                                className="font-medium text-slate-500 hover:text-red-600 hover:bg-red-50 order-2 sm:order-1 rounded-full px-6 transition-colors"
                                 onClick={() => setShowReject(true)}
                                 disabled={['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
                                 Từ chối
                             </Button>
                             <Button
+                                variant="outline"
                                 size="default"
-                                className="col-span-2 sm:col-span-1 bg-zinc-950 text-white hover:bg-zinc-900 font-bold order-1 sm:order-4"
+                                className="font-medium border-slate-200 hover:bg-slate-50 order-3 sm:order-2 rounded-full px-6 shadow-sm hidden sm:flex"
+                                onClick={() => window.print()}
+                            >
+                                <Printer className="mr-2 h-4 w-4 text-slate-500" />
+                                In báo giá
+                            </Button>
+                            <Button
+                                size="default"
+                                className="col-span-2 sm:col-span-1 bg-slate-900 text-white hover:bg-slate-800 font-bold order-1 sm:order-3 rounded-full px-8 shadow-md hover:shadow-lg transition-all h-11"
                                 onClick={() => setShowConfirm(true)}
                                 disabled={isSubmitting || ['accepted', 'rejected'].includes(currentQuotation.status)}
                             >
                                 {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : <CheckCircle className="mr-2 h-4 w-4" />}
-                                {currentQuotation.status === 'accepted' ? 'Đã chấp nhận' : 'Xác nhận ngay'}
+                                {currentQuotation.status === 'accepted' ? 'Đã xác nhận' : 'Xác nhận ngay'}
                             </Button>
                         </div>
                     </div>
