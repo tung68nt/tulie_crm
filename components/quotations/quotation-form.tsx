@@ -410,7 +410,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
     const vatAmount = subtotal * (vatPercent / 100)
     const totalAmount = subtotal + vatAmount
 
-    // JSON Export: build quotation object
+    // JSON Export: build quotation object (without proposal_content)
     const handleExportJson = () => {
         const exportData = {
             title,
@@ -424,7 +424,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             bank_account_no: bankAccountNo,
             bank_account_name: bankAccountName,
             bank_branch: bankBranch,
-            ...(type === 'proposal' ? { proposal_content: proposalContent } : {}),
             items: items.map((item, idx) => ({
                 section_name: item.section_name || '',
                 product_name: item.product_name || '',
@@ -438,6 +437,24 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         }
         navigator.clipboard.writeText(JSON.stringify(exportData, null, 2))
         toast.success('Đã copy JSON vào clipboard')
+    }
+
+    // Proposal JSON Export: only proposal_content fields
+    const handleExportProposalJson = () => {
+        const exportData = {
+            introduction: proposalContent?.introduction || '',
+            scope_of_work: proposalContent?.scope_of_work || '',
+            methodology: proposalContent?.methodology || '',
+            deliverables: proposalContent?.deliverables || '',
+            team: proposalContent?.team || '',
+            timeline: proposalContent?.timeline || '',
+            warranty: proposalContent?.warranty || '',
+            why_us: proposalContent?.why_us || '',
+            attachments: proposalContent?.attachments || '',
+            ...(proposalContent?.custom_sections?.length > 0 ? { custom_sections: proposalContent.custom_sections } : {})
+        }
+        setImportText(JSON.stringify(exportData, null, 2))
+        setIsImportProposalOpen(true)
     }
 
     // JSON Import: populate all fields from JSON
@@ -458,7 +475,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             if (data.bank_account_no) { setBankAccountNo(data.bank_account_no); count++ }
             if (data.bank_account_name) { setBankAccountName(data.bank_account_name); count++ }
             if (data.bank_branch) { setBankBranch(data.bank_branch); count++ }
-            if (data.proposal_content) { setProposalContent(data.proposal_content); count++ }
 
             if (data.items && Array.isArray(data.items) && data.items.length > 0) {
                 const rawItems = data.items.map((item: any, idx: number) => {
@@ -747,6 +763,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     <CardTitle>Nội dung Proposal</CardTitle>
                                     <CardDescription className="mt-1">Mô tả chi tiết giải pháp, phạm vi, đội ngũ cho khách hàng</CardDescription>
                                 </div>
+                                <Button type="button" variant="outline" size="sm" onClick={handleExportProposalJson}>
+                                    <FileJson className="mr-2 h-4 w-4" />
+                                    <span>Proposal JSON</span>
+                                </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 {/* Proposal Contents: 8 items in a 2x4 grid */}
@@ -970,7 +990,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         bank_account_no: bankAccountNo,
                                         bank_account_name: bankAccountName,
                                         bank_branch: bankBranch,
-                                        ...(type === 'proposal' ? { proposal_content: proposalContent } : {}),
                                         items: items.map((item, idx) => ({
                                             section_name: item.section_name || '',
                                             product_name: item.product_name || '',
@@ -1618,16 +1637,33 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 </DialogContent>
             </Dialog>
 
-            {/* Dialog Nhập Proposal JSON */}
+            {/* Dialog Nhập/Xuất Proposal JSON */}
             <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
                 <DialogContent className="sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Nhập nội dung Proposal</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2">
+                            <FileJson className="h-5 w-5 text-zinc-900" />
+                            Proposal JSON
+                        </DialogTitle>
                         <DialogDescription>
-                            Dán nội dung JSON đã copy để nhập nhanh các phần thông tin proposal.
+                            Xem, copy hoặc dán nội dung JSON để nhập/xuất nhanh các phần thông tin proposal.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="py-4">
+                    <div className="py-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-xs font-bold">Dữ liệu Proposal JSON</Label>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-[10px] tracking-tight font-bold"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(importText)
+                                    toast.success('Đã copy Proposal JSON')
+                                }}
+                            >
+                                <Copy className="h-3 w-3 mr-1" /> Copy JSON
+                            </Button>
+                        </div>
                         <Textarea
                             placeholder="Dán mã JSON tại đây..."
                             value={importText}
@@ -1637,7 +1673,10 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
-                        <Button onClick={handleImportProposal}>Nhập nội dung</Button>
+                        <Button onClick={handleImportProposal}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Nhập nội dung
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -1749,7 +1788,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
-                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ],\n  "proposal_content": { ... }\n}'}
+                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
                             </code>
                         </div>
                     </div>
