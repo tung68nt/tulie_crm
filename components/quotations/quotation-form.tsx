@@ -1633,7 +1633,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
             {/* Dialog Nhập/Xuất Proposal JSON */}
             <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
-                <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+                <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <FileJson className="h-5 w-5 text-zinc-900" />
@@ -1643,9 +1643,8 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             Xem, copy hoặc dán nội dung JSON để nhập/xuất nhanh các phần thông tin proposal.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex-1 overflow-y-auto py-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto py-4">
+                        <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <Label className="text-xs font-bold">Dữ liệu Proposal JSON</Label>
                                     <Button
@@ -1692,7 +1691,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 </code>
                             </div>
                         </div>
-                    </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
                         <Button onClick={handleImportProposal}>
