@@ -527,7 +527,16 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                             if (contract) {
                                 const contractDocs: any[] = contract.documents || []
                                 const visibleDocs = contractDocs.filter((d: any) => d.is_visible_on_portal !== false)
-                                const paymentDocs = visibleDocs.filter((d: any) => d.type === 'payment_request')
+
+                                // Deduplicate DB documents to prevent showing duplicates caused by race conditions
+                                const uniqueDocsMap = new Map<string, any>()
+                                for (const d of visibleDocs) {
+                                    const key = `${d.type}:${d.milestone_id || 'none'}`
+                                    uniqueDocsMap.set(key, d)
+                                }
+                                const uniqueVisibleDocs = Array.from(uniqueDocsMap.values())
+
+                                const paymentDocs = uniqueVisibleDocs.filter((d: any) => d.type === 'payment_request')
                                 const DOC_TYPE_LABELS: Record<string, string> = {
                                     contract: 'Hợp đồng',
                                     order: 'Đơn đặt hàng',
@@ -536,7 +545,7 @@ function WorkItemCard({ item, idx, token, quotationOptions = [], selectedQuotati
                                     acceptance: 'Biên bản nghiệm thu',
                                 }
 
-                                for (const d of visibleDocs) {
+                                for (const d of uniqueVisibleDocs) {
                                     const metaTitle = DOC_TYPE_LABELS[d.type] || d.type
                                     let docTitle = metaTitle
                                     if (d.type === 'payment_request' && paymentDocs.length > 1) {

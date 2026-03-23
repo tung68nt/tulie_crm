@@ -258,7 +258,7 @@ CREATE OR REPLACE FUNCTION workspace.auto_create_from_crm_project()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO workspace.projects (crm_project_id, name, description)
-  VALUES (NEW.id, NEW.name, COALESCE(NEW.description, ''))
+  VALUES (NEW.id, NEW.title, COALESCE(NEW.description, ''))
   ON CONFLICT DO NOTHING;
   RETURN NEW;
 END;
@@ -291,27 +291,35 @@ ALTER TABLE workspace.templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workspace.notifications ENABLE ROW LEVEL SECURITY;
 
 -- Internal app: authenticated users have full access (matches CRM pattern)
+DROP POLICY IF EXISTS "ws_projects_auth" ON workspace.projects;
 CREATE POLICY "ws_projects_auth" ON workspace.projects
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_cycles_auth" ON workspace.cycles;
 CREATE POLICY "ws_cycles_auth" ON workspace.cycles
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_tags_auth" ON workspace.tags;
 CREATE POLICY "ws_tags_auth" ON workspace.tags
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_tasks_auth" ON workspace.tasks;
 CREATE POLICY "ws_tasks_auth" ON workspace.tasks
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_task_tags_auth" ON workspace.task_tags;
 CREATE POLICY "ws_task_tags_auth" ON workspace.task_tags
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_comments_auth" ON workspace.task_comments;
 CREATE POLICY "ws_comments_auth" ON workspace.task_comments
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_templates_auth" ON workspace.templates;
 CREATE POLICY "ws_templates_auth" ON workspace.templates
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+DROP POLICY IF EXISTS "ws_notifications_auth" ON workspace.notifications;
 CREATE POLICY "ws_notifications_auth" ON workspace.notifications
   FOR ALL TO authenticated USING (true) WITH CHECK (true);
 

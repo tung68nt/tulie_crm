@@ -58,7 +58,8 @@ export async function startView(params: StartViewParams) {
 
         // Also update the quotation view_count, viewed_at
         try {
-            await supabase.rpc('increment_quotation_view', { quote_id: params.quotationId })
+            const { error: rpcError } = await supabase.rpc('increment_quotation_view', { quote_id: params.quotationId })
+            if (rpcError) throw new Error(rpcError.message)
         } catch {
             // Fallback: manual increment if RPC doesn't exist
             const { data: q } = await supabase
@@ -126,10 +127,11 @@ export async function addInteraction(viewId: string, action: string, details?: R
 
         // Append to existing interactions array
         try {
-            await supabase.rpc('append_view_interaction', {
+            const { error: rpcError } = await supabase.rpc('append_view_interaction', {
                 view_id: viewId,
                 interaction_data: interaction
             })
+            if (rpcError) throw new Error(rpcError.message)
         } catch {
             // Fallback: fetch + update if RPC doesn't exist
             const { data: view } = await supabase

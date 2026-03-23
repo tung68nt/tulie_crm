@@ -623,6 +623,14 @@ export async function generateDocumentBundle(contractId: string) {
 
     // 5. Insert all generated documents (one by one to handle FK errors gracefully)
     if (docs.length > 0) {
+        // Run a second delete right before insertion to clear any drafts 
+        // that might have been inserted by concurrent requests during the slow generation phase
+        await supabase
+            .from('contract_documents')
+            .delete()
+            .eq('contract_id', contractId)
+            .eq('status', 'draft')
+
         for (const doc of docs) {
             // Restore previous visibility state
             const visKey = `${doc.type}:${doc.milestone_id || ''}`

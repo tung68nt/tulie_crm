@@ -81,9 +81,17 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
 
     const docItems: DocItem[] = (() => {
         if (dbDocs.length > 0) {
+            // Deduplicate DB documents to prevent showing duplicates caused by race conditions
+            const uniqueDocsMap = new Map<string, any>()
+            for (const doc of dbDocs) {
+                const key = `${doc.type}:${doc.milestone_id || 'none'}`
+                uniqueDocsMap.set(key, doc)
+            }
+            const uniqueDbDocs = Array.from(uniqueDocsMap.values())
+
             // Build from DB documents
-            const paymentDocs = dbDocs.filter(d => d.type === 'payment_request')
-            return dbDocs.map((doc, idx) => {
+            const paymentDocs = uniqueDbDocs.filter(d => d.type === 'payment_request')
+            return uniqueDbDocs.map((doc, idx) => {
                 const meta = DOC_META[doc.type] || DOC_META.contract
                 const paymentIdx = doc.type === 'payment_request' 
                     ? paymentDocs.indexOf(doc) + 1 

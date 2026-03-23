@@ -50,6 +50,7 @@ import {
 import { toast } from 'sonner'
 import { getQuotationById } from '@/lib/supabase/services/quotation-service'
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
+import { getViewStats } from '@/lib/supabase/services/quote-tracking-service'
 import { useParams, useSearchParams } from 'next/navigation'
 
 import { StatusBadge } from '@/components/shared/status-badge'
@@ -59,6 +60,7 @@ export default function QuotationDetailPage() {
     const id = params.id as string
     const [quotation, setQuotation] = useState<Quotation | null>(null)
     const [brandConfig, setBrandConfig] = useState<any>(null)
+    const [stats, setStats] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [baseUrl, setBaseUrl] = useState('')
     const [layout, setLayout] = useState<'modern' | 'basic'>('modern')
@@ -76,12 +78,14 @@ export default function QuotationDetailPage() {
 
         const fetchData = async () => {
             try {
-                const [data, brand] = await Promise.all([
+                const [data, brand, statsData] = await Promise.all([
                     getQuotationById(id),
-                    getBrandConfig()
+                    getBrandConfig(),
+                    getViewStats(id)
                 ])
                 setQuotation(data)
                 setBrandConfig(brand)
+                setStats(statsData)
             } catch (error) {
                 console.error('Error fetching quotation:', error)
                 toast.error('Không thể tải dữ liệu báo giá')
@@ -502,7 +506,7 @@ export default function QuotationDetailPage() {
                                 <CardContent className="p-6">
                                     <div className="grid grid-cols-2 gap-4 mb-8">
                                         <div className="bg-muted/50 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
-                                            <p className="text-4xl font-bold tabular-nums leading-none tracking-tight">{quotation.view_count || 0}</p>
+                                            <p className="text-4xl font-bold tabular-nums leading-none tracking-tight">{stats?.totalViews ?? quotation.view_count ?? 0}</p>
                                             <p className="text-xs font-medium text-muted-foreground border-t border-zinc-100 pt-3 mt-3 mx-2">Lượt xem</p>
                                         </div>
                                         <div className="bg-muted/50 p-6 rounded-xl border border-zinc-100 text-center space-y-1 flex flex-col justify-center min-h-[100px]">
