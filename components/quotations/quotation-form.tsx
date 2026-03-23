@@ -415,7 +415,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         const exportData = {
             title,
             quotation_number: quotationNumber,
-            type,
             vat_percent: vatPercent,
             validity_days: validityDays,
             bank_name: bankName,
@@ -449,7 +448,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             warranty: proposalContent?.warranty || '',
             why_us: proposalContent?.why_us || '',
             attachments: proposalContent?.attachments || '',
-            ...(proposalContent?.custom_sections?.length > 0 ? { custom_sections: proposalContent.custom_sections } : {})
+            custom_sections: proposalContent?.custom_sections || []
         }
         setImportText(JSON.stringify(exportData, null, 2))
         setIsImportProposalOpen(true)
@@ -979,7 +978,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     const exportData = {
                                         title,
                                         quotation_number: quotationNumber,
-                                        type,
                                         vat_percent: vatPercent,
                                         validity_days: validityDays,
                                         bank_name: bankName,
@@ -1645,27 +1643,55 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             Xem, copy hoặc dán nội dung JSON để nhập/xuất nhanh các phần thông tin proposal.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex-1 overflow-y-auto py-4 space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold">Dữ liệu Proposal JSON</Label>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 text-[10px] tracking-tight font-bold"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(importText)
-                                    toast.success('Đã copy Proposal JSON')
-                                }}
-                            >
-                                <Copy className="h-3 w-3 mr-1" /> Copy JSON
-                            </Button>
+                    <div className="flex-1 overflow-y-auto py-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs font-bold">Dữ liệu Proposal JSON</Label>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-[10px] tracking-tight font-bold"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(importText)
+                                            toast.success('Đã copy Proposal JSON')
+                                        }}
+                                    >
+                                        <Copy className="h-3 w-3 mr-1" /> Copy JSON
+                                    </Button>
+                                </div>
+                                <Textarea
+                                    placeholder="Dán mã JSON tại đây..."
+                                    value={importText}
+                                    onChange={(e) => setImportText(e.target.value)}
+                                    className="min-h-[300px] h-[50vh] max-h-[50vh] font-mono text-xs"
+                                />
+                            </div>
+
+                            <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600 h-[50vh] overflow-y-auto">
+                                <p className="font-bold mb-1">Cấu trúc Proposal (Các trường hỗ trợ):</p>
+                                <code className="block whitespace-pre opacity-80 text-[10px] leading-tight">
+                                    {`{
+  "introduction": "Giới thiệu chung...",
+  "scope_of_work": "Phạm vi công việc...",
+  "methodology": "Phương pháp và quy trình...",
+  "deliverables": "Sản phẩm bàn giao...",
+  "team": "Đội ngũ thực hiện...",
+  "timeline": "Tiến độ thực hiện...",
+  "warranty": "Bảo hành & Hậu mãi...",
+  "why_us": "Năng lực của chúng tôi...",
+  "attachments": "Tài liệu đính kèm...",
+  "custom_sections": [
+    {
+      "id": "1",
+      "title": "Mục tuỳ chỉnh 1",
+      "content": "Nội dung mục tuỳ chỉnh 1..."
+    }
+  ]
+}`}
+                                </code>
+                            </div>
                         </div>
-                        <Textarea
-                            placeholder="Dán mã JSON tại đây..."
-                            value={importText}
-                            onChange={(e) => setImportText(e.target.value)}
-                            className="min-h-[300px] max-h-[50vh] font-mono text-xs"
-                        />
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsImportProposalOpen(false)}>Hủy</Button>
@@ -1784,7 +1810,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
-                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
+                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
                             </code>
                         </div>
                     </div>
