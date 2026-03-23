@@ -436,20 +436,19 @@ export function QuotationForm({ quotation, customers, products, units, projects,
         toast.success('Đã copy JSON vào clipboard')
     }
 
-    // Proposal JSON Export: only proposal_content fields
+    // Proposal JSON Export: only custom_sections and non-empty base fields
     const handleExportProposalJson = () => {
-        const exportData = {
-            introduction: proposalContent?.introduction || '',
-            scope_of_work: proposalContent?.scope_of_work || '',
-            methodology: proposalContent?.methodology || '',
-            deliverables: proposalContent?.deliverables || '',
-            team: proposalContent?.team || '',
-            timeline: proposalContent?.timeline || '',
-            warranty: proposalContent?.warranty || '',
-            why_us: proposalContent?.why_us || '',
-            attachments: proposalContent?.attachments || '',
-            custom_sections: proposalContent?.custom_sections || []
-        }
+        const exportData: any = {}
+        const baseFields = ['introduction', 'scope_of_work', 'methodology', 'deliverables', 'team', 'timeline', 'warranty', 'why_us', 'attachments'] as const;
+        
+        baseFields.forEach(field => {
+            const val = proposalContent?.[field as keyof typeof proposalContent];
+            if (val && typeof val === 'string' && val.trim() !== '') {
+                exportData[field] = val;
+            }
+        });
+
+        exportData.custom_sections = proposalContent?.custom_sections || []
         setImportText(JSON.stringify(exportData, null, 2))
         setIsImportProposalOpen(true)
     }
@@ -1663,23 +1662,14 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                     placeholder="Dán mã JSON tại đây..."
                                     value={importText}
                                     onChange={(e) => setImportText(e.target.value)}
-                                    className="min-h-[300px] h-[50vh] max-h-[50vh] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors"
+                                    className="min-h-[400px] h-[60vh] max-h-[60vh] font-mono text-xs p-4 border-slate-200 focus:bg-white transition-colors"
                                 />
                             </div>
 
-                            <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600 h-[50vh] overflow-y-auto">
-                                <p className="font-bold mb-1">Cấu trúc Proposal (Các trường hỗ trợ):</p>
+                            <div className="bg-white border border-slate-200 p-4 rounded-lg text-xs text-slate-600 h-[60vh] overflow-y-auto">
+                                <p className="font-bold mb-2">Cấu trúc Proposal (Các trường hỗ trợ):</p>
                                 <code className="block whitespace-pre opacity-80">
                                     {`{
-  "introduction": "Giới thiệu chung...",
-  "scope_of_work": "Phạm vi công việc...",
-  "methodology": "Phương pháp và quy trình...",
-  "deliverables": "Sản phẩm bàn giao...",
-  "team": "Đội ngũ thực hiện...",
-  "timeline": "Tiến độ thực hiện...",
-  "warranty": "Bảo hành & Hậu mãi...",
-  "why_us": "Năng lực của chúng tôi...",
-  "attachments": "Tài liệu đính kèm...",
   "custom_sections": [
     {
       "id": "1",
