@@ -777,12 +777,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
             )}
 
             {/* Sticky Action Footer */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 sm:p-4 shadow-md z-50 print:hidden overflow-hidden">
+            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 sm:py-5 sm:px-4 shadow-md z-50 print:hidden overflow-hidden">
                 <div className="container max-w-4xl mx-auto">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                         <div className="hidden sm:flex flex-col justify-center">
                             <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider leading-none">Tổng cộng</span>
-                            <span className="text-xl font-black text-slate-900 tabular-nums leading-tight">{formatCurrency(finalAmount)}</span>
+                            <span className="text-2xl font-bold text-slate-900 tabular-nums leading-tight">{formatCurrency(finalAmount)}</span>
                             <span className="text-[11px] text-slate-400 font-medium mt-0.5">Cần hỗ trợ? <span className="text-slate-600 font-semibold">{brandConfig?.hotline || "098.898.4554"}</span></span>
                         </div>
                         <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
