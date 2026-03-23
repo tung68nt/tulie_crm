@@ -369,8 +369,8 @@ export async function generateDocument(
                     subtotal += totalPrice
                     itemsRowsHtml += `<tr>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${index + 1}</td>
-                        <td style="border:1px solid #000; padding:5px;" colspan="3">${item.product_name}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.unit || 'Bộ'}</td>
+                        <td style="border:1px solid #000; padding:5px;">${item.product_name}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.unit || 'Gói'}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${item.quantity}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(item.unit_price)}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(totalPrice)}</td>
@@ -395,8 +395,7 @@ export async function generateDocument(
                     const pctString = discountPercent > 0 ? ` (${discountPercent}%)` : ''
                     variables.discount_row_html = `
                     <tr>
-                      <td style="border:1px solid #000; padding:5px;"></td>
-                      <td style="border:1px solid #000; padding:5px;" colspan="6">Chiết khấu${pctString}</td>
+                      <td style="border:1px solid #000; padding:5px;" colspan="5">Chiết khấu${pctString}</td>
                       <td style="border:1px solid #000; padding:5px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(discountAmount)}</td>
                     </tr>`
                 } else {

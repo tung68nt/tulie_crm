@@ -60,38 +60,34 @@ export const orderTemplate = `
   </table>
 
   <!-- Bảng hàng hóa -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:9pt;">
     <tr>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:40px;">STT</th>
-      <th style="border:1px solid #000; padding:5px; text-align:left; font-weight:bold;" colspan="3">Tên hàng hoá, dịch vụ</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Đơn vị tính</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:60px;">Số lượng</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:90px;">Đơn giá</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:100px;">Thành tiền</th>
+      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:30px;">STT</th>
+      <th style="border:1px solid #000; padding:5px; text-align:left; font-weight:bold;">Tên hàng hoá, dịch vụ</th>
+      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:50px;">ĐVT</th>
+      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:30px;">SL</th>
+      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Đơn giá</th>
+      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Thành tiền</th>
     </tr>
     {{contract_items_table}}
     <tr>
-      <td style="border:1px solid #000; padding:5px;"></td>
-      <td style="border:1px solid #000; padding:5px;" colspan="6"><strong>Cộng tiền hàng</strong></td>
+      <td style="border:1px solid #000; padding:5px;" colspan="5"><strong>Cộng tiền hàng</strong></td>
       <td style="border:1px solid #000; padding:5px; text-align:right;">{{subtotal}}</td>
     </tr>
     {{discount_row_html}}
     <tr>
-      <td style="border:1px solid #000; padding:5px;"></td>
-      <td style="border:1px solid #000; padding:5px;">Thuế suất GTGT</td>
+      <td style="border:1px solid #000; padding:5px;" colspan="3">Thuế suất GTGT</td>
       <td style="border:1px solid #000; padding:5px; text-align:center;">{{vat_rate}}</td>
-      <td style="border:1px solid #000; padding:5px;" colspan="4"></td>
+      <td style="border:1px solid #000; padding:5px;" colspan="1"></td>
       <td style="border:1px solid #000; padding:5px; text-align:right;">{{vat_amount}}</td>
     </tr>
     <tr>
-      <td style="border:1px solid #000; padding:5px;"></td>
-      <td style="border:1px solid #000; padding:5px;" colspan="6"><strong>Tổng tiền thanh toán</strong></td>
+      <td style="border:1px solid #000; padding:5px;" colspan="5"><strong>Tổng tiền thanh toán</strong></td>
       <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>
     </tr>
     <tr>
-      <td style="border:1px solid #000; padding:5px;"></td>
       <td style="border:1px solid #000; padding:5px;" colspan="2">Số tiền viết bằng chữ</td>
-      <td style="border:1px solid #000; padding:5px;" colspan="5">{{amount_in_words}}</td>
+      <td style="border:1px solid #000; padding:5px;" colspan="4"><em>{{amount_in_words}}</em></td>
     </tr>
   </table>
 
