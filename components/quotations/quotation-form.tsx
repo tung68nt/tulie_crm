@@ -418,8 +418,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
             type,
             vat_percent: vatPercent,
             validity_days: validityDays,
-            terms,
-            notes,
             bank_name: bankName,
             bank_account_no: bankAccountNo,
             bank_account_name: bankAccountName,
@@ -984,8 +982,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         type,
                                         vat_percent: vatPercent,
                                         validity_days: validityDays,
-                                        terms,
-                                        notes,
                                         bank_name: bankName,
                                         bank_account_no: bankAccountNo,
                                         bank_account_name: bankAccountName,
@@ -1639,7 +1635,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
 
             {/* Dialog Nhập/Xuất Proposal JSON */}
             <Dialog open={isImportProposalOpen} onOpenChange={setIsImportProposalOpen}>
-                <DialogContent className="sm:max-w-2xl">
+                <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                             <FileJson className="h-5 w-5 text-zinc-900" />
@@ -1649,7 +1645,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             Xem, copy hoặc dán nội dung JSON để nhập/xuất nhanh các phần thông tin proposal.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="py-4 space-y-2">
+                    <div className="flex-1 overflow-y-auto py-4 space-y-2">
                         <div className="flex items-center justify-between">
                             <Label className="text-xs font-bold">Dữ liệu Proposal JSON</Label>
                             <Button
@@ -1668,7 +1664,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                             placeholder="Dán mã JSON tại đây..."
                             value={importText}
                             onChange={(e) => setImportText(e.target.value)}
-                            className="min-h-[300px] font-mono text-xs"
+                            className="min-h-[300px] max-h-[50vh] font-mono text-xs"
                         />
                     </div>
                     <DialogFooter>
@@ -1788,7 +1784,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
-                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "terms": "Điều khoản...",\n  "notes": "Ghi chú...",\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
+                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "type": "standard | proposal",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
                             </code>
                         </div>
                     </div>
