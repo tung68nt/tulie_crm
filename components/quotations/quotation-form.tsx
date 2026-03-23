@@ -429,7 +429,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                 unit: item.unit || '',
                 unit_price: item.unit_price || 0,
                 discount: item.discount || 0,
-                sort_order: idx
+                sort_order: idx,
+                is_optional: item.is_optional || false,
+                alternative_group: item.alternative_group || ''
             }))
         }
         navigator.clipboard.writeText(JSON.stringify(exportData, null, 2))
@@ -489,7 +491,9 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         unit_price: Number(item.unit_price) || matchedProduct?.price || 0,
                         discount: Number(item.discount) || 0,
                         total_price: 0,
-                        sort_order: Number(item.sort_order) || idx
+                        sort_order: Number(item.sort_order) || idx,
+                        is_optional: item.is_optional || false,
+                        alternative_group: item.alternative_group || ''
                     }
                 }).map((item: any) => ({
                     ...item,
@@ -1798,7 +1802,7 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                         <div className="bg-white border border-slate-200 p-3 rounded-lg text-xs text-slate-600">
                             <p className="font-bold mb-1">Các trường hỗ trợ:</p>
                             <code className="block whitespace-pre opacity-80">
-                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0\n    }\n  ]\n}'}
+                                {'{\n  "title": "Tên báo giá",\n  "quotation_number": "Q-001",\n  "vat_percent": 10,\n  "validity_days": 30,\n  "bank_name": "TECHCOMBANK",\n  "bank_account_no": "123456789",\n  "bank_account_name": "CONG TY...",\n  "bank_branch": "Hà Nội",\n  "items": [\n    {\n      "section_name": "Thiết kế",\n      "product_name": "Logo",\n      "description": "Mô tả...",\n      "quantity": 1,\n      "unit": "bộ",\n      "unit_price": 5000000,\n      "discount": 0,\n      "sort_order": 0,\n      "is_optional": false,\n      "alternative_group": ""\n    }\n  ]\n}'}
                             </code>
                         </div>
                     </div>
