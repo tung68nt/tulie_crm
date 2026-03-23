@@ -11,7 +11,7 @@ import { PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '@/lib/constants/st
 import { ArrowLeft, Globe, Layout, FileCheck } from 'lucide-react'
 import Link from 'next/link'
 import { ProjectMetadataForm } from '@/components/projects/project-metadata-form'
-import { ProjectMilestones } from '@/components/projects/project-milestones'
+
 import { ProjectTasks } from '@/components/projects/project-tasks'
 import { ProjectSidebar } from '@/components/projects/project-sidebar'
 import { WorkItemsManager } from '@/components/projects/work-items-manager'
@@ -110,8 +110,7 @@ export default async function ProjectDetailPage({ params }: any) {
                         </CardContent>
                     </Card>
 
-                    {/* Milestones / Schedule */}
-                    <ProjectMilestones project={project} />
+
 
                     {/* Gantt Chart Progress */}
                     <ProjectGanttChart tasks={tasks} />
