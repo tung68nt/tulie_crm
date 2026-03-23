@@ -60,34 +60,33 @@ export const orderTemplate = `
   </table>
 
   <!-- Bảng hàng hóa -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:9pt;">
-    <tr>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:30px;">STT</th>
-      <th style="border:1px solid #000; padding:5px; text-align:left; font-weight:bold;">Tên hàng hoá, dịch vụ</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:50px;">ĐVT</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:30px;">SL</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Đơn giá</th>
-      <th style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold; width:80px;">Thành tiền</th>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:8.5pt;">
+    <tr style="background:#f5f5f5;">
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:25px;">STT</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold;">Tên hàng hoá, dịch vụ</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:40px;">ĐVT</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:25px;">SL</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Đơn giá</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:60px;">Giảm giá</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Thành tiền</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:55px;">Thuế VAT</th>
+      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Sau thuế</th>
     </tr>
     {{contract_items_table}}
-    <tr>
-      <td style="border:1px solid #000; padding:5px;" colspan="5"><strong>Cộng tiền hàng</strong></td>
-      <td style="border:1px solid #000; padding:5px; text-align:right;">{{subtotal}}</td>
+    <tr style="background:#f5f5f5;">
+      <td style="border:1px solid #000; padding:4px;" colspan="6"><strong>Cộng tiền hàng</strong></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{subtotal}}</td>
+      <td style="border:1px solid #000; padding:4px; text-align:right;">{{vat_total}}</td>
+      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_after_vat}}</td>
     </tr>
     {{discount_row_html}}
-    <tr>
-      <td style="border:1px solid #000; padding:5px;" colspan="3">Thuế suất GTGT</td>
-      <td style="border:1px solid #000; padding:5px; text-align:center;">{{vat_rate}}</td>
-      <td style="border:1px solid #000; padding:5px;" colspan="1"></td>
-      <td style="border:1px solid #000; padding:5px; text-align:right;">{{vat_amount}}</td>
+    <tr style="background:#f5f5f5;">
+      <td style="border:1px solid #000; padding:4px;" colspan="8"><strong>Tổng tiền thanh toán</strong></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>
     </tr>
     <tr>
-      <td style="border:1px solid #000; padding:5px;" colspan="5"><strong>Tổng tiền thanh toán</strong></td>
-      <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>
-    </tr>
-    <tr>
-      <td style="border:1px solid #000; padding:5px;" colspan="2">Số tiền viết bằng chữ</td>
-      <td style="border:1px solid #000; padding:5px;" colspan="4"><em>{{amount_in_words}}</em></td>
+      <td style="border:1px solid #000; padding:4px;" colspan="3">Số tiền viết bằng chữ</td>
+      <td style="border:1px solid #000; padding:4px;" colspan="6"><em>{{amount_in_words}}</em></td>
     </tr>
   </table>
 

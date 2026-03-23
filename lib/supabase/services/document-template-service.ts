@@ -364,39 +364,65 @@ export async function generateDocument(
             if (items.length > 0) {
                 let subtotal = 0
                 let itemsRowsHtml = ''
+                let totalVat = 0
+                let totalAfterVat = 0
                 items.forEach((item: any, index: number) => {
-                    const totalPrice = item.total_price || (item.quantity * item.unit_price)
-                    subtotal += totalPrice
+                    const qty = item.quantity || 1
+                    const unitPrice = item.unit_price || 0
+                    const grossTotal = qty * unitPrice
+                    const itemDiscount = item.discount || 0 // discount amount per item
+                    const afterDiscount = grossTotal - itemDiscount
+                    const itemVatRate = item.vat_percent || 0
+                    const itemVat = Math.round(afterDiscount * itemVatRate / 100)
+                    const afterVat = afterDiscount + itemVat
+                    
+                    subtotal += afterDiscount
+                    totalVat += itemVat
+                    totalAfterVat += afterVat
+
+                    // Description line (show below product name if exists)
+                    const descHtml = item.description 
+                        ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${item.description}</span>` 
+                        : ''
+
                     itemsRowsHtml += `<tr>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${index + 1}</td>
-                        <td style="border:1px solid #000; padding:5px;">${item.product_name}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.unit || 'Gói'}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${item.quantity}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(item.unit_price)}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(totalPrice)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center;">${index + 1}</td>
+                        <td style="border:1px solid #000; padding:4px;">${item.product_name}${descHtml}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center;">${item.unit || 'Gói'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center;">${qty}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right;">${itemDiscount > 0 ? new Intl.NumberFormat('vi-VN').format(itemDiscount) : '-'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
                     </tr>`
                 })
                 variables.contract_items_table = itemsRowsHtml
                 variables.quotation_items_table = itemsRowsHtml
 
-                // Subtotal, Discount, VAT, Total
-                const discountAmount = contract.quotation?.discount_amount ?? 0
-                const discountPercent = contract.quotation?.discount_percent ?? 0
-                const vatRate = contract.quotation?.vat_percent ?? 0
-                const vatAmount = contract.quotation?.vat_amount ?? Math.round((subtotal - discountAmount) * vatRate / 100)
+                // Summary totals
+                const overallDiscountAmount = contract.quotation?.discount_amount ?? 0
+                const overallDiscountPercent = contract.quotation?.discount_percent ?? 0
                 
                 variables.subtotal = new Intl.NumberFormat('vi-VN').format(subtotal)
-                variables.vat_rate = vatRate > 0 ? `${vatRate}%` : '0%'
-                variables.vat_amount = new Intl.NumberFormat('vi-VN').format(vatAmount)
-                variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(contract.total_amount || (subtotal - discountAmount + vatAmount))
+                variables.vat_total = new Intl.NumberFormat('vi-VN').format(totalVat)
+                variables.total_after_vat = new Intl.NumberFormat('vi-VN').format(totalAfterVat)
+                
+                // Final total = totalAfterVat - overall discount (if any)
+                const finalTotal = contract.total_amount || (totalAfterVat - overallDiscountAmount)
+                variables.total_amount_number = new Intl.NumberFormat('vi-VN').format(finalTotal)
 
-                // Optional discount row
-                if (discountAmount > 0) {
-                    const pctString = discountPercent > 0 ? ` (${discountPercent}%)` : ''
+                // Keep legacy vars for backward compat
+                variables.vat_rate = ''
+                variables.vat_amount = ''
+
+                // Optional overall discount row (separate from per-item discounts)
+                if (overallDiscountAmount > 0) {
+                    const pctString = overallDiscountPercent > 0 ? ` (${overallDiscountPercent}%)` : ''
                     variables.discount_row_html = `
                     <tr>
-                      <td style="border:1px solid #000; padding:5px;" colspan="5">Chiết khấu${pctString}</td>
-                      <td style="border:1px solid #000; padding:5px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(discountAmount)}</td>
+                      <td style="border:1px solid #000; padding:4px;" colspan="8">Chiết khấu tổng${pctString}</td>
+                      <td style="border:1px solid #000; padding:4px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(overallDiscountAmount)}</td>
                     </tr>`
                 } else {
                     variables.discount_row_html = ''
