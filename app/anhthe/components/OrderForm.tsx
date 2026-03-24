@@ -567,9 +567,6 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                                 </span>
                               )}
                             </div>
-                            {pkg.sku && (
-                              <p className="text-[10px] text-zinc-400 font-mono tracking-wide mt-0.5">SKU: {pkg.sku} · ID: {pkg.id.slice(0, 8)}</p>
-                            )}
                             <p className="text-xs text-zinc-500 mt-1 font-medium leading-relaxed">{pkg.desc}</p>
 
                             {/* Features — visible on desktop */}
@@ -649,28 +646,30 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
 
             <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
               {/* Toggle */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 sm:p-5">
-                <div className="space-y-0.5">
-                  <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-print">
-                    Muốn in ảnh cứng
-                  </Label>
-                  <p className="text-[11px] text-zinc-400 font-medium">
-                    {totalFreePrints > 0 ? `Bạn đang được tặng ${totalFreePrints} vỉ miễn phí từ các gói đã chọn` : 'Chọn gói dịch vụ để nhận vỉ in miễn phí'}
-                  </p>
-                  <a
-                    href="/anhthe/layouts"
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-lg bg-zinc-100 border border-zinc-200 text-[11px] font-semibold text-zinc-600 hover:bg-zinc-200 hover:text-zinc-800 transition-colors"
-                  >
-                    <ImagePlus className="size-3.5" />
-                    Xem mẫu vỉ ảnh
-                  </a>
+              <div className="p-4 sm:p-5 space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-print">
+                      Muốn in ảnh cứng
+                    </Label>
+                    <p className="text-[11px] text-zinc-400 font-medium">
+                      {totalFreePrints > 0 ? `Bạn đang được tặng ${totalFreePrints} vỉ miễn phí từ các gói đã chọn` : 'Chọn gói dịch vụ để nhận vỉ in miễn phí'}
+                    </p>
+                  </div>
+                  <Switch
+                    id="toggle-print"
+                    checked={wantPrint}
+                    onCheckedChange={setWantPrint}
+                  />
                 </div>
-                <Switch
-                  id="toggle-print"
-                  checked={wantPrint}
-                  onCheckedChange={setWantPrint}
-                />
+                <a
+                  href="/anhthe/layouts"
+                  target="_blank"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 border border-zinc-200 text-[11px] font-semibold text-zinc-600 hover:bg-zinc-200 hover:text-zinc-800 transition-colors"
+                >
+                  <ImagePlus className="size-3.5" />
+                  Xem mẫu vỉ ảnh
+                </a>
               </div>
 
               {/* Print Options Panel */}
@@ -975,39 +974,29 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
 
           {/* Order Summary + Submit */}
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm sticky bottom-4 z-10">
-            <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="w-full sm:w-auto">
-                <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-1">Tổng cộng (tạm tính)</p>
+            <div className="px-4 py-3 sm:p-6 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] sm:text-xs font-semibold text-zinc-400 uppercase tracking-widest">Tổng cộng (tạm tính)</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-2xl sm:text-3xl font-bold text-zinc-950 tracking-tighter tabular-nums">
+                  <span className="text-xl sm:text-3xl font-bold text-zinc-950 tracking-tighter tabular-nums">
                     {new Intl.NumberFormat('vi-VN').format(totalPrice)}
                   </span>
-                  <span className="text-sm font-semibold text-zinc-500">đ</span>
+                  <span className="text-xs sm:text-sm font-semibold text-zinc-500">đ</span>
                 </div>
-                {(totalPkgCount > 0 || discountAmount > 0) && (
-                  <div className="text-[11px] text-zinc-400 font-medium mt-1 space-y-0.5">
-                    {totalPkgCount > 0 && (
-                      <p>
-                        {totalPkgCount > 0 ? `${totalPkgCount} gói` : ''}
-                        {wantPrint && totalPrintQty > 0 && `${totalPkgCount > 0 ? ' · ' : ''}${totalPrintQty} vỉ in`}
-                        {wantPrint && shippingFee > 0 && ` · ship ${new Intl.NumberFormat('vi-VN').format(shippingFee)}đ`}
-                        {wantPrint && hasFreeShipping && ' · free ship'}
-                      </p>
-                    )}
-                    {discountAmount > 0 && (
-                      <p className="text-emerald-600 font-semibold">
-                        Giảm: -{new Intl.NumberFormat('vi-VN').format(discountAmount)}đ
-                        {discountType === 'percent' && ` (${discountValue}%)`}
-                      </p>
-                    )}
-                  </div>
-                )}
+                <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate">
+                  {totalPkgCount > 0 ? `${totalPkgCount} gói` : ''}
+                  {wantPrint && totalPrintQty > 0 && `${totalPkgCount > 0 ? ' · ' : ''}${totalPrintQty} vỉ in`}
+                  {wantPrint && hasFreeShipping && ' · free ship'}
+                  {discountAmount > 0 && (
+                    <span className="text-emerald-600 font-semibold"> · -{new Intl.NumberFormat('vi-VN').format(discountAmount)}đ</span>
+                  )}
+                </p>
               </div>
               <Button
                 type="submit"
                 size="lg"
                 disabled={isSubmitting || (totalPkgCount === 0 && !(wantPrint && (totalFreePrints + extraViCount) > 0))}
-                className="w-full sm:w-auto rounded-xl font-bold tracking-tight text-[13px] h-12 px-10 bg-zinc-900 hover:bg-zinc-800 shadow-lg shadow-black/10 transition-all disabled:opacity-40"
+                className="shrink-0 rounded-xl font-bold tracking-tight text-[13px] h-11 sm:h-12 px-6 sm:px-10 bg-zinc-900 hover:bg-zinc-800 shadow-lg shadow-black/10 transition-all disabled:opacity-40"
               >
                 {isSubmitting ? <LoadingSpinner size="sm" className="mr-2" /> : null}
                 {isSubmitting ? 'Đang gửi...' : 'Gửi đơn hàng'}
