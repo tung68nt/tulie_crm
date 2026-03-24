@@ -131,14 +131,14 @@ function handleSubdomainRewrite(request: NextRequest): NextResponse | URL | null
 // MIDDLEWARE
 // ============================================
 export async function middleware(request: NextRequest) {
-    // Handle subdomain rewrites first
+    // Check for subdomain rewrites (collect but don't return yet)
     const subdomainResult = handleSubdomainRewrite(request)
-    if (subdomainResult instanceof NextResponse) return subdomainResult
-    if (subdomainResult instanceof URL) {
-        return NextResponse.rewrite(subdomainResult)
-    }
+    if (subdomainResult instanceof NextResponse) return subdomainResult // 404 for blocked routes
 
-    // Rate limit portal pages first
+    // Store rewrite URL if subdomain matched
+    const rewriteUrl = subdomainResult instanceof URL ? subdomainResult : null
+
+    // Rate limit portal pages
     const rateLimited = checkPortalRateLimit(request)
     if (rateLimited) return rateLimited
 
@@ -158,6 +158,18 @@ export async function middleware(request: NextRequest) {
 
     // Also set nonce in response header for downstream use
     response.headers.set('x-nonce', nonce)
+
+    // Apply subdomain rewrite AFTER auth/CSP processing
+    if (rewriteUrl) {
+        const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
+            request: { headers: requestHeaders },
+        })
+        // Copy all response headers (auth cookies, CSP, etc.) to rewrite response
+        response.headers.forEach((value, key) => {
+            rewriteResponse.headers.set(key, value)
+        })
+        return rewriteResponse
+    }
 
     return response
 }
