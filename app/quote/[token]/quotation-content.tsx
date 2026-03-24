@@ -244,7 +244,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
         <div className="quotation-page min-h-screen bg-gray-100 py-8 pb-32 font-sans text-slate-800">
             {/* Options Switcher (Hero Section above Paper) */}
             {activeOptions.length > 1 && (
-                <div className="max-w-[210mm] mx-auto mb-10 print:hidden px-4 sm:px-0">
+                <div className="max-w-5xl mx-auto mb-10 print:hidden px-4 sm:px-0">
                     <div className="bg-white/90 backdrop-blur-xl border border-zinc-200/50 p-6 rounded-3xl shadow-2xl overflow-hidden relative group">
                         <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                             <Target className="w-40 h-40 text-black rotate-12" />
@@ -348,12 +348,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
             {/* A4 Container */}
             {viewMode === 'basic' ? (
-                <div className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden">
+                <div className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto">
                     <QuotationDocumentPaper quotation={currentQuotation} brandConfig={brandConfig} />
                 </div>
             ) : (
             <div
-                className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden"
+                className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto"
             >
 
                 <div className="quotation-inner p-6 sm:p-10">
@@ -522,14 +522,14 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                 {hasProposal && <span className="text-[0.7em] italic font-normal opacity-50 ml-2 tracking-tight">(Investment Plan)</span>}
                             </h3>
                             <div className="border border-slate-200 rounded-lg overflow-x-auto">
-                                <table className="w-full text-left border-collapse text-[11px] min-w-[600px]">
+                                <table className="w-full text-left border-collapse text-[11px] min-w-[900px]">
                                     <thead>
                                         <tr className="text-white shadow-sm table-header-gradient" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #404040)", WebkitPrintColorAdjust: 'exact' }}>
                                             <th className="py-2.5 px-1 font-semibold w-10 text-center normal-case print:hidden">Chọn</th>
                                             <th className="py-2.5 px-1 font-semibold w-10 text-center normal-case">#</th>
                                             <th className="py-2.5 px-3 font-semibold normal-case">
-                                                Hạng mục & Mô tả <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items</span>
+                                                Hạng mục & Mô tả chi tiết <br />
+                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Items & Description</span>
                                             </th>
                                             <th className="py-2.5 px-3 font-semibold text-center w-20 normal-case">
                                                 ĐVT <br />
@@ -773,7 +773,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
             {/* History Timeline Panel */}
             {historyItems.length > 0 && (
-                <div className="max-w-[210mm] mx-auto mt-12 mb-12 print:hidden px-4 sm:px-0">
+                <div className="max-w-5xl mx-auto mt-12 mb-12 print:hidden px-4 sm:px-0">
                     <div className="bg-white/80 backdrop-blur-md border-[3px] border-zinc-200/50 rounded-[40px] p-10 relative overflow-hidden shadow-2xl">
                         <div className="relative z-10 space-y-10">
                             <div className="flex items-center gap-6">
@@ -1040,7 +1040,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                     
                     /* Overflow fix */
                     .overflow-x-auto { overflow: visible !important; }
-                    .min-w-\\[600px\\] { min-width: 0 !important; }
+                    .min-w-\\[900px\\] { min-width: 0 !important; }
                     
                     /* Summary section */
                     .sm\\:w-\\[60\\%\\] { width: 55% !important; }
