@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+// SECURITY: Static headers that don't need per-request nonce.
+// CSP is set dynamically in middleware.ts with nonce-based script-src.
 const securityHeaders = [
     {
         key: 'X-Frame-Options',
@@ -13,10 +15,7 @@ const securityHeaders = [
         key: 'Referrer-Policy',
         value: 'strict-origin-when-cross-origin',
     },
-    {
-        key: 'X-XSS-Protection',
-        value: '1; mode=block',
-    },
+    // REMOVED: X-XSS-Protection — deprecated, ignored by modern browsers
     {
         key: 'Permissions-Policy',
         value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
@@ -25,25 +24,7 @@ const securityHeaders = [
         key: 'Strict-Transport-Security',
         value: 'max-age=31536000; includeSubDomains',
     },
-    {
-        key: 'Content-Security-Policy',
-        value: [
-            "default-src 'self'",
-            // SECURITY: Removed 'unsafe-inline' from script-src to prevent XSS execution
-            // Next.js inlines some scripts — use 'unsafe-inline' only if pages break, 
-            // but prefer fixing the root cause with nonce-based approach
-            "script-src 'self' 'unsafe-inline'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com data:",
-            "img-src 'self' data: blob: https:",
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://my.sepay.vn https://api.vietqr.io",
-            "frame-ancestors 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "object-src 'none'",
-            "upgrade-insecure-requests",
-        ].join('; '),
-    },
+    // NOTE: CSP header is now set in middleware.ts with nonce-based script-src
 ]
 
 const nextConfig: NextConfig = {
@@ -59,6 +40,25 @@ const nextConfig: NextConfig = {
     eslint: {
         // TODO: Fix eslint-plugin-import dependency issue, then set to false
         ignoreDuringBuilds: true,
+    },
+    async rewrites() {
+        return {
+            beforeFiles: [
+                // anhthe.tulie.studio → /anhthe routes
+                {
+                    source: '/',
+                    has: [{ type: 'host', value: 'anhthe.tulie.studio' }],
+                    destination: '/anhthe',
+                },
+                {
+                    source: '/:path((?!anhthe|_next|api|file|favicon).*)',
+                    has: [{ type: 'host', value: 'anhthe.tulie.studio' }],
+                    destination: '/anhthe/:path',
+                },
+            ],
+            afterFiles: [],
+            fallback: [],
+        }
     },
     async headers() {
         return [

@@ -83,68 +83,9 @@ function generateCspHeaders(nonce: string) {
 }
 
 // ============================================
-// SUBDOMAIN ROUTING
-// anhthe.tulie.studio → /anhthe routes
-// ============================================
-const SUBDOMAIN_MAP: Record<string, string> = {
-    'anhthe': '/anhthe',
-}
-
-function handleSubdomainRewrite(request: NextRequest): NextResponse | URL | null {
-    // Robust hostname detection for Vercel
-    const hostname = (
-        request.headers.get('x-forwarded-host') ||
-        request.headers.get('host') ||
-        request.nextUrl.hostname ||
-        ''
-    ).split(':')[0].toLowerCase() // strip port, normalize
-
-    // Extract subdomain: "anhthe.tulie.studio" → "anhthe"
-    const match = hostname.match(/^([^.]+)\.tulie\.studio$/)
-    if (!match) return null
-
-    const subdomain = match[1]
-    const basePath = SUBDOMAIN_MAP[subdomain]
-    if (!basePath) return null
-
-    const pathname = request.nextUrl.pathname
-
-    // Block CRM dashboard routes on subdomain (security)
-    if (pathname.match(/^\/(customers|quotations|contracts|invoices|products|deals|projects|reports|settings|login)/)) {
-        return new NextResponse('Not Found', { status: 404 })
-    }
-
-    // Skip if already on the correct path (avoid infinite rewrite)
-    if (pathname.startsWith(basePath)) return null
-
-    // Skip static assets and API routes
-    if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/file')) return null
-
-    // Rewrite: / → /anhthe, /success → /anhthe/success, etc.
-    const newPath = pathname === '/' ? basePath : `${basePath}${pathname}`
-    const url = request.nextUrl.clone()
-    url.pathname = newPath
-    return url
-}
-
-// ============================================
 // MIDDLEWARE
 // ============================================
 export async function middleware(request: NextRequest) {
-    // Check for subdomain rewrites (collect but don't return yet)
-    const subdomainResult = handleSubdomainRewrite(request)
-    if (subdomainResult instanceof NextResponse) return subdomainResult // 404 for blocked routes
-
-    // Store rewrite URL if subdomain matched
-    const rewriteUrl = subdomainResult instanceof URL ? subdomainResult : null
-
-    // CRITICAL: If subdomain rewrite detected, mutate the request URL pathname
-    // BEFORE passing to updateSession. Otherwise Supabase middleware sees "/"
-    // and redirects authenticated users to "/dashboard" (line 72-76 in supabase/middleware.ts).
-    if (rewriteUrl) {
-        request.nextUrl.pathname = rewriteUrl.pathname
-    }
-
     // Rate limit portal pages
     const rateLimited = checkPortalRateLimit(request)
     if (rateLimited) return rateLimited
@@ -156,7 +97,7 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set('x-nonce', nonce)
 
-    // Get session response (Supabase auth) — now sees rewritten path
+    // Get session response (Supabase auth)
     const response = await updateSession(request)
 
     // Set CSP header with nonce on the response
@@ -165,22 +106,6 @@ export async function middleware(request: NextRequest) {
 
     // Also set nonce in response header for downstream use
     response.headers.set('x-nonce', nonce)
-
-    // Apply subdomain rewrite
-    if (rewriteUrl) {
-        const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
-            request: { headers: requestHeaders },
-        })
-        // Copy all response headers (auth cookies, CSP, etc.) to rewrite response
-        response.headers.forEach((value, key) => {
-            rewriteResponse.headers.set(key, value)
-        })
-        // Copy cookies (auth session tokens)
-        response.cookies.getAll().forEach(cookie => {
-            rewriteResponse.cookies.set(cookie.name, cookie.value, cookie)
-        })
-        return rewriteResponse
-    }
 
     return response
 }
