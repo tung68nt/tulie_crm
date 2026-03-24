@@ -129,12 +129,9 @@ export const contractTemplate = `
       <td style="width:50px; vertical-align:top; padding:2px 0;">1.1.</td>
       <td style="vertical-align:top; padding:2px 0; text-align:justify;">Theo đề nghị của Bên A, Bên B thực hiện cung cấp cho Bên A sản phẩm/dịch vụ theo nội dung chi tiết tại <strong>Phụ lục 01</strong> (Bảng báo giá chi tiết) đính kèm hợp đồng này.</td>
     </tr>
+    {{clause_1_2_html}}
     <tr>
-      <td style="width:50px; vertical-align:top; padding:2px 0;">1.2.</td>
-      <td style="vertical-align:top; padding:2px 0; text-align:justify;">Phạm vi công việc, phương pháp triển khai, sản phẩm bàn giao và lộ trình thực hiện được quy định chi tiết tại <strong>Phụ lục 02</strong> (Đề xuất giải pháp) đính kèm hợp đồng này.</td>
-    </tr>
-    <tr>
-      <td style="width:50px; vertical-align:top; padding:2px 0;">1.3.</td>
+      <td style="width:50px; vertical-align:top; padding:2px 0;">{{clause_total_value_number}}</td>
       <td style="vertical-align:top; padding:2px 0; text-align:justify;">Tổng giá trị hợp đồng:</td>
     </tr>
   </table>
@@ -144,7 +141,7 @@ export const contractTemplate = `
   </table>
   <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
     <tr>
-      <td style="width:50px; vertical-align:top; padding:2px 0;">1.4.</td>
+      <td style="width:50px; vertical-align:top; padding:2px 0;">{{clause_appendix_number}}</td>
       <td style="vertical-align:top; padding:2px 0; text-align:justify;">Các phụ lục đính kèm là bộ phận không tách rời của hợp đồng này và có giá trị pháp lý tương đương.</td>
     </tr>
   </table>

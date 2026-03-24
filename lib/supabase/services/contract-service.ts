@@ -45,7 +45,7 @@ export async function getContractById(id: string) {
         const supabase = await createClient()
         const { data, error } = await supabase
             .from('contracts')
-            .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quotation_number, deal_id)')
+            .select('*, customer:customers(*), creator:users(*), milestones:contract_milestones(*), quotation:quotations(id, quotation_number, deal_id, type)')
             .eq('id', id)
             .single()
 

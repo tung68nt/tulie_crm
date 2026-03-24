@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu, ChevronDown, CheckCircle, UserPlus, FileText, CheckCircle2, CreditCard, BellRing } from 'lucide-react'
+import { Bell, Search, Moon, Sun, LogOut, User, Settings, Menu, ChevronDown, CheckCircle, UserPlus, FileText, CheckCircle2, CreditCard, BellRing, Trophy, XCircle, ClipboardList, AlertTriangle, Eye, LayoutGrid } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -24,8 +24,8 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getNotifications, getUnreadCount, markNotificationAsRead } from '@/lib/supabase/services/notification-service'
-import { Notification } from '@/types'
+import { getMergedNotifications, getMergedUnreadCount, markNotificationAsRead, markAllAsRead } from '@/lib/supabase/services/notification-service'
+import { Notification, NotificationType } from '@/types'
 import { getUserById } from '@/lib/supabase/services/user-service'
 
 export function Header() {
@@ -46,8 +46,8 @@ export function Header() {
 
             if (authUser) {
                 const [notifs, count, dbUser] = await Promise.all([
-                    getNotifications(authUser.id),
-                    getUnreadCount(authUser.id),
+                    getMergedNotifications(authUser.id),
+                    getMergedUnreadCount(authUser.id),
                     getUserById(authUser.id)
                 ])
 
@@ -100,25 +100,44 @@ export function Header() {
             const supabase = createClient()
             const { data: { user: authUser } } = await supabase.auth.getUser()
             if (authUser) {
-                await supabase.from('notifications')
-                    .update({ read: true })
-                    .eq('user_id', authUser.id)
-                    .eq('read', false)
+                await markAllAsRead(authUser.id)
             }
         } catch (error) {
             console.error('Error marking all as read:', error)
         }
     }
 
-    const getNotificationIcon = (type: string) => {
+    const getNotificationIcon = (type: NotificationType | string) => {
         switch (type) {
             case 'new_customer': return <UserPlus className="h-4 w-4" />
             case 'quotation_accepted': return <CheckCircle2 className="h-4 w-4" />
-            case 'invoice_overdue': return <BellRing className="h-4 w-4" />
+            case 'quotation_viewed': return <Eye className="h-4 w-4" />
+            case 'quotation_rejected': return <XCircle className="h-4 w-4" />
+            case 'quotation_sent': return <FileText className="h-4 w-4" />
+            case 'invoice_overdue': return <AlertTriangle className="h-4 w-4" />
             case 'contract_signed': return <FileText className="h-4 w-4" />
             case 'payment_received': return <CreditCard className="h-4 w-4" />
+            case 'deal_won': return <Trophy className="h-4 w-4" />
+            case 'deal_lost': return <XCircle className="h-4 w-4" />
+            case 'task_assigned': return <ClipboardList className="h-4 w-4" />
+            case 'task_overdue': return <BellRing className="h-4 w-4" />
+            case 'task_completed': return <CheckCircle className="h-4 w-4" />
+            case 'workspace': return <LayoutGrid className="h-4 w-4" />
             default: return <Bell className="h-4 w-4" />
         }
+    }
+
+    const getNotificationColor = (notification: Notification) => {
+        const severity = notification.severity || 'info'
+        if (!notification.read) {
+            switch (severity) {
+                case 'success': return 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                case 'warning': return 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                case 'error': return 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400'
+                default: return 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400'
+            }
+        }
+        return 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
     }
 
     const formatTimeAgo = (dateString: string) => {
@@ -226,7 +245,7 @@ export function Header() {
                                             className={`flex items-start gap-3 py-3 px-3 cursor-pointer rounded-lg transition-colors border border-transparent ${!notification.read ? 'bg-blue-50/50 dark:bg-blue-500/5 hover:bg-blue-50 dark:hover:bg-blue-500/10' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}
                                             onClick={() => handleNotificationClick(notification)}
                                         >
-                                            <div className={`mt-0.5 shrink-0 flex items-center justify-center h-8 w-8 rounded-full ${!notification.read ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'}`}>
+                                            <div className={`mt-0.5 shrink-0 flex items-center justify-center h-8 w-8 rounded-full ${getNotificationColor(notification)}`}>
                                                 {getNotificationIcon(notification.type)}
                                             </div>
                                             <div className="flex flex-col flex-1 w-full relative">

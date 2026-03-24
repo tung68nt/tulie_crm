@@ -576,15 +576,24 @@ export interface Expense {
 // Notification Types
 export type NotificationType =
   | 'new_customer'
+  | 'quotation_sent'
   | 'quotation_accepted'
   | 'quotation_viewed'
   | 'quotation_rejected'
   | 'invoice_overdue'
   | 'contract_signed'
   | 'payment_received'
+  | 'deal_won'
+  | 'deal_lost'
+  | 'task_assigned'
+  | 'task_overdue'
+  | 'task_completed'
   | 'low_margin'
   | 'cash_flow_alert'
+  | 'workspace'
   | 'system'
+
+export type NotificationSeverity = 'info' | 'success' | 'warning' | 'error'
 
 export interface Notification {
   id: string
@@ -593,7 +602,10 @@ export interface Notification {
   title: string
   message: string
   link?: string
-  read: boolean // Changed from is_read to match service usage
+  read: boolean
+  severity?: NotificationSeverity
+  metadata?: Record<string, any>
+  source?: 'crm' | 'workspace' // Phân biệt nguồn notification
   created_at: string
 }
 

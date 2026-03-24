@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { requireAuth, isAuthError } from '@/lib/security/auth-guard'
 import { getContractDocuments, generateDocumentBundle } from '@/lib/supabase/services/document-template-service'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 /**
  * GET /api/contracts/[id]/documents
@@ -27,6 +28,7 @@ export async function GET(
 /**
  * POST /api/contracts/[id]/documents
  * Regenerate all draft documents for a contract
+ * Accepts optional { include_proposal_appendix: boolean } to toggle proposal appendix
  */
 export async function POST(
     request: Request,
@@ -37,6 +39,17 @@ export async function POST(
         if (isAuthError(authResult)) return authResult
 
         const { id: contractId } = await params
+        const body = await request.json().catch(() => ({}))
+
+        // If include_proposal_appendix is specified, update contract before regenerating
+        if (typeof body.include_proposal_appendix === 'boolean') {
+            const supabase = createAdminClient()
+            await supabase
+                .from('contracts')
+                .update({ include_proposal_appendix: body.include_proposal_appendix })
+                .eq('id', contractId)
+        }
+
         await generateDocumentBundle(contractId)
         
         // Return fresh docs from DB

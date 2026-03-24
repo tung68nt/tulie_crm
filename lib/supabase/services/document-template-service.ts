@@ -504,9 +504,28 @@ export async function generateDocument(
             }
         }
 
+        // Determine whether to include proposal appendix
+        const includeProposalAppendix = contract?.include_proposal_appendix !== false
+
+        // Set clause numbering based on whether proposal appendix is included
+        // When included: 1.1, 1.2 (proposal ref), 1.3 (total value), 1.4 (appendix note)
+        // When not included: 1.1, 1.2 (total value), 1.3 (appendix note)
+        if (includeProposalAppendix && contract?.quotation?.type === 'proposal') {
+            variables.clause_1_2_html = `<tr>
+              <td style="width:50px; vertical-align:top; padding:2px 0;">1.2.</td>
+              <td style="vertical-align:top; padding:2px 0; text-align:justify;">Phạm vi công việc, phương pháp triển khai, sản phẩm bàn giao và lộ trình thực hiện được quy định chi tiết tại <strong>Phụ lục 02</strong> (Đề xuất giải pháp) đính kèm hợp đồng này.</td>
+            </tr>`
+            variables.clause_total_value_number = '1.3.'
+            variables.clause_appendix_number = '1.4.'
+        } else {
+            variables.clause_1_2_html = ''
+            variables.clause_total_value_number = '1.2.'
+            variables.clause_appendix_number = '1.3.'
+        }
+
         // Build proposal appendix HTML from quotation.proposal_content
         const proposalContent = contract?.quotation?.proposal_content as any
-        if (proposalContent && contract?.quotation?.type === 'proposal') {
+        if (includeProposalAppendix && proposalContent && contract?.quotation?.type === 'proposal') {
             const proposalSections: { label: string; content: string }[] = []
             if (proposalContent.introduction) proposalSections.push({ label: 'Mục tiêu & Giới thiệu', content: proposalContent.introduction })
             if (proposalContent.scope_of_work) proposalSections.push({ label: 'Phạm vi công việc (Scope of Work)', content: proposalContent.scope_of_work })

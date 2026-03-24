@@ -12,6 +12,7 @@ import { logActivity, logDestructiveAction } from './activity-service'
 import { getDealById } from './deal-service'
 import { getCustomerById } from './customer-service'
 import { createVersionSnapshot } from './quotation-version-service'
+import { notifyQuotationViewed, notifyQuotationAccepted } from './notification-service'
 
 export async function checkQuotationNumberExists(quotationNumber: string, excludeId?: string) {
     try {
@@ -487,6 +488,11 @@ export async function recordQuotationView(id: string) {
 
                 // 2. Notify via Telegram
                 await sendTelegramNotification(await formatQuotationViewed(current), 'notify_quotation_viewed')
+
+                // 3. In-app notification
+                if (current.created_by) {
+                    notifyQuotationViewed(current as any).catch(() => {})
+                }
             }
         }
 
@@ -517,6 +523,11 @@ export async function acceptQuotationPortal(id: string, confirmerInfo: any) {
         const quote = await getQuotationById(id)
         if (quote) {
             await sendTelegramNotification(await formatQuotationAccepted(quote), 'notify_quotation_accepted')
+
+            // In-app notification
+            if (quote.created_by) {
+                notifyQuotationAccepted(quote as any).catch(() => {})
+            }
 
             await logActivity({
                 action: 'accept',

@@ -4,6 +4,7 @@ import { createClient } from '../server'
 import { Deal, DealStatus } from '@/types'
 import { revalidatePath } from 'next/cache'
 import { logActivity, logDestructiveAction } from './activity-service'
+import { notifyDealWon, notifyDealLost } from './notification-service'
 
 export async function getDeals(customerId?: string, brand?: string) {
     try {
@@ -97,6 +98,14 @@ export async function createDeal(deal: Partial<Deal>) {
 export async function updateDeal(id: string, deal: Partial<Deal>) {
     try {
         const supabase = await createClient()
+
+        // Get current deal for status change detection
+        const { data: currentDeal } = await supabase
+            .from('deals')
+            .select('status, title, assigned_to, created_by, customer_id')
+            .eq('id', id)
+            .single()
+
         const { error } = await supabase
             .from('deals')
             .update(deal)
@@ -111,9 +120,24 @@ export async function updateDeal(id: string, deal: Partial<Deal>) {
             action: 'update',
             entity_type: 'deal',
             entity_id: id,
-            description: `Cập nhật cơ hội: ${deal.title || id}`,
+            description: `Cập nhật cơ hội: ${deal.title || currentDeal?.title || id}`,
             metadata: deal
         })
+
+        // Notify on deal status changes
+        if (deal.status && currentDeal && deal.status !== currentDeal.status) {
+            const dealForNotify = {
+                id,
+                title: deal.title || currentDeal.title || '',
+                assigned_to: currentDeal.assigned_to,
+                created_by: currentDeal.created_by || '',
+            }
+            if (deal.status === 'closed_won') {
+                notifyDealWon(dealForNotify).catch(() => {})
+            } else if (deal.status === 'closed_lost') {
+                notifyDealLost(dealForNotify).catch(() => {})
+            }
+        }
 
         revalidatePath('/deals')
         revalidatePath(`/deals/${id}`)

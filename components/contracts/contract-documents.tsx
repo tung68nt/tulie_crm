@@ -6,10 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw, Eye, EyeOff, CircleCheck, Circle } from 'lucide-react'
+import { FileText, Download, Printer, Check, ChevronRight, ChevronDown, Building2, User, Mail, Phone, MapPin, ClipboardList, CreditCard, Package, AlertTriangle, Save, RefreshCw, Eye, EyeOff, CircleCheck, Circle, FileCheck } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { Contract } from '@/types'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 
 
@@ -22,6 +23,10 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
     const [showForm, setShowForm] = useState(false)
     const [dbDocs, setDbDocs] = useState<any[]>([])
     const [regenerating, setRegenerating] = useState(false)
+    const [includeProposal, setIncludeProposal] = useState<boolean>(
+        (contract as any).include_proposal_appendix !== false
+    )
+    const isProposalQuotation = (contract as any).quotation?.type === 'proposal'
 
     const loadDocs = useCallback(() => {
         fetch(`/api/contracts/${contract.id}/documents`)
@@ -42,7 +47,10 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
             const res = await fetch(`/api/contracts/${contract.id}/documents`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ regenerate: true })
+                body: JSON.stringify({ 
+                    regenerate: true,
+                    ...(isProposalQuotation ? { include_proposal_appendix: includeProposal } : {})
+                })
             })
             if (!res.ok) throw new Error('Failed')
             toast.success('Đã tạo lại giấy tờ thành công')
@@ -591,6 +599,21 @@ export function ContractDocuments({ contract }: ContractDocumentsProps) {
                     )
                 })}
                 </div>
+
+                {/* Proposal appendix toggle - only show for proposal-type quotations */}
+                {isProposalQuotation && (
+                    <div className="flex items-center justify-between px-3 py-2 rounded-lg border bg-muted/30">
+                        <div className="flex items-center gap-2">
+                            <FileCheck className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span className="text-xs font-medium">Kèm Phụ lục đề xuất giải pháp</span>
+                        </div>
+                        <Switch
+                            checked={includeProposal}
+                            onCheckedChange={setIncludeProposal}
+                            className="scale-75"
+                        />
+                    </div>
+                )}
             </CardContent>
         </Card>
     )
