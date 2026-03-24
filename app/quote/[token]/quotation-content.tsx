@@ -541,12 +541,21 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                             </th>
                                             <th className="py-2.5 px-3 font-semibold text-right w-24 normal-case">
                                                 Đơn giá <br />
-                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Price</span>
+                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Unit Price</span>
                                             </th>
-                                            {hasDiscount && <th className="py-2.5 px-3 font-semibold text-center w-16 normal-case text-[10px]">CK(%)</th>}
-                                            <th className="py-2.5 px-4 font-semibold text-right w-28 normal-case">
+                                            {hasDiscount && <th className="py-2.5 px-2 font-semibold text-center w-14 normal-case text-[10px]">CK(%)<br /><span className="text-[0.8em] font-normal opacity-60 italic">/ Disc.</span></th>}
+                                            {hasDiscount && <th className="py-2.5 px-2 font-semibold text-right w-24 normal-case text-[10px]">Giảm giá<br /><span className="text-[0.8em] font-normal opacity-60 italic">/ Discount</span></th>}
+                                            <th className="py-2.5 px-3 font-semibold text-right w-28 normal-case">
                                                 Thành tiền <br />
                                                 <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Amount</span>
+                                            </th>
+                                            <th className="py-2.5 px-2 font-semibold text-center w-16 normal-case text-[10px]">
+                                                Thuế VAT<br />
+                                                <span className="text-[0.8em] font-normal opacity-60 italic">/ Tax</span>
+                                            </th>
+                                            <th className="py-2.5 px-3 font-semibold text-right w-28 normal-case">
+                                                Thành tiền<br />
+                                                <span className="text-[0.8em] font-normal opacity-60 italic normal-case">/ Total</span>
                                             </th>
                                         </tr>
                                     </thead>
@@ -562,7 +571,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                                 {sectionIndex + 1}
                                                             </div>
                                                         </td>
-                                                        <td colSpan={hasDiscount ? 6 : 5} className="px-3 py-2.5 font-semibold text-slate-900 text-[13px] normal-case">
+                                                        <td colSpan={hasDiscount ? 9 : 7} className="px-3 py-2.5 font-semibold text-slate-900 text-[13px] normal-case">
                                                             <span>{sectionName || "Sản phẩm & Dịch vụ chi tiết"}</span>
                                                         </td>
                                                     </tr>
@@ -624,10 +633,21 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                                                             <td className="px-3 text-center text-slate-600 align-top py-2">{item.quantity}</td>
                                                             <td className="px-3 text-right text-slate-600 align-top py-2">{formatCurrency(item.unit_price)}</td>
                                                             {hasDiscount && (
-                                                                <td className="px-3 text-center text-slate-500 align-top py-2">{item.discount || 0}%</td>
+                                                                <td className="px-2 text-center text-slate-500 align-top py-2 text-[10px]">{item.discount || 0}%</td>
                                                             )}
+                                                            {hasDiscount && (
+                                                                <td className="px-2 text-right text-slate-500 align-top py-2 text-[10px]">
+                                                                    {formatCurrency((item.quantity * item.unit_price * (item.discount || 0)) / 100)}
+                                                                </td>
+                                                            )}
+                                                            <td className="px-3 text-right font-medium text-slate-700 align-top py-2">
+                                                                {formatCurrency(item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))}
+                                                            </td>
+                                                            <td className="px-2 text-center text-slate-500 align-top py-2 text-[10px]">
+                                                                {item.vat_percent || 0}%
+                                                            </td>
                                                             <td className="px-3 text-right font-bold text-slate-900 align-top py-2">
-                                                                {formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}
+                                                                {formatCurrency((item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100))) * (1 + (item.vat_percent || 0) / 100))}
                                                             </td>
                                                         </tr>
                                                     );
