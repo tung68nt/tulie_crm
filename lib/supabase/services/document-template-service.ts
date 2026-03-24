@@ -407,10 +407,10 @@ export async function generateDocument(
                         totalVat += itemVat
                         totalAfterVat += afterVat
 
-                        // Description: convert newlines to <br> for proper line breaks
+                        // Description: \n\n = paragraph break (more space), \n = line break
                         const rawDesc = item.description || ''
                         const descHtml = rawDesc 
-                            ? `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.7; margin-top:4px; padding-top:2px; border-top:1px dashed #ddd;">${rawDesc.replace(/\n/g, '<br>')}</div>` 
+                            ? `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.5; margin-top:4px; padding-top:2px; border-top:1px dashed #ddd;">${rawDesc.replace(/\n\n/g, '</div><div style="margin-top:6px;">').replace(/\n/g, '<br>')}</div>` 
                             : ''
 
                         const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
