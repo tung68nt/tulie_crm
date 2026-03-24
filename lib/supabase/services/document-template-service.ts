@@ -386,7 +386,7 @@ export async function generateDocument(
                     // Section header row
                     if (sectionName) {
                         itemsRowsHtml += `<tr style="background:#f0f0f0;">
-                            <td style="border:1px solid #000; padding:4px;" colspan="10"><strong>${sectionName}</strong></td>
+                            <td style="border:1px solid #000; padding:4px;" colspan="11"><strong>${sectionName}</strong></td>
                         </tr>`
                     }
 
@@ -419,16 +419,17 @@ export async function generateDocument(
                         const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
 
                         itemsRowsHtml += `<tr>
-                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemNum}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top; white-space:nowrap;">${itemNum}</td>
                             <td style="border:1px solid #000; padding:4px; vertical-align:top;"><strong>${item.product_name}</strong>${descHtml}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${item.unit || 'Gói'}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${qty}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${discountPct > 0 ? discountPct + '%' : '-'}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${discountAmount > 0 ? new Intl.NumberFormat('vi-VN').format(discountAmount) : '-'}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
-                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top; white-space:nowrap;">${item.unit || 'Gói'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top; white-space:nowrap;">${qty}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top; white-space:nowrap;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top; white-space:nowrap;">${discountPct > 0 ? discountPct + '%' : '-'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top; white-space:nowrap;">${discountAmount > 0 ? new Intl.NumberFormat('vi-VN').format(discountAmount) : '-'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top; white-space:nowrap;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top; white-space:nowrap;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top; white-space:nowrap;">${itemVat > 0 ? new Intl.NumberFormat('vi-VN').format(itemVat) : '-'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top; white-space:nowrap;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
                         </tr>`
                     })
                 })

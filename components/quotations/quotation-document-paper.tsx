@@ -90,57 +90,48 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                 Lời đầu tiên, <span className="font-bold">{brandConfig?.brand_name || "Công ty Công nghệ Tulie"}</span> xin gửi tới Quý đối tác lời chào trân trọng và lời chúc sức khỏe. Căn cứ vào nhu cầu của Quý khách, chúng tôi xin gửi tới Quý khách bảng báo giá chi tiết như sau:
             </p>
 
-            {/* Main Items Table */}
-            <table className="w-full border-collapse border border-black text-[11px] mb-8">
-                <colgroup>
-                    <col style={{ width: '3%' }} />   {/* STT */}
-                    <col style={{ width: '38%' }} />  {/* Hạng mục & Mô tả */}
-                    <col style={{ width: '5%' }} />   {/* ĐVT */}
-                    <col style={{ width: '3%' }} />   {/* SL */}
-                    <col style={{ width: '10%' }} />  {/* Đơn giá */}
-                    <col style={{ width: '5%' }} />   {/* CK% */}
-                    <col style={{ width: '8%' }} />   {/* Giảm giá */}
-                    <col style={{ width: '10%' }} />  {/* Thành tiền */}
-                    <col style={{ width: '5%' }} />   {/* VAT */}
-                    <col style={{ width: '13%' }} />  {/* Thành tiền sau thuế */}
-                </colgroup>
+            {/* Main Items Table — flexible widths, nowrap on numbers */}
+            <table className="w-full border-collapse border border-black text-[11px] mb-8" style={{ tableLayout: 'auto' }}>
                 <thead>
                     <tr className="bg-zinc-50 grayscale">
-                        <th className="border border-black py-2 px-1 text-center w-8 font-bold text-[10px]">STT<br /><span className="text-[7pt] font-normal opacity-60">No.</span></th>
-                        <th className="border border-black py-2 px-3 text-left font-bold uppercase text-[10px]">
+                        <th className="border border-black py-2 px-1 text-center font-bold text-[10px] whitespace-nowrap">STT<br /><span className="text-[7pt] font-normal opacity-60">No.</span></th>
+                        <th className="border border-black py-2 px-3 text-left font-bold uppercase text-[10px]" style={{ width: '100%' }}>
                             Hạng mục & Mô tả chi tiết <br />
                             <span className="text-[7pt] font-normal opacity-60 normal-case">Items & Description</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-center w-14 font-bold text-[10px]">
+                        <th className="border border-black py-2 px-1 text-center font-bold text-[10px] whitespace-nowrap">
                             ĐVT <br />
                             <span className="text-[7pt] font-normal opacity-60">Unit</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-center w-10 font-bold text-[10px]">
+                        <th className="border border-black py-2 px-1 text-center font-bold text-[10px] whitespace-nowrap">
                             SL <br />
                             <span className="text-[7pt] font-normal opacity-60">Qty</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-right w-20 font-bold text-[10px]">
+                        <th className="border border-black py-2 px-1 text-right font-bold text-[10px] whitespace-nowrap">
                             Đơn giá <br />
                             <span className="text-[7pt] font-normal opacity-60">Unit Price</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-center w-12 font-bold text-[9px]">
+                        <th className="border border-black py-2 px-1 text-center font-bold text-[9px] whitespace-nowrap">
                             CK(%) <br />
                             <span className="text-[7pt] font-normal opacity-60">Disc.</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-right w-18 font-bold text-[9px]">
+                        <th className="border border-black py-2 px-1 text-right font-bold text-[9px] whitespace-nowrap">
                             Giảm giá <br />
                             <span className="text-[7pt] font-normal opacity-60">Discount</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-right w-22 font-bold text-[10px]">
+                        <th className="border border-black py-2 px-1 text-right font-bold text-[10px] whitespace-nowrap">
                             Thành tiền <br />
                             <span className="text-[7pt] font-normal opacity-60">Amount</span>
                         </th>
-                        <th className="border border-black py-2 px-1 text-center w-14 font-bold text-[9px]">
-                            Thuế<br />VAT <br />
-                            <span className="text-[7pt] font-normal opacity-60">VAT</span>
+                        <th className="border border-black py-2 px-1 text-center font-bold text-[9px] whitespace-nowrap">
+                            VAT<br />(%)
                         </th>
-                        <th className="border border-black py-2 px-1 text-right w-22 font-bold text-[10px]">
-                            Thành tiền<br />sau thuế <br />
+                        <th className="border border-black py-2 px-1 text-right font-bold text-[9px] whitespace-nowrap">
+                            Tiền VAT <br />
+                            <span className="text-[7pt] font-normal opacity-60">VAT Amt</span>
+                        </th>
+                        <th className="border border-black py-2 px-1 text-right font-bold text-[10px] whitespace-nowrap">
+                            Tổng cộng <br />
                             <span className="text-[7pt] font-normal opacity-60">Total</span>
                         </th>
                     </tr>
@@ -150,7 +141,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                         <React.Fragment key={sectionName || sIdx}>
                             {sectionName && (
                                 <tr className="bg-zinc-100">
-                                    <td colSpan={10} className="border border-black py-1.5 px-3 font-bold uppercase text-[10px]">
+                                    <td colSpan={11} className="border border-black py-1.5 px-3 font-bold uppercase text-[10px]">
                                         {sectionName}
                                     </td>
                                 </tr>
@@ -167,19 +158,20 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                                 const afterVat = afterDiscount + vatAmt;
                                 return (
                                 <tr key={item.id} className="font-medium">
-                                    <td className="border border-black py-2 px-1 text-center align-top font-bold text-[10px]">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top font-bold text-[10px] whitespace-nowrap">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
                                     <td className="border border-black py-2 px-3 align-top">
                                         <p className="font-bold mb-1 uppercase">{item.name || item.product_name}</p>
                                         {(item.description) && <p className="text-[10px] text-zinc-600 whitespace-pre-line italic leading-relaxed mt-1 pt-1 border-t border-dashed border-zinc-200">{item.description}</p>}
                                     </td>
-                                    <td className="border border-black py-2 px-1 text-center align-top">{item.unit || 'Bộ'}</td>
-                                    <td className="border border-black py-2 px-1 text-center align-top font-bold">{qty}</td>
-                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px]">{formatCurrency(unitPrice).replace('₫', '')}</td>
-                                    <td className="border border-black py-2 px-1 text-center align-top text-[10px]">{discountPct > 0 ? `${discountPct}%` : '-'}</td>
-                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px]">{discountAmt > 0 ? formatCurrency(discountAmt).replace('₫', '') : '-'}</td>
-                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px]">{formatCurrency(afterDiscount).replace('₫', '')}</td>
-                                    <td className="border border-black py-2 px-1 text-center align-top text-[10px]">{vatRate > 0 ? `${vatRate}%` : '0%'}</td>
-                                    <td className="border border-black py-2 px-1 text-right align-top font-bold tabular-nums text-[10px]">{formatCurrency(afterVat).replace('₫', '')}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top whitespace-nowrap">{item.unit || 'Bộ'}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top font-bold whitespace-nowrap">{qty}</td>
+                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(unitPrice).replace('₫', '')}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top text-[10px] whitespace-nowrap">{discountPct > 0 ? `${discountPct}%` : '-'}</td>
+                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px] whitespace-nowrap">{discountAmt > 0 ? formatCurrency(discountAmt).replace('₫', '') : '-'}</td>
+                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(afterDiscount).replace('₫', '')}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top text-[10px] whitespace-nowrap">{vatRate > 0 ? `${vatRate}%` : '0%'}</td>
+                                    <td className="border border-black py-2 px-1 text-right align-top tabular-nums text-[10px] whitespace-nowrap">{vatAmt > 0 ? formatCurrency(vatAmt).replace('₫', '') : '-'}</td>
+                                    <td className="border border-black py-2 px-1 text-right align-top font-bold tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(afterVat).replace('₫', '')}</td>
                                 </tr>
                                 );
                             })}
@@ -204,37 +196,37 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                         return (
                             <>
                                 <tr>
-                                    <td colSpan={7} className="border border-black py-2 px-3 text-right font-bold text-[10px]">Tạm tính / Subtotal:</td>
-                                    <td className="border border-black py-2 px-1 text-right font-bold tabular-nums text-[10px]">{formatCurrency(grossTotal).replace('₫', '')}</td>
+                                    <td colSpan={8} className="border border-black py-2 px-3 text-right font-bold text-[10px]">Tạm tính / Subtotal:</td>
                                     <td className="border border-black py-2 px-1"></td>
                                     <td className="border border-black py-2 px-1"></td>
+                                    <td className="border border-black py-2 px-1 text-right font-bold tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(grossTotal).replace('₫', '')}</td>
                                 </tr>
                                 {totalDiscountAmt > 0 && (
                                     <tr>
-                                        <td colSpan={7} className="border border-black py-2 px-3 text-right font-bold text-[10px] text-zinc-600">Tổng chiết khấu / Total Discount:</td>
-                                        <td className="border border-black py-2 px-1 text-right tabular-nums text-[10px] text-zinc-600">-{formatCurrency(totalDiscountAmt).replace('₫', '')}</td>
+                                        <td colSpan={8} className="border border-black py-2 px-3 text-right font-bold text-[10px] text-zinc-600">Tổng chiết khấu / Total Discount:</td>
                                         <td className="border border-black py-2 px-1"></td>
                                         <td className="border border-black py-2 px-1"></td>
+                                        <td className="border border-black py-2 px-1 text-right tabular-nums text-[10px] text-zinc-600 whitespace-nowrap">-{formatCurrency(totalDiscountAmt).replace('₫', '')}</td>
                                     </tr>
                                 )}
                                 {totalDiscountAmt > 0 && (
                                     <tr>
-                                        <td colSpan={7} className="border border-black py-2 px-3 text-right font-bold text-[10px]">Cộng tiền hàng / Net Amount:</td>
-                                        <td className="border border-black py-2 px-1 text-right font-bold tabular-nums text-[10px]">{formatCurrency(subtotalAfterDiscount).replace('₫', '')}</td>
+                                        <td colSpan={8} className="border border-black py-2 px-3 text-right font-bold text-[10px]">Cộng tiền hàng / Net Amount:</td>
                                         <td className="border border-black py-2 px-1"></td>
                                         <td className="border border-black py-2 px-1"></td>
+                                        <td className="border border-black py-2 px-1 text-right font-bold tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(subtotalAfterDiscount).replace('₫', '')}</td>
                                     </tr>
                                 )}
                                 {totalVatAmt > 0 && (
                                     <tr>
-                                        <td colSpan={7} className="border border-black py-2 px-3 text-right font-medium text-[10px]">Tổng thuế VAT / Total VAT:</td>
+                                        <td colSpan={8} className="border border-black py-2 px-3 text-right font-medium text-[10px]">Tổng thuế VAT / Total VAT:</td>
                                         <td className="border border-black py-2 px-1"></td>
-                                        <td className="border border-black py-2 px-1 text-right tabular-nums text-[10px]">{formatCurrency(totalVatAmt).replace('₫', '')}</td>
+                                        <td className="border border-black py-2 px-1 text-right tabular-nums text-[10px] whitespace-nowrap">{formatCurrency(totalVatAmt).replace('₫', '')}</td>
                                         <td className="border border-black py-2 px-1"></td>
                                     </tr>
                                 )}
                                 <tr className="bg-zinc-50">
-                                    <td colSpan={8} className="border border-black py-3 px-3 text-right font-bold uppercase text-[11px]">Tổng cộng thanh toán / Grand Total:</td>
+                                    <td colSpan={9} className="border border-black py-3 px-3 text-right font-bold uppercase text-[11px]">Tổng cộng thanh toán / Grand Total:</td>
                                     <td colSpan={2} className="border border-black py-3 px-1 text-right font-bold text-[13px] tabular-nums underline decoration-2 underline-offset-4 whitespace-nowrap">{formatCurrency(quotation.total_amount || grandTotal).replace('₫', '')} VND</td>
                                 </tr>
                             </>
