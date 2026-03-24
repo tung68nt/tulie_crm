@@ -410,7 +410,7 @@ export async function generateDocument(
                         // Description: convert newlines to <br> for proper line breaks
                         const rawDesc = item.description || ''
                         const descHtml = rawDesc 
-                            ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${rawDesc.replace(/\n/g, '<br>')}</span>` 
+                            ? `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.7; margin-top:4px; padding-top:2px; border-top:1px dashed #ddd;">${rawDesc.replace(/\n/g, '<br>')}</div>` 
                             : ''
 
                         const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
