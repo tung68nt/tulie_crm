@@ -11,6 +11,7 @@ import {
 import { logActivity, logDestructiveAction } from './activity-service'
 import { getDealById } from './deal-service'
 import { getCustomerById } from './customer-service'
+import { createVersionSnapshot } from './quotation-version-service'
 
 export async function checkQuotationNumberExists(quotationNumber: string, excludeId?: string) {
     try {
@@ -280,6 +281,13 @@ export async function updateQuotation(id: string, quotation: Partial<Quotation>,
         const quoteDataToUpdate = Object.fromEntries(
             Object.entries(rawUpdate).filter(([_, v]) => v !== undefined)
         )
+
+        // Auto-snapshot current version before overwriting
+        try {
+            await createVersionSnapshot(id)
+        } catch (snapErr) {
+            console.error('Version snapshot failed (non-blocking):', snapErr)
+        }
 
         // Check duplicate quotation number
         if (quoteDataToUpdate.quotation_number) {

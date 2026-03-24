@@ -54,6 +54,7 @@ import { getViewStats } from '@/lib/supabase/services/quote-tracking-service'
 import { useParams, useSearchParams } from 'next/navigation'
 
 import { StatusBadge } from '@/components/shared/status-badge'
+import { QuotationVersionHistory } from '@/components/quotations/quotation-version-history'
 
 export default function QuotationDetailPage() {
     const params = useParams()
@@ -190,11 +191,15 @@ export default function QuotationDetailPage() {
                                     <StatusBadge entityType="quotation" status={quotation.status} />
                                 </div>
                                 <h1 className="text-3xl font-bold leading-none tracking-tight text-zinc-950">{quotation.customer?.company_name}</h1>
+                                {quotation.title && (
+                                    <p className="text-sm font-medium text-zinc-500 mt-0.5">{quotation.title}</p>
+                                )}
                             </div>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
+                        <QuotationVersionHistory quotationId={id} />
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" size="default" className="gap-2 font-medium">

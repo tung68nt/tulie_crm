@@ -158,7 +158,7 @@ function readThreeDigits(n: number, readZero: boolean): string {
 
     if (c > 0) {
         if (b > 0 && c === 1) result += ' mốt';
-        else if (b > 0 && c === 4) result += ' tư'; // Optional: "bốn" or "tư" -> we use "tư"
+        else if (b > 0 && c === 4) result += ' bốn';
         else if (b > 0 && c === 5) result += ' lăm';
         else result += ' ' + DIGITS[c];
     }

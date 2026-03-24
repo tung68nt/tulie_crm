@@ -371,6 +371,10 @@ export async function generateDocument(
                     const unitPrice = item.unit_price || 0
                     const grossTotal = qty * unitPrice
                     const itemDiscount = item.discount || 0 // discount amount per item
+                    // Calculate discount percentage from amount
+                    const discountPct = grossTotal > 0 && itemDiscount > 0 
+                        ? Math.round((itemDiscount / grossTotal) * 100) 
+                        : 0
                     const afterDiscount = grossTotal - itemDiscount
                     const itemVatRate = item.vat_percent || 0
                     const itemVat = Math.round(afterDiscount * itemVatRate / 100)
@@ -380,21 +384,23 @@ export async function generateDocument(
                     totalVat += itemVat
                     totalAfterVat += afterVat
 
-                    // Description line (show below product name if exists)
-                    const descHtml = item.description 
-                        ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${item.description}</span>` 
+                    // Description: convert newlines to <br> for proper line breaks
+                    const rawDesc = item.description || ''
+                    const descHtml = rawDesc 
+                        ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${rawDesc.replace(/\n/g, '<br>')}</span>` 
                         : ''
 
                     itemsRowsHtml += `<tr>
-                        <td style="border:1px solid #000; padding:4px; text-align:center;">${index + 1}</td>
-                        <td style="border:1px solid #000; padding:4px;">${item.product_name}${descHtml}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center;">${item.unit || 'Gói'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center;">${qty}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right;">${itemDiscount > 0 ? new Intl.NumberFormat('vi-VN').format(itemDiscount) : '-'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${index + 1}</td>
+                        <td style="border:1px solid #000; padding:4px; vertical-align:top;"><strong>${item.product_name}</strong>${descHtml}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${item.unit || 'Gói'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${qty}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${discountPct > 0 ? discountPct + '%' : '-'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${itemDiscount > 0 ? new Intl.NumberFormat('vi-VN').format(itemDiscount) : '-'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
+                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
                     </tr>`
                 })
                 variables.contract_items_table = itemsRowsHtml
@@ -421,7 +427,7 @@ export async function generateDocument(
                     const pctString = overallDiscountPercent > 0 ? ` (${overallDiscountPercent}%)` : ''
                     variables.discount_row_html = `
                     <tr>
-                      <td style="border:1px solid #000; padding:4px;" colspan="8">Chiết khấu tổng${pctString}</td>
+                      <td style="border:1px solid #000; padding:4px;" colspan="9">Chiết khấu tổng / Overall Discount${pctString}</td>
                       <td style="border:1px solid #000; padding:4px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(overallDiscountAmount)}</td>
                     </tr>`
                 } else {

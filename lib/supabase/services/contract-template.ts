@@ -132,33 +132,34 @@ export const contractTemplate = `
   </table>
 
   <!-- Bảng hàng hóa -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:8.5pt;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:8pt;">
     <tr style="background:#f5f5f5;">
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:25px;">STT</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold;">Tên hàng hoá, dịch vụ</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:40px;">ĐVT</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:25px;">SL</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Đơn giá</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:60px;">Giảm giá</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Thành tiền</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:55px;">Thuế VAT</th>
-      <th style="border:1px solid #000; padding:4px; text-align:center; font-weight:bold; width:70px;">Thành tiền sau thuế</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:25px;">STT<br><span style="font-weight:normal; font-size:7pt;">No.</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold;">Hạng mục & Mô tả chi tiết<br><span style="font-weight:normal; font-size:7pt;">Items & Description</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:35px;">ĐVT<br><span style="font-weight:normal; font-size:7pt;">Unit</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:22px;">SL<br><span style="font-weight:normal; font-size:7pt;">Qty</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Đơn giá<br><span style="font-weight:normal; font-size:7pt;">Unit Price</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:32px;">CK(%)<br><span style="font-weight:normal; font-size:7pt;">Disc.</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:55px;">Giảm giá<br><span style="font-weight:normal; font-size:7pt;">Discount</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Thành tiền<br><span style="font-weight:normal; font-size:7pt;">Amount</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:45px;">Thuế VAT<br><span style="font-weight:normal; font-size:7pt;">VAT</span></th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Thành tiền sau thuế<br><span style="font-weight:normal; font-size:7pt;">Total</span></th>
     </tr>
     {{contract_items_table}}
     <tr style="background:#f5f5f5;">
-      <td style="border:1px solid #000; padding:4px;" colspan="6"><strong>Cộng tiền hàng</strong></td>
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Cộng tiền hàng / Subtotal</strong></td>
       <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{subtotal}}</td>
       <td style="border:1px solid #000; padding:4px; text-align:right;">{{vat_total}}</td>
       <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_after_vat}}</td>
     </tr>
     {{discount_row_html}}
     <tr style="background:#f5f5f5;">
-      <td style="border:1px solid #000; padding:4px;" colspan="8"><strong>Tổng tiền thanh toán</strong></td>
+      <td style="border:1px solid #000; padding:4px;" colspan="9"><strong>Tổng tiền thanh toán / Grand Total</strong></td>
       <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>
     </tr>
     <tr>
       <td style="border:1px solid #000; padding:4px;" colspan="3">Số tiền viết bằng chữ</td>
-      <td style="border:1px solid #000; padding:4px;" colspan="6"><em>{{amount_in_words}}</em></td>
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><em>{{amount_in_words}}</em></td>
     </tr>
   </table>
 

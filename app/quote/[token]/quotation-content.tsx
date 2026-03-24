@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
-import { CheckCircle, CheckCircle2, XCircle, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen } from 'lucide-react'
+import { CheckCircle, CheckCircle2, XCircle, Building2, Calendar, FileText, User, Mail, Phone, Globe, Info, CreditCard, MapPin, Printer, Target, ClipboardList, Lightbulb, Package, Users, Clock, Shield, Award, BookOpen, Layout, FileSignature } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import {
     Dialog,
@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { updateQuotationStatus } from '@/lib/supabase/services/portal-actions'
 import { cn } from '@/lib/utils'
+import { QuotationDocumentPaper } from '@/components/quotations/quotation-document-paper'
 import { Badge } from '@/components/ui/badge'
 import { Check } from 'lucide-react'
 import { useQuotationTracking } from '@/hooks/use-quotation-tracking'
@@ -44,6 +45,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
     const [showReject, setShowReject] = useState(false)
     const [rejectReason, setRejectReason] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [viewMode, setViewMode] = useState<'modern' | 'basic'>('modern')
 
     // View tracking
     const { trackInteraction } = useQuotationTracking(initialQuotation.id)
@@ -314,7 +316,42 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                 }
             `}} />
 
+            {/* View Mode Toggle */}
+            <div className="max-w-[210mm] mx-auto mb-4 flex items-center justify-end gap-2 print:hidden px-4 sm:px-0">
+                <div className="inline-flex items-center rounded-full border border-zinc-200/60 bg-white/80 backdrop-blur-sm shadow-sm p-0.5">
+                    <button
+                        onClick={() => setViewMode('modern')}
+                        className={cn(
+                            "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all",
+                            viewMode === 'modern'
+                                ? "bg-zinc-900 text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-700"
+                        )}
+                    >
+                        <Layout className="w-3.5 h-3.5" />
+                        Hiện đại
+                    </button>
+                    <button
+                        onClick={() => setViewMode('basic')}
+                        className={cn(
+                            "flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all",
+                            viewMode === 'basic'
+                                ? "bg-zinc-900 text-white shadow-sm"
+                                : "text-zinc-500 hover:text-zinc-700"
+                        )}
+                    >
+                        <FileSignature className="w-3.5 h-3.5" />
+                        Cơ bản
+                    </button>
+                </div>
+            </div>
+
             {/* A4 Container */}
+            {viewMode === 'basic' ? (
+                <div className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden">
+                    <QuotationDocumentPaper quotation={currentQuotation} brandConfig={brandConfig} />
+                </div>
+            ) : (
             <div
                 className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-[210mm] overflow-hidden"
             >
@@ -712,6 +749,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                     </div>
                 </div>
             </div>
+            )}
 
             {/* History Timeline Panel */}
             {historyItems.length > 0 && (

@@ -1674,6 +1674,15 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 <p className="font-bold mb-2">Cấu trúc Proposal (Các trường hỗ trợ):</p>
                                 <code className="block whitespace-pre opacity-80">
                                     {`{
+  "introduction": "Mục tiêu & Giới thiệu...",
+  "scope_of_work": "Phạm vi công việc...",
+  "methodology": "Phương pháp & Cách tiếp cận...",
+  "deliverables": "Sản phẩm bàn giao...",
+  "team": "Đội ngũ chuyên trách...",
+  "timeline": "Lộ trình triển khai...",
+  "warranty": "Bảo hành & Hỗ trợ...",
+  "why_us": "Vì sao chọn chúng tôi?...",
+  "case_studies": "Case Studies & Portfolio...",
   "custom_sections": [
     {
       "id": "1",
