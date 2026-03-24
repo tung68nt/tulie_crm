@@ -93,16 +93,16 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
             {/* Main Items Table */}
             <table className="w-full border-collapse border border-black text-[11px] mb-8">
                 <colgroup>
-                    <col style={{ width: '4%' }} />
-                    <col style={{ width: '30%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '5%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '9%' }} />
-                    <col style={{ width: '12%' }} />
-                    <col style={{ width: '6%' }} />
-                    <col style={{ width: '10%' }} />
+                    <col style={{ width: '3%' }} />   {/* STT */}
+                    <col style={{ width: '38%' }} />  {/* Hạng mục & Mô tả */}
+                    <col style={{ width: '5%' }} />   {/* ĐVT */}
+                    <col style={{ width: '3%' }} />   {/* SL */}
+                    <col style={{ width: '10%' }} />  {/* Đơn giá */}
+                    <col style={{ width: '5%' }} />   {/* CK% */}
+                    <col style={{ width: '8%' }} />   {/* Giảm giá */}
+                    <col style={{ width: '10%' }} />  {/* Thành tiền */}
+                    <col style={{ width: '5%' }} />   {/* VAT */}
+                    <col style={{ width: '13%' }} />  {/* Thành tiền sau thuế */}
                 </colgroup>
                 <thead>
                     <tr className="bg-zinc-50 grayscale">

@@ -348,12 +348,12 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
 
             {/* A4 Container */}
             {viewMode === 'basic' ? (
-                <div className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto">
+                <div className="quotation-paper quotation-paper--basic mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto">
                     <QuotationDocumentPaper quotation={currentQuotation} brandConfig={brandConfig} />
                 </div>
             ) : (
             <div
-                className="quotation-paper mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto"
+                className="quotation-paper quotation-paper--modern mx-auto bg-white shadow-xl relative w-full max-w-5xl overflow-x-auto"
             >
 
                 <div className="quotation-inner p-6 sm:p-10">
@@ -992,8 +992,8 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                         background-color: #f1f5f9 !important;
                     }
                     
-                    /* === TABLE === */
-                    table {
+                    /* === TABLE (modern view only) === */
+                    .quotation-paper--modern table {
                         width: 100% !important;
                         border-collapse: separate !important;
                         border-spacing: 0 !important;
@@ -1003,7 +1003,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                         min-width: 0 !important;
                     }
                     
-                    th {
+                    .quotation-paper--modern th {
                         background-color: #000 !important;
                         color: #fff !important;
                         padding: 6px 10px !important;
@@ -1012,14 +1012,25 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                         border: none !important;
                     }
                     
-                    td {
+                    .quotation-paper--modern td {
                         border-bottom: 0.5px solid #e2e8f0 !important;
                         padding: 5px 10px !important;
                         vertical-align: top !important;
                         font-size: 9px !important;
                     }
                     
-                    tbody tr:last-child td { border-bottom: none !important; }
+                    .quotation-paper--modern tbody tr:last-child td { border-bottom: none !important; }
+                    
+                    /* === BASIC VIEW print - just clean up, keep original layout === */
+                    .quotation-paper--basic {
+                        max-width: none !important;
+                        width: 100% !important;
+                        box-shadow: none !important;
+                    }
+                    .quotation-paper--basic .quotation-paper-basic {
+                        padding: 5mm !important;
+                        width: 100% !important;
+                    }
                     
                     /* === FONT SIZES - smaller for print === */
                     .text-xs { font-size: 9px !important; }
@@ -1074,7 +1085,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                     .rounded-xl { border-radius: 12px !important; }
                     .rounded-lg { border-radius: 8px !important; }
                     
-                    .table-header-gradient, thead tr {
+                    .quotation-paper--modern .table-header-gradient, .quotation-paper--modern thead tr {
                         background: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E"), linear-gradient(to right, #09090b, #171717, #404040) !important;
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
