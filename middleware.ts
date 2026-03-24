@@ -138,6 +138,13 @@ export async function middleware(request: NextRequest) {
     // Store rewrite URL if subdomain matched
     const rewriteUrl = subdomainResult instanceof URL ? subdomainResult : null
 
+    // CRITICAL: If subdomain rewrite detected, mutate the request URL pathname
+    // BEFORE passing to updateSession. Otherwise Supabase middleware sees "/"
+    // and redirects authenticated users to "/dashboard" (line 72-76 in supabase/middleware.ts).
+    if (rewriteUrl) {
+        request.nextUrl.pathname = rewriteUrl.pathname
+    }
+
     // Rate limit portal pages
     const rateLimited = checkPortalRateLimit(request)
     if (rateLimited) return rateLimited
@@ -149,7 +156,7 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set('x-nonce', nonce)
 
-    // Get session response (Supabase auth)
+    // Get session response (Supabase auth) — now sees rewritten path
     const response = await updateSession(request)
 
     // Set CSP header with nonce on the response
@@ -159,7 +166,7 @@ export async function middleware(request: NextRequest) {
     // Also set nonce in response header for downstream use
     response.headers.set('x-nonce', nonce)
 
-    // Apply subdomain rewrite AFTER auth/CSP processing
+    // Apply subdomain rewrite
     if (rewriteUrl) {
         const rewriteResponse = NextResponse.rewrite(rewriteUrl, {
             request: { headers: requestHeaders },
@@ -167,6 +174,10 @@ export async function middleware(request: NextRequest) {
         // Copy all response headers (auth cookies, CSP, etc.) to rewrite response
         response.headers.forEach((value, key) => {
             rewriteResponse.headers.set(key, value)
+        })
+        // Copy cookies (auth session tokens)
+        response.cookies.getAll().forEach(cookie => {
+            rewriteResponse.cookies.set(cookie.name, cookie.value, cookie)
         })
         return rewriteResponse
     }
