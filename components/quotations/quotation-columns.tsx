@@ -60,6 +60,11 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
                     >
                         {quotation.quotation_number}
                     </Link>
+                    {quotation.title && (
+                        <p className="text-xs text-zinc-600 font-medium truncate max-w-[200px]">
+                            {quotation.title}
+                        </p>
+                    )}
                     <p className="text-xs text-muted-foreground">
                         {formatDate(quotation.created_at)}
                     </p>
@@ -123,12 +128,12 @@ export const quotationColumns: ColumnDef<Quotation>[] = [
         accessorKey: 'view_count',
         header: 'Lượt xem',
         cell: ({ row }) => {
-            const count = row.getValue('view_count') as number
+            const count = (row.getValue('view_count') as number) || 0
             const viewedAt = row.original.viewed_at
             return (
                 <div>
                     <span className="font-medium">{count}</span>
-                    {viewedAt && (
+                    {viewedAt && count > 0 && (
                         <p className="text-xs text-muted-foreground">
                             {formatRelativeTime(viewedAt)}
                         </p>
