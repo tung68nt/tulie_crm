@@ -386,7 +386,7 @@ export async function generateDocument(
                     // Section header row
                     if (sectionName) {
                         itemsRowsHtml += `<tr style="background:#f0f0f0;">
-                            <td style="border:1px solid #000; padding:4px;" colspan="10"><strong>${sIdx + 1}. ${sectionName}</strong></td>
+                            <td style="border:1px solid #000; padding:4px;" colspan="10"><strong>${sectionName}</strong></td>
                         </tr>`
                     }
 

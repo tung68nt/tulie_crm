@@ -151,7 +151,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                             {sectionName && (
                                 <tr className="bg-zinc-100">
                                     <td colSpan={10} className="border border-black py-1.5 px-3 font-bold uppercase text-[10px]">
-                                        {sIdx + 1}. {sectionName}
+                                        {sectionName}
                                     </td>
                                 </tr>
                             )}
