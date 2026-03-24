@@ -631,12 +631,12 @@ export default function QuotationDetailPage() {
                             <Tabs value={layout} onValueChange={(v) => setLayout(v as 'modern' | 'basic')} className="w-full max-w-[400px]">
                                 <TabsList className="grid w-full grid-cols-2">
                                     <TabsTrigger value="modern" className="gap-2">
-                                        <Layout className="h-4 w-4" />
-                                        Hiện đại
+                                        <Eye className="h-4 w-4" />
+                                        Chế độ xem
                                     </TabsTrigger>
                                     <TabsTrigger value="basic" className="gap-2">
-                                        <FileSignature className="h-4 w-4" />
-                                        Cơ bản
+                                        <Printer className="h-4 w-4" />
+                                        Chế độ in
                                     </TabsTrigger>
                                 </TabsList>
                             </Tabs>

@@ -227,7 +227,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                                 )}
                                 <tr className="bg-zinc-50">
                                     <td colSpan={9} className="border border-black py-3 px-3 text-right font-bold uppercase text-[11px]">Tổng cộng thanh toán / Grand Total:</td>
-                                    <td colSpan={2} className="border border-black py-3 px-1 text-right font-bold text-[13px] tabular-nums underline decoration-2 underline-offset-4 whitespace-nowrap">{formatCurrency(quotation.total_amount || grandTotal).replace('₫', '')} VND</td>
+                                    <td colSpan={2} className="border border-black py-3 px-1 text-right font-bold text-[13px] tabular-nums whitespace-nowrap">{formatCurrency(quotation.total_amount || grandTotal).replace('₫', '')} VND</td>
                                 </tr>
                             </>
                         );

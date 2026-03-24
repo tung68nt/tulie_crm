@@ -217,16 +217,20 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                     </h3>
 
                     <div className="border border-zinc-200 rounded-xl shadow-sm">
-                        <table className="w-full text-left border-collapse text-[12px]">
+                        <table className="w-full text-left border-collapse text-[11px]">
                             <thead>
                                 <tr className="text-white" style={{ background: "url(\"data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='rgba(255,255,255,0.12)'/%3E%3C/svg%3E\"), linear-gradient(to right, #09090b, #171717, #262626)", WebkitPrintColorAdjust: 'exact' }}>
-                                    <th className="py-4 px-1 font-bold w-8 text-center text-[10px]">#</th>
-                                    <th className="py-4 px-4 font-bold">Hạng mục & Mô tả <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Items</span></th>
-                                    <th className="py-4 px-4 font-bold text-center w-20">ĐVT <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Unit</span></th>
-                                    <th className="py-4 px-4 font-bold text-center w-20">SL <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Qty</span></th>
-                                    <th className="py-4 px-4 font-bold text-right w-28">Đơn giá <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Price</span></th>
-                                    {hasDiscount && <th className="py-4 px-4 font-bold text-center w-20 text-[10px]">CK(%)</th>}
-                                    <th className="py-4 px-6 font-bold text-right w-32">Thành tiền <br /><span className="text-[9px] font-normal opacity-60 uppercase tracking-wider">Amount</span></th>
+                                    <th className="py-3 px-2 font-bold w-6 text-center text-[9px] rounded-tl-lg">#</th>
+                                    <th className="py-3 px-3 font-bold w-auto">Hạng mục & Mô tả <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Items</span></th>
+                                    <th className="py-3 px-1 font-bold text-center w-10">ĐVT <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Unit</span></th>
+                                    <th className="py-3 px-1 font-bold text-center w-10">SL <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Qty</span></th>
+                                    <th className="py-3 px-2 font-bold text-right w-16">Đơn giá <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Price</span></th>
+                                    <th className="py-3 px-1 font-bold text-center w-10 text-[9px]">CK(%)<br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Disc</span></th>
+                                    <th className="py-3 px-2 font-bold text-right w-16">Giảm giá <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Discount</span></th>
+                                    <th className="py-3 px-2 font-bold text-right w-20">Thành tiền <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Amount</span></th>
+                                    <th className="py-3 px-1 font-bold text-center w-10 text-[9px]">VAT<br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">(%)</span></th>
+                                    <th className="py-3 px-2 font-bold text-right w-16">Tiền VAT <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">VAT Amt</span></th>
+                                    <th className="py-3 px-3 font-bold text-right w-20 rounded-tr-lg">Tổng cộng <br /><span className="text-[8px] font-normal opacity-60 uppercase tracking-wider">Total</span></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -234,9 +238,9 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                     <React.Fragment key={sIdx}>
                                         {sectionName && (
                                             <tr className="bg-zinc-100 border-b border-zinc-200">
-                                                <td colSpan={hasDiscount ? 7 : 6} className="px-5 py-3 font-bold text-zinc-900 text-[13px]">
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="flex items-center justify-center w-6 h-6 rounded-md bg-zinc-900 text-white text-[10px] font-bold"
+                                                <td colSpan={11} className="px-3 py-2 font-bold text-zinc-900 text-[12px]">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="flex items-center justify-center w-5 h-5 rounded-md bg-zinc-900 text-white text-[9px] font-bold"
                                                             style={{ WebkitPrintColorAdjust: 'exact' }}>
                                                             {sIdx + 1}
                                                         </span>
@@ -245,33 +249,42 @@ export function QuotationModernPaper({ quotation, brandConfig }: QuotationModern
                                                 </td>
                                             </tr>
                                         )}
-                                        {sectionItems.map((item: any, iIdx: number) => (
-                                            <tr key={iIdx} className="hover:bg-zinc-50/50">
-                                                <td colSpan={1} className="w-8 shrink-0"></td>
-                                                <td className="px-4 align-top py-4">
-                                                    <div className="flex items-start gap-4">
-                                                        {sectionName && (
-                                                            <span className="text-zinc-400 font-bold text-[12px] pt-[2px] min-w-[32px] shrink-0 text-right">
-                                                                {sIdx + 1}.{iIdx + 1}
-                                                            </span>
-                                                        )}
+                                        {sectionItems.map((item: any, iIdx: number) => {
+                                            const qty = item.quantity || 1;
+                                            const unitPrice = item.unit_price || 0;
+                                            const grossTotal = qty * unitPrice;
+                                            const discountPct = item.discount || 0;
+                                            const discountAmt = grossTotal * (discountPct / 100);
+                                            const afterDiscount = grossTotal - discountAmt;
+                                            const vatRate = item.vat_percent || 0;
+                                            const vatAmt = afterDiscount * (vatRate / 100);
+                                            const afterVat = afterDiscount + vatAmt;
+
+                                            return (
+                                                <tr key={iIdx} className="hover:bg-zinc-50/50">
+                                                    <td colSpan={1} className="w-6 shrink-0 text-center py-3 text-zinc-400 font-bold text-[9px]">
+                                                        {sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}
+                                                    </td>
+                                                    <td className="px-3 align-top py-3">
                                                         <div>
-                                                            <p className="font-bold text-zinc-950 text-[13px]">{item.product_name}</p>
+                                                            <p className="font-bold text-zinc-950 text-[12px] uppercase">{item.product_name || item.name}</p>
                                                             {item.description && (
-                                                                <p className="text-zinc-500 text-[11px] mt-1.5 leading-relaxed whitespace-pre-line border-l-2 border-zinc-100 pl-3 italic">{item.description}</p>
+                                                                <p className="text-zinc-500 text-[10px] mt-1 leading-relaxed whitespace-pre-line border-l-2 border-zinc-100 pl-2 italic overflow-hidden">{item.description}</p>
                                                             )}
                                                         </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 text-center text-zinc-600 align-top py-4">{item.unit}</td>
-                                                <td className="px-4 text-center text-zinc-600 align-top py-4">{item.quantity}</td>
-                                                <td className="px-4 text-right text-zinc-600 align-top py-4">{formatCurrency(item.unit_price)}</td>
-                                                {hasDiscount && (
-                                                    <td className="px-4 text-center text-zinc-500 align-top py-4">{item.discount || 0}%</td>
-                                                )}
-                                                <td className="px-6 text-right font-semibold text-zinc-950 align-top py-4 text-[13px]">{formatCurrency(item.total_price || (item.quantity * item.unit_price * (1 - (item.discount || 0) / 100)))}</td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className="px-1 text-center text-zinc-600 align-top py-3 text-[10px]">{item.unit || 'Bộ'}</td>
+                                                    <td className="px-1 text-center text-zinc-800 font-bold align-top py-3 text-[10px]">{qty}</td>
+                                                    <td className="px-2 text-right text-zinc-600 align-top py-3 text-[10px] tracking-tight tabular-nums">{formatCurrency(unitPrice).replace('₫', '')}</td>
+                                                    <td className="px-1 text-center text-zinc-500 align-top py-3 text-[10px]">{discountPct > 0 ? `${discountPct}%` : '-'}</td>
+                                                    <td className="px-2 text-right text-zinc-500 align-top py-3 text-[10px] tracking-tight tabular-nums">{discountAmt > 0 ? formatCurrency(discountAmt).replace('₫', '') : '-'}</td>
+                                                    <td className="px-2 text-right text-zinc-800 align-top py-3 text-[10px] tracking-tight tabular-nums">{formatCurrency(afterDiscount).replace('₫', '')}</td>
+                                                    <td className="px-1 text-center text-zinc-500 align-top py-3 text-[10px]">{vatRate > 0 ? `${vatRate}%` : '0%'}</td>
+                                                    <td className="px-2 text-right text-zinc-500 align-top py-3 text-[10px] tracking-tight tabular-nums">{vatAmt > 0 ? formatCurrency(vatAmt).replace('₫', '') : '-'}</td>
+                                                    <td className="px-3 text-right font-bold text-zinc-950 align-top py-3 text-[11px] tracking-tight tabular-nums">{formatCurrency(afterVat).replace('₫', '')}</td>
+                                                </tr>
+                                            );
+                                        })}
                                     </React.Fragment>
                                 ))}
                             </tbody>
