@@ -91,7 +91,14 @@ const SUBDOMAIN_MAP: Record<string, string> = {
 }
 
 function handleSubdomainRewrite(request: NextRequest): NextResponse | URL | null {
-    const hostname = request.headers.get('host') || ''
+    // Robust hostname detection for Vercel
+    const hostname = (
+        request.headers.get('x-forwarded-host') ||
+        request.headers.get('host') ||
+        request.nextUrl.hostname ||
+        ''
+    ).split(':')[0].toLowerCase() // strip port, normalize
+
     // Extract subdomain: "anhthe.tulie.studio" → "anhthe"
     const match = hostname.match(/^([^.]+)\.tulie\.studio$/)
     if (!match) return null
@@ -103,7 +110,7 @@ function handleSubdomainRewrite(request: NextRequest): NextResponse | URL | null
     const pathname = request.nextUrl.pathname
 
     // Block CRM dashboard routes on subdomain (security)
-    if (pathname.startsWith('/(dashboard)') || pathname.match(/^\/(customers|quotations|contracts|invoices|products|deals|projects|reports|settings)/)) {
+    if (pathname.match(/^\/(customers|quotations|contracts|invoices|products|deals|projects|reports|settings|login)/)) {
         return new NextResponse('Not Found', { status: 404 })
     }
 
