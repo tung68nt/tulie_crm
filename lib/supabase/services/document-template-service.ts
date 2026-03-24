@@ -407,13 +407,16 @@ export async function generateDocument(
                         totalVat += itemVat
                         totalAfterVat += afterVat
 
-                        // Description: \n\n = paragraph break (more space), \n = line break
+                        // Description: each line becomes its own block with spacing
                         const rawDesc = item.description || ''
-                        const descHtml = rawDesc 
-                            ? `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.5; margin-top:4px; padding-top:2px; border-top:1px dashed #ddd;">${rawDesc.replace(/\n\n/g, '</div><div style="margin-top:6px;">').replace(/\n/g, '<br>')}</div>` 
-                            : ''
+                        let descHtml = ''
+                        if (rawDesc) {
+                            const lines = rawDesc.split(/\n/).filter((l: string) => l.trim())
+                            const linesDivs = lines.map((line: string) => `<div style="margin-top:3px;">${line.trim()}</div>`).join('')
+                            descHtml = `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.4; margin-top:4px; padding-top:3px; border-top:1px dashed #ddd;">${linesDivs}</div>`
+                        }
 
-                        const itemNum = iIdx + 1
+                        const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
 
                         itemsRowsHtml += `<tr>
                             <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemNum}</td>
