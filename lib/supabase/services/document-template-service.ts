@@ -500,6 +500,61 @@ export async function generateDocument(
             }
         }
 
+        // Build proposal appendix HTML from quotation.proposal_content
+        const proposalContent = contract?.quotation?.proposal_content as any
+        if (proposalContent && contract?.quotation?.type === 'proposal') {
+            const proposalSections: { label: string; content: string }[] = []
+            if (proposalContent.introduction) proposalSections.push({ label: 'Mục tiêu & Giới thiệu', content: proposalContent.introduction })
+            if (proposalContent.scope_of_work) proposalSections.push({ label: 'Phạm vi công việc (Scope of Work)', content: proposalContent.scope_of_work })
+            if (proposalContent.methodology) proposalSections.push({ label: 'Phương pháp & Cách tiếp cận', content: proposalContent.methodology })
+            if (proposalContent.deliverables) proposalSections.push({ label: 'Sản phẩm bàn giao (Deliverables)', content: proposalContent.deliverables })
+            if (proposalContent.team) proposalSections.push({ label: 'Đội ngũ chuyên trách', content: proposalContent.team })
+            if (proposalContent.timeline) proposalSections.push({ label: 'Lộ trình triển khai (Timeline)', content: proposalContent.timeline })
+            if (proposalContent.warranty) proposalSections.push({ label: 'Bảo hành & Hỗ trợ', content: proposalContent.warranty })
+            if (proposalContent.why_us) proposalSections.push({ label: 'Vì sao chọn chúng tôi?', content: proposalContent.why_us })
+            if (proposalContent.case_studies) proposalSections.push({ label: 'Case Studies & Portfolio', content: proposalContent.case_studies })
+
+            // Custom sections
+            if (proposalContent.custom_sections) {
+                try {
+                    const custom = typeof proposalContent.custom_sections === 'string'
+                        ? JSON.parse(proposalContent.custom_sections)
+                        : proposalContent.custom_sections
+                    if (Array.isArray(custom)) {
+                        custom.forEach((s: any) => {
+                            if (s.title && s.content) proposalSections.push({ label: s.title, content: s.content })
+                        })
+                    }
+                } catch { /* skip */ }
+            }
+
+            if (proposalSections.length > 0) {
+                let proposalHtml = `
+                    <div style="page-break-before: always;"></div>
+                    <p style="text-align:center; font-weight:bold; font-size:13pt; margin: 20px 0 10px 0;">PHỤ LỤC 02 — ĐỀ XUẤT GIẢI PHÁP</p>
+                    <p style="text-align:center; font-style:italic; margin-bottom:20px; font-size:9pt;">(Đính kèm Hợp đồng kinh tế số ${variables.contract_number || ''} ngày ${variables.day || ''}/${variables.month || ''}/${variables.year || ''})</p>
+                `
+
+                proposalSections.forEach((section, idx) => {
+                    const sectionContent = section.content
+                        .replace(/\n/g, '<br>')
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    proposalHtml += `
+                        <div style="margin-bottom:16px;">
+                            <p style="font-weight:bold; font-size:10pt; margin: 0 0 6px 0; border-bottom:1px solid #ddd; padding-bottom:4px;">${idx + 1}. ${section.label}</p>
+                            <div style="font-size:9.5pt; text-align:justify; line-height:1.6; padding-left:4px;">${sectionContent}</div>
+                        </div>
+                    `
+                })
+
+                variables.proposal_appendix_html = proposalHtml
+            } else {
+                variables.proposal_appendix_html = ''
+            }
+        } else {
+            variables.proposal_appendix_html = ''
+        }
+
         const filledContent = await fillTemplate(template.content, variables)
 
         return {
