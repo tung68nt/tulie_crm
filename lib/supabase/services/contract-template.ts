@@ -91,7 +91,7 @@ export const contractTemplate = `
       <td style="vertical-align:top; white-space:nowrap;">Người đại diện pháp luật:</td>
       <td style="font-weight:bold; vertical-align:top; white-space:nowrap;">Ông Nguyễn Thanh Tùng</td>
       <td style="vertical-align:top; white-space:nowrap;">Chức vụ:</td>
-      <td style="vertical-align:top; white-space:nowrap;">Giám đốc</td>
+      <td style="vertical-align:top; white-space:nowrap;">Người đại diện</td>
     </tr>
     <tr>
       <td style="vertical-align:top;">Địa chỉ liên hệ:</td>
@@ -147,12 +147,30 @@ export const contractTemplate = `
     </tr>
     {{contract_items_table}}
     <tr style="background:#f5f5f5;">
-      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Cộng tiền hàng / Subtotal</strong></td>
-      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{subtotal}}</td>
-      <td style="border:1px solid #000; padding:4px; text-align:right;">{{vat_total}}</td>
-      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_after_vat}}</td>
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Tạm tính / Subtotal</strong></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{gross_total}}</td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+      <td style="border:1px solid #000; padding:4px;"></td>
     </tr>
     {{discount_row_html}}
+    <tr style="background:#f5f5f5;">
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Tổng chiết khấu / Total Discount</strong></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right;">-{{total_discount}}</td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+    </tr>
+    <tr style="background:#f5f5f5;">
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Cộng tiền hàng / Net Amount</strong></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{subtotal}}</td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+    </tr>
+    <tr style="background:#f5f5f5;">
+      <td style="border:1px solid #000; padding:4px;" colspan="7"><strong>Tổng thuế VAT / Total VAT</strong></td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+      <td style="border:1px solid #000; padding:4px; text-align:right;">{{vat_total}}</td>
+      <td style="border:1px solid #000; padding:4px;"></td>
+    </tr>
     <tr style="background:#f5f5f5;">
       <td style="border:1px solid #000; padding:4px;" colspan="9"><strong>Tổng tiền thanh toán / Grand Total</strong></td>
       <td style="border:1px solid #000; padding:4px; text-align:right; font-weight:bold;">{{total_amount_number}}</td>

@@ -362,55 +362,85 @@ export async function generateDocument(
             // Build items table from quotation items
             const items = contract.items || []
             if (items.length > 0) {
-                let subtotal = 0
-                let itemsRowsHtml = ''
+                let grossTotal = 0
+                let totalDiscountAmt = 0
                 let totalVat = 0
                 let totalAfterVat = 0
-                items.forEach((item: any, index: number) => {
-                    const qty = item.quantity || 1
-                    const unitPrice = item.unit_price || 0
-                    const grossTotal = qty * unitPrice
-                    const itemDiscount = item.discount || 0 // discount amount per item
-                    // Calculate discount percentage from amount
-                    const discountPct = grossTotal > 0 && itemDiscount > 0 
-                        ? Math.round((itemDiscount / grossTotal) * 100) 
-                        : 0
-                    const afterDiscount = grossTotal - itemDiscount
-                    const itemVatRate = item.vat_percent || 0
-                    const itemVat = Math.round(afterDiscount * itemVatRate / 100)
-                    const afterVat = afterDiscount + itemVat
-                    
-                    subtotal += afterDiscount
-                    totalVat += itemVat
-                    totalAfterVat += afterVat
+                let itemsRowsHtml = ''
 
-                    // Description: convert newlines to <br> for proper line breaks
-                    const rawDesc = item.description || ''
-                    const descHtml = rawDesc 
-                        ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${rawDesc.replace(/\n/g, '<br>')}</span>` 
-                        : ''
-
-                    itemsRowsHtml += `<tr>
-                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${index + 1}</td>
-                        <td style="border:1px solid #000; padding:4px; vertical-align:top;"><strong>${item.product_name}</strong>${descHtml}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${item.unit || 'Gói'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${qty}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${discountPct > 0 ? discountPct + '%' : '-'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${itemDiscount > 0 ? new Intl.NumberFormat('vi-VN').format(itemDiscount) : '-'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
-                        <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
-                    </tr>`
+                // Group items by section_name
+                const sections: Record<string, any[]> = {}
+                items.forEach((item: any) => {
+                    const sectionName = item.section_name || ''
+                    if (!sections[sectionName]) sections[sectionName] = []
+                    sections[sectionName].push(item)
                 })
+
+                const sectionEntries = Object.entries(sections).sort((a, b) => {
+                    if (a[0] === '') return 1
+                    if (b[0] === '') return -1
+                    return (a[1][0]?.sort_order || 0) - (b[1][0]?.sort_order || 0)
+                })
+
+                sectionEntries.forEach(([sectionName, sectionItems], sIdx) => {
+                    // Section header row
+                    if (sectionName) {
+                        itemsRowsHtml += `<tr style="background:#f0f0f0;">
+                            <td style="border:1px solid #000; padding:4px;" colspan="10"><strong>${sIdx + 1}. ${sectionName}</strong></td>
+                        </tr>`
+                    }
+
+                    sectionItems.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+                    sectionItems.forEach((item: any, iIdx: number) => {
+                        const qty = item.quantity || 1
+                        const unitPrice = item.unit_price || 0
+                        const itemGross = qty * unitPrice
+                        const discountPct = item.discount || 0 // discount is a percentage (0-100)
+                        const discountAmount = Math.round(itemGross * discountPct / 100)
+                        const afterDiscount = itemGross - discountAmount
+                        const itemVatRate = item.vat_percent || 0
+                        const itemVat = Math.round(afterDiscount * itemVatRate / 100)
+                        const afterVat = afterDiscount + itemVat
+                        
+                        grossTotal += itemGross
+                        totalDiscountAmt += discountAmount
+                        totalVat += itemVat
+                        totalAfterVat += afterVat
+
+                        // Description: convert newlines to <br> for proper line breaks
+                        const rawDesc = item.description || ''
+                        const descHtml = rawDesc 
+                            ? `<br><span style="font-size:7.5pt; color:#555; font-style:italic;">${rawDesc.replace(/\n/g, '<br>')}</span>` 
+                            : ''
+
+                        const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
+
+                        itemsRowsHtml += `<tr>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemNum}</td>
+                            <td style="border:1px solid #000; padding:4px; vertical-align:top;"><strong>${item.product_name}</strong>${descHtml}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${item.unit || 'Gói'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${qty}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(unitPrice)}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${discountPct > 0 ? discountPct + '%' : '-'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${discountAmount > 0 ? new Intl.NumberFormat('vi-VN').format(discountAmount) : '-'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterDiscount)}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemVatRate > 0 ? itemVatRate + '%' : '0%'}</td>
+                            <td style="border:1px solid #000; padding:4px; text-align:right; vertical-align:top;">${new Intl.NumberFormat('vi-VN').format(afterVat)}</td>
+                        </tr>`
+                    })
+                })
+
                 variables.contract_items_table = itemsRowsHtml
                 variables.quotation_items_table = itemsRowsHtml
 
                 // Summary totals
+                const subtotalAfterDiscount = grossTotal - totalDiscountAmt
                 const overallDiscountAmount = contract.quotation?.discount_amount ?? 0
                 const overallDiscountPercent = contract.quotation?.discount_percent ?? 0
                 
-                variables.subtotal = new Intl.NumberFormat('vi-VN').format(subtotal)
+                variables.gross_total = new Intl.NumberFormat('vi-VN').format(grossTotal)
+                variables.total_discount = new Intl.NumberFormat('vi-VN').format(totalDiscountAmt)
+                variables.subtotal = new Intl.NumberFormat('vi-VN').format(subtotalAfterDiscount)
                 variables.vat_total = new Intl.NumberFormat('vi-VN').format(totalVat)
                 variables.total_after_vat = new Intl.NumberFormat('vi-VN').format(totalAfterVat)
                 
