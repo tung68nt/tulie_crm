@@ -6,7 +6,7 @@ import {
     Plus, LayoutGrid, List, FileText, Share2, Copy, ExternalLink, Edit, Printer, Clock, FileDown,
     CheckCircle, XCircle, Layout, ArrowLeft, Target, ClipboardList, Lightbulb, Package, Users,
     Shield, Award, BookOpen, User, Phone, Mail, MapPin, Globe, CreditCard, Building2,
-    Eye, Info, Receipt, FileSignature
+    Eye, Info, Receipt, FileSignature, Maximize2
 } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import Link from 'next/link'
@@ -28,6 +28,14 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import { formatCurrency, formatDate, readNumberToWords } from '@/lib/utils/format'
 import { QUOTATION_STATUS_LABELS, QUOTATION_STATUS_COLORS } from '@/lib/constants/status'
 import { QuotationPaper } from '@/components/quotations/quotation-paper'
@@ -334,7 +342,41 @@ export default function QuotationDetailPage() {
                                             <CardTitle className="text-base font-bold">Đề xuất giải pháp</CardTitle>
                                             <CardDescription>Proposal — {proposalSections.length} Stages</CardDescription>
                                         </div>
-                                        <Target className="h-5 w-5 text-muted-foreground" />
+                                        <div className="flex items-center gap-2">
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs font-medium">
+                                                        <Maximize2 className="h-3.5 w-3.5" />
+                                                        <span className="hidden sm:inline">Phóng to</span>
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                                                    <DialogHeader className="pb-4 border-b">
+                                                        <DialogTitle className="text-xl">Đề xuất giải pháp (Proposal)</DialogTitle>
+                                                        <DialogDescription>Chi tiết {proposalSections.length} giai đoạn triển khai</DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="py-6 space-y-8">
+                                                        {proposalSections.map((section, idx) => (
+                                                            <div key={idx} className="space-y-3">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center font-bold text-sm text-zinc-600 shrink-0">
+                                                                        {idx + 1}
+                                                                    </div>
+                                                                    <h3 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
+                                                                        <span className="text-primary">{sectionIcons[section.key] || <Info className="h-4 w-4" />}</span>
+                                                                        {section.label}
+                                                                    </h3>
+                                                                </div>
+                                                                <div className="pl-11 text-sm text-zinc-700 leading-relaxed whitespace-pre-line">
+                                                                    {pc[section.key]}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
+                                            <Target className="h-5 w-5 text-muted-foreground ml-1" />
+                                        </div>
                                     </CardHeader>
                                     <CardContent className="pt-6">
                                         <div className="relative pl-12 before:absolute before:left-[17px] before:top-[32px] before:bottom-8 before:w-[2px] before:bg-zinc-100 before:rounded-full">
