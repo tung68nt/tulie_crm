@@ -167,7 +167,7 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                                 const afterVat = afterDiscount + vatAmt;
                                 return (
                                 <tr key={item.id} className="font-medium">
-                                    <td className="border border-black py-2 px-1 text-center align-top font-bold text-[10px]">{sectionName ? `${sIdx + 1}.${iIdx + 1}` : iIdx + 1}</td>
+                                    <td className="border border-black py-2 px-1 text-center align-top font-bold text-[10px]">{iIdx + 1}</td>
                                     <td className="border border-black py-2 px-3 align-top">
                                         <p className="font-bold mb-1 uppercase">{item.name || item.product_name}</p>
                                         {(item.description) && <p className="text-[10px] text-zinc-600 whitespace-pre-line italic leading-relaxed mt-1 pt-1 border-t border-dashed border-zinc-200">{item.description}</p>}

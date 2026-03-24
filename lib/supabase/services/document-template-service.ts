@@ -413,7 +413,7 @@ export async function generateDocument(
                             ? `<div style="font-size:7.5pt; color:#555; font-style:italic; line-height:1.5; margin-top:4px; padding-top:2px; border-top:1px dashed #ddd;">${rawDesc.replace(/\n\n/g, '</div><div style="margin-top:6px;">').replace(/\n/g, '<br>')}</div>` 
                             : ''
 
-                        const itemNum = sectionName ? `${sIdx + 1}.${iIdx + 1}` : `${iIdx + 1}`
+                        const itemNum = iIdx + 1
 
                         itemsRowsHtml += `<tr>
                             <td style="border:1px solid #000; padding:4px; text-align:center; vertical-align:top;">${itemNum}</td>
