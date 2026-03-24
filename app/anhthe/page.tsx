@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 }
 
 export default async function IDPhotoOrderPage() {
-  // Fetch only studio photo packages (active, sorted by price)
+  // Fetch only ID photo packages (SKU: anhthe-*) — not all Studio products
   const allProducts = await getProducts()
   const photoPackages = allProducts
-    .filter(p => p.is_active && p.category === 'Studio')
+    .filter(p => p.is_active && p.sku?.startsWith('anhthe-'))
     .sort((a, b) => a.price - b.price)
 
   // Check if current user is admin (logged in)

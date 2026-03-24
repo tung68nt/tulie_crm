@@ -484,6 +484,42 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
             </div>
           </section>
 
+          {/* Demo Images — Sample Results */}
+          <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
+            <div className="p-4 sm:p-6 border-b border-zinc-100">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4.5 h-4.5 text-zinc-700" />
+                </div>
+                <div>
+                  <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Kết quả mẫu</h2>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">So sánh chất lượng giữa các gói — Ảnh gốc → Gói 79k → Gói 199k → Gói 339k</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-4 sm:p-6 space-y-4">
+              <div className="rounded-xl overflow-hidden border border-zinc-100">
+                <img
+                  src="/file/anhthe-1.jpg"
+                  alt="Kết quả mẫu ảnh thẻ người lớn — so sánh Ảnh gốc, Gói 79k, Gói 199k, Gói 339k"
+                  className="w-full h-auto"
+                  loading="eager"
+                />
+              </div>
+              <div className="rounded-xl overflow-hidden border border-zinc-100">
+                <img
+                  src="/file/anhthe-2.jpg"
+                  alt="Kết quả mẫu ảnh thẻ trẻ em — so sánh Ảnh gốc, Gói 79k, Gói 199k, Gói 339k"
+                  className="w-full h-auto"
+                  loading="eager"
+                />
+              </div>
+              <p className="text-[11px] text-zinc-400 text-center font-medium">
+                Gói càng cao, ảnh càng được chỉnh sửa kỹ lưỡng hơn — bao gồm ghép tóc, ghép trang phục, chỉnh da cao cấp
+              </p>
+            </div>
+          </section>
+
           {/* Section 2: Package Selection — Multi-quantity */}
           <section className="space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3 px-1">
