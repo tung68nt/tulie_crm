@@ -29,7 +29,17 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
     const year = new Date(quotation.created_at).getFullYear();
 
     return (
-        <div className="bg-white p-[2cm] min-h-[297mm] text-black font-sans leading-normal print:p-0">
+        <>
+        {/* Print style: force A4 landscape so 10 columns fit */}
+        <style dangerouslySetInnerHTML={{ __html: `
+            @media print {
+                @page { size: A4 landscape; margin: 10mm; }
+                .quotation-paper-basic { width: 100% !important; max-width: none !important; padding: 0 !important; box-shadow: none !important; }
+                .quotation-paper-basic table { font-size: 8pt !important; }
+                .quotation-paper-basic th, .quotation-paper-basic td { padding: 3px 2px !important; }
+            }
+        `}} />
+        <div className="bg-white p-[2cm] min-h-[297mm] text-black font-sans leading-normal print:p-0 quotation-paper-basic">
             {/* Header following administrative style */}
             <div className="flex gap-4 items-start mb-8 text-left">
                 {/* Logo */}
@@ -81,7 +91,19 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
             </p>
 
             {/* Main Items Table */}
-            <table className="w-full border-collapse border border-black text-[12px] mb-8">
+            <table className="w-full border-collapse border border-black text-[11px] mb-8">
+                <colgroup>
+                    <col style={{ width: '4%' }} />
+                    <col style={{ width: '30%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '5%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '9%' }} />
+                    <col style={{ width: '12%' }} />
+                    <col style={{ width: '6%' }} />
+                    <col style={{ width: '10%' }} />
+                </colgroup>
                 <thead>
                     <tr className="bg-zinc-50 grayscale">
                         <th className="border border-black py-2 px-1 text-center w-8 font-bold text-[10px]">STT<br /><span className="text-[7pt] font-normal opacity-60">No.</span></th>
@@ -284,5 +306,6 @@ export function QuotationDocumentPaper({ quotation, brandConfig }: QuotationDocu
                 {brandConfig?.brand_name || "Tulie Agency"} - Creative Solution & Digital Strategy | Hotline: {brandConfig?.phone || "098.898.4554"} | Website: {brandConfig?.website || "tulie.vn"}
             </div>
         </div>
+        </>
     );
 }
