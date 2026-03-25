@@ -153,6 +153,66 @@ export const academyWebhookSchema = z.object({
 }).passthrough() // Allow additional fields from external system
 
 // ============================================
+// TRACKING SCHEMAS (public endpoints)
+// ============================================
+
+/** POST /api/portal-tracking */
+export const portalTrackingStartSchema = z.object({
+    action: z.literal('start'),
+    projectId: uuidSchema.nullable().optional(),
+    customerId: uuidSchema.nullable().optional(),
+    portalToken: z.string().min(1).max(200),
+    sessionId: z.string().min(1).max(100),
+    userAgent: safeTextSchema(500).optional(),
+    referrer: z.string().max(2000).optional(),
+    deviceType: z.enum(['desktop', 'mobile', 'tablet']).optional().default('desktop'),
+})
+
+export const portalTrackingPingSchema = z.object({
+    action: z.literal('ping'),
+    viewId: uuidSchema,
+    durationSeconds: z.number().int().min(0).max(7200).optional(),
+    maxScrollPercent: z.number().min(0).max(100).optional(),
+})
+
+export const portalTrackingInteractionSchema = z.object({
+    action: z.literal('interaction'),
+    viewId: uuidSchema,
+    interactionType: safeTextSchema(100),
+    details: safeTextSchema(1000).nullable().optional(),
+})
+
+export const portalTrackingPageSchema = z.object({
+    action: z.literal('page'),
+    viewId: uuidSchema,
+    pageName: safeTextSchema(200),
+})
+
+/** POST /api/quote-tracking */
+export const quoteTrackingStartSchema = z.object({
+    action: z.literal('start'),
+    quotationId: uuidSchema,
+    sessionId: z.string().min(1).max(100),
+    userAgent: safeTextSchema(500).optional(),
+    referrer: z.string().max(2000).optional(),
+    deviceType: z.enum(['desktop', 'mobile', 'tablet']).optional().default('desktop'),
+})
+
+export const quoteTrackingPingSchema = z.object({
+    action: z.literal('ping'),
+    viewId: uuidSchema,
+    durationSeconds: z.number().int().min(0).max(7200).optional(),
+    maxScrollPercent: z.number().min(0).max(100).optional(),
+})
+
+export const quoteTrackingInteractionSchema = z.object({
+    action: z.literal('interaction'),
+    viewId: uuidSchema,
+    interactionType: safeTextSchema(100),
+    details: safeTextSchema(1000).nullable().optional(),
+})
+
+// ============================================
 // HELPER
 // ============================================
 

@@ -92,24 +92,7 @@ export async function POST(req: NextRequest) {
         if (storedApiKey || storedSecretKey) {
             // API key/Secret is configured → enforce authentication
             if (!authHeader && !signature) {
-                const headersObj = Object.fromEntries(req.headers.entries())
-                console.warn('[SePay Webhook] Rejected: Security configured but no auth provided. Headers received:', headersObj)
-                
-                // TEMP DEBUG: Log to database so we can see it
-                try {
-                    const { createAdminClient } = await import('@/lib/supabase/admin')
-                    const supabase = createAdminClient()
-                    
-                    const debugKey = 'sepay_debug_' + Date.now()
-                    await supabase.from('system_settings').insert([{
-                        key: debugKey,
-                        value: headersObj,
-                        updated_at: new Date().toISOString()
-                    }])
-                } catch (e) {
-                    // ignore
-                }
-
+                console.warn('[SePay Webhook] Rejected: Security configured but no auth provided')
                 return NextResponse.json({ success: false, message: 'Unauthorized: missing credentials' }, { status: 401 })
             }
 
@@ -129,8 +112,12 @@ export async function POST(req: NextRequest) {
                 }
             }
         } else {
-            // No API key configured → accept without auth (backward compatible)
-            console.log('[SePay Webhook] No API key/Secret configured — accepting without auth')
+            // SECURITY: No API key configured → reject. Payment webhooks MUST be authenticated.
+            console.warn('[SePay Webhook] Rejected: No API key/Secret configured. Configure in Settings → Payment Gateway.')
+            return NextResponse.json(
+                { success: false, message: 'Webhook not configured. Set API key in system settings.' },
+                { status: 503 }
+            )
         }
 
         // 2. Verify HMAC Signature (if provided)

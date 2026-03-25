@@ -17,7 +17,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { Lock, Eye, EyeOff, RefreshCw, Copy, Check } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
-import { setEntityPassword, getEntityPasswordPlain } from '@/lib/supabase/services/portal-actions'
+import { setEntityPassword } from '@/lib/supabase/services/portal-actions'
 
 interface SetPasswordDialogProps {
     entityId: string
@@ -40,27 +40,11 @@ export function SetPasswordDialog({
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const [currentPassword, setCurrentPassword] = useState<string | null>(null)
-    const [loadingCurrent, setLoadingCurrent] = useState(false)
     const [copied, setCopied] = useState(false)
 
-    // Load current plaintext password when dialog opens
-    const handleOpenChange = async (open: boolean) => {
+    const handleOpenChange = (open: boolean) => {
         setIsOpen(open)
-        if (open && hasPassword) {
-            setLoadingCurrent(true)
-            try {
-                const result = await getEntityPasswordPlain(tableName, entityId)
-                if (result.password) {
-                    setCurrentPassword(result.password)
-                }
-            } catch {
-                // ignore — plaintext may not be stored
-            } finally {
-                setLoadingCurrent(false)
-            }
-        } else if (!open) {
-            setCurrentPassword(null)
+        if (!open) {
             setPassword('')
             setCopied(false)
         }
@@ -77,9 +61,8 @@ export function SetPasswordDialog({
     }
 
     const handleCopy = () => {
-        const textToCopy = password || currentPassword
-        if (textToCopy) {
-            navigator.clipboard.writeText(textToCopy)
+        if (password) {
+            navigator.clipboard.writeText(password)
             setCopied(true)
             toast.success('Đã copy mật khẩu')
             setTimeout(() => setCopied(false), 2000)
@@ -167,7 +150,7 @@ export function SetPasswordDialog({
                                 <RefreshCw className="h-3 w-3 mr-1" />
                                 Tạo ngẫu nhiên
                             </Button>
-                            {(password || currentPassword) && (
+                            {password && (
                                 <Button type="button" variant="outline" size="sm" className="text-xs h-7" onClick={handleCopy}>
                                     {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
                                     {copied ? 'Đã copy' : 'Copy'}
@@ -177,17 +160,8 @@ export function SetPasswordDialog({
                     </div>
                     {hasPassword && (
                         <div className="space-y-1.5 p-3 bg-muted/50 rounded-lg border">
-                            <Label className="text-xs text-muted-foreground">Mật khẩu hiện tại</Label>
-                            {loadingCurrent ? (
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                    <LoadingSpinner size="sm" />
-                                    Đang tải...
-                                </div>
-                            ) : currentPassword ? (
-                                <p className="text-sm font-mono font-medium bg-background px-2 py-1 rounded border select-all">{currentPassword}</p>
-                            ) : (
-                                <p className="text-xs text-muted-foreground italic">Không thể xem (mật khẩu đã mã hoá)</p>
-                            )}
+                            <Label className="text-xs text-muted-foreground">Trạng thái</Label>
+                            <p className="text-xs text-muted-foreground italic">🔒 Mật khẩu đã mã hoá. Nhập mật khẩu mới để thay đổi, hoặc để trống để gỡ bỏ.</p>
                         </div>
                     )}
                 </div>

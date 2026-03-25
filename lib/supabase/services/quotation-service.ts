@@ -419,6 +419,12 @@ export async function duplicateQuotation(id: string) {
 export async function deleteQuotation(id: string) {
     try {
         const supabase = await createClient()
+
+        // Manually delete related records to avoid FK constraint errors if cascade is missing
+        await supabase.from('quotation_items').delete().eq('quotation_id', id)
+        await supabase.from('quotation_versions').delete().eq('quotation_id', id)
+        await supabase.from('quotation_views').delete().eq('quotation_id', id)
+
         const { error } = await supabase
             .from('quotations')
             .delete()
@@ -444,6 +450,12 @@ export async function deleteQuotation(id: string) {
 export async function deleteQuotations(ids: string[]) {
     try {
         const supabase = await createClient()
+
+        // Manually delete related records to avoid FK constraint errors if cascade is missing
+        await supabase.from('quotation_items').delete().in('quotation_id', ids)
+        await supabase.from('quotation_versions').delete().in('quotation_id', ids)
+        await supabase.from('quotation_views').delete().in('quotation_id', ids)
+
         const { error } = await supabase
             .from('quotations')
             .delete()

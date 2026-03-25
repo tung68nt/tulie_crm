@@ -4,7 +4,7 @@ import { CURRENCY_LOCALE, DATE_FORMAT, DATETIME_FORMAT } from '@/lib/constants'
 
 // Currency formatting
 export function formatCurrency(amount: number | null | undefined, currency: string = 'VND'): string {
-    let value = (amount === null || amount === undefined || isNaN(amount)) ? 0 : amount;
+    const value = (amount === null || amount === undefined || isNaN(amount)) ? 0 : amount;
     return new Intl.NumberFormat(CURRENCY_LOCALE, {
         style: 'currency',
         currency,

@@ -58,12 +58,30 @@ export async function setEntityPassword(tableName: string, entityId: string, pas
 }
 
 /**
- * @deprecated SECURITY: Plaintext password retrieval is disabled.
- * Passwords are stored as hashes only. This function always returns null.
+ * @deprecated Passwords are stored as hashes only. Always returns null.
+ * Kept for backward compatibility with SetPasswordDialog.
  */
 export async function getEntityPasswordPlain(_tableName: string, _entityId: string) {
-    // SECURITY: Never return plaintext passwords — hash-only storage
     return { password: null }
+}
+
+// ============================================
+// BRUTE-FORCE PROTECTION
+// ============================================
+const passwordAttempts = new Map<string, { count: number; resetAt: number }>()
+const MAX_PASSWORD_ATTEMPTS = 5
+const PASSWORD_WINDOW_MS = 15 * 60 * 1000 // 15 minutes
+
+function checkPasswordRateLimit(token: string): { allowed: boolean; remainingAttempts: number } {
+    const now = Date.now()
+    const entry = passwordAttempts.get(token)
+    if (!entry || now > entry.resetAt) {
+        passwordAttempts.set(token, { count: 1, resetAt: now + PASSWORD_WINDOW_MS })
+        return { allowed: true, remainingAttempts: MAX_PASSWORD_ATTEMPTS - 1 }
+    }
+    entry.count++
+    const remaining = Math.max(0, MAX_PASSWORD_ATTEMPTS - entry.count)
+    return { allowed: entry.count <= MAX_PASSWORD_ATTEMPTS, remainingAttempts: remaining }
 }
 
 // Deprecated: use setEntityPassword
@@ -73,6 +91,12 @@ export async function setQuotationPassword(quotationId: string, password: string
 
 export async function verifyPortalPassword(token: string, password: string) {
     try {
+        // SECURITY: Brute-force protection
+        const rateCheck = checkPasswordRateLimit(`portal_${token}`)
+        if (!rateCheck.allowed) {
+            return { success: false, error: 'Quá nhiều lần thử. Vui lòng đợi 15 phút.' }
+        }
+
         // SECURITY: Use admin client — portal visitors have no session,
         // and we verify token ownership before any data access
         const supabase = createAdminClient()
@@ -99,7 +123,10 @@ export async function verifyPortalPassword(token: string, password: string) {
         const isValid = await bcrypt.compare(password, passwordHash)
 
         if (!isValid) {
-            return { success: false, error: 'Mật khẩu không chính xác' }
+            return {
+                success: false,
+                error: `Mật khẩu không chính xác. Còn ${rateCheck.remainingAttempts} lần thử.`
+            }
         }
 
         // Set HMAC-signed secure cookie
@@ -117,6 +144,62 @@ export async function verifyPortalPassword(token: string, password: string) {
         return { success: true }
     } catch (err: any) {
         console.error('Password verification error:', err)
+        return { success: false, error: 'Lỗi hệ thống' }
+    }
+}
+
+/**
+ * Verify password for public quote page (/quote/[token])
+ * Similar to verifyPortalPassword but cookie scoped to /quote path
+ */
+export async function verifyQuotePassword(token: string, password: string) {
+    try {
+        // SECURITY: Brute-force protection
+        const rateCheck = checkPasswordRateLimit(`quote_${token}`)
+        if (!rateCheck.allowed) {
+            return { success: false, error: 'Quá nhiều lần thử. Vui lòng đợi 15 phút.' }
+        }
+
+        const supabase = createAdminClient()
+
+        const { data: quotation, error } = await supabase
+            .from('quotations')
+            .select('password_hash')
+            .eq('public_token', token)
+            .single()
+
+        if (error || !quotation) {
+            return { success: false, error: 'Không tìm thấy báo giá' }
+        }
+
+        if (!quotation.password_hash) {
+            return { success: true } // No password required
+        }
+
+        const isValid = await bcrypt.compare(password, quotation.password_hash)
+
+        if (!isValid) {
+            return {
+                success: false,
+                error: `Mật khẩu không chính xác. Còn ${rateCheck.remainingAttempts} lần thử.`
+            }
+        }
+
+        // Set HMAC-signed secure cookie scoped to /quote
+        const cookieStore = await cookies()
+        const signedValue = await signPortalToken(token)
+        cookieStore.set(`quote_auth_${token}`, signedValue, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7, // 1 week
+            path: '/quote'  // SECURITY: Scoped to quote paths only
+        })
+
+        revalidatePath(`/quote/${token}`)
+        return { success: true }
+    } catch (err: any) {
+        console.error('Quote password verification error:', err)
         return { success: false, error: 'Lỗi hệ thống' }
     }
 }

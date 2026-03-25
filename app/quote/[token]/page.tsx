@@ -1,8 +1,10 @@
 import { Metadata } from 'next'
 import { QuotationContent } from './quotation-content'
+import QuotePasswordForm from './password-form'
 import { getQuotationByToken } from '@/lib/supabase/services/quotation-service'
 import { getBrandConfig } from '@/lib/supabase/services/settings-service'
 import { notFound } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,6 +41,19 @@ export default async function PublicQuotationPage({ params }: Props) {
 
         if (!quotation) {
             notFound()
+        }
+
+        // SECURITY: Check password protection
+        if ((quotation as any).password_hash) {
+            const { signPortalToken } = await import('@/lib/supabase/services/portal-actions')
+            const cookieStore = await cookies()
+            const cookieValue = cookieStore.get(`quote_auth_${token}`)?.value
+            const expectedValue = await signPortalToken(token)
+            const isAuthenticated = cookieValue === expectedValue
+
+            if (!isAuthenticated) {
+                return <QuotePasswordForm token={token} customerName={quotation.customer?.company_name} />
+            }
         }
 
         return <QuotationContent quotation={quotation} brandConfig={brandConfig} />

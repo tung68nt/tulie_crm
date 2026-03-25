@@ -307,28 +307,49 @@ const PdfTemplate: React.FC<PdfTemplateProps> = ({ quotation }) => {
                         </View>
 
                         {/* Map dynamic sections */}
-                        {Object.entries(pc).map(([key, value], idx) => {
-                            if (!value || typeof value !== 'string' || value.trim().length === 0 || ['custom_sections'].includes(key)) return null;
+                        {(() => {
+                            // New format: sections array
+                            if (pc.sections && Array.isArray(pc.sections)) {
+                                return pc.sections.filter((s: any) => s.label && s.content && s.content.trim()).map((s: any, idx: number) => (
+                                    <View key={s.key || idx} wrap={false} style={{ marginBottom: 15, paddingLeft: 15, borderLeft: '2px solid #efefef' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <View style={{ backgroundColor: '#000', color: '#fff', width: 14, height: 14, borderRadius: 7, justifyContent: 'center', alignItems: 'center', marginRight: 8 }}>
+                                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{idx + 1}</Text>
+                                            </View>
+                                            <Text style={{ fontSize: 10, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>{s.label}</Text>
+                                        </View>
+                                        <Text style={{ fontSize: 9, color: '#555', lineHeight: 1.6 }}>{s.content}</Text>
+                                    </View>
+                                ));
+                            }
+                            // Old flat format fallback
                             const labels: Record<string, string> = {
                                 introduction: 'Mục tiêu & Giới thiệu',
                                 transition: 'Tiếp cận & Giải pháp',
                                 scope_of_work: 'Phạm vi công việc',
+                                methodology: 'Phương pháp & Cách tiếp cận',
+                                deliverables: 'Sản phẩm bàn giao',
+                                team: 'Đội ngũ chuyên trách',
                                 why_us: 'Tại sao chọn Tulie',
                                 case_studies: 'Kinh nghiệm thực tế',
-                                timeline: 'Lộ trình triển khai'
+                                timeline: 'Lộ trình triển khai',
+                                warranty: 'Bảo hành & Hỗ trợ',
                             };
-                            return (
-                                <View key={key} wrap={false} style={{ marginBottom: 15, paddingLeft: 15, borderLeft: '2px solid #efefef' }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                                        <View style={{ backgroundColor: '#000', color: '#fff', width: 14, height: 14, borderRadius: 7, justifyContent: 'center', alignItems: 'center', marginRight: 8 }}>
-                                            <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{idx + 1}</Text>
+                            return Object.entries(pc).map(([key, value], idx) => {
+                                if (!value || typeof value !== 'string' || value.trim().length === 0 || ['custom_sections', 'sections', 'attachments'].includes(key)) return null;
+                                return (
+                                    <View key={key} wrap={false} style={{ marginBottom: 15, paddingLeft: 15, borderLeft: '2px solid #efefef' }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                            <View style={{ backgroundColor: '#000', color: '#fff', width: 14, height: 14, borderRadius: 7, justifyContent: 'center', alignItems: 'center', marginRight: 8 }}>
+                                                <Text style={{ fontSize: 8, fontFamily: 'Roboto-Bold' }}>{idx + 1}</Text>
+                                            </View>
+                                            <Text style={{ fontSize: 10, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>{labels[key] || key}</Text>
                                         </View>
-                                        <Text style={{ fontSize: 10, fontFamily: 'Roboto-Bold', textTransform: 'uppercase' }}>{labels[key] || key}</Text>
+                                        <Text style={{ fontSize: 9, color: '#555', lineHeight: 1.6 }}>{value}</Text>
                                     </View>
-                                    <Text style={{ fontSize: 9, color: '#555', lineHeight: 1.6 }}>{value}</Text>
-                                </View>
-                            );
-                        })}
+                                );
+                            });
+                        })()}
                     </View>
                 )}
 

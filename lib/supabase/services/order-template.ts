@@ -60,18 +60,18 @@ export const orderTemplate = `
   </table>
 
   <!-- Bảng hàng hóa -->
-  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:8pt;">
+  <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:8pt; table-layout:auto;">
     <tr style="background:#f5f5f5;">
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:25px;">STT</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold;">Hạng mục & Mô tả chi tiết</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:35px;">ĐVT</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:22px;">SL</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Đơn giá</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:32px;">CK(%)</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:55px;">Giảm giá</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Thành tiền</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:45px;">Thuế VAT</th>
-      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:68px;">Thành tiền sau thuế</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; white-space:nowrap;">STT</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; width:100%;">Hạng mục & Mô tả chi tiết</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; white-space:nowrap;">ĐVT</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; white-space:nowrap;">SL</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:right; font-weight:bold; white-space:nowrap;">Đơn giá</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; white-space:nowrap;">CK(%)</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:right; font-weight:bold; white-space:nowrap;">Giảm giá</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:right; font-weight:bold; white-space:nowrap;">Thành tiền</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:center; font-weight:bold; white-space:nowrap;">Thuế VAT</th>
+      <th style="border:1px solid #000; padding:4px 2px; text-align:right; font-weight:bold; white-space:nowrap;">Thành tiền sau thuế</th>
     </tr>
     {{contract_items_table}}
     <tr style="background:#f5f5f5;">

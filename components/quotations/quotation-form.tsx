@@ -769,131 +769,131 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                 </Button>
                             </CardHeader>
                             <CardContent className="space-y-6">
-                                {/* Proposal Contents: 8 items in a 2x4 grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8 mb-10 pb-8 border-b border-slate-100 items-stretch">
-                                    {/* 1. Introduction */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Mục tiêu & Giới thiệu</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Nêu bật vấn đề, nhu cầu của khách hàng và tổng quan giải pháp đề xuất.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder="VD: Với mong muốn nâng cao hình ảnh thương hiệu và gia tăng chuyển đổi qua kênh digital, chúng tôi xin đề xuất giải pháp toàn diện bao gồm..."
-                                            value={proposalContent?.introduction || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, introduction: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                {/* Dynamic Proposal Sections */}
+                                {(() => {
+                                    const DEFAULT_SECTIONS = [
+                                        { key: 'introduction', label: 'Mục tiêu & Giới thiệu', placeholder: 'VD: Với mong muốn nâng cao hình ảnh thương hiệu và gia tăng chuyển đổi qua kênh digital, chúng tôi xin đề xuất giải pháp toàn diện bao gồm...' },
+                                        { key: 'scope_of_work', label: 'Phạm vi công việc (Scope of Work)', placeholder: 'VD:\n• Thiết kế bộ nhận diện: Logo, name card, banner\n• Website: UI/UX, frontend + backend, tích hợp CRM' },
+                                        { key: 'methodology', label: 'Phương pháp & Cách tiếp cận', placeholder: 'VD: Áp dụng quy trình Agile with sprint 2 tuần, review định kỳ cùng khách hàng.' },
+                                        { key: 'deliverables', label: 'Sản phẩm bàn giao (Deliverables)', placeholder: 'VD:\n• File thiết kế gốc (AI, PSD, Figma)\n• Source code + tài liệu hướng dẫn sử dụng' },
+                                        { key: 'team', label: 'Đội ngũ & Nhân sự', placeholder: 'VD: Senior Designer (4 năm exp), Project Manager, 2 Content Creator...' },
+                                        { key: 'timeline', label: 'Tiến độ & Timeline', placeholder: 'VD: Tuần 1: Research, Tuần 2: Design, Tuần 3-4: Development...' },
+                                        { key: 'warranty', label: 'Chính sách bảo hành & Hỗ trợ', placeholder: 'VD: Bảo hành code 12 tháng, hỗ trợ vận hành 2h/ngày trong tuần đầu...' },
+                                        { key: 'why_us', label: 'Vì sao chọn chúng tôi?', placeholder: 'VD:\n• 5+ năm kinh nghiệm ngành F&B, Bất động sản\n• Đội ngũ in-house, không outsource' },
+                                    ]
 
-                                    {/* 2. Scope of Work */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Phạm vi công việc (Scope of Work)</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Mô tả chi tiết từng hạng mục, số lượng, tần suất và chất lượng đầu ra mong muốn.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder={"VD:\n• Thiết kế bộ nhận diện: Logo, name card, banner, profile công ty\n• Website: Thiết kế UI/UX, phát triển frontend + backend, tích hợp CRM\n• Marketing: 12 bài content/tháng, 4 video reels, quản lý fanpage\n• Sự kiện: Thiết kế backdrop, standee, giấy mời, tờ rơi"}
-                                            value={proposalContent?.scope_of_work || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, scope_of_work: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                    const getSections = () => {
+                                        if (proposalContent?.sections && Array.isArray(proposalContent.sections)) {
+                                            return proposalContent.sections
+                                        }
+                                        const migrated: any[] = []
+                                        DEFAULT_SECTIONS.forEach(def => {
+                                            if (proposalContent?.[def.key]) {
+                                                migrated.push({ key: def.key, label: def.label, content: proposalContent[def.key] })
+                                            }
+                                        })
+                                        if (proposalContent?.custom_sections && Array.isArray(proposalContent.custom_sections)) {
+                                            proposalContent.custom_sections.forEach((s: any) => {
+                                                if (s.title || s.content) migrated.push({ key: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`, label: s.title || 'Mục tùy chỉnh', content: s.content || '' })
+                                            })
+                                        }
+                                        return migrated.length > 0 ? migrated : DEFAULT_SECTIONS.map(d => ({ key: d.key, label: d.label, content: '' }))
+                                    }
 
-                                    {/* 3. Methodology */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Phương pháp & Cách tiếp cận</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Mô tả cách thức triển khai, công nghệ, quy trình và tiêu chuẩn áp dụng.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder={"VD: Áp dụng quy trình Agile with sprint 2 tuần, review định kỳ cùng khách hàng.\nThiết kế: Design Thinking → Wireframe → UI → Review → Hoàn thiện\nDev: Git-based, CI/CD, testing trước bàn giao"}
-                                            value={proposalContent?.methodology || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, methodology: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                    const sections = getSections()
 
-                                    {/* 4. Deliverables */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Sản phẩm bàn giao (Deliverables)</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Liệt kê cụ thể sản phẩm đầu ra bàn giao cho khách hàng.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder={"VD:\n• File thiết kế gốc (AI, PSD, Figma)\n• Source code + tài liệu hướng dẫn sử dụng\n• Báo cáo hiệu quả chiến dịch hàng tháng\n• Video gốc full HD + phụ đề"}
-                                            value={proposalContent?.deliverables || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, deliverables: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                    const updateSections = (newSections: any[]) => {
+                                        const flat: any = { sections: newSections }
+                                        newSections.forEach((s: any) => {
+                                            const defaultDef = DEFAULT_SECTIONS.find(d => d.key === s.key)
+                                            if (defaultDef && s.content) flat[s.key] = s.content
+                                        })
+                                        const customOnes = newSections.filter(s => !DEFAULT_SECTIONS.find(d => d.key === s.key))
+                                        if (customOnes.length > 0) flat.custom_sections = customOnes.map(s => ({ title: s.label, content: s.content }))
+                                        if (proposalContent?.attachments) flat.attachments = proposalContent.attachments
+                                        setProposalContent(flat)
+                                    }
 
-                                    {/* 5. Team */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Đội ngũ & Nhân sự</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Cấu trúc team triển khai và vai trò chính.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder="VD: Senior Designer (4 năm exp), Project Manager, 2 Content Creator..."
-                                            value={proposalContent?.team || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, team: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                    const getPlaceholder = (key: string) => DEFAULT_SECTIONS.find(d => d.key === key)?.placeholder || 'Nhập nội dung...'
 
-                                    {/* 6. Timeline */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Tiến độ & Timeline</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Cột mốc quan trọng và thời gian hoàn thành từng giai đoạn.</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder="VD: Tuần 1: Research, Tuần 2: Design, Tuần 3-4: Development..."
-                                            value={proposalContent?.timeline || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, timeline: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                    return (
+                                        <>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 mb-10 pb-8 border-b border-slate-100 items-stretch">
+                                                {sections.map((section: any, idx: number) => (
+                                                    <div key={section.key || idx} className="flex flex-col space-y-3 h-full group">
+                                                        <div className="flex items-start gap-2">
+                                                            <div className="flex-1">
+                                                                <Input
+                                                                    value={section.label}
+                                                                    onChange={(e) => {
+                                                                        const updated = [...sections]
+                                                                        updated[idx] = { ...updated[idx], label: e.target.value }
+                                                                        updateSections(updated)
+                                                                    }}
+                                                                    className="text-[14px] font-bold text-slate-900 border-0 border-b border-transparent hover:border-slate-200 focus:border-black bg-transparent px-0 h-auto py-1 rounded-none shadow-none focus-visible:ring-0"
+                                                                    placeholder="Tên mục..."
+                                                                />
+                                                            </div>
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => {
+                                                                    const updated = sections.filter((_: any, i: number) => i !== idx)
+                                                                    updateSections(updated)
+                                                                }}
+                                                                className="text-red-400 hover:text-red-600 h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                                                                title="Xóa mục này"
+                                                            >
+                                                                <X className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        </div>
+                                                        <Textarea
+                                                            rows={4}
+                                                            placeholder={getPlaceholder(section.key)}
+                                                            value={section.content || ''}
+                                                            onChange={(e) => {
+                                                                const updated = [...sections]
+                                                                updated[idx] = { ...updated[idx], content: e.target.value }
+                                                                updateSections(updated)
+                                                            }}
+                                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[120px] resize-none overflow-hidden"
+                                                            ref={(el) => {
+                                                                if (el && section.content) {
+                                                                    el.style.height = 'auto'
+                                                                    el.style.height = Math.max(120, el.scrollHeight) + 'px'
+                                                                }
+                                                            }}
+                                                            onInput={(e) => {
+                                                                const el = e.target as HTMLTextAreaElement
+                                                                el.style.height = 'auto'
+                                                                el.style.height = Math.max(120, el.scrollHeight) + 'px'
+                                                            }}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
 
-                                    {/* 7. Warranty */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Chính sách bảo hành & Hỗ trợ</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Cam kết hỗ trợ sau bàn giao và bảo trì dịch vụ</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder="VD: Bảo hành code 12 tháng, hỗ trợ vận hành 2h/ngày trong tuần đầu..."
-                                            value={proposalContent?.warranty || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, warranty: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
+                                            <div className="flex items-center gap-3">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        const newKey = `custom_${Date.now()}`
+                                                        updateSections([...sections, { key: newKey, label: 'Mục mới', content: '' }])
+                                                    }}
+                                                >
+                                                    <Plus className="h-4 w-4 mr-1" /> Thêm mục
+                                                </Button>
+                                                <span className="text-xs text-muted-foreground">Nhấn vào tên mục để đổi tên • Hover để hiện nút xóa</span>
+                                            </div>
+                                        </>
+                                    )
+                                })()}
 
-                                    {/* 8. Why Us */}
-                                    <div className="flex flex-col space-y-4 h-full">
-                                        <div>
-                                            <Label className="text-[14px] font-bold text-slate-900 block mb-1.5">Vì sao chọn chúng tôi?</Label>
-                                            <p className="text-xs text-muted-foreground leading-relaxed">Lợi thế cạnh tranh, điểm mạnh riêng</p>
-                                        </div>
-                                        <Textarea
-                                            rows={4}
-                                            placeholder={"VD:\n• 5+ năm kinh nghiệm ngành F&B, Bất động sản\n• Đội ngũ in-house, không outsource\n• Quy trình chuyên nghiệp, minh bạch\n• Đã phục vụ 200+ khách hàng"}
-                                            value={proposalContent?.why_us || ''}
-                                            onChange={(e) => setProposalContent({ ...proposalContent, why_us: e.target.value })}
-                                            className="bg-white border-slate-200 focus:border-black focus:ring-1 focus:ring-black transition-all flex-1 min-h-[140px]"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Row 7: Case Studies */}
-                                <div className="space-y-2.5 mb-6">
+                                {/* Attachments */}
+                                <div className="space-y-2.5 mb-6 pt-6 border-t border-slate-100">
                                     <Label className="text-sm font-bold">Tài liệu đính kèm (Attachments)</Label>
                                     <p className="text-xs text-muted-foreground mt-1.5">Link driver, hồ sơ năng lực hoặc các file liên quan</p>
                                     <Textarea
@@ -902,68 +902,6 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                         value={proposalContent?.attachments || ''}
                                         onChange={(e) => setProposalContent({ ...proposalContent, attachments: e.target.value })}
                                     />
-                                </div>
-
-                                {/* Row 8: Custom Sections */}
-                                <div className="space-y-3 pt-2 border-t">
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                        <div>
-                                            <Label className="text-sm font-semibold">Nội dung bổ sung</Label>
-                                            <p className="text-xs text-muted-foreground">Thêm các mục tùy chỉnh vào proposal (VD: Phụ lục, Tài liệu tham khảo...)</p>
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                const existing = proposalContent?.custom_sections || []
-                                                setProposalContent({
-                                                    ...proposalContent,
-                                                    custom_sections: [...existing, { title: '', content: '' }]
-                                                })
-                                            }}
-                                        >
-                                            <Plus className="h-4 w-4 mr-1" /> Thêm mục
-                                        </Button>
-                                    </div>
-                                    {(proposalContent?.custom_sections || []).map((section: any, idx: number) => (
-                                        <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3 bg-white">
-                                            <div className="flex items-center gap-2">
-                                                <Input
-                                                    placeholder="Tên mục (VD: Phụ lục A, Tài liệu tham khảo...)"
-                                                    value={section.title}
-                                                    onChange={(e) => {
-                                                        const updated = [...(proposalContent?.custom_sections || [])]
-                                                        updated[idx] = { ...updated[idx], title: e.target.value }
-                                                        setProposalContent({ ...proposalContent, custom_sections: updated })
-                                                    }}
-                                                    className="flex-1"
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        const updated = (proposalContent?.custom_sections || []).filter((_: any, i: number) => i !== idx)
-                                                        setProposalContent({ ...proposalContent, custom_sections: updated })
-                                                    }}
-                                                    className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                            <Textarea
-                                                rows={3}
-                                                placeholder="Nội dung chi tiết..."
-                                                value={section.content}
-                                                onChange={(e) => {
-                                                    const updated = [...(proposalContent?.custom_sections || [])]
-                                                    updated[idx] = { ...updated[idx], content: e.target.value }
-                                                    setProposalContent({ ...proposalContent, custom_sections: updated })
-                                                }}
-                                            />
-                                        </div>
-                                    ))}
                                 </div>
                             </CardContent>
                         </Card>
@@ -1198,8 +1136,19 @@ export function QuotationForm({ quotation, customers, products, units, projects,
                                                                             placeholder="Quy cách / Mô tả kỹ thuật (vd: A5 2 mặt, C150...)"
                                                                             value={item.description || ""}
                                                                             onChange={(e) => updateItem(item.id!, { description: e.target.value })}
-                                                                            className="h-16 text-[12px] min-h-[40px] resize-y"
-                                                                            rows={1}
+                                                                            className="text-[12px] min-h-[40px] resize-none overflow-hidden"
+                                                                            rows={2}
+                                                                            ref={(el) => {
+                                                                                if (el && item.description) {
+                                                                                    el.style.height = 'auto'
+                                                                                    el.style.height = el.scrollHeight + 'px'
+                                                                                }
+                                                                            }}
+                                                                            onInput={(e) => {
+                                                                                const el = e.target as HTMLTextAreaElement
+                                                                                el.style.height = 'auto'
+                                                                                el.style.height = el.scrollHeight + 'px'
+                                                                            }}
                                                                         />
 
                                                                         <div className="flex flex-wrap items-center gap-4 mt-2 mb-1 p-2 rounded-md bg-stone-50 border border-stone-100">

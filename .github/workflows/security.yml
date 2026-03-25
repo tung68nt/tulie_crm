@@ -1,0 +1,45 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    name: Dependency & Code Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # SCA — Check for known vulnerabilities in dependencies
+      - name: npm audit
+        run: npm audit --audit-level=high --production
+
+      # Secret leak detection
+      - name: Check for hardcoded secrets
+        run: |
+          # Fail if any hardcoded API keys, tokens, or passwords are found
+          if grep -rn --include='*.ts' --include='*.tsx' --include='*.js' \
+            --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=.git \
+            -iE '(sk_live|sk_test|re_[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|AKIA[A-Z0-9]{16})' \
+            .; then
+            echo "::error::Hardcoded secrets detected!"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets found"
+
+      # SAST — Static Application Security Testing
+      - name: Semgrep SAST scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
