@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Camera, CheckCircle2, ImagePlus, Link2, MapPin, MinusIcon, Package, Percent, PlusIcon, Printer, Sparkles, Star, Tag, Truck, Upload, User, X } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Camera, CheckCircle2, Eye, ImagePlus, Link2, MapPin, MinusIcon, Package, Percent, PlusIcon, Printer, Sparkles, Star, Tag, Truck, Upload, User, X } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -145,6 +146,7 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
 
   // Print state — per-vỉ sizes
   const [wantPrint, setWantPrint] = useState(false)
+  const [showLayoutPreview, setShowLayoutPreview] = useState(false)
   const [viSizes, setViSizes] = useState<string[]>([])
   const [extraViCount, setExtraViCount] = useState(0)
   const [showAllLayouts, setShowAllLayouts] = useState(false)
@@ -366,8 +368,8 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
           <section className="bg-white rounded-xl border border-zinc-200 overflow-hidden shadow-sm">
             <div className="p-4 sm:p-6 border-b border-zinc-100">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                  <User className="w-4.5 h-4.5 text-zinc-700" />
+                <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                  <span className="text-sm font-bold text-white">1</span>
                 </div>
                 <div>
                   <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Thông tin khách hàng</h2>
@@ -493,7 +495,7 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                 </div>
                 <div>
                   <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Kết quả mẫu</h2>
-                  <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">So sánh chất lượng giữa các gói — Ảnh gốc → Gói 79k → Gói 199k → Gói 339k</p>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 mt-0.5">So sánh chất lượng giữa các gói</p>
                 </div>
               </div>
             </div>
@@ -523,8 +525,8 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
           {/* Section 2: Package Selection — Multi-quantity */}
           <section className="space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3 px-1">
-              <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                <Camera className="w-4.5 h-4.5 text-zinc-700" />
+              <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                <span className="text-sm font-bold text-white">2</span>
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Chọn gói dịch vụ</h2>
@@ -635,8 +637,8 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
           {/* Section 3: Print Options */}
           <section className="space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3 px-1">
-              <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                <Printer className="w-4.5 h-4.5 text-zinc-700" />
+              <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                <span className="text-sm font-bold text-white">3</span>
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Dịch vụ In ấn</h2>
@@ -662,14 +664,36 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                     onCheckedChange={setWantPrint}
                   />
                 </div>
-                <a
-                  href="/anhthe/layouts"
-                  target="_blank"
+                <button
+                  type="button"
+                  onClick={() => setShowLayoutPreview(true)}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 border border-zinc-200 text-[11px] font-semibold text-zinc-600 hover:bg-zinc-200 hover:text-zinc-800 transition-colors"
                 >
-                  <ImagePlus className="size-3.5" />
+                  <Eye className="size-3.5" />
                   Xem mẫu vỉ ảnh
-                </a>
+                </button>
+
+                {/* Layout Preview Dialog */}
+                <Dialog open={showLayoutPreview} onOpenChange={setShowLayoutPreview}>
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="text-base font-bold">Các kiểu vỉ in ảnh</DialogTitle>
+                      <p className="text-xs text-zinc-400">Khổ giấy Canon 10×15 cm — độ bền lên tới 100 năm</p>
+                    </DialogHeader>
+                    <div className="grid gap-4 sm:grid-cols-2 mt-2">
+                      {PRINT_SIZES.map(size => (
+                        <div key={size.id} className="rounded-xl border border-zinc-200 overflow-hidden">
+                          <div className="px-3 py-2 border-b border-zinc-100 bg-zinc-50">
+                            <p className="text-xs font-bold text-zinc-900">{size.name}</p>
+                          </div>
+                          <div className="p-2">
+                            <PrintLayoutPreview sizeId={size.id} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
 
               {/* Print Options Panel */}
@@ -893,8 +917,8 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
           {isAdmin && (
           <section className="space-y-4 sm:space-y-5">
             <div className="flex items-center gap-3 px-1">
-              <div className="w-9 h-9 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
-                <Tag className="w-4.5 h-4.5 text-zinc-700" />
+              <div className="w-9 h-9 rounded-xl bg-zinc-900 flex items-center justify-center shrink-0">
+                <span className="text-sm font-bold text-white">4</span>
               </div>
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-zinc-950 tracking-tight">Giảm giá</h2>
