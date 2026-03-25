@@ -69,8 +69,10 @@ export async function logActivity(entry: AuditLogEntry) {
                 action: entry.action,
                 entity_type: entry.entity_type,
                 entity_id: entry.entity_id,
-                description: entry.description,
-                metadata: entry.metadata || {},
+                details: {
+                    description: entry.description,
+                    ...(entry.metadata || {})
+                },
                 created_at: new Date().toISOString()
             }])
 

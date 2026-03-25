@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export interface DataTableFilterOption {
     label: string
@@ -118,9 +119,11 @@ export function DataTable<TData, TValue>({
             setLoading(true)
             await onDelete(selectedRows.map((row) => row.original))
             table.resetRowSelection()
+            setOpen(false)
+        } catch (error: any) {
+            toast.error(error.message || "Có lỗi xảy ra khi xoá")
         } finally {
             setLoading(false)
-            setOpen(false)
         }
     }
 
@@ -129,6 +132,8 @@ export function DataTable<TData, TValue>({
             setLoading(true)
             await action.onAction(selectedRows.map((row) => row.original))
             table.resetRowSelection()
+        } catch (error: any) {
+            toast.error(error.message || "Thao tác thất bại")
         } finally {
             setLoading(false)
         }
