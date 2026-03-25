@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Camera, CheckCircle2, Eye, ImagePlus, Link2, MapPin, MinusIcon, Package, Percent, PlusIcon, Printer, Sparkles, Star, Tag, Truck, Upload, User, X } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { toast } from 'sonner'
@@ -675,22 +675,31 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
 
                 {/* Layout Preview Dialog */}
                 <Dialog open={showLayoutPreview} onOpenChange={setShowLayoutPreview}>
-                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="text-base font-bold">Các kiểu vỉ in ảnh</DialogTitle>
-                      <p className="text-xs text-zinc-400">Khổ giấy Canon 10×15 cm — độ bền lên tới 100 năm</p>
-                    </DialogHeader>
-                    <div className="grid gap-4 sm:grid-cols-2 mt-2">
-                      {PRINT_SIZES.map(size => (
-                        <div key={size.id} className="rounded-xl border border-zinc-200 overflow-hidden">
-                          <div className="px-3 py-2 border-b border-zinc-100 bg-zinc-50">
-                            <p className="text-xs font-bold text-zinc-900">{size.name}</p>
+                  <DialogContent className="max-w-2xl p-0 gap-0 overflow-hidden" showCloseButton={false}>
+                    {/* Sticky header with close button */}
+                    <div className="flex items-start justify-between p-4 sm:p-6 pb-3 border-b border-zinc-100">
+                      <div>
+                        <DialogTitle className="text-base font-bold">Các kiểu vỉ in ảnh</DialogTitle>
+                        <p className="text-xs text-zinc-400 mt-1">Khổ giấy Canon 10×15 cm — độ bền lên tới 100 năm</p>
+                      </div>
+                      <DialogClose className="shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center bg-zinc-100 hover:bg-zinc-200 transition-colors">
+                        <X className="size-4 text-zinc-600" />
+                      </DialogClose>
+                    </div>
+                    {/* Scrollable content */}
+                    <div className="max-h-[70vh] overflow-y-auto p-4 sm:p-6">
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {PRINT_SIZES.map(size => (
+                          <div key={size.id} className="rounded-xl border border-zinc-200 overflow-hidden">
+                            <div className="px-3 py-2 border-b border-zinc-100 bg-zinc-50">
+                              <p className="text-xs font-bold text-zinc-900">{size.name}</p>
+                            </div>
+                            <div className="p-2">
+                              <PrintLayoutPreview sizeId={size.id} />
+                            </div>
                           </div>
-                          <div className="p-2">
-                            <PrintLayoutPreview sizeId={size.id} />
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -859,12 +868,32 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
                       onClick={() => {
                         const nameEl = document.getElementById('customerName') as HTMLInputElement
                         const phoneEl = document.getElementById('customerPhone') as HTMLInputElement
-                        if (nameEl?.value) setShippingName(nameEl.value)
-                        if (phoneEl?.value) setShippingPhone(phoneEl.value)
+                        if (shippingName === nameEl?.value && shippingPhone === phoneEl?.value) {
+                          // Toggle off — clear fields
+                          setShippingName('')
+                          setShippingPhone('')
+                        } else {
+                          if (nameEl?.value) setShippingName(nameEl.value)
+                          if (phoneEl?.value) setShippingPhone(phoneEl.value)
+                        }
                       }}
-                      className="w-full text-left px-3 py-2 rounded-lg bg-zinc-50 border border-zinc-200 hover:bg-zinc-100 transition-colors text-xs font-medium text-zinc-600 flex items-center gap-2"
+                      className={cn(
+                        "w-full text-left px-3 py-2.5 rounded-lg border transition-all text-xs font-semibold flex items-center gap-2.5",
+                        shippingName && shippingPhone
+                          ? "bg-zinc-900 border-zinc-900 text-white"
+                          : "bg-white border-zinc-300 text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50 active:bg-zinc-100"
+                      )}
                     >
-                      <User className="h-3.5 w-3.5" />
+                      <div className={cn(
+                        "w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors",
+                        shippingName && shippingPhone
+                          ? "border-white bg-white"
+                          : "border-zinc-300"
+                      )}>
+                        {shippingName && shippingPhone && (
+                          <CheckCircle2 className="size-4 text-zinc-900" />
+                        )}
+                      </div>
                       Cùng thông tin khách hàng bên trên
                     </button>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
