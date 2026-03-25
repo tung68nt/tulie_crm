@@ -461,7 +461,7 @@ export async function generateDocument(
                     const pctString = overallDiscountPercent > 0 ? ` (${overallDiscountPercent}%)` : ''
                     variables.discount_row_html = `
                     <tr>
-                      <td style="border:1px solid #000; padding:4px;" colspan="9">Chiết khấu tổng / Overall Discount${pctString}</td>
+                      <td style="border:1px solid #000; padding:4px;" colspan="9">Chiết khấu tổng${pctString}</td>
                       <td style="border:1px solid #000; padding:4px; text-align:right;">-${new Intl.NumberFormat('vi-VN').format(overallDiscountAmount)}</td>
                     </tr>`
                 } else {
