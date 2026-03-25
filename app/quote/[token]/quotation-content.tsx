@@ -329,7 +329,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                         )}
                     >
                         <Layout className="w-3.5 h-3.5" />
-                        Hiện đại
+                        Chế độ xem
                     </button>
                     <button
                         onClick={() => setViewMode('basic')}
@@ -341,7 +341,7 @@ export function QuotationContent({ quotation: initialQuotation, brandConfig }: Q
                         )}
                     >
                         <FileSignature className="w-3.5 h-3.5" />
-                        Cơ bản
+                        Chế độ in
                     </button>
                 </div>
             </div>
