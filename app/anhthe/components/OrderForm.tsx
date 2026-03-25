@@ -651,18 +651,36 @@ export default function OrderForm({ products, isAdmin = false }: { products: Pro
               <div className="p-4 sm:p-5 space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <div className="space-y-0.5">
-                    <Label className="text-[13px] font-bold text-zinc-950 cursor-pointer" htmlFor="toggle-print">
+                    <p className="text-[13px] font-bold text-zinc-950">
                       Muốn in ảnh cứng
-                    </Label>
+                    </p>
                     <p className="text-[11px] text-zinc-400 font-medium">
                       {totalFreePrints > 0 ? `Bạn đang được tặng ${totalFreePrints} vỉ miễn phí từ các gói đã chọn` : 'Chọn gói dịch vụ để nhận vỉ in miễn phí'}
                     </p>
                   </div>
-                  <Switch
-                    id="toggle-print"
-                    checked={wantPrint}
-                    onCheckedChange={setWantPrint}
-                  />
+                  {/* Segmented toggle: Không / Có */}
+                  <div className="flex shrink-0 rounded-lg border border-zinc-200 overflow-hidden text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setWantPrint(false)}
+                      className={cn(
+                        "px-3.5 py-1.5 transition-colors",
+                        !wantPrint ? "bg-zinc-900 text-white" : "bg-white text-zinc-500 hover:bg-zinc-50"
+                      )}
+                    >
+                      Không
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setWantPrint(true)}
+                      className={cn(
+                        "px-3.5 py-1.5 transition-colors border-l border-zinc-200",
+                        wantPrint ? "bg-zinc-900 text-white" : "bg-white text-zinc-500 hover:bg-zinc-50"
+                      )}
+                    >
+                      Có
+                    </button>
+                  </div>
                 </div>
                 <button
                   type="button"
